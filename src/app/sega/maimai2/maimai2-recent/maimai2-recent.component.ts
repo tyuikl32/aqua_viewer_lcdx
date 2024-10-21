@@ -187,6 +187,7 @@ export class Maimai2RecentComponent implements OnInit {
     }
     return 'DXScore';
   }
+
   getJacketId(input: number): string {
     const inputString = input.toString();
     const lastFourDigits = inputString.slice(-4);

@@ -103,7 +103,7 @@ export class AppComponent implements OnInit, OnDestroy {
       }),
       filter(titles => titles.length > 0)
     ).subscribe((titles: string[]) => {
-      const fullTitle = titles.reverse().join(' - ') + ' | RinNET';
+      const fullTitle = titles.reverse().join(' - ') + ' | NET';
       this.titleService.setTitle(fullTitle);
     });
   }

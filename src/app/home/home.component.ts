@@ -6,6 +6,7 @@ import {environment} from '../../environments/environment';
 import {StatusCode} from '../status-code';
 import {TranslateService} from '@ngx-translate/core';
 import { AccountService } from '../auth/account.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -109,12 +110,16 @@ export class HomeComponent implements OnInit {
               public accountService: AccountService,
               public authenticationService: AuthenticationService,
               private renderer: Renderer2,
+              protected router: Router,
               private translate: TranslateService) {
   }
 
   ngOnInit(): void {
     this.avatarHeadId = this.avatarHeadData[Math.floor(Math.random() * this.avatarHeadData.length)];
     // this.avatarHeadId = this.avatarHeadData[19];
+    if (this.accountService.currentAccountValue){
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   fault(e: MouseEvent): void {

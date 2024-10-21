@@ -82,8 +82,6 @@ export class DashboardComponent implements OnInit {
     })
 
     this.getProfiles();
-    this.loadKeychip();
-    this.loadTrustedKeychip();
   }
 
   getProfiles(){
@@ -137,7 +135,7 @@ export class DashboardComponent implements OnInit {
 
   loadAnnouncements() {
     const param = new HttpParams().set('lang', this.language.getCurrentLang())
-    this.api.get('api/user/announcement/recent', param).subscribe(
+    this.api.getLcdx('lcdx/announcement/recent', param).subscribe(
       resp => {
         if (resp?.status) {
           const statusCode: StatusCode = resp.status.code;

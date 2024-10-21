@@ -5,7 +5,7 @@
 export const environment = {
   // apiServer: 'http://38.147.172.133/',
   // apiServer: 'http://192.168.123.112/',
-  apiServer: '/',
+  apiServer: 'https://portal.naominet.live/',
   production: false,
   enableImages: true,
   assetsHost: 'https://rinnet.stehp.cn/'

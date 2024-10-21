@@ -33,6 +33,17 @@ export class AuthenticationService {
       mergeMap(this.procLoginResp));
   }
 
+  login_lcdx(token: string) {
+    return this.http.get<any>('http://lcdxnet.sys-all.com.cn:42081/' + 'lcdx/onetime/' + token)
+      .pipe(
+        map(
+          resp => {
+            return resp;
+          }
+        ),
+        mergeMap(this.procLoginResp));
+  }
+
   loginWithOAuth(oauthCode: string, type: string) {
     return this.http.post<any>(`${environment.apiServer}api/auth/signin/oauth2/${oauthCode}/${type}`, null)
     .pipe(

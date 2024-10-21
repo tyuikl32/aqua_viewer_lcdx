@@ -73,14 +73,9 @@ export class AnnouncementsComponent implements OnInit {
       param = param.set('type', this.type)
     }
     let api: string;
-    if(this.isAdmin()){
-      api = 'api/admin/announcement/';
-    }
-    else {
-      api = 'api/user/announcement/';
-    }
+    api = 'lcdx/announcement/list';
 
-    this.api.get(api, param).subscribe(
+    this.api.getLcdx(api, param).subscribe(
       resp => {
         if (resp?.status) {
           const statusCode: StatusCode = resp.status.code;

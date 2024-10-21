@@ -16,25 +16,15 @@ import {PasswordResetComponent} from './password-reset/password-reset.component'
 import {ProfileComponent} from './profile/profile.component';
 import {AnnouncementsComponent} from './announcements/announcements.component';
 import {EditComponent} from "./announcements/edit/edit.component";
+import {OnetimeSignInComponent} from "./onetime-sign-in/onetime-sign-in.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent, data: {title: 'Home', disableSidebar: true }},
-  {path: 'profile', component: ProfileComponent, canActivate: [AuthGuardService], data: {title: 'Profile'}},
-  {path: 'cards', component: CardsComponent, canActivate: [AuthGuardService], data: {title: 'Cards'}},
-  {path: 'keychip', component: KeychipComponent, canActivate: [AuthGuardService], data: {title: 'Keychip'}},
   {path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService], data: {title: 'Dashboard'}},
-  {path: 'import', component: ImporterComponent, canActivate: [AuthGuardService], data: {title: 'Import'}},
   {path: 'announcements', component: AnnouncementsComponent, canActivate: [AuthGuardService], data: {title: 'Announcements'}},
-  {path: 'announcements/edit', component: EditComponent, canActivate: [AuthGuardService], data: {title: 'EditAnnouncements'}},
-  {path: 'contributors', component: ContributorsComponent, data: {title: 'Contributors', disableSidebar: true }},
-  {path: 'ongeki', loadChildren: () => import('./sega/ongeki/ongeki.module').then(mod => mod.OngekiModule), canMatch: [AuthGuardService], data: {title: 'Ongeki'}},
   {path: 'mai2', loadChildren: () => import('./sega/maimai2/maimai2.module').then(mod => mod.Maimai2Module), canMatch: [AuthGuardService], data: {title: 'Mai2'}},
-  {path: 'chuni/v2', loadChildren: () => import('./sega/chunithm/v2/v2.module').then(mod => mod.V2Module), canMatch: [AuthGuardService], data: {title: 'ChuniV2'}},
-  {path: 'oauth-callback/:type', component: OauthCallbackComponent, data: {title: 'OAuthCallback', disableSidebar: true }},
-  {path: 'sign-in', component: SignInComponent, canActivate: [LoginGuardService], data: {title: 'SignIn', disableSidebar: true }},
-  {path: 'sign-up', component: SignUpComponent, canActivate: [LoginGuardService], data: {title: 'SignUp', disableSidebar: true }},
-  {path: 'password-reset', component: PasswordResetComponent, canActivate: [LoginGuardService], data: {title: 'ResetPassword', disableSidebar: true }},
   {path: 'not-found', component: NotFoundComponent, data: {title: 'NotFound', disableSidebar: true }},
+  {path: 'onetime-sign-in', component: OnetimeSignInComponent, data: {title: 'OneTimeSignIn', disableSidebar: true }},
   {path: '**', redirectTo: '/not-found'}
 ];
 

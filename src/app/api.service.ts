@@ -18,6 +18,10 @@ export class ApiService {
     return this.http.get<any>(this.getHost() + path, {params});
   }
 
+  getLcdx(path: string, params?: HttpParams) {
+    return this.http.get<any>('http://lcdxnet.sys-all.com.cn:42081/' + path, {params});
+  }
+
   post(path: string, data?: object, params?: HttpParams) {
     return this.http.post<any>(this.getHost() + path, data, {params});
   }
