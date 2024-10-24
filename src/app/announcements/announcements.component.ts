@@ -99,13 +99,9 @@ export class AnnouncementsComponent implements OnInit {
 
   showAnnouncement(announcement: Announcement) {
     let api: string;
-    if(this.isAdmin()){
-      api = 'api/admin/announcement/';
-    }
-    else {
-      api = 'api/user/announcement/';
-    }
-    this.api.get(api + announcement.id, new HttpParams().set('lang', this.lang.getCurrentLang())).subscribe(
+
+    api = 'lcdx/announcement/item/';
+    this.api.getLcdx(api + announcement.id, new HttpParams().set('lang', this.lang.getCurrentLang())).subscribe(
       resp => {
         if (resp?.status) {
           const statusCode: StatusCode = resp.status.code;

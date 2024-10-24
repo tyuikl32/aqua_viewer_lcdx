@@ -34,7 +34,7 @@ export class AuthenticationService {
   }
 
   login_lcdx(token: string) {
-    return this.http.get<any>('http://lcdxnet.sys-all.com.cn:42081/' + 'lcdx/onetime/' + token)
+    return this.http.get<any>(environment.lcdxApiServer + 'lcdx/onetime/' + token)
       .pipe(
         map(
           resp => {

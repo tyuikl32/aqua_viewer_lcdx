@@ -25,6 +25,7 @@ const routes: Routes = [
   {path: 'mai2', loadChildren: () => import('./sega/maimai2/maimai2.module').then(mod => mod.Maimai2Module), canMatch: [AuthGuardService], data: {title: 'Mai2'}},
   {path: 'not-found', component: NotFoundComponent, data: {title: 'NotFound', disableSidebar: true }},
   {path: 'onetime-sign-in', component: OnetimeSignInComponent, data: {title: 'OneTimeSignIn', disableSidebar: true }},
+  {path: 'sign-in', component: SignInComponent, data: {title: 'SignIn', disableSidebar: true }},
   {path: '**', redirectTo: '/not-found'}
 ];
 

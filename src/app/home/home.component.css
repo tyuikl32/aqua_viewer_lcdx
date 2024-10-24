@@ -74,3 +74,29 @@
   align-items: center;
   font-weight: bold;
 }
+
+.tiny-text{
+  font-size: 0.2rem;
+}
+.home-container {
+  display: flex;
+  flex-direction: column;
+}
+.footer-container {
+  position: fixed; /* 设置为固定定位 */
+  bottom: 0; /* 向下贴边 */
+  right: 0; /* 向右贴边 */
+  width: 100%; /* 宽度设为100% */
+}
+
+.footer {
+  position: relative; /* 可选的，取决于你的需求 */
+  padding: 20px; /* 可根据需要调整内边距 */
+}
+
+.footer a {
+  position: absolute; /* 设置为绝对定位 */
+  bottom: 0; /* 距离底部为 0 */
+  right: 0; /* 距离右边为 0 */
+  margin: 10px; /* 可选的，给链接添加一点外边距 */
+}

@@ -250,7 +250,7 @@ export class Maimai2RatingComponent implements OnInit {
   }
   imgError(event: Event) {
     const target = event.target as HTMLImageElement;
-    target.src = this.host + 'assets/mai2/jacket/UI_Jacket_000000.webp';
+    target.src = 'assets/mai2/jacket/UI_Jacket_000000.webp';
   }
 }
 

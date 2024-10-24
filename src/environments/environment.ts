@@ -5,7 +5,8 @@
 export const environment = {
   // apiServer: 'http://38.147.172.133/',
   // apiServer: 'http://192.168.123.112/',
-  apiServer: 'https://portal.naominet.live/',
+  apiServer: 'http://localhost/',
+  lcdxApiServer: 'http://localhost/',
   production: false,
   enableImages: true,
   assetsHost: 'https://rinnet.stehp.cn/'

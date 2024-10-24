@@ -99,7 +99,7 @@
       <div class="hstack">
         <img
           class="jacket rounded-start"
-          [src]="host + 'assets/mai2/jacket/UI_Jacket_' + getJacketId(item.musicId) + '.webp'"
+          [src]="'assets/mai2/jacket/UI_Jacket_' + getJacketId(item.musicId) + '.webp'"
           (error)="imgError($event)"
           #img alt="">
         <div *ngIf="item.musicId != 0" class="card-body overflow-hidden py-0 px-2">
