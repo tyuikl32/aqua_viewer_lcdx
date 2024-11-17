@@ -30,7 +30,7 @@
           <img
             class="song-jacket"
             *ngIf="enableImages == true"
-            [src]="host + 'assets/mai2/jacket/UI_Jacket_' + getJacketId(item.musicId) + '.webp'"
+            [src]="'assets/mai2/jacket/UI_Jacket_' + getJacketId(item.musicId) + '.webp'"
             (error)="imgError($event)"
             #img alt="">
         </div>

@@ -45,3 +45,11 @@ export interface DisplayMaimai2Profile {
   totalMasterAchievement: number;
   totalReMasterAchievement: number;
 }
+
+export interface KOPRankings{
+  userId: number;
+  currentUserName: string;
+  score: number;
+  tournamentId: number;
+  rankDate: Date;
+}

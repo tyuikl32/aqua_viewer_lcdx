@@ -5,8 +5,8 @@
 export const environment = {
   // apiServer: 'http://38.147.172.133/',
   // apiServer: 'http://192.168.123.112/',
-  apiServer: 'http://localhost/',
-  lcdxApiServer: 'http://localhost/',
+  apiServer: 'https://lcdxnet.sys-all.com.cn/',
+  lcdxApiServer: 'https://localhost:44395/',
   production: false,
   enableImages: true,
   assetsHost: 'https://rinnet.stehp.cn/'

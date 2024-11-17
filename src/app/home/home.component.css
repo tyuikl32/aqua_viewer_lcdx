@@ -22,7 +22,7 @@
 }
 
 .logo-bg {
-  background: url('src/assets/turtle.svg') no-repeat center center / 100%;
+  background: url('src/assets/laochan.svg') no-repeat center center / 100%;
 }
 
 .logo-bottom {
@@ -55,7 +55,7 @@
   height: 100%;
   top: 0;
   left: 0;
-  mask: url('src/assets/turtle.svg') center/contain;
+  mask: url('src/assets/laochan.svg') center/contain;
 }
 
 .logo-img_fault::after {

@@ -161,7 +161,7 @@ export class Maimai2RecentComponent implements OnInit {
   }
 
   getRivalNumber(item: Maimai2Playlog): string{
-    if (item.vsRank === 0){
+    if (item.vsRank === 1){
       return '1st';
     }else{
       return '2nd';

@@ -19,6 +19,7 @@ import {TranslateModule} from "@ngx-translate/core";
 import {Maimai2RatingComponent} from "./maimai2-rating/maimai2-rating.component";
 import {Maimai2RecentComponent} from "./maimai2-recent/maimai2-recent.component";
 import {NgbCollapse} from '@ng-bootstrap/ng-bootstrap';
+import { Maimai2KopRankingComponent } from './maimai2-kop-ranking/maimai2-kop-ranking.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import {NgbCollapse} from '@ng-bootstrap/ng-bootstrap';
     Maimai2SettingComponent,
     Maimai2RatingComponent,
     Maimai2RecentComponent,
-    Maimai2NameSettingDialog
+    Maimai2NameSettingDialog,
+    Maimai2KopRankingComponent
   ],
     imports: [
         CommonModule,

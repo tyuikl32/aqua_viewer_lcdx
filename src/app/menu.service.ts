@@ -30,6 +30,12 @@ export class MenuService {
             displayCondition: DisplayCondition.HasProfile,
           },
           {
+            id: 4,
+            name: 'KOP',
+            url: 'mai2/kop',
+            displayCondition: DisplayCondition.HasProfile,
+          },
+          {
             id: 1,
             name: 'Setting',
             url: 'mai2/setting',

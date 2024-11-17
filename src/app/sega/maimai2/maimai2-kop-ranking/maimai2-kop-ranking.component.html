@@ -1,0 +1,38 @@
+<h1 class="page-heading">KOP 6th</h1>
+<div class="card p-1" style="max-width: 100%" *ngIf="kopRankings.length==0">
+  没有正在进行的排名.
+</div>
+<ng-container *ngIf="kopRankings.length > 0">
+  <p class="mt-3"></p>
+  <div class="ranking">
+    <table class="mt-1">
+      <thead>
+      <th>Rank</th>
+      <th>Name</th>
+      <th>Score</th>
+      <th>Date</th>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of kopRankings; let ranking = index">
+        <td class="rank position-relative" [ngSwitch]="ranking">
+          <img *ngSwitchCase="0" class="medal" src="assets/gold-medal.svg" alt="">
+          <img *ngSwitchCase="1" class="medal" src="assets/silver-medal.svg" alt="">
+          <img *ngSwitchCase="2" class="medal" src="assets/bronze-medal.svg" alt="">
+          <span *ngSwitchDefault>
+          {{ ranking + 1 }}
+          </span>
+        </td>
+        <td class="name">
+          <span *ngIf="ranking == 0 || ranking == 1 || ranking == 2" style="font-weight: bold">{{ item.currentUserName }}</span>
+          <span *ngIf="ranking != 0 && ranking != 1 && ranking != 2">{{ item.currentUserName }}</span>
+        </td>
+        <td class="pc">{{ item.score/10000 | number: '1.4-4' }}%</td>
+        <td class="pc">
+          {{item.rankDate| date: 'yyyy/MM/dd HH:mm:ss' }}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</ng-container>
