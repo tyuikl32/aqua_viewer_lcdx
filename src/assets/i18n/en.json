@@ -280,17 +280,26 @@
     "MusicList": {
       "Title": "Music List",
       "Filter": "Filter",
+      "PatternTypes": {
+        "ID": "ID",
+        "Level": "Level",
+        "Const": "Const",
+        "Range": "Range",
+        "String": "String",
+        "Artist": "Artist",
+        "Title": "Title",
+        "Boss": "Boss"
+      },
       "SongScoreRanking": {
         "Boss": "Boss",
         "Details": "Details",
+        "PlayCount": "Play Count",
         "Ranking": "Ranking",
         "RankingInfo": "You rank {{ranking}} out of {{total}} players."
       }
     },
     "CardPage": {
       "Title": "Card",
-      "Gallery": "Gallery",
-      "Gacha": "Gacha",
       "Holo": "Holo",
       "Elements": "Elements",
       "Details": "Details",
@@ -350,6 +359,14 @@
       "ModifyRomVersionFailed": "Failed to Modify Rom Version",
       "ModifyDataVersionFailed": "Failed to Modify Data Version",
       "DownloadingProfile": "Downloading Profile"
+    },
+    "MusicRankingPage": {
+      "Title": "Music Ranking"
+    },
+    "UserRankingPage": {
+      "Title": "User Ranking",
+      "Rating": "Rating",
+      "Activity": "Activity"
     }
   },
   "ChuniV2": {
@@ -392,6 +409,11 @@
       "RemoveLove": "RemoveLove",
       "Remove": "Remove",
       "RemoveTip": "Remove them as rival?"
+    },
+    "UserRankingPage": {
+      "Title": "User Ranking",
+      "Rating": "Rating",
+      "Activity": "Activity"
     }
   },
   "Maimai2": {

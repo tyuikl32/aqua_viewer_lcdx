@@ -3,12 +3,6 @@ import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {OngekiRoutes} from './ongeki.routing';
 import {OngekiProfileComponent} from './ongeki-profile/ongeki-profile.component';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatTableModule} from '@angular/material/table';
 import {OngekiCardComponent} from './ongeki-card/ongeki-card.component';
 import {NgxPaginationModule} from 'ngx-pagination';
 import {OngekiRecentComponent} from './ongeki-recent/ongeki-recent.component';
@@ -24,18 +18,17 @@ import {ToBattleSpritePipe} from './util/to-battle-sprite.pipe';
 import {ToTechSpritePipe} from './util/to-tech-sprite.pipe';
 import {OngekiSettingComponent} from './ongeki-setting/ongeki-setting.component';
 import {OngekiMusicRankingComponent} from './ongeki-music-ranking/ongeki-music-ranking.component';
-import {MatSortModule} from '@angular/material/sort';
 import {OngekiUserRankingComponent} from './ongeki-user-ranking/ongeki-user-ranking.component';
 import {ToTechRatingPipe} from './util/to-tech-rating.pipe';
 import {OngekiRecentItemComponent} from './ongeki-recent-item/ongeki-recent-item.component';
 import {ToRaritySpritePipe} from './util/to-rarity-sprite.pipe';
-import {NgbAccordionModule, NgbPopoverModule, NgbCollapseModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbAccordionModule, NgbPopoverModule, NgbCollapseModule, NgbTypeahead, NgbHighlight} from '@ng-bootstrap/ng-bootstrap';
 import {OngekiCardLevelComponent} from './ongeki-card-level/ongeki-card-level.component';
 import {TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import {TranslateHttpLoader } from '@ngx-translate/http-loader';
-import {HttpClient } from '@angular/common/http';
-import { OngekiSongScoreRankingComponent } from './ongeki-song-score-ranking/ongeki-song-score-ranking.component';
-import { ToTechHonorSpritePipe } from './util/to-tech-honor-sprite.pipe';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import {HttpClient} from '@angular/common/http';
+import {OngekiSongScoreRankingComponent} from './ongeki-song-score-ranking/ongeki-song-score-ranking.component';
+import {ToTechHonorSpritePipe} from './util/to-tech-honor-sprite.pipe';
 import {NgIconsModule} from '@ng-icons/core';
 import {
   bootstrapStopFill
@@ -71,37 +64,32 @@ export function HttpLoaderFactory(http: HttpClient) {
     exports: [
         OngekiCardComponent
     ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        OngekiRoutes,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    OngekiRoutes,
 
-        MatCardModule,
-        NgxPaginationModule,
-        MatButtonModule,
-        ToolsModule,
-        MatInputModule,
-        MatFormFieldModule,
-        MatTableModule,
-        MatPaginatorModule,
-        FlexLayoutModule,
-        MatSortModule,
-        NgbAccordionModule,
-        NgbCollapseModule,
-        NgbPopoverModule,
-        NgOptimizedImage,
-        TranslateModule.forChild({
-          loader: {
-            provide: TranslateLoader,
-            useFactory: HttpLoaderFactory,
-            deps: [HttpClient]
-          }
-        }),
-        NgIconsModule.withIcons({
-          bootstrapStopFill
-        }),
-    ]
+    NgxPaginationModule,
+    ToolsModule,
+    FlexLayoutModule,
+    NgbAccordionModule,
+    NgbCollapseModule,
+    NgbPopoverModule,
+    NgOptimizedImage,
+    TranslateModule.forChild({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
+    NgIconsModule.withIcons({
+      bootstrapStopFill
+    }),
+    NgbTypeahead,
+    NgbHighlight,
+  ]
 })
 export class OngekiModule {
 }

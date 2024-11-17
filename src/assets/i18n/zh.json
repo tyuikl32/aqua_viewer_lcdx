@@ -280,9 +280,20 @@
     "MusicList": {
       "Title": "乐曲列表",
       "Filter": "筛选",
+      "PatternTypes": {
+        "ID": "ID",
+        "Level": "等级",
+        "Const": "定数",
+        "Range": "范围",
+        "String": "字符串",
+        "Artist": "艺术家",
+        "Title": "标题",
+        "Boss": "对手"
+      },
       "SongScoreRanking": {
         "Boss": "对手",
         "Details": "游玩情况",
+        "PlayCount": "游玩次数",
         "Ranking": "排行",
         "RankingInfo": "你在 {{total}} 名玩家中排名第 {{ranking}}。"
       }
@@ -348,6 +359,14 @@
       "ModifyRomVersionFailed": "修改游戏版本失败",
       "ModifyDataVersionFailed": "修改数据版本失败",
       "DownloadingProfile": "正在下载玩家存档"
+    },
+    "MusicRankingPage": {
+      "Title": "乐曲排行"
+    },
+    "UserRankingPage": {
+      "Title": "玩家排行",
+      "Rating": "评级",
+      "Activity": "活跃度"
     }
   },
   "ChuniV2": {
@@ -390,6 +409,11 @@
       "RemoveLove": "解除喜爱",
       "Remove": "解除好友",
       "RemoveTip": "确定要解除好友关系吗？"
+    },
+    "UserRankingPage": {
+      "Title": "玩家排行",
+      "Rating": "评级",
+      "Activity": "活跃度"
     }
   },
   "Maimai2": {
