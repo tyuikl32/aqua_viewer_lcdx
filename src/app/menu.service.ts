@@ -30,9 +30,21 @@ export class MenuService {
             displayCondition: DisplayCondition.HasProfile,
           },
           {
-            id: 4,
+            id: 6,
             name: 'KOP',
             url: 'mai2/kop',
+            displayCondition: DisplayCondition.HasProfile,
+          },
+          {
+            id: 4,
+            name: 'Photos',
+            url: 'mai2/photos',
+            displayCondition: DisplayCondition.HasProfile,
+          },
+          {
+            id: 5,
+            name: 'Dxpass',
+            url: 'mai2/dxpass',
             displayCondition: DisplayCondition.HasProfile,
           },
           {

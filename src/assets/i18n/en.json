@@ -40,7 +40,9 @@
       "Character": "Character",
       "UserBox": "User Box",
       "Setting": "Setting",
-      "KOP": "KOP6th"
+      "KOP": "KOP6th",
+      "Photos": "Photos",
+      "Dxpass": "Deluxe Pass"
     }
   },
   "DashboardPage": {
@@ -414,6 +416,10 @@
       "Title": "User Ranking",
       "Rating": "Rating",
       "Activity": "Activity"
+    },
+    "RecentPage": {
+      "Title": "Play Record",
+      "Ranking": "Ranking"
     }
   },
   "Maimai2": {
@@ -428,9 +434,19 @@
       "RatingRecommend": "Rating Recommend"
     },
     "RecentPage": {
-      "Title": "Recent Playlogs",
+      "Title": "Play Record",
       "DXScore": "DX Score",
       "Detailed": "Show Detail"
+    },
+    "PhotosPage": {
+      "Title": "Game Gallery",
+      "NotOwned": "You have not upload any game photo."
+    },
+    "DxpassPage": {
+      "Title": "Deluxe Pass Info",
+      "NotOwned": "You do not own any deluxe pass.",
+      "BuyDate": "Buy-In Date",
+      "ExpireDate": "Expire Date"
     }
   },
   "ContributorsPage": {
