@@ -420,6 +420,28 @@
     "RecentPage": {
       "Title": "Play Record",
       "Ranking": "Ranking"
+    },
+    "SettingsPage": {
+      "Title": "Settings",
+      "Profile": "Profile",
+      "Versionfile": "Version file",
+      "UserName": "User Name",
+      "Change": "Change",
+      "Edit": "Edit",
+      "ChangeUserName": "Change User Name",
+      "MessageChangeUserName1": "Up to 8 full-width characters excluding special characters",
+      "MessageChangeUserName2": "with the following symbols also allowed",
+      "RomVersion": "Rom Version",
+      "ModifyRomVersion": "Modify Rom Version",
+      "MessageRomVersion": "Change only if you have login problem due to rom version",
+      "DataVersion": "Data Version",
+      "ModifyDataVersion": "Modify Data Version",
+      "MessageDataVersion": "Change only if you have login problem due to data version",
+      "Export": "Export Profile",
+      "ChangeUserNameFailed": "Failed to Change User Name",
+      "ModifyRomVersionFailed": "Failed to Modify Rom Version",
+      "ModifyDataVersionFailed": "Failed to Modify Data Version",
+      "DownloadingProfile": "Downloading Profile"
     }
   },
   "Maimai2": {
@@ -446,7 +468,9 @@
       "Title": "Deluxe Pass Info",
       "NotOwned": "You do not own any deluxe pass.",
       "BuyDate": "Buy-In Date",
-      "ExpireDate": "Expire Date"
+      "ExpireDate": "Expire Date",
+      "DefaultInfo": "Default DX Pass kind currently",
+      "SetDefault": "Set type as default"
     }
   },
   "ContributorsPage": {

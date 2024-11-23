@@ -420,6 +420,28 @@
     "RecentPage": {
       "Title": "游玩记录",
       "Ranking": "排名"
+    },
+    "SettingsPage": {
+      "Title": "设定",
+      "Profile": "个人信息",
+      "Versionfile": "版本信息",
+      "UserName": "玩家名",
+      "Edit": "编辑",
+      "Change": "更改",
+      "ChangeUserName": "修改玩家名",
+      "MessageChangeUserName1": "除去特殊字符以外的8个全角字符以内",
+      "MessageChangeUserName2": "以下的符号也可以使用",
+      "RomVersion": "游戏版本",
+      "ModifyRomVersion": "修改游戏版本",
+      "MessageRomVersion": "仅在因rom版本导致登录问题时更改",
+      "DataVersion": "数据版本",
+      "ModifyDataVersion": "修改数据版本",
+      "MessageDataVersion": "仅在因数据版本导致登录问题时更改",
+      "Export": "导出玩家存档",
+      "ChangeUserNameFailed": "修改玩家名失败",
+      "ModifyRomVersionFailed": "修改游戏版本失败",
+      "ModifyDataVersionFailed": "修改数据版本失败",
+      "DownloadingProfile": "正在下载玩家存档"
     }
   },
   "Maimai2": {
@@ -446,7 +468,9 @@
       "Title": "DX通行证",
       "NotOwned": "你暂未拥有任何DX通行证。",
       "BuyDate": "购入时间",
-      "ExpireDate": "到期时间"
+      "ExpireDate": "到期时间",
+      "DefaultInfo": "当前设定的默认DX Pass类型",
+      "SetDefault": "设为默认类型"
     }
   },
   "ContributorsPage": {
