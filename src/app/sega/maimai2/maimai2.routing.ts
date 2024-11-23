@@ -14,7 +14,7 @@ const routes: Routes = [
   {path: 'recent', component: Maimai2RecentComponent, data: {title: 'Recent'}},
   {path: 'rating', component: Maimai2RatingComponent, data: {title: 'Rating'}},
   {path: 'photos', component: Maimai2PhotosComponent, data: {title: 'Photos'}},
-  {path: 'dxpass', component: Maimai2DxpassComponent, data: {title: 'DxPass'}}
+  {path: 'dxpass', component: Maimai2DxpassComponent, data: {title: 'DxPass'}},
   {path: 'kop', component: Maimai2KopRankingComponent, data: {title: 'KOP6th 在线预选'}},
 ];
 
