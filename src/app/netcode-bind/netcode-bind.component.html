@@ -1,0 +1,34 @@
+<h1 class="page-heading">绑定游戏档案</h1>
+
+<div class="hstack alert alert-warning" role="alert">
+  <ng-icon class="me-2" name="bootstrap-exclamation-triangle-fill"></ng-icon>
+  <div>在继续进行前，你需要通过游戏内的Net 绑定码来将游戏档案与你的账号绑定。</div>
+</div>
+
+<div class="card mt-3">
+  <div class="card-body">
+    <h5 class="card-title">输入你的Net 绑定码</h5>
+    <form [formGroup]="netCodeForm" (ngSubmit)="onSubmit()">
+     <input type="text" class="form-control mb-3" id="netCode" formControlName="netCode">
+    </form>
+    <a (click)="onClick()"
+       class="btn btn-primary"
+       [ngClass]="{'disabled': !loaded}"
+       [ngStyle]="{'pointer-events': !loaded ? 'none' : 'auto', 'opacity': !loaded ? 0.5 : 1}"
+       style="width: 100%">
+      绑定
+    </a>
+
+
+  </div>
+</div>
+
+<div class="card mt-3">
+  <div class="card-body">
+    <ol>
+      <li>绑定码需通过机台处查看。</li>
+      <li>在游戏Entry界面，当你通过二维码或Aime读取游戏数据时，单击“访问码”按钮</li>
+      <li>在打开的视图中查阅你的Net 绑定码</li>
+    </ol>
+  </div>
+</div>

@@ -55,4 +55,19 @@
   </div>
 </div>
 
+<div class="card mb-3" *ngIf="profile">
+  <div class="card-header">
+    绑定的卡号
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">绑定一张Aime卡到现在的账号，可以使用该Aime卡访问登录这个游戏档案</h5>
+    <form [formGroup]="bindCardForm" (ngSubmit)="onSubmit()">
+      <input type="text" class="form-control mb-3" id="accessCode" formControlName="accessCode">
+    </form>
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="text-muted small align-text-bottom">*请输入20位数字<br>*解除绑定后，你的Aime卡将会回复到原先的档案。</div>
+      <a (click)="lcdxBindAccessCode()" class="btn btn-primary">{{currentAccessCode==""?"尝试绑定":"解除绑定"}}</a>
+    </div>
+  </div>
+</div>
 

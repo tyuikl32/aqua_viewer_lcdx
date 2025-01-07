@@ -4,6 +4,7 @@ import {MessageService} from '../message.service';
 import {StatusCode} from '../status-code';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Router} from '@angular/router';
+import {AccountService} from '../auth/account.service';
 
 @Component({
   selector: 'app-onetime-sign-in',
@@ -25,6 +26,7 @@ export class OnetimeSignInComponent {
   }
 
   load(token: string) {
+    this.authenticationService.logout();
     this.authenticationService.login_lcdx(token)
       .subscribe(
         {

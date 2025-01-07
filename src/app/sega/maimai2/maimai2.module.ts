@@ -13,6 +13,7 @@ import {NgbCollapse} from '@ng-bootstrap/ng-bootstrap';
 import { Maimai2KopRankingComponent } from './maimai2-kop-ranking/maimai2-kop-ranking.component';
 import {Maimai2PhotosComponent} from "./maimai2-photos/maimai2-photos.component";
 import { Maimai2DxpassComponent } from './maimai2-dxpass/maimai2-dxpass.component';
+import {NgIcon} from '@ng-icons/core';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import { Maimai2DxpassComponent } from './maimai2-dxpass/maimai2-dxpass.componen
         TranslateModule,
         ReactiveFormsModule,
         NgOptimizedImage,
-        NgbCollapse
+        NgbCollapse,
+        NgIcon
     ]
 })
 export class Maimai2Module {

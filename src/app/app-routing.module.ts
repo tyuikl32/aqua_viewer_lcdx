@@ -17,6 +17,7 @@ import {ProfileComponent} from './profile/profile.component';
 import {AnnouncementsComponent} from './announcements/announcements.component';
 import {EditComponent} from "./announcements/edit/edit.component";
 import {OnetimeSignInComponent} from "./onetime-sign-in/onetime-sign-in.component";
+import {NetcodeBindComponent} from './netcode-bind/netcode-bind.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent, data: {title: 'Home', disableSidebar: true }},
@@ -25,7 +26,9 @@ const routes: Routes = [
   {path: 'mai2', loadChildren: () => import('./sega/maimai2/maimai2.module').then(mod => mod.Maimai2Module), canMatch: [AuthGuardService], data: {title: 'Mai2'}},
   {path: 'not-found', component: NotFoundComponent, data: {title: 'NotFound', disableSidebar: true }},
   {path: 'onetime-sign-in', component: OnetimeSignInComponent, data: {title: 'OneTimeSignIn', disableSidebar: true }},
+  {path: 'netcode-bind', component: NetcodeBindComponent, canActivate: [AuthGuardService], data: {title: 'NetCode Bind', disableSidebar: true }},
   {path: 'sign-in', component: SignInComponent, data: {title: 'SignIn', disableSidebar: true }},
+  {path: 'sign-up', component: SignUpComponent, data: {title: 'SignUp', disableSidebar: true }},
   {path: '**', redirectTo: '/not-found'}
 ];
 

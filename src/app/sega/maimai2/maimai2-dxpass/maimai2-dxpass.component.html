@@ -33,7 +33,7 @@
   <div *ngIf="dxpasses" class="row mb-4 g-2">
     <div
       *ngFor="let item of dxpasses | async | paginate: { id: 'server', itemsPerPage: 10, currentPage: currentPage, totalItems: totalElements }; let i = index"
-      class="col-12 col-xl-3 col-md-4 col-sm-6">
+      class="col-6 col-xl-3 col-md-4 col-sm-6">
       <div class="card position-relative">
         <img src="{{host}}assets/mai2/dxpass/base/UI_CardBase_000000{{item.cardTypeId}}_{{get6digit(item.mapId)}}_S.webp"
              class="card-img-top img-fluid" alt="" (click)="toggleDetail(i)">

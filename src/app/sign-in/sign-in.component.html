@@ -1,8 +1,16 @@
+
 <div class="d-flex justify-content-center">
   <div class="card authorization-card col-12 mb-5">
+    <div class="hstack alert alert-info my-2 mx-2">
+      <ng-icon class="me-2" name="bootstrap-sun"></ng-icon>
+      <ul class="m-0 mt-2 mb-2">
+        <li>如果可以，使用Bot的快捷登录指令获得快速登陆网址，并在浏览器中跳转登录.</li>
+        <li>你也可以在下面的表单手动登录.</li>
+      </ul>
+    </div>
     <div class="pt-2 pt-lg-4 px-3 px-sm-5 mb-3">
       <div class="mb-4">
-        <div class="fs-1 fw-bold">RinNET</div>
+        <div class="fs-1 fw-bold"></div>
         <div class="fs-5 fw-bold">{{'SignInPage.Title' | translate}}</div>
       </div>
       <div *ngIf="type && token" class="callout callout-info py-3" role="alert">
@@ -23,7 +31,7 @@
                    [class.is-invalid]="password.touched && !password.valid && password.errors">
           </div>
           <div class="text-end">
-            <button type="button" class="btn btn-link text-decoration-none btn-sm" (click)="navigateToPasswordReset()">{{'SignInPage.ResetPasswordTip' | translate}}</button>
+            <button type="button" class="btn btn-link text-decoration-none btn-sm" (click)="navigateToSignUp()">{{'SignInPage.ResetPasswordTip' | translate}}</button>
           </div>
           <button type="submit" class="btn btn-primary btn-sm mb-2" [class.disabled]="signInForm.disabled">
             {{'SignInPage.SignIn' | translate}}
@@ -32,23 +40,6 @@
             {{'SignInPage.SignUpTip' | translate}}
             <button class="btn btn-link btn-sm text-decoration-none p-0" (click)="navigateToSignUp()">{{'SignInPage.SignUp' | translate}}</button>
           </div>
-          <ng-container *ngIf="!type || !token">
-            <div class="row justify-content-center align-items-center m-0 mb-2">
-              <hr class="col m-0">
-              <div class="col-auto">
-                {{'SignInPage.Or' | translate}}
-              </div>
-              <hr class="col m-0">
-            </div>
-            <ng-container *ngFor="let provider of providers">
-              <button type="button" class="btn btn-theme" (click)="oauth.getSignInUrl(provider)">
-                <svg class="oauth-icon" viewBox="0 0 16 16">
-                  <use attr.href="assets/{{provider}}.svg#icon"/>
-                </svg>
-                {{'OAuth.ContinueWith' | translate: {type: oauth.tokenTypes.get(provider)} }}
-              </button>
-            </ng-container>
-          </ng-container>
         </div>
       </form>
     </div>

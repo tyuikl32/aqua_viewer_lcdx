@@ -24,3 +24,30 @@
 .more-announcements:hover{
   text-decoration: underline;
 }
+
+.quick-navigate {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  height: 5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-size: 1.5em;
+  padding: 0.5rem;
+}
+
+.mai2-playlog{
+  background: linear-gradient(45deg, #0d2e40, #3a4165);
+  color: lightgrey;
+}
+.mai2-rating{
+  background: linear-gradient(45deg, darkblue, darkgray);
+  color: cornflowerblue;
+}
+.mai2-profile{
+  background: linear-gradient(45deg, darkgreen, darkred);
+  color: #9a6c5b;
+}
+.mai2-photo{
+  background: linear-gradient(45deg, darksalmon, #b393e1);
+  color: #bdefc4;
+}

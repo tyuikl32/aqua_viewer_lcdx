@@ -8,6 +8,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {interval, Subscription} from 'rxjs';
 import {StatusCode} from '../status-code';
 import {OAuthService} from '../auth/oauth.service';
+import {AccountService} from '../auth/account.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -27,21 +28,23 @@ export class SignUpComponent implements OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private fb: FormBuilder,
+    public accountService: AccountService,
     private authenticationService: AuthenticationService,
     private messageService: MessageService,
     public router: Router,
     private translate: TranslateService,
     protected oauth: OAuthService) {
+      if (this.accountService.currentAccountValue){
+        this.router.navigate(['/dashboard']);
+      }
       this.providers = [...this.oauth.tokenTypes.keys()];
       this.initForm();
       const state = this.router.getCurrentNavigation().extras.state;
       if (state) {
-        if(this.oauth.tokenTypes.has(state.type) && state.token.length === 32){
+        if (this.oauth.tokenTypes.has(state.type) && state.token.length === 32){
           this.token = state.token;
           this.type = state.type;
         }
-        this.name.setValue(state.name);
-        this.username.setValue(state.username);
         this.email.setValue(state.email);
         history.replaceState({}, document.title);
       }
@@ -49,23 +52,12 @@ export class SignUpComponent implements OnDestroy {
 
   private initForm(): void {
     this.signUpForm = this.fb.group({
-      name: ['', [
-        Validators.required,
-        Validators.minLength(4),
-        Validators.maxLength(40)]],
-      username: ['', [
-        Validators.required,
-        Validators.pattern('^[a-zA-Z0-9_]+$'),
-        Validators.minLength(3),
-        Validators.maxLength(15)]],
+
       email: ['', [
         Validators.required,
-        Validators.email,
-        Validators.maxLength(40)]],
+        Validators.maxLength(12)]],
       verifyCode: ['', [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.maxLength(8)]],
+        Validators.required]],
       password: ['', [
         Validators.required,
         Validators.minLength(8),
@@ -94,14 +86,6 @@ export class SignUpComponent implements OnDestroy {
     }
   }
 
-  get name() {
-    return this.signUpForm.get('name');
-  }
-
-  get username() {
-    return this.signUpForm.get('username');
-  }
-
   get email() {
     return this.signUpForm.get('email');
   }
@@ -119,17 +103,11 @@ export class SignUpComponent implements OnDestroy {
   }
 
   navigateToSignIn(){
-    var state:any = {};
-    if(this.email.valid){
+    const state: any = {};
+    if (this.email.valid){
       state.email = this.email.value;
     }
-    if(this.username.valid){
-      state.username = this.username.value;
-    }
-    if(this.name.valid){
-      state.name = this.name.value;
-    }
-    if(this.token && this.type){
+    if (this.token && this.type){
       state.token = this.token;
       state.type = this.type;
     }
@@ -150,25 +128,25 @@ export class SignUpComponent implements OnDestroy {
     this.getVerifyCodeForm.disable();
     const value = this.email.value;
 
-    this.authenticationService.getVerifyCode(value).pipe(first())
+    this.authenticationService.getVerifyCode_lcdx(value).pipe(first())
       .subscribe(
         {
           next: (resp) => {
             if (resp?.status) {
               const statusCode: StatusCode = resp.status.code;
               if (statusCode === StatusCode.OK){
-                this.translate.get("SignUpPage.Messages.SendCodeSuccess").subscribe((res: string) => {
+                this.translate.get('SignUpPage.Messages.SendCodeSuccess').subscribe((res: string) => {
                   this.messageService.notice(res, 'success');
                 });
                 this.disableButtonForInterval(60);
               }
-              else if(statusCode === StatusCode.EMAIL_ALREADY_IN_USE){
-                this.translate.get("SignUpPage.Messages.EmailInvailable").subscribe((res: string) => {
+              else if (statusCode === StatusCode.EMAIL_ALREADY_IN_USE){
+                this.translate.get('SignUpPage.Messages.EmailInvailable').subscribe((res: string) => {
                   this.messageService.notice(res, 'danger');
                 });
               }
-              else if(statusCode === StatusCode.VERIFY_CODE_SEND_TOO_FAST){
-                this.translate.get("SignUpPage.Messages.SendCodeTooFast").subscribe((res: string) => {
+              else if (statusCode === StatusCode.VERIFY_CODE_SEND_TOO_FAST){
+                this.translate.get('SignUpPage.Messages.SendCodeTooFast').subscribe((res: string) => {
                   this.messageService.notice(res, 'warning');
                 });
               }
@@ -187,66 +165,6 @@ export class SignUpComponent implements OnDestroy {
           }
         }
       );
-  }
-
-  checkEmail() {
-    const email = this.email.value;
-    if (email) {
-      this.authenticationService.checkEmailAvailability(email).subscribe(
-        resp => {
-          if (resp?.status) {
-            const statusCode: StatusCode = resp.status.code;
-            if (statusCode === StatusCode.OK){
-              this.translate.get("SignUpPage.Messages.EmailAvailable").subscribe((res: string) => {
-                this.messageService.notice(res, 'success');
-              });
-            }
-            else if(statusCode === StatusCode.EMAIL_ALREADY_IN_USE){
-              this.translate.get("SignUpPage.Messages.EmailInvailable").subscribe((res: string) => {
-                this.messageService.notice(res, 'danger');
-              });
-            }
-            else{
-              this.messageService.notice(resp.status.message);
-            }
-          }
-        },
-        error => {
-          this.messageService.notice('Error checking email availability.');
-          console.error('Error checking email', error);
-        }
-      );
-    }
-  }
-
-  checkUsername() {
-    const username = this.username.value;
-    if (username) {
-      this.authenticationService.checkUsernameAvailability(username).subscribe(
-        resp => {
-          if (resp?.status) {
-            const statusCode: StatusCode = resp.status.code;
-            if (statusCode === StatusCode.OK){
-              this.translate.get("SignUpPage.Messages.UsernameAvailable").subscribe((res: string) => {
-                this.messageService.notice(res, 'success');
-              });
-            }
-            else if(statusCode === StatusCode.USERNAME_ALREADY_TAKEN){
-              this.translate.get("SignUpPage.Messages.UsernameAlreadyTaken").subscribe((res: string) => {
-                this.messageService.notice(res, 'danger');
-              });
-            }
-            else{
-              this.messageService.notice(resp.status.message);
-            }
-          }
-        },
-        error => {
-          this.messageService.notice('Error checking username availability.');
-          console.error('Error checking username', error);
-        }
-      );
-    }
   }
 
   private disableButtonForInterval(seconds: number) {
@@ -269,30 +187,30 @@ export class SignUpComponent implements OnDestroy {
     this.signUpForm.disable();
     const value = this.signUpForm.value;
 
-    this.authenticationService.signUp(value.name, value.username, value.email, value.verifyCode, value.password, this.token).pipe(first())
+    this.authenticationService.signUp_lcdx(value.email, value.verifyCode, value.password).pipe(first())
       .subscribe(
         {
           next: (resp) => {
             if (resp?.status) {
               const statusCode: StatusCode = resp.status.code;
               if (statusCode === StatusCode.OK){
-                this.messageService.notice('Sign up success.');
+                this.messageService.notice(resp.status.message);
                 location.reload();
               }
-              else if(statusCode === StatusCode.EMAIL_ALREADY_IN_USE){
-                this.translate.get("SignUpPage.Messages.EmailInvailable").subscribe((res: string) => {
+              else if (statusCode === StatusCode.EMAIL_ALREADY_IN_USE){
+                this.translate.get('SignUpPage.Messages.EmailInvailable').subscribe((res: string) => {
                   this.messageService.notice(res, 'danger');
                 });
                 this.signUpForm.enable();
               }
-              else if(statusCode === StatusCode.USERNAME_ALREADY_TAKEN){
-                this.translate.get("SignUpPage.Messages.UsernameAlreadyTaken").subscribe((res: string) => {
+              else if (statusCode === StatusCode.USERNAME_ALREADY_TAKEN){
+                this.translate.get('SignUpPage.Messages.UsernameAlreadyTaken').subscribe((res: string) => {
                   this.messageService.notice(res, 'danger');
                 });
                 this.signUpForm.enable();
               }
-              else if(statusCode === StatusCode.VERIFY_CODE_NOT_CORRECT){
-                this.translate.get("SignUpPage.Messages.CodeIncorrect").subscribe((res: string) => {
+              else if (statusCode === StatusCode.VERIFY_CODE_NOT_CORRECT){
+                this.translate.get('SignUpPage.Messages.CodeIncorrect').subscribe((res: string) => {
                   this.messageService.notice(res, 'danger');
                 });
                 this.signUpForm.enable();

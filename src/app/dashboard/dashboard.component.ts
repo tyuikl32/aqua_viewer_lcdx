@@ -27,6 +27,7 @@ export class DashboardComponent implements OnInit {
   errorPreloadTaskCount = 0;
   enableImages = environment.enableImages;
   announcement: Announcement;
+  announcement2 : Announcement;
   loadingAnnouncement = true;
   loadingDatabase = true;
   loadingProfile = true;
@@ -96,6 +97,9 @@ export class DashboardComponent implements OnInit {
           }
           else if (statusCode === StatusCode.NOT_FOUND){
             this.noCard = true;
+            if (this.noCard){
+              this.router.navigate(['/netcode-bind']);
+            }
           }
           else{
             this.messageService.notice(resp.status.message);
@@ -134,13 +138,31 @@ export class DashboardComponent implements OnInit {
   }
 
   loadAnnouncements() {
-    const param = new HttpParams().set('lang', this.language.getCurrentLang())
+    const param = new HttpParams().set('lang', this.language.getCurrentLang()).set('index', 0);
     this.api.getLcdx('lcdx/announcement/recent', param).subscribe(
       resp => {
         if (resp?.status) {
           const statusCode: StatusCode = resp.status.code;
           if (statusCode === StatusCode.OK && resp.data) {
             this.announcement = Announcement.fromJSON(resp.data);
+          }
+          else{
+            this.messageService.notice(resp.status.message);
+          }
+          this.loadingAnnouncement = false;
+        }
+      },
+      error => {
+        this.messageService.notice(error);
+        this.loadingAnnouncement = false;
+      });
+    const param2 = new HttpParams().set('lang', this.language.getCurrentLang()).set('index', 1);
+    this.api.getLcdx('lcdx/announcement/recent', param2).subscribe(
+      resp => {
+        if (resp?.status) {
+          const statusCode: StatusCode = resp.status.code;
+          if (statusCode === StatusCode.OK && resp.data) {
+            this.announcement2 = Announcement.fromJSON(resp.data);
           }
           else{
             this.messageService.notice(resp.status.message);

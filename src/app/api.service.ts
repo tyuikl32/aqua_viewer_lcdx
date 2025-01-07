@@ -26,6 +26,10 @@ export class ApiService {
     return this.http.post<any>(this.getHost() + path, data, {params});
   }
 
+  postLcdx(path: string, data?: object, params?: HttpParams) {
+    return this.http.post<any>(environment.lcdxApiServer + path, data, {params});
+  }
+
   put(path: string, data?: object, params?: HttpParams) {
     return this.http.put<any>(this.getHost() + path, data, {params});
   }

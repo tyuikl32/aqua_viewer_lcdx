@@ -68,7 +68,8 @@
     "OverPower": "OverPower",
     "LastPlay": "Last played",
     "PlayCount": "Played Count",
-    "AwakenLevel": "Chara Awakened"
+    "AwakenLevel": "Chara Awakened",
+    "QuickNavigate": "Navigation"
   },
   "AnnouncementsPage": {
     "Title": "Announcements",
@@ -102,7 +103,7 @@
   "SignInPage": {
     "Title": "Sign in to your account",
     "BindTip": "Sign in to link your {{type}} account",
-    "UsernameOrEmail": "User name or Email",
+    "UsernameOrEmail": "QQ Number",
     "Password": "Password",
     "ResetPasswordTip": "Forgot password?",
     "SignIn": "Sign in",
@@ -112,7 +113,7 @@
     "LoginFailedMessage": "Invalid username/email or password. Please try again."
   },
   "SignUpPage": {
-    "Title": "Sign up an account",
+    "Title": "Sign up or Reset Password",
     "BindTip": "Sign up and link your {{type}} account",
     "Nickname": "Nickname",
     "Username": "Username",

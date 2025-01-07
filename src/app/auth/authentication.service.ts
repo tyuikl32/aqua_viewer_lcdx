@@ -33,8 +33,21 @@ export class AuthenticationService {
       mergeMap(this.procLoginResp));
   }
 
+  login_lcdx_common(usernameOrEmail: string, password: string) {
+    const params: any = {usernameOrEmail, password};
+
+    return this.http.post<any>(environment.lcdxApiServer + 'lcdx/login', params)
+      .pipe(
+        map(
+          resp => {
+            return resp;
+          }
+        ),
+        mergeMap(this.procLoginResp));
+  }
+
   login_lcdx(token: string) {
-    return this.http.get<any>(environment.lcdxApiServer + 'lcdx/onetime/' + token)
+    return this.http.get<any>(environment.lcdxApiServer + 'lcdx/onetime-v2/' + token)
       .pipe(
         map(
           resp => {
@@ -70,6 +83,18 @@ export class AuthenticationService {
       mergeMap(this.procLoginResp));
   }
 
+  signUp_lcdx(qqNumber: string, code: string, password: string) {
+    const params: any = { code, password};
+    return this.http.post<any>(environment.lcdxApiServer + 'lcdx/register_confirm/' + qqNumber, params)
+      .pipe(
+        map(
+          resp => {
+            return resp;
+          }
+        ),
+        mergeMap(this.procLoginResp));
+  }
+
   procLoginResp = (loginResp) => {
     const loginStatusCode: StatusCode = loginResp?.status?.code;
     if (loginStatusCode !== StatusCode.OK || !loginResp.data) {
@@ -96,6 +121,17 @@ export class AuthenticationService {
 
   getVerifyCode(email: string) {
     return this.http.post<any>(environment.apiServer + 'api/auth/getVerifyCode', {email})
+      .pipe(
+        map(
+          resp => {
+            return resp;
+          }
+        )
+      );
+  }
+
+  getVerifyCode_lcdx(email: string) {
+    return this.http.get<any>(environment.lcdxApiServer + 'lcdx/register_start/' + email)
       .pipe(
         map(
           resp => {

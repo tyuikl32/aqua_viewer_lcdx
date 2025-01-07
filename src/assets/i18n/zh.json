@@ -68,7 +68,8 @@
     "OverPower": "完成度",
     "LastPlay": "上次游玩",
     "PlayCount": "游玩次数",
-    "AwakenLevel": "觉醒角色数"
+    "AwakenLevel": "觉醒角色数",
+    "QuickNavigate": "快速导航"
   },
   "AnnouncementsPage": {
     "Title": "公告",
@@ -102,7 +103,7 @@
   "SignInPage": {
     "Title": "登录",
     "BindTip": "登录以绑定{{type}}账号",
-    "UsernameOrEmail": "登录名或电子邮箱",
+    "UsernameOrEmail": "QQ号",
     "Password": "密码",
     "ResetPasswordTip": "忘记密码？",
     "SignIn": "登录",
@@ -112,7 +113,7 @@
     "LoginFailedMessage": "用户名或密码错误。"
   },
   "SignUpPage": {
-    "Title": "注册账号",
+    "Title": "注册账号或重设密码",
     "BindTip": "注册并绑定{{type}}账号",
     "Nickname": "昵称",
     "Username": "登录名",

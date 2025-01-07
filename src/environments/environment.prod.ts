@@ -3,5 +3,5 @@ export const environment = {
   lcdxApiServer: '/',
   production: true,
   enableImages: true,
-  assetsHost: 'https://rinnet.stehp.cn/'
+  assetsHost: ''
 };

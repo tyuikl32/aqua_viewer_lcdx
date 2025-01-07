@@ -68,6 +68,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { AnnouncementsComponent } from './announcements/announcements.component';
 import { EditComponent } from './announcements/edit/edit.component';
 import { OnetimeSignInComponent } from './onetime-sign-in/onetime-sign-in.component';
+import { NetcodeBindComponent } from './netcode-bind/netcode-bind.component';
 
 const aegis = new Aegis({
   id: 'j4KOYFL0VyajP4KjdG', // 上报 id
@@ -106,7 +107,8 @@ export function initializeApp(
     ProfileComponent,
     AnnouncementsComponent,
     EditComponent,
-    OnetimeSignInComponent
+    OnetimeSignInComponent,
+    NetcodeBindComponent
    ],
   imports: [
     BrowserModule,
