@@ -16,6 +16,7 @@ import {ArrayUtils} from 'src/app/util/array-utils';
 import {UserService} from 'src/app/user.service';
 import {FormArray, FormControl} from '@angular/forms';
 import {Collapse} from 'bootstrap';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-ongeki-card',
@@ -133,7 +134,8 @@ export class OngekiCardComponent implements OnInit {
     private messageService: MessageService,
     private dbService: NgxIndexedDBService,
     public router: Router,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private translateService: TranslateService
   ) {
     const userAgent = window.navigator.userAgent;
     const safari = userAgent.indexOf('Safari') > -1;
@@ -146,20 +148,15 @@ export class OngekiCardComponent implements OnInit {
   }
 
   async ngOnInit() {
-    const collapseElement = document.getElementById('filterCollapse');
-    if (collapseElement) {
-      this.filterCollapse = new Collapse(collapseElement, {toggle: false});
-    }
-
     await this.prepare();
     combineLatest([
       this.route.queryParams.pipe(startWith({page: 1})),
-      this.sortControl.valueChanges.pipe(startWith('0')),
-      this.showAllControl.valueChanges.pipe(startWith(true)),
-      this.rarityControls.valueChanges.pipe(startWith([])),
-      this.attrControls.valueChanges.pipe(startWith([])),
-      this.skillCategoryControls.valueChanges.pipe(startWith([])),
-      this.searchTermControl.valueChanges.pipe(startWith('')),
+      this.sortControl.valueChanges.pipe(startWith(this.sortControl.value)),
+      this.showAllControl.valueChanges.pipe(startWith(this.showAllControl.value)),
+      this.rarityControls.valueChanges.pipe(startWith(this.rarityControls.value)),
+      this.attrControls.valueChanges.pipe(startWith(this.attrControls.value)),
+      this.skillCategoryControls.valueChanges.pipe(startWith(this.skillCategoryControls.value)),
+      this.searchTermControl.valueChanges.pipe(startWith(this.searchTermControl.value)),
     ]).subscribe(([queryParams, sort, showAll, raritiesValues, attrValues, skillCategoryValues, searchTerm]) => {
       const selectedAttrs = this.attrs.filter((_, index) => attrValues[index]);
       const selectedSkillCategorys = this.skillCategorys.filter((_, index) => skillCategoryValues[index]);
@@ -172,7 +169,9 @@ export class OngekiCardComponent implements OnInit {
       this.load(this.currentPage);
     });
     if (this.isSafari) {
-      this.messageService.notice('Warning: Some features of this page are not Safari compatible!');
+      this.translateService.get('Ongeki.CardPage.SafariWarning').subscribe(x => {
+        this.messageService.notice(x, 'warning');
+      });
     }
   }
 
@@ -767,6 +766,12 @@ export class OngekiCardComponent implements OnInit {
   }
 
   toggleFilter() {
+    if (!this.filterCollapse){
+      const collapseElement = document.getElementById('filterCollapse');
+      if (collapseElement) {
+        this.filterCollapse = new Collapse(collapseElement, {toggle: false});
+      }
+    }
     if (this.filterCollapsed){
       this.filterCollapse.show();
       this.filterCollapsed = false;
