@@ -24,6 +24,7 @@
       "Profile": "Profile"
     },
     "Sidebar": {
+      "Navigation": "Navigation",
       "Dashboard": "Dashboard",
       "Import": "Import",
       "Announcements": "Announcements",
@@ -213,16 +214,26 @@
     "UnbindCard": "Unbind Card",
     "UnbindCardTip": "Are you sure to unbind this card?",
     "AccessCode": "Access code",
-    "ChangeAccessCode": "Change AccessCode",
+    "ChangeAccessCode": "Change Access Code",
     "Aliases": "Aliases",
     "None": "None",
     "AddAlias": "Add Alias",
+    "RemoveAlias": "Remove Alias",
+    "RemoveAliasTip": "Are you sure to remove this alias?",
     "SetDefault": "Set Default",
     "BindCard": "Bind Card",
     "Warning1": "Do not share your access code with anyone or add others' cards as aliases.",
     "Warning2": "Due to differences in functionality between card readers and cards, the access code might differ from the printed code on the card. Please follow the guidance on the game's title screen to view the actual access code.",
     "Warning3": "You must play at least one game before successfully binding the card.",
-    "Warning4": "Aliases are used to link multiple cards to the same profile. You need to add access codes that have no play records."
+    "Warning4": "Aliases are used to link multiple cards to the same profile. You need to add access codes that have no play records.",
+    "BindSuccessMessage": "Card bound successfully.",
+    "CardNotFountMessage": "Card not found.",
+    "AlreadyBoundToOthersMessage": "Card bound to another account.",
+    "AlreadyBoundToSelfMessage": "Card already bound to you.",
+    "SetDefaultSuccessMessage": "Set default card successfully.",
+    "AddAliasErrorMessage": "Card already registered. Only unregistered cards can be added as an alias.",
+    "ChangeAccessCodeErrorMessage": "Card already registered. Please use an unregistered card.",
+    "ChangeAccessCodeSuccessMessage": "Change access code successfully."
   },
   "KeychipPage": {
     "Title": "Keychip",
@@ -483,7 +494,15 @@
   },
   "Maimai2": {
     "ProfilePage": {
-      "Overview": "Player Info"
+      "Title": "Profile",
+      "UserName": "User Name",
+      "Overview": "Player info",
+      "Rating": "Rating",
+      "AwakenedCharacter": "Awakened character★",
+      "PlayCount": "Play Count",
+      "LastPay": "Last Pay",
+      "OTOMODACHI": "OTOMODACHI Class",
+      "DANININTEI": "DANININTEI Class"
     },
     "RatingPage": {
       "Title": "Best 50 Rating",
@@ -507,7 +526,33 @@
       "BuyDate": "Buy-In Date",
       "ExpireDate": "Expire Date",
       "DefaultInfo": "Default DX Pass kind currently",
-      "SetDefault": "Set type as default"
+      "SetDefault": "Set type as default",
+      "Remaining": "remaining",
+      "Expired": "Expired"
+    },
+    "Setting": {
+      "Title": "Setting",
+      "UserName": "User Name",
+      "UserNameTitle": "This is your in-game username:",
+      "UserNameSubTitle": "*Note: Use full-width characters when changing the name.",
+      "UserNameChangeButton": "Change",
+      "UserIcon": "User Icon",
+      "UserIconTex": " ",
+      "UserIconChangeButton": "Upload",
+      "RedemptionCode": "Redemption Code",
+      "RedemptionCodeTitle": "Use a redemption code to activate gifts:",
+      "RedemptionCodeSubTitle": "*Please do not use someone else's redemption code.",
+      "RedeemButton": "Redeem",
+      "BindingCardNumber": "Bound Card Number",
+      "BindingCardNumberTitle": "Bind an Aime card to this account, allowing you to use the Aime card to log in to this game profile.",
+      "BindingCardNumberSubTitle1": "*Please enter a 20-digit number.",
+      "BindingCardNumberSubTitle2": "*After unbinding, your Aime card will revert to its original profile.",
+      "TryBind": "Try Binding",
+      "Unbind": "Unbind",
+      "ExportData": "Export Data",
+      "ExportDataTitle": "This function allows you to export data for use during migration.",
+      "ExportDataSubTitle": "*Please do not share the exported files with others",
+      "ExportDataSubButton": "Export"
     }
   },
   "ContributorsPage": {

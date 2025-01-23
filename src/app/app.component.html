@@ -2,7 +2,8 @@
   <div class="flex-grow-1">
     <nav ngbNav #nav="ngbNav" class="app-navbar navbar navbar-expand-lg position-fixed shadow w-100">
       <div class="container-xxl">
-        <button [class.v-hidden]="disableSidebar || !accountService.currentAccountValue" (click)="showSidebar()"
+        <button [class.v-not-login]="disableSidebar && !accountService.currentAccountValue" (click)="showSidebar()"
+                [class.v-hidden]="isRouterHome && accountService.currentAccountValue"
                 class="navbar-toggler btn btn-icon"
                 type="button">
           <div class="d-flex align-items-center">
@@ -48,7 +49,7 @@
                [class.d-none]="disableSidebar || !accountService.currentAccountValue">
           <div id="sidebar" class="offcanvas-lg offcanvas-start" tabindex="-1">
             <div class="offcanvas-header" style="height: 3.6rem">
-              <h5 class="offcanvas-title" id="offcanvasExampleLabel">Navigation</h5>
+              <h5 class="offcanvas-title" id="offcanvasExampleLabel">{{'App.Sidebar.Navigation'|translate}}</h5>
               <button type="button" class="btn-close" aria-label="Close"
                       (click)="hideSidebar()"></button>
             </div>
