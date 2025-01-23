@@ -74,7 +74,10 @@
     "LastPlay": "Last played",
     "PlayCount": "Played Count",
     "AwakenLevel": "Chara Awakened",
-    "QuickNavigate": "Navigation"
+    "QuickNavigate": "Navigation",
+    "Profile": "Profile",
+    "PlayRecord": "Play Record",
+    "Photos": "Photos"
   },
   "AnnouncementsPage": {
     "Title": "Announcements",

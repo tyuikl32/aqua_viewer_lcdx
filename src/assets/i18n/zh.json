@@ -74,7 +74,10 @@
     "LastPlay": "上次游玩",
     "PlayCount": "游玩次数",
     "AwakenLevel": "觉醒角色数",
-    "QuickNavigate": "快速导航"
+    "QuickNavigate": "快速导航",
+    "Profile": "档案",
+    "PlayRecord": "游玩记录",
+    "Photos": "相册"
   },
   "AnnouncementsPage": {
     "Title": "公告",

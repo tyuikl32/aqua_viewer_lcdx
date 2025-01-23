@@ -37,17 +37,17 @@
 
 .mai2-playlog{
   background: linear-gradient(45deg, #0d2e40, #3a4165);
-  color: lightgrey;
+  color: #ffffff;
 }
 .mai2-rating{
   background: linear-gradient(45deg, darkblue, darkgray);
-  color: cornflowerblue;
+  color: #ffffff;
 }
 .mai2-profile{
   background: linear-gradient(45deg, darkgreen, darkred);
-  color: #9a6c5b;
+  color: #ffffff;
 }
 .mai2-photo{
   background: linear-gradient(45deg, darksalmon, #b393e1);
-  color: #bdefc4;
+  color: #ffffff;
 }

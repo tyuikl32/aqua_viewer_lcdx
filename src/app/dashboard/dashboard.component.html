@@ -44,16 +44,16 @@
     <div class="row mb-3 g-2">
       <div class="row mb-3 g-2">
         <div class="col-6 col-xxl-3 col-lg-4 col-md-3 col-sm-4">
-          <div class="card-btn rounded-3 quick-navigate mai2-playlog user-select-none" routerLink="/mai2/recent">游玩记录</div>
+          <div class="card-btn rounded-3 quick-navigate mai2-playlog user-select-none" routerLink="/mai2/recent">{{'DashboardPage.PlayRecord' | translate}}</div>
         </div>
         <div class="col-6 col-xxl-3 col-lg-4 col-md-3 col-sm-4">
-          <div class="card-btn rounded-3 quick-navigate mai2-rating user-select-none" routerLink="/mai2/rating">评级</div>
+          <div class="card-btn rounded-3 quick-navigate mai2-rating user-select-none" routerLink="/mai2/rating">{{'DashboardPage.Rating' | translate}}</div>
         </div>
         <div class="col-6 col-xxl-3 col-lg-4 col-md-3 col-sm-4">
-          <div class="card-btn rounded-3 quick-navigate mai2-profile user-select-none" routerLink="/mai2/profile">档案</div>
+          <div class="card-btn rounded-3 quick-navigate mai2-profile user-select-none" routerLink="/mai2/profile">{{'DashboardPage.Profile' | translate}}</div>
         </div>
         <div class="col-6 col-xxl-3 col-lg-4 col-md-3 col-sm-4">
-          <div class="card-btn rounded-3 quick-navigate mai2-photo user-select-none" routerLink="/mai2/photos">相册</div>
+          <div class="card-btn rounded-3 quick-navigate mai2-photo user-select-none" routerLink="/mai2/photos">{{'DashboardPage.Photos' | translate}}</div>
         </div>
       </div>
 
@@ -73,30 +73,30 @@
             <img class="placeholder profile-icon">
             <table class="profile-table">
               <tbody>
-                <tr>
-                  <th>
-                    <span class="placeholder" style="width: 3em;"></span>
-                  </th>
-                  <td>
-                    <span class="placeholder" style="width: 2em;"></span>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <span class="placeholder" style="width: 4em;"></span>
-                  </th>
-                  <td>
-                    <span class="placeholder" style="width: 5em;"></span>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <span class="placeholder" style="width: 3em;"></span>
-                  </th>
-                  <td>
-                    <span class="placeholder" style="width: 3em;"></span>
-                  </td>
-                </tr>
+              <tr>
+                <th>
+                  <span class="placeholder" style="width: 3em;"></span>
+                </th>
+                <td>
+                  <span class="placeholder" style="width: 2em;"></span>
+                </td>
+              </tr>
+              <tr>
+                <th>
+                  <span class="placeholder" style="width: 4em;"></span>
+                </th>
+                <td>
+                  <span class="placeholder" style="width: 5em;"></span>
+                </td>
+              </tr>
+              <tr>
+                <th>
+                  <span class="placeholder" style="width: 3em;"></span>
+                </th>
+                <td>
+                  <span class="placeholder" style="width: 3em;"></span>
+                </td>
+              </tr>
               </tbody>
             </table>
           </div>
@@ -133,18 +133,18 @@
             <img class="profile-icon" src="assets/ongeki/card-icon/UI_Card_Icon_{{ongekiProfile.cardId}}.webp">
             <table class="profile-table">
               <tbody>
-                <tr>
-                  <th>{{'DashboardPage.Level' | translate}}</th>
-                  <td>{{ongekiProfile.reincarnationNum * 100 + ongekiProfile.level}}</td>
-                </tr>
-                <tr>
-                  <th>{{'DashboardPage.Rating' | translate}}</th>
-                  <td>{{ongekiProfile.playerRating / 100 | number: '1.2-2'}}</td>
-                </tr>
-                <tr>
-                  <th>{{'DashboardPage.BattlePoint' | translate}}</th>
-                  <td>{{ongekiProfile.battlePoint}}</td>
-                </tr>
+              <tr>
+                <th>{{'DashboardPage.Level' | translate}}</th>
+                <td>{{ongekiProfile.reincarnationNum * 100 + ongekiProfile.level}}</td>
+              </tr>
+              <tr>
+                <th>{{'DashboardPage.Rating' | translate}}</th>
+                <td>{{ongekiProfile.playerRating / 100 | number: '1.2-2'}}</td>
+              </tr>
+              <tr>
+                <th>{{'DashboardPage.BattlePoint' | translate}}</th>
+                <td>{{ongekiProfile.battlePoint}}</td>
+              </tr>
               </tbody>
             </table>
           </div>
