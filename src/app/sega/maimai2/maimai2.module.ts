@@ -14,6 +14,7 @@ import { Maimai2KopRankingComponent } from './maimai2-kop-ranking/maimai2-kop-ra
 import {Maimai2PhotosComponent} from "./maimai2-photos/maimai2-photos.component";
 import { Maimai2DxpassComponent } from './maimai2-dxpass/maimai2-dxpass.component';
 import {NgIcon} from '@ng-icons/core';
+import {Maimai2SonglistComponent} from "./maimai2-songlist/maimai2-songlist.component";
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import {NgIcon} from '@ng-icons/core';
     Maimai2PhotosComponent,
     Maimai2DxpassComponent,
     Maimai2KopRankingComponent
+    Maimai2SonglistComponent
   ],
     imports: [
         CommonModule,
