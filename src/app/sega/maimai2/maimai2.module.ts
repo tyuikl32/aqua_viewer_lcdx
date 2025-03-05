@@ -25,7 +25,7 @@ import {Maimai2SonglistComponent} from "./maimai2-songlist/maimai2-songlist.comp
     Maimai2RecentComponent,
     Maimai2PhotosComponent,
     Maimai2DxpassComponent,
-    Maimai2KopRankingComponent
+    Maimai2KopRankingComponent,
     Maimai2SonglistComponent
   ],
     imports: [
