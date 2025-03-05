@@ -15,6 +15,8 @@ import {Maimai2PhotosComponent} from "./maimai2-photos/maimai2-photos.component"
 import { Maimai2DxpassComponent } from './maimai2-dxpass/maimai2-dxpass.component';
 import {NgIcon} from '@ng-icons/core';
 import {Maimai2SonglistComponent} from "./maimai2-songlist/maimai2-songlist.component";
+import {Maimai2SongDetailComponent} from "./maimai2-song-detail/maimai2-song-detail.component";
+import {NgIcon} from "@ng-icons/core";
 
 
 @NgModule({
@@ -26,20 +28,21 @@ import {Maimai2SonglistComponent} from "./maimai2-songlist/maimai2-songlist.comp
     Maimai2PhotosComponent,
     Maimai2DxpassComponent,
     Maimai2KopRankingComponent,
-    Maimai2SonglistComponent
+    Maimai2SonglistComponent,
+    Maimai2SongDetailComponent
   ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        Maimai2Routes,
-        NgxPaginationModule,
-        ToolsModule,
-        TranslateModule,
-        ReactiveFormsModule,
-        NgOptimizedImage,
-        NgbCollapse,
-        NgIcon
-    ]
+  imports: [
+    CommonModule,
+    FormsModule,
+    Maimai2Routes,
+    NgxPaginationModule,
+    ToolsModule,
+    TranslateModule,
+    ReactiveFormsModule,
+    NgOptimizedImage,
+    NgbCollapse,
+    NgIcon
+  ]
 })
 export class Maimai2Module {
 }
