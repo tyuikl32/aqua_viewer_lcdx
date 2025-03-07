@@ -13,6 +13,7 @@
 <div class="card mt-3 mb-3">
   <div class="card-body">
     <span class="card-title" style="font-size: 1.25rem;">{{ 'Maimai2.RatingPage.ElevateRecommend'|translate }}</span>
+
     <div class="table-container d-block d-md-none">
       <table class="table table-striped" style="text-align: center;">
         <thead>
@@ -82,7 +83,7 @@
 
 <ng-template #record let-index="index" let-item="item">
   <div class="col-12 col-md-6 col-xxl-4">
-    <div class="card rating-card">
+    <div class="card rating-card" (click)="showDetail(item.music)">
       <div class="hstack">
         <img
           class="jacket rounded-start"
