@@ -16,7 +16,6 @@ import { Maimai2DxpassComponent } from './maimai2-dxpass/maimai2-dxpass.componen
 import {NgIcon} from '@ng-icons/core';
 import {Maimai2SonglistComponent} from "./maimai2-songlist/maimai2-songlist.component";
 import {Maimai2SongDetailComponent} from "./maimai2-song-detail/maimai2-song-detail.component";
-import {NgIcon} from "@ng-icons/core";
 
 
 @NgModule({
