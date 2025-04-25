@@ -607,6 +607,20 @@
       "Genre": "流派",
       "Version": "版本",
       "MatchingSongs": "匹配歌曲"
+    },
+    "RivalPage": {
+      "Title": "对手列表",
+      "YourRivalID": "你的对手ID",
+      "InputPlaceholder": "在此输入对方的对手ID",
+      "InputPlaceholder2": "对手数超过3，不可手动添加",
+      "AddButton": "添加对手",
+      "RemoveButton": "移除对手",
+      "NoRivals": "暂无对手，请在上方添加",
+      "AwakenLevel": "觉醒等级",
+      "Rating": "评级",
+      "PlayCount": "游玩次数",
+      "RivalId": "对手ID",
+      "LastPlay": "最后游玩："
     }
   },
   "ContributorsPage": {
