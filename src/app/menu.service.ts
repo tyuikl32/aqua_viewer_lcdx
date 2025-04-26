@@ -48,6 +48,12 @@ export class MenuService {
             displayCondition: DisplayCondition.HasProfile,
           },
           {
+            id: 7,
+            name: 'Rival',
+            url: 'mai2/rival',
+            displayCondition: DisplayCondition.HasProfile,
+          },
+          {
             id: 6,
             name: 'MusicList',
             url: 'mai2/songlist',

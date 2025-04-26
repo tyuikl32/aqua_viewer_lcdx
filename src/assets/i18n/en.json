@@ -4,7 +4,8 @@
     "ChuniV2": "CHUNITHM NEW",
     "Mai2": "Maimai DX",
     "Colon": ": ",
-    "OK": "OK"
+    "OK": "OK",
+    "FailedToLoad": "Failed to load"
   },
   "App": {
     "Footer": {
@@ -47,7 +48,8 @@
       "OnlineBattle": "Online Battle"
     },
     "Messages": {
-      "BrowserNotSupported": "Your browser is not supported! Please upgrade to the latest version of Chrome, Firefox, Safari, or Edge for the best experience."
+      "BrowserNotSupported": "Your browser is not supported! Please upgrade to the latest version of Chrome, Firefox, Safari, or Edge for the best experience.",
+      "LoadingFailed": "Loading Failed！"
     }
   },
   "DashboardPage": {
@@ -289,7 +291,7 @@
       "Tip1": "15 highest ratings from new version fumens",
       "Tip2": "30 highest ratings from old version fumens",
       "Tip3": "10 highest ratings from recent plays, excluding Lunatic difficulty",
-      "RatingWarning": "The data from your last play doesn't match the server version, so song ratings may be inaccurate.",
+      "DataVersionWarning": "Due to a mismatch between the game and server data versions, the fumen constants or rating calculations may be incorrect.",
       "PlayerRating": "Player Rating",
       "HighestRating": "Highest Rating",
       "New": "Current Version",
@@ -323,8 +325,19 @@
         "RankingInfo": "You rank {{ranking}} out of {{total}} players."
       }
     },
-    "CardPage": {
+    "Card": {
       "Title": "Card",
+      "EditFor": "Edit For",
+      "Deck": "Deck",
+      "Skin": "Skin",
+      "DeckID": "Deck ID",
+      "CardGallery": "Card Gallery",
+      "SelectCard": "Select Card",
+      "Valid": "Valid",
+      "Warning1": "Using cards unsupported by your game version will crash the game."
+    },
+    "CardGallery": {
+      "Title": "Card Gallery",
       "Holo": "Holo",
       "Elements": "Elements",
       "Details": "Details",
@@ -406,7 +419,7 @@
       "Unacquired": "Unacquired",
       "Version": "Version",
       "SearchPlaceholder": "ID，Name，Illustrator，WorkName",
-      "TotalCharaNum": "Total {{num}} characters",
+      "TotalCharaNum": "Total {{num}} Characters",
       "ShowFilter": "Show Filter",
       "HideFilter": "Hide Filter",
       "ResetFilter": "Reset Filter",
@@ -435,6 +448,8 @@
       "AvatarFront": "Avatar Front",
       "AvatarBack": "Avatar Back",
       "Trophy": "Trophy",
+      "TrophySub1": "Sub Trophy 1",
+      "TrophySub2": "Sub Trophy 2",
       "Frame": "Frame",
       "Change": "Change",
       "Preview": "Preview",
@@ -448,6 +463,16 @@
       "SelectItem": "Select Item",
       "MessageSuccess": "Successfully changed.",
       "MessageFailed": "Failed to change item."
+    },
+    "MusicListPage": {
+      "Title": "Music List",
+      "ReleaseVersion": "Release Version",
+      "Genre": "Genre",
+      "TotalSongNum": "Total {{num}} Songs",
+      "ShowFilter": "Show Filter",
+      "HideFilter": "Hide Filter",
+      "ResetFilter": "Reset Filter",
+      "FilterPlaceholder": "ID, Name, Artist"
     },
     "RivalPage": {
       "Title": "Rival",
@@ -472,9 +497,21 @@
       "Rating": "Rating",
       "Activity": "Activity"
     },
+    "RatingPage": {
+      "Title": "Rating",
+      "Overview": "Overview",
+      "PlayerRating": "Your Rating",
+      "HighestRating": "Highest",
+      "New": "New",
+      "Best": "Best",
+      "Recent": "Recent",
+      "DataVersionWarning": "Due to a mismatch between the game and server data versions, the fumen constants or rating calculations may be incorrect."
+    },
     "RecentPage": {
       "Title": "Play Record",
-      "Ranking": "Ranking"
+      "Details": "Details",
+      "TotalPlayLogNum": "Total {{num}} Play Records",
+      "ResetFilter": "Reset Filter"
     },
     "SettingsPage": {
       "Title": "Settings",
@@ -573,6 +610,20 @@
       "Genre": "Genre",
       "Version": "Version",
       "MatchingSongs": "Matching Songs"
+    },
+    "RivalPage": {
+      "Title": "Rival List",
+      "YourRivalID": "Your Rival ID",
+      "InputPlaceholder": "Input other's rival id here",
+      "InputPlaceholder2": "Rival count is mor than 3",
+      "AddButton": "Add Rival",
+      "RemoveButton": "Remove",
+      "NoRivals": "No rivals yet. Add one above!",
+      "AwakenLevel": "Awaken Level",
+      "Rating": "Rating",
+      "PlayCount": "Play Count",
+      "RivalId": "Rival Id",
+      "LastPlay": "Last Play:"
     }
 
   },

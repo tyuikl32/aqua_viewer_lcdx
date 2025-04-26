@@ -4,7 +4,8 @@
     "ChuniV2": "中二节奏NEW",
     "Mai2": "舞萌DX",
     "Colon": "：",
-    "OK": "确定"
+    "OK": "确定",
+    "FailedToLoad": "加载失败"
   },
   "App": {
     "Footer": {
@@ -24,7 +25,7 @@
       "Profile": "档案"
     },
     "Sidebar": {
-      "Navigation": "导航栏",
+      "Navigation": "导航",
       "Dashboard": "仪表板",
       "Import": "导入",
       "Announcements": "公告",
@@ -47,7 +48,8 @@
       "OnlineBattle": "全国对战"
     },
     "Messages": {
-      "BrowserNotSupported": "您的浏览器不受支持！请升级到最新版的Chrome、Firefox、Safari或Edge浏览器以获得最佳体验。"
+      "BrowserNotSupported": "您的浏览器不受支持！请升级到最新版的Chrome、Firefox、Safari或Edge浏览器以获得最佳体验。",
+      "LoadingFailed": "加载失败！"
     }
   },
   "DashboardPage": {
@@ -285,16 +287,18 @@
     },
     "RatingPage": {
       "Title": "评级",
+      "Overview": "概览",
       "TipLead": "单曲评级由谱面定数与得分经过计算得出，玩家评级由55个单曲评级取平均数得出，其中包含：",
       "Tip1": "来自当前版本的15个最高评级的谱面",
       "Tip2": "来自以往版本的30个最高评级的谱面",
       "Tip3": "30次最近游玩记录中的10个最高评级（不计入Lunatic难度）",
-      "RatingWarning": "上次游玩使用的数据与服务器中的数据不匹配，单曲评级计算可能有误",
+      "DataVersionWarning": "由于游戏与服务器数据版本不一致，谱面定数或评级计算可能有误",
       "PlayerRating": "玩家评级",
       "HighestRating": "最高评级",
       "New": "当前版本",
       "Best": "以往版本",
-      "Recent": "最近"
+      "Recent": "最近",
+      "Platinum": "白金"
     },
     "RecentPage": {
       "Title": "游玩记录",
@@ -323,8 +327,19 @@
         "RankingInfo": "你在 {{total}} 名玩家中排名第 {{ranking}}。"
       }
     },
-    "CardPage": {
+    "Card": {
       "Title": "卡片",
+      "EditFor": "编成",
+      "Deck": "卡组",
+      "Skin": "皮肤",
+      "DeckID": "卡组编号",
+      "CardGallery": "所有卡片",
+      "SelectCard": "选择卡片",
+      "Valid": "启用",
+      "Warning1": "请确保你的游戏版本存在卡组设定的卡片，否则会导致游戏崩溃。"
+    },
+    "CardGallery": {
+      "Title": "卡片一览",
       "Holo": "闪膜",
       "Elements": "信息",
       "Details": "卡片信息",
@@ -435,6 +450,8 @@
       "AvatarFront": "前面",
       "AvatarBack": "背部",
       "Trophy": "称号",
+      "TrophySub1": "副称号1",
+      "TrophySub2": "副称号2",
       "Frame": "框体",
       "Change": "更改",
       "Preview": "预览",
@@ -448,6 +465,16 @@
       "SelectItem": "选择",
       "MessageSuccess": "更换成功",
       "MessageFailed": "更换失败"
+    },
+    "MusicListPage": {
+      "Title": "乐曲列表",
+      "ReleaseVersion": "发布版本",
+      "Genre": "分类",
+      "TotalSongNum": "共 {{num}} 首乐曲",
+      "ShowFilter": "显示过滤",
+      "HideFilter": "隐藏过滤",
+      "ResetFilter": "重置过滤",
+      "FilterPlaceholder": "ID, 曲名, 作者"
     },
     "RivalPage": {
       "Title": "好友",
@@ -472,9 +499,21 @@
       "Rating": "评级",
       "Activity": "活跃度"
     },
+    "RatingPage": {
+      "Title": "评级",
+      "Overview": "概览",
+      "PlayerRating": "你的评级",
+      "HighestRating": "历史最高",
+      "New": "当前版本",
+      "Best": "最佳成绩",
+      "Recent": "最近高分",
+      "DataVersionWarning": "由于游戏与服务器数据版本不一致，谱面定数或评级计算可能有误"
+    },
     "RecentPage": {
       "Title": "游玩记录",
-      "Ranking": "排名"
+      "Details": "详情",
+      "TotalPlayLogNum": "共 {{num}} 条游玩记录",
+      "ResetFilter": "重置过滤"
     },
     "SettingsPage": {
       "Title": "设定",
@@ -573,6 +612,20 @@
       "Genre": "流派",
       "Version": "版本",
       "MatchingSongs": "匹配歌曲"
+    },
+    "RivalPage": {
+      "Title": "对手列表",
+      "YourRivalID": "你的对手ID",
+      "InputPlaceholder": "在此输入对方的对手ID",
+      "InputPlaceholder2": "对手数超过3，不可手动添加",
+      "AddButton": "添加对手",
+      "RemoveButton": "移除对手",
+      "NoRivals": "暂无对手，请在上方添加",
+      "AwakenLevel": "觉醒等级",
+      "Rating": "评级",
+      "PlayCount": "游玩次数",
+      "RivalId": "对手ID",
+      "LastPlay": "最后游玩："
     }
   },
   "ContributorsPage": {
