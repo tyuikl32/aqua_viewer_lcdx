@@ -27,13 +27,16 @@ export class DashboardComponent implements OnInit {
   errorPreloadTaskCount = 0;
   enableImages = environment.enableImages;
   announcement: Announcement;
-  announcement2 : Announcement;
+  announcement2: Announcement;
   loadingAnnouncement = true;
+  recentUpdate: Announcement;
+  loadingUpdate = true;
   loadingDatabase = true;
-  loadingProfile = true;
+  loadingProfiles = true;
+  profilesError = false;
   loadingKeychip = true;
   loadingTrustedKeychip = true;
-  checkingUpdate = true;
+  checkingUpdateState = 'checking';
   dbVersion = 0;
   currentCard = undefined;
   noCard = false;
@@ -74,17 +77,20 @@ export class DashboardComponent implements OnInit {
     this.addStatusSubscribe(this.preload.chusanSymbolChatState);
     this.addStatusSubscribe(this.preload.maimai2MusicState);
     this.preload.checkingUpdateObservable.subscribe(checkingUpdate => {
-      this.checkingUpdate = checkingUpdate;
+      this.checkingUpdateState = checkingUpdate;
     });
     this.preload.dbVersionObservable.subscribe(dbVersion => {
       this.dbVersion = dbVersion;
     });
     this.translate.onLangChange.subscribe(event => {
       this.loadingAnnouncement = true;
-      this.loadAnnouncements()
-    })
+      this.loadingUpdate = true;
+      this.loadAnnouncements();
+    });
 
     this.getProfiles();
+    this.loadKeychip();
+    this.loadTrustedKeychip();
   }
 
   getProfiles(){
@@ -110,12 +116,12 @@ export class DashboardComponent implements OnInit {
           else{
             this.messageService.notice(resp.status.message);
           }
-          this.loadingProfile = false;
+          this.loadingProfiles = false;
         }
       },
       error => {
         this.messageService.notice(error);
-        this.loadingProfile = false;
+        this.loadingProfiles = false;
       });
   }
 
