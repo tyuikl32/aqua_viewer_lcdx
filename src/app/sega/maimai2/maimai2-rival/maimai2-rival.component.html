@@ -4,7 +4,7 @@
     <i class="bi bi-person-vcard me-2"></i>
     <div>
       <div class="text-muted small">{{ 'Maimai2.RivalPage.YourRivalID' | translate }}</div>
-      <div class="h5 mb-0">{{10000000 + userService.currentUser.defaultCard.id}}</div>
+      <div class="h5 mb-0">{{convertRivalId(String(10000000 + userService.currentUser.defaultCard.id))}}</div>
     </div>
   </div>
 </div>
