@@ -606,6 +606,20 @@
       "Genre": "Genre",
       "Version": "Version",
       "MatchingSongs": "Matching Songs"
+    },
+    "RivalPage": {
+      "Title": "Rival List",
+      "YourRivalID": "Your Rival ID",
+      "InputPlaceholder": "Input other's rival id here",
+      "InputPlaceholder2": "Rival count is mor than 3",
+      "AddButton": "Add Rival",
+      "RemoveButton": "Remove",
+      "NoRivals": "No rivals yet. Add one above!",
+      "AwakenLevel": "Awaken Level",
+      "Rating": "Rating",
+      "PlayCount": "Play Count",
+      "RivalId": "Rival Id",
+      "LastPlay": "Last Play:"
     }
 
   },
