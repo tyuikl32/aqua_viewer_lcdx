@@ -16,6 +16,7 @@ import {PasswordResetComponent} from './password-reset/password-reset.component'
 import {ProfileComponent} from './profile/profile.component';
 import {AnnouncementsComponent} from './announcements/announcements.component';
 import {EditComponent} from "./announcements/edit/edit.component";
+import {AdminComponent} from './admin/admin.component';
 
 const routes: Routes = [
   {path: '', component: HomeComponent, data: {title: 'Home', disableSidebar: true }},
@@ -34,6 +35,7 @@ const routes: Routes = [
   {path: 'sign-in', component: SignInComponent, canActivate: [LoginGuardService], data: {title: 'SignIn', disableSidebar: true }},
   {path: 'sign-up', component: SignUpComponent, canActivate: [LoginGuardService], data: {title: 'SignUp', disableSidebar: true }},
   {path: 'password-reset', component: PasswordResetComponent, canActivate: [LoginGuardService], data: {title: 'ResetPassword', disableSidebar: true }},
+  {path: 'admin', component: AdminComponent, canActivate: [AuthGuardService], data: {title: 'Admin'}},
   {path: 'not-found', component: NotFoundComponent, data: {title: 'NotFound', disableSidebar: true }},
   {path: '**', redirectTo: '/not-found'}
 ];

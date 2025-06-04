@@ -70,6 +70,9 @@
                       <li class="pb-2">
                         <a class="link-btn rounded" [class.active]="isActive('/import')" (click)="navigateTo('/import')">{{'App.Sidebar.Import' | translate}}</a>
                       </li>
+                      <li *ngIf="isAdmin()" class="pb-2">
+                        <a class="link-btn rounded" [class.active]="isActive('/admin')" (click)="navigateTo('/admin')">{{'App.Sidebar.Admin' | translate}}</a>
+                      </li>
   <!--                    <li class="pb-2">-->
   <!--                      <a class="link-btn rounded" target="_blank"-->
   <!--                         href="https://status.naominet.live/status/aquaserver">{{'App.Sidebar.Status' | translate}}</a>-->

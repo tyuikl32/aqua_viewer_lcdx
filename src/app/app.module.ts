@@ -69,6 +69,7 @@ import { PasswordResetComponent } from './password-reset/password-reset.componen
 import { ProfileComponent } from './profile/profile.component';
 import { AnnouncementsComponent } from './announcements/announcements.component';
 import { EditComponent } from './announcements/edit/edit.component';
+import { AdminComponent } from './admin/admin.component';
 
 const aegis = new Aegis({
   id: 'j4KOYFL0VyajP4KjdG', // 上报 id
@@ -106,7 +107,8 @@ export function initializeApp(
     SignInComponent,
     ProfileComponent,
     AnnouncementsComponent,
-    EditComponent
+    EditComponent,
+    AdminComponent
    ],
   imports: [
     BrowserModule,
