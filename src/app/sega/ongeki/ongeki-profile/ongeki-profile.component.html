@@ -36,12 +36,34 @@
         <div class="rating">
           <img *ngIf="Math.floor(profile.newPlayerRating / 10000) > 0" class="rating-num-integer" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating / 10000)}}.webp">
           <img class="rating-num-integer" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating / 1000) % 10}}.webp">
-          <img class="rating-num-dot" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/dot.webp">
-          <img class="rating-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating / 100) % 10}}.webp">
-          <img class="rating-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating / 10) % 10}}.webp">
-          <img class="rating-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.playerRating) % 10}}.webp">
+          <img class="rating-num-dot rating-new-num-dot" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/dot.webp">
+          <img class="rating-num-fractional rating-new-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating / 100) % 10}}.webp">
+          <img class="rating-num-fractional rating-new-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating / 10) % 10}}.webp">
+          <img class="rating-num-fractional rating-new-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating) % 10}}.webp">
           <div class="rating-highest text-nowrap">(Max: {{(profile.newHighestRating / 1000) | number: '0.2-3'}})</div>
         </div>
+        <ng-template [ngIf]="profile.newPlayerRating >= 20000">
+          <div class="rating rating-num-clip-path">
+            <img
+              [style.mask-image]="'url(' + host + 'assets/ongeki/gameUi/UI_NUM_30pt_Rating_' + getNewRatingType(profile.newPlayerRating) + '/' + Math.floor(profile.newPlayerRating / 10000) + '.webp)'"
+              class="rating-num-integer rating-new-num-mask" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_09Rainbow/0-no.webp">
+            <img
+              [style.mask-image]="'url(' + host + 'assets/ongeki/gameUi/UI_NUM_30pt_Rating_' + getNewRatingType(profile.newPlayerRating) + '/' + Math.floor(profile.newPlayerRating / 1000) % 10 + '.webp)'"
+              class="rating-num-integer rating-new-num-mask" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_09Rainbow/0-no.webp">
+            <img
+              [style.mask-image]="'url(' + host + 'assets/ongeki/gameUi/UI_NUM_30pt_Rating_' + getNewRatingType(profile.newPlayerRating) + '/dot.webp)'"
+              class="rating-num-dot rating-new-num-dot rating-new-num-mask" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_09Rainbow/dot-no.webp">
+            <img
+              [style.mask-image]="'url(' + host + 'assets/ongeki/gameUi/UI_NUM_30pt_Rating_' + getNewRatingType(profile.newPlayerRating) + '/' + Math.floor(profile.newPlayerRating / 100) % 10 + '.webp)'"
+              class="rating-num-fractional rating-new-num-fractional rating-new-num-mask" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_09Rainbow/0-no.webp">
+            <img
+              [style.mask-image]="'url(' + host + 'assets/ongeki/gameUi/UI_NUM_30pt_Rating_' + getNewRatingType(profile.newPlayerRating) + '/' + Math.floor(profile.newPlayerRating / 10) % 10 + '.webp)'"
+              class="rating-num-fractional rating-new-num-fractional rating-new-num-mask" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_09Rainbow/0-no.webp">
+            <img
+              [style.mask-image]="'url(' + host + 'assets/ongeki/gameUi/UI_NUM_30pt_Rating_' + getNewRatingType(profile.newPlayerRating) + '/' + Math.floor(profile.newPlayerRating % 10) + '.webp)'"
+              class="rating-num-fractional rating-new-num-fractional rating-new-num-mask" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_09Rainbow/0-no.webp">
+          </div>
+        </ng-template>
       </ng-template>
     </div>
     <div class="chara-container">
