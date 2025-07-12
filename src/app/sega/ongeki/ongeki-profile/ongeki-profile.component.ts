@@ -140,4 +140,27 @@ export class OngekiProfileComponent implements OnInit {
     return operator === '>=';
   }
 
+  get maskDigits(): number[] {
+    const rating = this.profile.newPlayerRating;
+    return [
+      Math.floor(rating / 10000),
+      Math.floor(rating / 1000) % 10,
+      -1, // -1 代表小数点
+      Math.floor(rating / 100) % 10,
+      Math.floor(rating / 10) % 10,
+      Math.floor(rating % 10)
+    ];
+  }
+
+  getMaskImage(digit: number, index: number): string {
+    const basePath = `${this.host}assets/ongeki/gameUi/UI_NUM_30pt_Rating_${this.getNewRatingType(this.profile.newPlayerRating)}`;
+    if (digit === -1) { return `url(${basePath}/dot.webp)`; }
+    return `url(${basePath}/${digit}.webp)`;
+  }
+
+  getMaskClass(index: number): string {
+    if (index < 2) { return 'rating-num-integer rating-new-num-mask'; }
+    if (index === 2) { return 'rating-num-dot rating-new-num-dot rating-new-num-mask'; }
+    return 'rating-num-fractional rating-new-num-fractional rating-new-num-mask';
+  }
 }

@@ -259,6 +259,7 @@
   mask-mode: alpha;
   mask-repeat: no-repeat;
   mask-size: contain;
+  transform: scale(0.86);
 }
 
 .rating-num-clip-path {
