@@ -10,13 +10,13 @@
       <!--title-->
       <div class="song-info-title text-truncate fw-bold">
           <span>
-            {{playLog.songInfo != null ? playLog.songInfo.name : 'MusicID:' + playLog.musicId}}
+            {{ playLog.songInfo != null ? playLog.songInfo.name : 'MusicID:' + playLog.musicId }}
           </span>
       </div>
       <!--artist-->
       <div class="song-info-artist text-truncate ">
           <span>
-            {{playLog.songInfo != null ? playLog.songInfo.artistName : ('Ongeki.RecentPage.UnknownArtist' | translate)}}
+            {{ playLog.songInfo != null ? playLog.songInfo.artistName : ('Ongeki.RecentPage.UnknownArtist' | translate) }}
           </span>
       </div>
       <!--difficulty-->
@@ -24,27 +24,27 @@
             <span *ngSwitchCase="'Basic'"
                   class="difficulty difficulty-basic badge rounded-pill">
               Basic
-              {{(playLog.songInfo?.level0 | toLevelDecimal)??'None'}}
+              {{ (playLog.songInfo?.level0 | toLevelDecimal) ?? 'None' }}
             </span>
         <span *ngSwitchCase="'Advanced'"
               class="difficulty difficulty-advanced badge rounded-pill">
               Advanced
-          {{(playLog.songInfo?.level1 | toLevelDecimal)??'None'}}
+          {{ (playLog.songInfo?.level1 | toLevelDecimal) ?? 'None' }}
             </span>
         <span *ngSwitchCase="'Expert'"
               class="difficulty difficulty-expert badge rounded-pill">
               Expert
-          {{(playLog.songInfo?.level2 | toLevelDecimal)??'None'}}
+          {{ (playLog.songInfo?.level2 | toLevelDecimal) ?? 'None' }}
             </span>
         <span *ngSwitchCase="'Master'"
               class="difficulty difficulty-master badge rounded-pill">
               Master
-          {{(playLog.songInfo?.level3 | toLevelDecimal)??'None'}}
+          {{ (playLog.songInfo?.level3 | toLevelDecimal) ?? 'None' }}
             </span>
         <span *ngSwitchCase="'Lunatic'"
               class="difficulty difficulty-lunatic badge rounded-pill">
               Lunatic
-          {{(playLog.songInfo?.level4 | toLevelDecimal)??'None'}}
+          {{ (playLog.songInfo?.level4 | toLevelDecimal) ?? 'None' }}
             </span>
       </div>
     </div>
@@ -59,16 +59,16 @@
               <span>BATTLE SCORE</span>
             </div>
             <div class="score" [class.new-record]="playLog.isBattleNewRecord">
-              <span class="score-font-large">{{Math.floor(playLog.battleScore / 10000)}}</span>
-              <span class="score-font-small">{{playLog.battleScore % 10000|formatNumber:4}}</span>
+              <span class="score-font-large">{{ Math.floor(playLog.battleScore / 10000) }}</span>
+              <span class="score-font-small">{{ playLog.battleScore % 10000|formatNumber:4 }}</span>
             </div>
             <!--over damage-->
             <div class="item-header battle-item-header">
               <span>OVER DAMAGE</span>
             </div>
             <div class="score" [class.new-record]="playLog.isOverDamageNewRecord">
-              <span class="score-font-large">{{Math.floor(playLog.overDamage / 100)}}</span>
-              <span class="score-font-small">.{{playLog.overDamage % 100|formatNumber:2}}%</span>
+              <span class="score-font-large">{{ Math.floor(playLog.overDamage / 100) }}</span>
+              <span class="score-font-small">.{{ playLog.overDamage % 100|formatNumber:2 }}%</span>
             </div>
           </div>
           <!--score stamp-->
@@ -82,25 +82,24 @@
               <span>TECHNICAL SCORE</span>
             </div>
             <div class="score" [class.new-record]="playLog.isTechNewRecord">
-              <span class="score-font-large">{{Math.floor(playLog.techScore / 10000)}}</span>
-              <span class="score-font-small">{{playLog.techScore % 10000|formatNumber:4}}</span>
+              <span class="score-font-large">{{ Math.floor(playLog.techScore / 10000) }}</span>
+              <span class="score-font-small">{{ playLog.techScore % 10000|formatNumber:4 }}</span>
             </div>
-            <!--rating-->
-            <div class="item-header technical-item-header">
-              <span>RATING</span>
-            </div>
-            <div class="score score-font-large" [ngSwitch]="difficulty[playLog.level]">
-              <span
-                *ngSwitchCase="'Basic'">{{((playLog.songInfo?.level0 | toLevelDecimal) | toTechRating : playLog.techScore)??'None'}}</span>
-              <span
-                *ngSwitchCase="'Advanced'">{{((playLog.songInfo?.level1 | toLevelDecimal) | toTechRating : playLog.techScore)??'None'}}</span>
-              <span
-                *ngSwitchCase="'Expert'">{{((playLog.songInfo?.level2 | toLevelDecimal) | toTechRating : playLog.techScore)??'None'}}</span>
-              <span
-                *ngSwitchCase="'Master'">{{((playLog.songInfo?.level3 | toLevelDecimal) | toTechRating : playLog.techScore)??'None'}}</span>
-              <span
-                *ngSwitchCase="'Lunatic'">{{((playLog.songInfo?.level4 | toLevelDecimal) | toTechRating : playLog.techScore)??'None'}}</span>
-            </div>
+            <!--platinum-->
+            <ng-container>
+              <div class="item-header technical-item-header">
+                <span>PLATINUM</span>
+              </div>
+              <div class="score">
+                <div class="platinum-star-container">
+                  <img *ngFor="let _ of getArrayFromNumber(playLog.platinumScoreStar)"
+                       class="platinum-star" src="{{host}}assets/ongeki/gameUi/UI_Card_star_00.webp">
+                  <img *ngFor="let _ of getArrayFromNumber(5 - playLog.platinumScoreStar)"
+                       class="platinum-star" src="{{host}}assets/ongeki/gameUi/UI_Card_star_01.webp">
+                </div>
+                <div class="score-font-large platinum-score">{{ playLog.platinumScore }}</div>
+              </div>
+            </ng-container>
           </div>
           <!--score rank-->
           <div class="col-6 col-sm-3 col-md-6 col-lg-3 align-items-center d-flex" style="max-width: 150px">
@@ -165,74 +164,76 @@
   </div>
   <div class="card-footer fw-bold">
     <div class="float-start">
-      <a type="button" class="text-primary" (click)="open(judgeContent)">{{'Ongeki.RecentPage.Details' | translate}}</a>
+      <a type="button" class="text-primary"
+         (click)="open(judgeContent)">{{ 'Ongeki.RecentPage.Details' | translate }}</a>
     </div>
     <div class="float-start ms-3">
-      <a type="button" class="text-primary" (click)="showDetail(playLog.songInfo)">{{'Ongeki.RecentPage.Ranking' | translate}}</a>
+      <a type="button" class="text-primary"
+         (click)="showDetail(playLog.songInfo)">{{ 'Ongeki.RecentPage.Ranking' | translate }}</a>
     </div>
     <div class="float-end">
-      <span>{{(playLog.userPlayDate | toDate).toLocaleString()}}</span>
+      <span>{{ (playLog.userPlayDate | toDate).toLocaleString() }}</span>
     </div>
   </div>
 </div>
 
 <ng-template #judgeContent let-modal>
-    <div class="modal-header">
-      <h4 class="modal-title">{{'Ongeki.RecentPage.Details' | translate}}</h4>
-      <button type="button" class="btn-close shadow-none" aria-label="Close" (click)="modal.dismiss()"></button>
-    </div>
-    <div class="modal-body">
-      <table class="judge-table table table-borderless table-sm table-striped table-dark align-middle">
-        <tbody>
-        <tr>
-          <td class="combo">COMBO</td>
-          <td class="combo">{{playLog.maxCombo}}</td>
-        </tr>
-        <tr>
-          <td class="critical-break">C.BREAK</td>
-          <td class="critical-break">{{playLog.judgeCriticalBreak}}</td>
-        </tr>
-        <tr>
-          <td class="break">BREAK</td>
-          <td class="break">{{playLog.judgeBreak}}</td>
-        </tr>
-        <tr>
-          <td class="hit">HIT</td>
-          <td class="hit">{{playLog.judgeHit}}</td>
-        </tr>
-        <tr>
-          <td class="miss">MISS</td>
-          <td class="miss">{{playLog.judgeMiss}}</td>
-        </tr>
-        <tr>
-          <td class="bell">BELL</td>
-          <td class="bell">{{playLog.bellCount}}/{{playLog.totalBellCount}}</td>
-        </tr>
-        <tr>
-          <td class="damage">DAMAGE</td>
-          <td class="damage">{{playLog.damageCount}}</td>
-        </tr>
-        <tr>
-          <td>TAP</td>
-          <td>{{playLog.rateTap}}%</td>
-        </tr>
-        <tr>
-          <td>HOLD</td>
-          <td>{{playLog.rateHold}}%</td>
-        </tr>
-        <tr>
-          <td>FLICK</td>
-          <td>{{playLog.rateFlick}}%</td>
-        </tr>
-        <tr>
-          <td>SIDE TAP</td>
-          <td>{{playLog.rateSideTap}}%</td>
-        </tr>
-        <tr>
-          <td>SIDE HOLD</td>
-          <td>{{playLog.rateSideHold}}%</td>
-        </tr>
-        </tbody>
-      </table>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ 'Ongeki.RecentPage.Details' | translate }}</h4>
+    <button type="button" class="btn-close shadow-none" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <table class="judge-table table table-borderless table-sm table-striped table-dark align-middle">
+      <tbody>
+      <tr>
+        <td class="combo">COMBO</td>
+        <td class="combo">{{ playLog.maxCombo }}</td>
+      </tr>
+      <tr>
+        <td class="critical-break">C.BREAK</td>
+        <td class="critical-break">{{ playLog.judgeCriticalBreak }}</td>
+      </tr>
+      <tr>
+        <td class="break">BREAK</td>
+        <td class="break">{{ playLog.judgeBreak }}</td>
+      </tr>
+      <tr>
+        <td class="hit">HIT</td>
+        <td class="hit">{{ playLog.judgeHit }}</td>
+      </tr>
+      <tr>
+        <td class="miss">MISS</td>
+        <td class="miss">{{ playLog.judgeMiss }}</td>
+      </tr>
+      <tr>
+        <td class="bell">BELL</td>
+        <td class="bell">{{ playLog.bellCount }}/{{ playLog.totalBellCount }}</td>
+      </tr>
+      <tr>
+        <td class="damage">DAMAGE</td>
+        <td class="damage">{{ playLog.damageCount }}</td>
+      </tr>
+      <tr>
+        <td>TAP</td>
+        <td>{{ playLog.rateTap }}%</td>
+      </tr>
+      <tr>
+        <td>HOLD</td>
+        <td>{{ playLog.rateHold }}%</td>
+      </tr>
+      <tr>
+        <td>FLICK</td>
+        <td>{{ playLog.rateFlick }}%</td>
+      </tr>
+      <tr>
+        <td>SIDE TAP</td>
+        <td>{{ playLog.rateSideTap }}%</td>
+      </tr>
+      <tr>
+        <td>SIDE HOLD</td>
+        <td>{{ playLog.rateSideHold }}%</td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 </ng-template>

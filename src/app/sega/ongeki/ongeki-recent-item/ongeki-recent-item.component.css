@@ -65,6 +65,7 @@
 .play-result .score-area .item-header {
   font-size: 12px;
   font-weight: bold;
+  right: 0;
 }
 
 .play-result .score-area .battle-item-header {
@@ -81,6 +82,21 @@
 
 .play-result .score-area .score-font-small {
   font-size: 16px;
+}
+
+.platinum-score{
+  font-size: 80%!important;
+}
+
+.platinum-star {
+  text-align: right;
+  height: 10px;
+  margin: 0 -0.5px;
+  float: right;
+}
+
+.platinum-star-container {
+  height: 10px;
 }
 
 .play-result .score-area .score {
