@@ -14,6 +14,7 @@ import {LanguageService} from '../language.service';
 import {HttpParams} from '@angular/common/http';
 import {TranslateService} from '@ngx-translate/core';
 import {Luid} from '../cards/cards.component';
+import {compareVersions} from 'compare-versions';
 
 @Component({
   selector: 'app-dashboard',
@@ -237,5 +238,23 @@ export class DashboardComponent implements OnInit {
   getFormattedNumberByDigit(input: string, digit: number): string {
     return input.toString().padStart(digit, '0');
   }
+
+  compareVersion(version: string, target: string, operator: '>=' | '<') {
+    const a = version.split('.').map(Number);
+    const b = target.split('.').map(Number);
+    const len = Math.max(a.length, b.length);
+
+    for (let i = 0; i < len; i++) {
+      const n1 = a[i] || 0;
+      const n2 = b[i] || 0;
+
+      if (n1 > n2) { return operator === '>='; }
+      if (n1 < n2) { return operator === '<'; }
+    }
+    return operator === '>=';
+  }
+
+
+  protected readonly compareVersions = compareVersions;
 }
 

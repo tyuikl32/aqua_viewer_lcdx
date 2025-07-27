@@ -181,7 +181,12 @@
                 </tr>
                 <tr>
                   <th>{{'DashboardPage.Rating' | translate}}</th>
-                  <td>{{ongekiProfile.playerRating / 100 | number: '1.2-2'}}</td>
+                  <ng-template [ngIf]="compareVersion(ongekiProfile.lastRomVersion, '1.50.00', '>=')">
+                    <td>{{ongekiProfile.newPlayerRating / 1000 | number: '0.2-2'}}</td>
+                  </ng-template>
+                  <ng-template [ngIf]="compareVersion(ongekiProfile.lastRomVersion, '1.50.00', '<')">
+                    <td>{{ongekiProfile.playerRating / 100 | number: '1.2-2'}}</td>
+                  </ng-template>
                 </tr>
                 <tr>
                   <th>{{'DashboardPage.BattlePoint' | translate}}</th>
