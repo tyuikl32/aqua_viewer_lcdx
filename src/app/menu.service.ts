@@ -166,6 +166,18 @@ export class MenuService {
             displayCondition: DisplayCondition.HasProfile,
           },
           {
+            id: 8,
+            name: 'Circle',
+            url: 'mai2/circle',
+            displayCondition: DisplayCondition.HasProfile,
+          },
+          {
+            id: 9,
+            name: 'Festa',
+            url: 'mai2/festa',
+            displayCondition: DisplayCondition.HasProfile,
+          },
+          {
             id: 7,
             name: 'Rival',
             url: 'mai2/rival',
