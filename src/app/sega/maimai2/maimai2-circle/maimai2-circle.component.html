@@ -1,0 +1,411 @@
+<h1 class="page-heading">{{ "Maimai2.CirclePage.Title" | translate }}</h1>
+
+<h3 class="page-heading">已加入的Circle信息</h3>
+<div class="alert alert-info" *ngIf="!userCircleInfo?.joinedCircle">
+  你目前还没有加入任何Circle, 或者你可以新建Circle
+</div>
+<div *ngIf="userCircleInfo?.joinedCircle">
+  <div class="card mb-4">
+    <div class="card-body gap-2 d-grid">
+      <div class="d-block gap-2 d-flex align-items-center">
+        <div>
+          <!--
+          <img
+            class="song-jacket cover-full"
+            *ngIf="enableImages == true"
+            [src]="host + 'assets/mai2/jacket/UI_Jacket_' + getJacketId(item.musicId) + '.webp'"
+            (error)="imgError($event)"
+            #img alt="">
+            -->
+        </div>
+        <div class="d-grid gap-4 position-relative w-100">
+          <div class="overflow-hidden" style="text-overflow: ellipsis">
+            <h3 class="text-nowrap mb-2 fw-bold m-0">
+              {{ userCircleInfo?.joinedCircle?.circleName }}
+            </h3>
+            <div class="d-flex mb-1 align-items-baseline">
+              <span class="fw-bold fs-8 me-2">是否为用户Circle:</span>
+              <span>{{ userCircleInfo?.joinedCircle?.isPlace }}</span>
+            </div>
+            <div class="d-flex mb-1 align-items-baseline">
+              <span class="fw-bold fs-8 me-2">Circle段位:</span>
+              <span>{{ userCircleInfo?.joinedCircle?.circleClass }}</span>
+            </div>
+            <div class="d-flex mb-1 align-items-baseline">
+              <span class="fw-bold fs-8 me-2">是否公开:</span>
+              <span>{{ userCircleInfo?.joinedCircle?.isPublic }}</span>
+            </div>
+            <div class="d-flex mb-3 align-items-baseline">
+              <span class="fw-bold fs-8 me-2">PlaceId:</span>
+              <span>{{ userCircleInfo?.joinedCircle?.placeId }}</span>
+            </div>
+            <div class="d-flex mb-1 align-items-baseline">
+              <span class="fw-bold fs-8 me-2">玩家数据更新日期:</span>
+              <span>{{ userCircleInfo?.userCirclePointData?.aggrDate }}</span>
+            </div>
+            <div class="d-flex mb-1 align-items-baseline">
+              <span class="fw-bold fs-8 me-2">此玩家累计point (上月累计):</span>
+              <span
+                >{{ userCircleInfo?.userCirclePointData?.point }}pt ({{
+                  userCircleInfo?.userCirclePointRankingResult?.lastMonthPoint
+                }}pt)</span
+              >
+            </div>
+            <div class="d-flex mb-3 align-items-baseline">
+              <span class="fw-bold fs-8 me-2">此玩家上个月排名:</span>
+              <span>{{
+                userCircleInfo?.userCirclePointRankingResult
+                  ?.lastMonthCircleRank
+              }}</span>
+            </div>
+            <div
+              class="card d-flex"
+              *ngIf="userCircleInfo?.joinedCircle?.comment"
+            >
+              <div class="card-body">
+                <span class="comment-text">{{
+                  userCircleInfo?.joinedCircle?.comment
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="d-flex justify-content-between">
+        <div class="align-items-center d-flex">
+          {{ userCircleInfo?.userCircleData?.lastLoginDate }}
+        </div>
+        <div>
+          <button
+            class="btn btn-primary btn-sm horizon-margin"
+            (click)="copyCircleCode(userCircleInfo?.joinedCircle)"
+          >
+            复制CircleCode
+          </button>
+          <button
+            class="btn btn-danger btn-sm horizon-margin"
+            (click)="exitCircle()"
+            *ngIf="!userCircleInfo?.isCircleOwner"
+          >
+            退出此Circle圈子
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="userCircleInfo?.isCircleOwner">
+  <h3 class="page-heading">管理你的Circle</h3>
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="d-flex mb-2">
+        <div class="align-items-center d-flex">
+          <button
+            class="btn btn-danger btn-sm horizon-margin"
+            (click)="dissolveCircle()"
+          >
+            解散此Circle圈子
+          </button>
+        </div>
+        <div class="align-items-center d-flex">
+          <button
+            class="btn btn-warning btn-sm horizon-margin"
+            (click)="setIsPublic(true)"
+            *ngIf="!userCircleInfo?.joinedCircle?.isPublic"
+          >
+            公开此Circle圈子
+          </button>
+          <button
+            class="btn btn-warning btn-sm horizon-margin"
+            (click)="setIsPublic(false)"
+            *ngIf="userCircleInfo?.joinedCircle?.isPublic"
+          >
+            隐藏此Circle圈子
+          </button>
+        </div>
+      </div>
+      <div *ngIf="userCircleInfo?.joinedCircle">
+        <textarea
+          type="text"
+          class="form-control mb-2 mt-2 multi-line-ellipsis"
+          placeholder="comment"
+          rows="5"
+          [(ngModel)]="updateCommentStr"
+        >
+        </textarea>
+        <button
+          type="button"
+          class="btn btn-primary btn-sm horizon-margin"
+          (click)="updateComment()"
+        >
+          更新Comment
+        </button>
+
+        <h5 class="page-heading mt-5">Circle成员列表</h5>
+
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>昵称</th>
+              <th>Rating</th>
+              <th>积分</th>
+              <th>最后登录</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let member of circleMemberUserList">
+              <td>{{ member.userProfile.userName }}</td>
+              <td>
+                {{ member.userProfile.playerRating }}
+              </td>
+              <td>
+                <span *ngIf="member.userCirclePointData?.point"
+                  >{{ member.userCirclePointData?.point }}pt</span
+                >
+              </td>
+              <td>{{ member.userCircleData?.lastLoginDate }}</td>
+              <td>
+                <button
+                  class="btn btn-outline-danger btn-sm horizon-margin"
+                  (click)="kickUser(member.userCode)"
+                >
+                  踢出
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div
+          class="pagination justify-content-center d-flex align-items-center"
+        >
+          <li
+            class="page-item"
+            [class.disabled]="circleMemberUserListPage === 0"
+          >
+            <a class="page-link" (click)="prevCircleMemberUserListPage()"
+              >&nbsp;<&nbsp;</a
+            >
+          </li>
+          <span class="ml-2 mr-2"
+            >第 {{ circleMemberUserListPage + 1 }} 页 / 共
+            {{ Math.ceil(circleMemberUserListTotalCount / pageSize) }} 页</span
+          >
+          <li
+            class="page-item"
+            [class.disabled]="
+              (circleMemberUserListPage + 1) * pageSize >=
+              circleMemberUserListTotalCount
+            "
+          >
+            <a class="page-link" (click)="nextCircleMemberUserListPage()"
+              >&nbsp;>&nbsp;</a
+            >
+          </li>
+        </div>
+
+        <h5 class="page-heading mt-5">申请加入Circle列表</h5>
+
+        <div *ngIf="requestJoinUserListTotalCount > 0">
+          <table class="user-table">
+            <thead>
+              <tr>
+                <th>昵称</th>
+                <th>段位(class/grade)</th>
+                <th>Rating</th>
+                <th>上次登录时间</th>
+                <th>申请时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let userRequest of requestJoinUserList">
+                <td>{{ userRequest.userProfile.userName }}</td>
+                <td>
+                  {{ userRequest.userProfile.classRank }} /
+                  {{ userRequest.userProfile.gradeRank }}
+                </td>
+                <td>{{ userRequest.userProfile.playerRating }}</td>
+                <td>{{ userRequest.userProfile.lastPlayDate }}</td>
+                <td>{{ userRequest.requestTime }}</td>
+                <td>
+                  <button
+                    class="btn btn-outline-success btn-sm horizon-margin"
+                    (click)="approveUser(userRequest.userCode)"
+                  >
+                    批准
+                  </button>
+                  <button
+                    class="btn btn-outline-danger btn-sm horizon-margin"
+                    (click)="rejectUser(userRequest.userCode)"
+                  >
+                    拒绝
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div
+            class="pagination justify-content-center d-flex align-items-center"
+          >
+            <li
+              class="page-item"
+              [class.disabled]="requestJoinUserListPage === 0"
+            >
+              <a class="page-link" (click)="prevRequestJoinCircleListPage()"
+                >&nbsp;<&nbsp;</a
+              >
+            </li>
+            <span class="ml-2 mr-2"
+              >第 {{ requestJoinUserListPage + 1 }} 页 / 共
+              {{ Math.ceil(requestJoinUserListTotalCount / pageSize) }} 页</span
+            >
+            <li
+              class="page-item"
+              [class.disabled]="
+                (requestJoinUserListPage + 1) * pageSize >=
+                requestJoinUserListTotalCount
+              "
+            >
+              <a class="page-link" (click)="nextRequestJoinCircleListPage()"
+                >&nbsp;>&nbsp;</a
+              >
+            </li>
+          </div>
+        </div>
+
+        <div
+          class="alert alert-info"
+          *ngIf="requestJoinUserListTotalCount == 0"
+        >
+          暂无玩家申请加入
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">新建Circle</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body">
+    <label for="userInput" class="form-label">Circle名称:</label>
+    <input
+      id="userInput"
+      type="text"
+      class="form-control"
+      [(ngModel)]="createUserCircle.circleName"
+    />
+    <label for="userInput" class="form-label mt-2">Comment:</label>
+    <textarea
+      id="userInput"
+      type="text"
+      rows="5"
+      class="form-control multi-line-ellipsis"
+      [(ngModel)]="createUserCircle.comment"
+    ></textarea>
+    <div class="form-check mt-2">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [(ngModel)]="createUserCircle.isPublic"
+        id="checkDefault"
+      />
+      <label class="form-check-label" for="checkDefault"> 是否公开 </label>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="modal.close('cancel')"
+    >
+      取消
+    </button>
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="createCircle(); modal.close('ok')"
+    >
+      提交
+    </button>
+  </div>
+</ng-template>
+
+<h3 class="page-heading mt-4">公开的用户Circle列表</h3>
+<button
+  class="btn-sm btn btn-primary mb-4"
+  (click)="openCreateCircleDialog(content)"
+>
+  新建Circle
+</button>
+<div class="mb-4" *ngIf="publicUserCircleListTotalCount > 0">
+  <div class="row">
+    <div *ngFor="let circle of publicUserCircleList" class="col-md-6 mb-3">
+      <div class="card position-relative h-100">
+        <!-- 右上角申请加入按钮 -->
+        <button
+          class="btn btn-primary btn-sm position-absolute top-0 end-0 m-2"
+          (click)="joinCircle(circle)"
+          *ngIf="!userCircleInfo?.joinedCircle"
+        >
+          申请加入
+        </button>
+
+        <div class="card-body">
+          <h5 class="card-title">{{ circle.circleName }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">
+            Place ID: {{ circle.placeId }}
+          </h6>
+          <h6 class="card-subtitle mb-2 text-muted">
+            Class: {{ circle.circleClass }}
+          </h6>
+          <div class="card" *ngIf="circle.comment">
+            <div class="card-body">
+              <span class="comment-text">{{ circle.comment }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pagination justify-content-center d-flex align-items-center">
+    <li class="page-item" [class.disabled]="publicUserCircleListPage === 0">
+      <a class="page-link" (click)="prevPublicUserCircleListPage()"
+        >&nbsp;<&nbsp;</a
+      >
+    </li>
+    <span class="ml-2 mr-2"
+      >第 {{ publicUserCircleListPage + 1 }} 页 / 共
+      {{ Math.ceil(publicUserCircleListTotalCount / pageSize) }} 页</span
+    >
+    <li
+      class="page-item"
+      [class.disabled]="
+        (publicUserCircleListPage + 1) * pageSize >=
+        publicUserCircleListTotalCount
+      "
+    >
+      <a class="page-link" (click)="nextPublicUserCircleListPage()"
+        >&nbsp;>&nbsp;</a
+      >
+    </li>
+  </div>
+</div>
+
+<div class="alert alert-info" *ngIf="publicUserCircleListTotalCount == 0">
+  暂无可加入的Circle
+</div>

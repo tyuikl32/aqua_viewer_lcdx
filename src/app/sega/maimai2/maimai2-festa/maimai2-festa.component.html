@@ -1,0 +1,289 @@
+<h1 class="page-heading">{{ "Maimai2.FestaPage.Title" | translate }}</h1>
+
+<div class="alert alert-info" *ngIf="!userCircleInfo?.joinedCircle">
+  你目前还没有加入任何Circle, 无法查看和参与当前Festa活动
+</div>
+
+<div *ngIf="userCircleInfo?.joinedCircle">
+  <h3 class="page-heading" *ngIf="gameFestaInfo?.gameFesta">
+    <span>当前进行的Festa活动</span>
+    <div class="card shadow mb-4 mt-4">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h5 class="mb-0">
+          {{ gameFestaInfo.gameFesta.name }} -
+          {{ gameFestaInfo.gameFesta.festaTitle }}
+        </h5>
+        <span
+          class="badge"
+          [style.backgroundColor]="
+            getStatePhaseColor(gameFestaInfo.gameFesta.festaPhaseState)
+          "
+          >{{
+            getStatePhaseName(gameFestaInfo.gameFesta.festaPhaseState)
+          }}</span
+        >
+      </div>
+
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p>
+              <strong>版本:</strong>
+              {{ gameFestaInfo.gameFesta.releaseTagName }}
+            </p>
+            <p>
+              <strong>报名选队时间:</strong>
+              {{
+                getEventTimeString(
+                  gameFestaInfo.gameFesta.netOpenName.replace("Net", "")
+                )
+              }}
+            </p>
+            <p>
+              <strong>正式开始时间:</strong>
+              {{ getEventTimeString(gameFestaInfo.gameFesta.openEventId) }}
+            </p>
+            <p>
+              <strong>结束结算时间:</strong>
+              {{ getEventTimeString(gameFestaInfo.gameFesta.resultEventId) }}
+            </p>
+            <p>
+              <strong>奖励边界:</strong>
+              {{ gameFestaInfo.gameFesta.rewardBorder }}
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p>
+              <strong>目前是否能报名:</strong>
+              {{ !gameFestaInfo.gameFestaData.isCircleJoinNotAllowed }}
+            </p>
+            <p>
+              <strong>目前是否为拉力阶段:</strong>
+              {{ gameFestaInfo.gameFestaData.isRallyPeriod }}
+            </p>
+          </div>
+        </div>
+        <hr />
+
+        <div
+          *ngIf="
+            gameFestaInfo.gameFesta.festaPhaseState.toLowerCase() == 'voteteam'
+          "
+        >
+          <strong>队伍投票</strong>
+          <ul class="list-group mt-2">
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+              *ngFor="let side of gameFestaInfo.gameFestaData.festaSideDataList"
+            >
+              <span [style.color]="getFestaSideColor(side.festaSideId)">
+                {{ getSideName(gameFestaInfo.gameFesta, side.festaSideId) }}
+              </span>
+              <button
+                (click)="
+                  voteSide(
+                    gameFestaInfo.gameFesta.openEventId,
+                    side.festaSideId
+                  )
+                "
+                class="btn btn-sm btn-primary"
+              >
+                投票
+              </button>
+            </li>
+          </ul>
+          <p *ngIf="getVotedFestaSideId() > 0" class="mt-2">
+            你已选择队伍:
+            <span [style.color]="getFestaSideColor(getVotedFestaSideId())">
+              {{
+                getSideName(gameFestaInfo.gameFesta, getVotedFestaSideId())
+              }}</span
+            >
+          </p>
+          <p style="color: red" *ngIf="getVotedFestaSideId() <= 0" class="mt-2">
+            你目前还没投票选择队伍，请先投票，否则无法参与活动后续内容
+          </p>
+        </div>
+
+        <div
+          *ngIf="
+            gameFestaInfo.gameFesta.festaPhaseState.toLowerCase() != 'voteteam'
+          "
+        >
+          <h6>队伍排名</h6>
+          <div class="progress" style="height: 30px">
+            <div class="festa-progress">
+              <ng-container
+                *ngFor="
+                  let side of gameFestaInfo.gameFestaData.festaSideDataList;
+                  let i = index
+                "
+              >
+                <div
+                  class="festa-progress-segment"
+                  [style.flex]="side.advantagePercent"
+                  [style.backgroundColor]="getFestaSideColor(side.festaSideId)"
+                >
+                  <span>{{ side.advantagePercent }}%</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+          <ul class="list-group mt-2">
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+              *ngFor="let side of gameFestaInfo.gameFestaData.festaSideDataList"
+            >
+              {{ formatRank(side.rankInPlace) }}
+              {{ getSideName(gameFestaInfo.gameFesta, side.festaSideId) }}
+              <span>{{ side.advantagePercent }}% </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </h3>
+</div>
+
+<div *ngIf="gameFestaInfo?.gameRsultFesta">
+  <h3 class="page-heading">最近结束的Festa活动</h3>
+  <div class="card shadow mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">
+        {{ gameFestaInfo.gameRsultFesta.name }} -
+        {{ gameFestaInfo.gameRsultFesta.festaTitle }}
+      </h5>
+      <span
+        class="badge"
+        [style.backgroundColor]="
+          getStatePhaseColor(gameFestaInfo.gameRsultFesta.festaPhaseState)
+        "
+        >{{
+          getStatePhaseName(gameFestaInfo.gameRsultFesta.festaPhaseState)
+        }}</span
+      >
+    </div>
+
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <p>
+            <strong>版本:</strong>
+            {{ gameFestaInfo.gameRsultFesta.releaseTagName }}
+          </p>
+          <p>
+            <strong>报名选队时间:</strong>
+            {{
+              getEventTimeString(
+                gameFestaInfo.gameRsultFesta.netOpenName.replace("Net", "")
+              )
+            }}
+          </p>
+          <p>
+            <strong>正式开始时间:</strong>
+            {{ getEventTimeString(gameFestaInfo.gameRsultFesta.openEventId) }}
+          </p>
+          <p>
+            <strong>结束结算时间:</strong>
+            {{ getEventTimeString(gameFestaInfo.gameRsultFesta.resultEventId) }}
+          </p>
+          <p>
+            <strong>奖励边界:</strong>
+            {{ gameFestaInfo.gameRsultFesta.rewardBorder }}
+          </p>
+        </div>
+      </div>
+
+      <hr />
+
+      <div>
+        <h6>最终队伍排名</h6>
+        <div class="progress" style="height: 30px">
+          <div class="festa-progress">
+            <ng-container
+              *ngFor="
+                let side of gameFestaInfo.gameResultFestaData
+                  .resultFestaSideDataList;
+                let i = index
+              "
+            >
+              <div
+                class="festa-progress-segment"
+                [style.flex]="side.advantagePercent"
+                [style.backgroundColor]="getFestaSideColor(side.festaSideId)"
+              >
+                <span>{{ side.advantagePercent }}%</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <ul class="list-group mt-2">
+          <li
+            class="list-group-item d-flex justify-content-between align-items-center"
+            *ngFor="
+              let side of gameFestaInfo.gameResultFestaData
+                .resultFestaSideDataList
+            "
+          >
+            {{ formatRank(side.rank) }}
+            {{ getSideName(gameFestaInfo.gameRsultFesta, side.festaSideId) }}
+            <span>{{ side.advantagePercent }}% </span>
+          </li>
+        </ul>
+      </div>
+
+      <hr />
+
+      <div class="card">
+        <div class="card-header">
+          <span
+            >Circle情况 - {{ userResultFestaInfo?.circle?.circleName }}</span
+          >
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p>
+                <strong>所属队伍与排名:</strong>
+                <span
+                  [style.color]="
+                    getFestaSideColor(
+                      userResultFestaInfo.userResultFestaData.festaSideId
+                    )
+                  "
+                >
+                  {{
+                    getSideName(
+                      gameFestaInfo.gameRsultFesta,
+                      userResultFestaInfo.userResultFestaData.festaSideId
+                    )
+                  }}
+                  {{
+                    formatRank(
+                      userResultFestaInfo.userResultFestaData
+                        .circleRankInFestaSide
+                    )
+                  }}</span
+                >
+              </p>
+              <p>
+                <strong>队伍总分数:</strong>
+                {{
+                  userResultFestaInfo.userResultFestaData.circleTotalFestaPoint
+                }}
+              </p>
+            </div>
+            <div class="col-md-6">
+              <p>
+                <strong>玩家分数:</strong>
+                {{ userResultFestaInfo.userFestaData.currentTotalFestaPoint }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
