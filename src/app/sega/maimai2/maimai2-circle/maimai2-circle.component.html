@@ -2,7 +2,7 @@
 
 <h3 class="page-heading">已加入的Circle信息</h3>
 <div class="alert alert-info" *ngIf="!userCircleInfo?.joinedCircle">
-  你目前还没有加入任何Circle
+  你目前还没有加入任何Circle, 或者你可以新建Circle
 </div>
 <div *ngIf="userCircleInfo?.joinedCircle">
   <div class="card mb-4">
@@ -289,7 +289,69 @@
   </div>
 </div>
 
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">新建Circle</h4>
+    <button
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      (click)="modal.dismiss('Cross click')"
+    ></button>
+  </div>
+
+  <div class="modal-body">
+    <label for="userInput" class="form-label">Circle名称:</label>
+    <input
+      id="userInput"
+      type="text"
+      class="form-control"
+      [(ngModel)]="createUserCircle.circleName"
+    />
+    <label for="userInput" class="form-label mt-2">Comment:</label>
+    <textarea
+      id="userInput"
+      type="text"
+      rows="5"
+      class="form-control multi-line-ellipsis"
+      [(ngModel)]="createUserCircle.comment"
+    ></textarea>
+    <div class="form-check mt-2">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        [(ngModel)]="createUserCircle.isPublic"
+        id="checkDefault"
+      />
+      <label class="form-check-label" for="checkDefault"> 是否公开 </label>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="modal.close('cancel')"
+    >
+      取消
+    </button>
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="createCircle(); modal.close('ok')"
+    >
+      提交
+    </button>
+  </div>
+</ng-template>
+
 <h3 class="page-heading mt-4">公开的用户Circle列表</h3>
+<button
+  class="btn-sm btn btn-primary mb-4"
+  (click)="openCreateCircleDialog(content)"
+>
+  新建Circle
+</button>
 <div class="mb-4" *ngIf="publicUserCircleListTotalCount > 0">
   <div class="row">
     <div *ngFor="let circle of publicUserCircleList" class="col-md-6 mb-3">

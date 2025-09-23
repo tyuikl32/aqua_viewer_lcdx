@@ -6,7 +6,7 @@ import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { environment } from '../../../../environments/environment';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { UserService } from 'src/app/user.service';
 import { Maimai2Circle } from '../model/Maimai2Circle';
 import { Page } from 'src/app/model/Page';
@@ -30,6 +30,7 @@ export class Maimai2CircleComponent implements OnInit {
     private api: ApiService,
     private userService: UserService,
     private messageService: MessageService,
+    private modalService: NgbModal,
     protected clipboard: Clipboard
   ) {
   }
@@ -56,6 +57,8 @@ export class Maimai2CircleComponent implements OnInit {
   updateCommentStr: string;
 
   pageSize: number = 10
+
+  createUserCircle: Maimai2Circle;
 
   ngOnInit() {
     this.aimeId = String(this.userService.currentUser.defaultCard.extId);
@@ -292,6 +295,32 @@ export class Maimai2CircleComponent implements OnInit {
       (error: string) => {
         this.messageService.notice(error);
         console.error(`updateCircle() failed, error = ${error}`);
+        return of({ data: [], error: true });
+      }
+    );
+  }
+
+  openCreateCircleDialog(content: any) {
+    if (!this.createUserCircle)
+      this.createUserCircle = {} as any;
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
+  }
+
+  createCircle() {
+    const param = new HttpParams().set('aimeId', this.aimeId);
+    this.api.post('api/game/maimai2/createCircle', this.createUserCircle, param).pipe().subscribe(
+      (data: ApiResponse<boolean>) => {
+        if (data.data) {
+          this.messageService.toastService.show("新建Circle成功");
+          this.loadUserCircleInfo(); // refresh
+        }
+        else
+          this.messageService.toastService.show("新建Circle失败");
+      }
+      ,
+      (error: string) => {
+        this.messageService.notice(error);
+        console.error(`createCircle() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
     );
