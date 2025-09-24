@@ -18,6 +18,7 @@ import { Maimai2UserCircleData } from '../model/Maimai2UserCircleData';
 import { Maimai2CircleMemberInfo } from '../model/Maimai2CircleMemberInfo';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { json } from 'stream/consumers';
+import { DialogService } from 'src/app/dialog.service';
 
 @Component({
   selector: 'app-maimai2-circle',
@@ -31,6 +32,7 @@ export class Maimai2CircleComponent implements OnInit {
     private userService: UserService,
     private messageService: MessageService,
     private modalService: NgbModal,
+    private dialogService: DialogService,
     protected clipboard: Clipboard
   ) {
   }
@@ -202,9 +204,12 @@ export class Maimai2CircleComponent implements OnInit {
     );
   }
 
-  kickUser(userCode: string) {
-    const param = new HttpParams().set('aimeId', this.aimeId).set('userCode', userCode);
-    this.api.post('api/game/maimai2/deleteUserToCircle', param).pipe().subscribe(
+  async kickUser(memberInfo: Maimai2CircleMemberInfo) {
+    if (!await this.dialogService.show("警告", `是否踢出用户${memberInfo?.userProfile?.userName}?`))
+      return;
+
+    const param = new HttpParams().set('aimeId', this.aimeId).set('userCode', memberInfo?.userCode);
+    await this.api.post('api/game/maimai2/deleteUserToCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
         if (data.data) {
           this.messageService.toastService.show("踢出玩家成功");
@@ -273,7 +278,7 @@ export class Maimai2CircleComponent implements OnInit {
     this.updateCircle(copyCircle);
   }
 
-  updateComment() {
+  async updateComment() {
     let copyCircle: Maimai2Circle = JSON.parse(JSON.stringify(this.userCircleInfo.joinedCircle));
     copyCircle.comment = this.updateCommentStr;
 
@@ -326,9 +331,11 @@ export class Maimai2CircleComponent implements OnInit {
     );
   }
 
-  exitCircle() {
+  async exitCircle() {
+    if (!await this.dialogService.show("警告", `是否退出Circle圈子${this.userCircleInfo?.joinedCircle?.circleName}?`))
+      return;
     const param = new HttpParams().set('aimeId', this.aimeId);
-    this.api.post('api/game/maimai2/exitCircle', param).pipe().subscribe(
+    await this.api.post('api/game/maimai2/exitCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
         if (data.data) {
           this.messageService.toastService.show("退出Circle成功");
@@ -346,7 +353,9 @@ export class Maimai2CircleComponent implements OnInit {
     );
   }
 
-  dissolveCircle() {
+  async dissolveCircle() {
+    if (!await this.dialogService.show("警告", `是否解散Circle圈子${this.userCircleInfo?.joinedCircle?.circleName}?`))
+      return;
     const param = new HttpParams().set('aimeId', this.aimeId);
     this.api.post('api/game/maimai2/dissolveCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
