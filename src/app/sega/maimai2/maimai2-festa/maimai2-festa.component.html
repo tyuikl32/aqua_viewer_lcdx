@@ -35,15 +35,11 @@
             </p>
             <p>
               <strong>报名选队时间:</strong>
-              {{
-                getEventTimeString(
-                  gameFestaInfo.gameFesta.netOpenName.replace("Net", "")
-                )
-              }}
+              {{ getEventTimeString(gameFestaInfo.gameFesta.openEventId) }}
             </p>
             <p>
               <strong>正式开始时间:</strong>
-              {{ getEventTimeString(gameFestaInfo.gameFesta.openEventId) }}
+              {{ getEventStartTimeString(gameFestaInfo.gameFesta.openEventId) }}
             </p>
             <p>
               <strong>结束结算时间:</strong>
@@ -175,15 +171,11 @@
           </p>
           <p>
             <strong>报名选队时间:</strong>
-            {{
-              getEventTimeString(
-                gameFestaInfo.gameRsultFesta.netOpenName.replace("Net", "")
-              )
-            }}
+            {{ getEventTimeString(gameFestaInfo.gameRsultFesta.openEventId) }}
           </p>
           <p>
             <strong>正式开始时间:</strong>
-            {{ getEventTimeString(gameFestaInfo.gameRsultFesta.openEventId) }}
+            {{ getEventStartTimeString(gameFestaInfo.gameFesta.openEventId) }}
           </p>
           <p>
             <strong>结束结算时间:</strong>

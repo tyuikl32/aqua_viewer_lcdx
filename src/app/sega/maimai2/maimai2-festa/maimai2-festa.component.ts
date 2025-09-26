@@ -73,6 +73,15 @@ export class Maimai2FestaComponent implements OnInit {
     );
   }
 
+  getEventStartTimeString(openEventId: string) {
+    let year = parseInt(openEventId.substring(0, 2), 10);
+    let month = parseInt(openEventId.substring(2, 4), 10) - 1;
+    let day = parseInt(openEventId.substring(4, 6), 10);
+
+    let result = new Date(new Date(2000 + year, month, day).getTime() + 7 * 24 * 60 * 60 * 1000);
+    return `${result.getFullYear()}-${(result.getMonth() + 1).toString().padStart(2, '0')}-${result.getDate().toString().padStart(2, '0')}`;
+  }
+
   loadGameFestaInfo() {
     const param = new HttpParams().set('aimeId', this.aimeId);
     this.api.get('api/game/maimai2/gameFestaInfo', param).pipe().subscribe(
@@ -119,7 +128,7 @@ export class Maimai2FestaComponent implements OnInit {
       async (data: ApiResponse<boolean>) => {
         if (data.data) {
           this.messageService.toastService.show("队伍投票成功");
-          
+
           if (this.gameFestaInfo.gameFesta)
             this.userFestaInfo = await this.loadUserFestaInfo(this.gameFestaInfo.gameFesta);
         }
