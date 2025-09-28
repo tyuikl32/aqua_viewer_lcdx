@@ -169,9 +169,11 @@
                       )
                     }}
                     {{
-                      formatRank(
-                        userFestaInfo.userFestaData.circleRankInFestaSide
-                      )
+                      userFestaInfo.userFestaData.circleRankInFestaSide === 0
+                        ? ""
+                        : formatRank(
+                            userFestaInfo.userFestaData.circleRankInFestaSide
+                          )
                     }}</span
                   >
                 </p>
@@ -212,9 +214,9 @@
                   <div
                     class="rank"
                     [ngClass]="{
-                      gold: item.rank === 0,
-                      silver: item.rank === 1,
-                      bronze: item.rank === 2
+                      gold: item.rank === 1,
+                      silver: item.rank === 2,
+                      bronze: item.rank === 3
                     }"
                   >
                     {{ formatRank(item.rank) }}
@@ -229,9 +231,9 @@
                   <span
                     class="score"
                     [ngClass]="{
-                      gold: item.rank === 0,
-                      silver: item.rank === 1,
-                      bronze: item.rank === 2
+                      gold: item.rank === 1,
+                      silver: item.rank === 2,
+                      bronze: item.rank === 3
                     }"
                   >
                     {{ item.circleFestaData.totalPoint }} fp</span
@@ -251,9 +253,9 @@
                   <div
                     class="rank"
                     [ngClass]="{
-                      gold: item.rank === 0,
-                      silver: item.rank === 1,
-                      bronze: item.rank === 2
+                      gold: item.rank === 1,
+                      silver: item.rank === 2,
+                      bronze: item.rank === 3
                     }"
                   >
                     {{ formatRank(item.rank) }}
@@ -268,9 +270,9 @@
                   <span
                     class="score"
                     [ngClass]="{
-                      gold: item.rank === 0,
-                      silver: item.rank === 1,
-                      bronze: item.rank === 2
+                      gold: item.rank === 1,
+                      silver: item.rank === 2,
+                      bronze: item.rank === 3
                     }"
                   >
                     {{ item.circleFestaData.totalPoint }} fp</span
@@ -395,10 +397,13 @@
                     )
                   }}
                   {{
-                    formatRank(
-                      userResultFestaInfo.userResultFestaData
-                        .circleRankInFestaSide
-                    )
+                    userResultFestaInfo.userResultFestaData
+                      .circleRankInFestaSide === 0
+                      ? ""
+                      : formatRank(
+                          userResultFestaInfo.userResultFestaData
+                            .circleRankInFestaSide
+                        )
                   }}</span
                 >
               </p>

@@ -254,13 +254,16 @@ export class Maimai2FestaComponent implements OnInit {
   }
 
   formatRank(rank: number) {
+    if (rank == 0)
+      return "--";
+
     var postfix = "th";
-    rank++;
     switch (rank) {
       case 1: { postfix = "st"; break; };
       case 2: { postfix = "nd"; break; };
       case 3: { postfix = "rd"; break; };
     }
+    
     return rank.toString() + postfix;
   }
 
