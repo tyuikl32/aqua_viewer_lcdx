@@ -11,7 +11,7 @@ import { UserService } from 'src/app/user.service';
 import { Maimai2Circle } from '../model/Maimai2Circle';
 import { Page } from 'src/app/model/Page';
 import { error } from 'console';
-import { ApiResponse } from 'src/app/model/ApiResponse';
+import { ApiResponse, isOk } from 'src/app/model/ApiResponse';
 import { Maimai2UserCircleInfo } from '../model/Maimai2UserCircleInfo';
 import { Maimai2RequestJoinCircleUser } from '../model/Maimai2RequestJoinCircleUser';
 import { Maimai2UserCircleData } from '../model/Maimai2UserCircleData';
@@ -126,9 +126,13 @@ export class Maimai2CircleComponent implements OnInit {
     const param = new HttpParams().set('aimeId', this.aimeId);
     this.api.get('api/game/maimai2/userCircleInfo', param).pipe().subscribe(
       (data: ApiResponse<Maimai2UserCircleInfo>) => {
-        this.userCircleInfo = data.data;
-        this.updateCommentStr = data.data?.joinedCircle?.comment;
-        console.log(`loadUserCircleInfo() loaded successfully`);
+        if (isOk(data)) {
+          this.userCircleInfo = data.data;
+          this.updateCommentStr = data.data?.joinedCircle?.comment;
+          console.log(`loadUserCircleInfo() loaded successfully`);
+        } else {
+          this.toastShowFailedMessage(data, "加载用户Circle信息失败");
+        }
       }
       ,
       (error: string) => {
@@ -191,10 +195,10 @@ export class Maimai2CircleComponent implements OnInit {
     const param = new HttpParams().set('aimeId', this.aimeId).set('circleId', circle.circleId);
     this.api.post('api/game/maimai2/requestJoinCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
-        if (data.data)
+        if (isOk(data))
           this.messageService.toastService.show("申请加入Circle成功, 等待对方同意");
         else
-          this.messageService.toastService.show("申请加入Circle失败");
+          this.toastShowFailedMessage(data, "申请加入Circle失败");
       }
       ,
       (error: string) => {
@@ -212,13 +216,13 @@ export class Maimai2CircleComponent implements OnInit {
     const param = new HttpParams().set('aimeId', this.aimeId).set('userCode', memberInfo?.userCode);
     await this.api.post('api/game/maimai2/deleteUserToCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
-        if (data.data) {
+        if (isOk(data)) {
           this.messageService.toastService.show("踢出玩家成功");
           //refresh
           this.loadCircleMemberUserList(this.circleMemberUserListPage);
         }
         else
-          this.messageService.toastService.show("踢出玩家失败");
+          this.toastShowFailedMessage(data, "踢出玩家失败");
       }
       ,
       (error: string) => {
@@ -233,14 +237,14 @@ export class Maimai2CircleComponent implements OnInit {
     const param = new HttpParams().set('aimeId', this.aimeId).set('userCode', userCode);
     this.api.post('api/game/maimai2/approveUserJoinCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
-        if (data.data) {
+        if (isOk(data)) {
           this.messageService.toastService.show("同意玩家加入Circle成功");
           //refresh
           this.loadRequestJoinCircleList(this.requestJoinUserListPage);
           this.loadCircleMemberUserList(this.circleMemberUserListPage);
         }
         else
-          this.messageService.toastService.show("同意玩家加入Circle失败");
+          this.toastShowFailedMessage(data, "同意玩家加入Circle失败");
       }
       ,
       (error: string) => {
@@ -255,13 +259,13 @@ export class Maimai2CircleComponent implements OnInit {
     const param = new HttpParams().set('aimeId', this.aimeId).set('userCode', userCode);
     this.api.post('api/game/maimai2/rejectUserJoinCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
-        if (data.data) {
+        if (isOk(data)) {
           this.messageService.toastService.show("已拒绝玩家加入Circle");
           //refresh
           this.loadRequestJoinCircleList(this.requestJoinUserListPage);
         }
         else
-          this.messageService.toastService.show("拒绝玩家加入Circle失败");
+          this.toastShowFailedMessage(data, "拒绝玩家加入Circle失败");
       }
       ,
       (error: string) => {
@@ -271,17 +275,17 @@ export class Maimai2CircleComponent implements OnInit {
       }
     );
   }
-  
+
   updateCircle() {
     const param = new HttpParams().set('aimeId', this.aimeId);
     this.api.post('api/game/maimai2/updateCircle', this.tmpUserCircle, param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
-        if (data.data) {
+        if (isOk(data)) {
           this.messageService.toastService.show("更新Circle信息成功");
           this.loadUserCircleInfo(); // refresh
         }
         else
-          this.messageService.toastService.show("更新Circle信息失败");
+          this.toastShowFailedMessage(data, "更新Circle信息失败");
       }
       ,
       (error: string) => {
@@ -315,12 +319,12 @@ export class Maimai2CircleComponent implements OnInit {
     const param = new HttpParams().set('aimeId', this.aimeId);
     this.api.post('api/game/maimai2/createCircle', this.tmpUserCircle, param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
-        if (data.data) {
+        if (isOk(data)) {
           this.messageService.toastService.show("新建Circle成功");
           this.loadUserCircleInfo(); // refresh
         }
         else
-          this.messageService.toastService.show("新建Circle失败");
+          this.toastShowFailedMessage(data, "新建Circle失败");
       }
       ,
       (error: string) => {
@@ -337,12 +341,12 @@ export class Maimai2CircleComponent implements OnInit {
     const param = new HttpParams().set('aimeId', this.aimeId);
     await this.api.post('api/game/maimai2/exitCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
-        if (data.data) {
+        if (isOk(data)) {
           this.messageService.toastService.show("退出Circle成功");
           this.loadUserCircleInfo(); // refresh
         }
         else
-          this.messageService.toastService.show("退出Circle失败");
+          this.toastShowFailedMessage(data, "退出Circle失败");
       }
       ,
       (error: string) => {
@@ -359,12 +363,12 @@ export class Maimai2CircleComponent implements OnInit {
     const param = new HttpParams().set('aimeId', this.aimeId);
     this.api.post('api/game/maimai2/dissolveCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
-        if (data.data) {
+        if (isOk(data)) {
           this.messageService.toastService.show("解散Circle成功");
           this.loadUserCircleInfo(); // refresh
         }
         else
-          this.messageService.toastService.show("解散Circle失败");
+          this.toastShowFailedMessage(data, "解散Circle失败");
       }
       ,
       (error: string) => {
@@ -373,6 +377,11 @@ export class Maimai2CircleComponent implements OnInit {
         return of({ data: [], error: true });
       }
     );
+  }
+
+  toastShowFailedMessage(apiResp: ApiResponse<any>, contentPrefix: string) {
+    var msg = `${contentPrefix}: [${apiResp?.status?.code}] ${apiResp?.status?.message}`;
+    this.messageService.toastService.show(msg);
   }
 
   protected readonly length = length;
