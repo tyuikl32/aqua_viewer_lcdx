@@ -60,7 +60,8 @@ export class Maimai2CircleComponent implements OnInit {
 
   pageSize: number = 10
 
-  createUserCircle: Maimai2Circle;
+  isModify = false;
+  tmpUserCircle: Maimai2Circle;
 
   ngOnInit() {
     this.aimeId = String(this.userService.currentUser.defaultCard.extId);
@@ -270,24 +271,10 @@ export class Maimai2CircleComponent implements OnInit {
       }
     );
   }
-
-  setIsPublic(isPublic: boolean) {
-    let copyCircle: Maimai2Circle = JSON.parse(JSON.stringify(this.userCircleInfo.joinedCircle));
-    copyCircle.isPublic = isPublic;
-
-    this.updateCircle(copyCircle);
-  }
-
-  async updateComment() {
-    let copyCircle: Maimai2Circle = JSON.parse(JSON.stringify(this.userCircleInfo.joinedCircle));
-    copyCircle.comment = this.updateCommentStr;
-
-    this.updateCircle(copyCircle);
-  }
-
-  updateCircle(circle: Maimai2Circle) {
+  
+  updateCircle() {
     const param = new HttpParams().set('aimeId', this.aimeId);
-    this.api.post('api/game/maimai2/updateCircle', circle, param).pipe().subscribe(
+    this.api.post('api/game/maimai2/updateCircle', this.tmpUserCircle, param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
         if (data.data) {
           this.messageService.toastService.show("更新Circle信息成功");
@@ -306,14 +293,27 @@ export class Maimai2CircleComponent implements OnInit {
   }
 
   openCreateCircleDialog(content: any) {
-    if (!this.createUserCircle)
-      this.createUserCircle = {} as any;
+    this.isModify = false;
+    this.tmpUserCircle = {} as any;
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
+  }
+
+  openModifyCircleDialog(content: any) {
+    this.isModify = true;
+    this.tmpUserCircle = JSON.parse(JSON.stringify(this.userCircleInfo.joinedCircle));
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' });
+  }
+
+  processComfirmButton() {
+    if (this.isModify)
+      this.updateCircle();
+    else
+      this.createCircle();
   }
 
   createCircle() {
     const param = new HttpParams().set('aimeId', this.aimeId);
-    this.api.post('api/game/maimai2/createCircle', this.createUserCircle, param).pipe().subscribe(
+    this.api.post('api/game/maimai2/createCircle', this.tmpUserCircle, param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
         if (data.data) {
           this.messageService.toastService.show("新建Circle成功");

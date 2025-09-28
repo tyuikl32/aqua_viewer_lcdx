@@ -8,4 +8,5 @@ export interface Maimai2Circle {
   aggrDate: string;
   circleCode: string;
   comment: string;
+  isAllowAnyoneJoin: boolean;
 }
