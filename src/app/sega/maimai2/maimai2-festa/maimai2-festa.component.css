@@ -119,3 +119,39 @@
   font-size: 0.85rem;
   font-weight: bold;
 }
+.rank-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* 左右自适应，中间填充 */
+  gap: 8px;
+  padding: 4px 0;
+  align-items: center;
+}
+
+.rank {
+  text-align: left;
+  font-weight: bold;
+  min-width: 2em;
+}
+
+.circle-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score {
+  text-align: right;
+  font-weight: bold;
+  min-width: 4em;
+}
+
+/* 排名前三颜色 */
+.gold {
+  color: #FFD700; /* 金色 */
+}
+.silver {
+  color: #C0C0C0; /* 银色 */
+}
+.bronze {
+  color: #CD7F32; /* 铜色 */
+}

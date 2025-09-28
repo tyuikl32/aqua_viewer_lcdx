@@ -6,7 +6,9 @@
 
 <div *ngIf="userCircleInfo?.joinedCircle">
   <h3 class="page-heading" *ngIf="gameFestaInfo?.gameFesta">
-    <span>当前进行的Festa活动</span>
+    <span
+      >当前进行的Festa活动 <small style="color: gray">*每天7点更新</small></span
+    >
     <div class="card shadow mb-4 mt-4">
       <div
         class="card-header d-flex justify-content-between align-items-center"
@@ -47,7 +49,7 @@
             </p>
             <p>
               <strong>奖励边界:</strong>
-              {{ gameFestaInfo.gameFesta.rewardBorder }}
+              {{ gameFestaInfo.gameFesta.rewardBorder }} fp
             </p>
           </div>
           <div class="col-md-6">
@@ -103,11 +105,7 @@
           </p>
         </div>
 
-        <div
-          *ngIf="
-            gameFestaInfo.gameFesta.festaPhaseState.toLowerCase() != 'voteteam'
-          "
-        >
+        <div class="mt-2">
           <h6>队伍排名</h6>
           <div class="progress" style="height: 30px">
             <div class="festa-progress">
@@ -132,11 +130,155 @@
               class="list-group-item d-flex justify-content-between align-items-center"
               *ngFor="let side of gameFestaInfo.gameFestaData.festaSideDataList"
             >
-              {{ formatRank(side.rankInPlace) }}
-              {{ getSideName(gameFestaInfo.gameFesta, side.festaSideId) }}
+              <span>
+                {{ formatRank(side.rankInPlace) }}
+                <span [style.color]="getFestaSideColor(side.festaSideId)">
+                  {{ getSideName(gameFestaInfo.gameFesta, side.festaSideId) }}
+                </span></span
+              >
               <span>{{ side.advantagePercent }}% </span>
             </li>
           </ul>
+        </div>
+
+        <div class="card mt-4" *ngIf="userFestaInfo?.userFestaData">
+          <div class="card-header">
+            <span
+              >玩家与Circle情况 -
+              {{ userFestaInfo?.userFestaData?.circleName }}</span
+            >
+          </div>
+          <div class="card-body" *ngIf="userFestaInfo">
+            <div class="row">
+              <div class="col-md-6">
+                <p>
+                  <strong>placeId:</strong>
+                  {{ userFestaInfo?.userFestaData?.placeId }}
+                </p>
+                <p>
+                  <strong>所属队伍与队内排名:</strong>
+                  <span
+                    [style.color]="
+                      getFestaSideColor(userFestaInfo.userFestaData.festaSideId)
+                    "
+                  >
+                    {{
+                      getSideName(
+                        gameFestaInfo.gameFesta,
+                        userFestaInfo.userFestaData.festaSideId
+                      )
+                    }}
+                    {{
+                      formatRank(
+                        userFestaInfo.userFestaData.circleRankInFestaSide
+                      )
+                    }}</span
+                  >
+                </p>
+                <p>
+                  <strong>Circle总分数:</strong>
+                  {{ userFestaInfo.userFestaData.circleTotalFestaPoint }} fp
+                </p>
+              </div>
+              <div class="col-md-6">
+                <p>
+                  <strong>玩家分数:</strong>
+                  {{ userFestaInfo.userFestaData.currentTotalFestaPoint }}
+                  fp
+                </p>
+                <p>
+                  <strong>奖励还需分数:</strong>
+                  {{ userFestaInfo.userFestaData.receivedRewardBorder }}
+                  fp
+                </p>
+                <p>
+                  <strong>已领奖励:</strong>
+                  {{ userFestaInfo.userFestaData.participationRewardGet }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-md-6">
+            <div class="card" *ngIf="sameSideCircleRankInfoList?.length > 0">
+              <div class="card-header"><span>同队排行</span></div>
+              <div class="card-body">
+                <div
+                  *ngFor="let item of sameSideCircleRankInfoList"
+                  class="rank-row"
+                >
+                  <div
+                    class="rank"
+                    [ngClass]="{
+                      gold: item.rank === 0,
+                      silver: item.rank === 1,
+                      bronze: item.rank === 2
+                    }"
+                  >
+                    {{ formatRank(item.rank) }}
+                  </div>
+                  <span
+                    [style.color]="
+                      getFestaSideColor(item.circleFestaData.festaSideId)
+                    "
+                  >
+                    {{ item.circleFestaData.circleName }}
+                  </span>
+                  <span
+                    class="score"
+                    [ngClass]="{
+                      gold: item.rank === 0,
+                      silver: item.rank === 1,
+                      bronze: item.rank === 2
+                    }"
+                  >
+                    {{ item.circleFestaData.totalPoint }} fp</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card" *ngIf="allSideCircleRankInfoList?.length > 0">
+              <div class="card-header"><span>总排行</span></div>
+              <div class="card-body">
+                <div
+                  *ngFor="let item of allSideCircleRankInfoList"
+                  class="rank-row"
+                >
+                  <div
+                    class="rank"
+                    [ngClass]="{
+                      gold: item.rank === 0,
+                      silver: item.rank === 1,
+                      bronze: item.rank === 2
+                    }"
+                  >
+                    {{ formatRank(item.rank) }}
+                  </div>
+                  <span
+                    [style.color]="
+                      getFestaSideColor(item.circleFestaData.festaSideId)
+                    "
+                  >
+                    {{ item.circleFestaData.circleName }}
+                  </span>
+                  <span
+                    class="score"
+                    [ngClass]="{
+                      gold: item.rank === 0,
+                      silver: item.rank === 1,
+                      bronze: item.rank === 2
+                    }"
+                  >
+                    {{ item.circleFestaData.totalPoint }} fp</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

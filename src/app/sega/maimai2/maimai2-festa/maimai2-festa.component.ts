@@ -21,6 +21,8 @@ import { json } from 'stream/consumers';
 import { Maimai2GameFestaInfo } from '../model/Maimai2GameFestaInfo';
 import { Maimai2UserFestaInfo } from '../model/Maimai2UserFestaInfo';
 import { Maimai2GameFesta } from '../model/Maimai2GameFesta';
+import { Maimai2UserFestaData } from '../model/Maimai2UserFestaData';
+import { Maimai2CircleFestaRankInfo } from '../model/MaiMai2CircleFestaRankInfo';
 
 @Component({
   selector: 'app-maimai2-festa',
@@ -46,6 +48,9 @@ export class Maimai2FestaComponent implements OnInit {
   userFestaInfo: Maimai2UserFestaInfo = null;
   userResultFestaInfo: Maimai2UserFestaInfo = null;
   userCircleInfo: Maimai2UserCircleInfo = null;
+
+  sameSideCircleRankInfoList: Maimai2CircleFestaRankInfo[] = null;
+  allSideCircleRankInfoList: Maimai2CircleFestaRankInfo[] = null;
 
   ngOnInit() {
     this.aimeId = String(this.userService.currentUser.defaultCard.extId);
@@ -73,6 +78,52 @@ export class Maimai2FestaComponent implements OnInit {
     );
   }
 
+  loadSameSideCircleRankInfo(userFestaData: Maimai2UserFestaData) {
+    const param = new HttpParams()
+      .set('aimeId', this.aimeId)
+      .set('openEventId', userFestaData.eventId)
+      .set('filterFestaSideId', userFestaData.festaSideId)
+      .set('placeId', userFestaData.placeId)
+      .set('page', 0)
+      .set('size', 10);
+
+    this.api.get('api/game/maimai2/rankFestaCircles', param).pipe().subscribe(
+      (data: Page<Maimai2CircleFestaRankInfo>) => {
+        this.sameSideCircleRankInfoList = data.content;
+        console.log(`loadSameSideCircleRankInfo() loaded successfully`);
+      }
+      ,
+      (error: string) => {
+        this.messageService.notice(error);
+        console.error(`loadSameSideCircleRankInfo() failed, error = ${error}`);
+        return of({ data: [], error: true });
+      }
+    );
+  }
+
+  loadAllSideCircleRankInfo(userFestaData: Maimai2UserFestaData) {
+    const param = new HttpParams()
+      .set('aimeId', this.aimeId)
+      .set('openEventId', userFestaData.eventId)
+      .set('filterFestaSideId', -1)
+      .set('placeId', userFestaData.placeId)
+      .set('page', 0)
+      .set('size', 10);
+
+    this.api.get('api/game/maimai2/rankFestaCircles', param).pipe().subscribe(
+      (data: Page<Maimai2CircleFestaRankInfo>) => {
+        this.allSideCircleRankInfoList = data.content;
+        console.log(`loadSameSideCircleRankInfo() loaded successfully`);
+      }
+      ,
+      (error: string) => {
+        this.messageService.notice(error);
+        console.error(`loadSameSideCircleRankInfo() failed, error = ${error}`);
+        return of({ data: [], error: true });
+      }
+    );
+  }
+
   getEventStartTimeString(openEventId: string) {
     let year = parseInt(openEventId.substring(0, 2), 10);
     let month = parseInt(openEventId.substring(2, 4), 10) - 1;
@@ -89,8 +140,13 @@ export class Maimai2FestaComponent implements OnInit {
         this.gameFestaInfo = data.data;
         console.log(`loadGameFestaInfo() loaded successfully`);
 
-        if (this.gameFestaInfo.gameFesta)
+        if (this.gameFestaInfo.gameFesta) {
           this.userFestaInfo = await this.loadUserFestaInfo(this.gameFestaInfo.gameFesta);
+          if (this.userFestaInfo.userFestaData) {
+            this.loadSameSideCircleRankInfo(this.userFestaInfo.userFestaData);
+            this.loadAllSideCircleRankInfo(this.userFestaInfo.userFestaData);
+          }
+        }
         if (this.gameFestaInfo.gameRsultFesta)
           this.userResultFestaInfo = await this.loadUserFestaInfo(this.gameFestaInfo.gameRsultFesta);
       }
