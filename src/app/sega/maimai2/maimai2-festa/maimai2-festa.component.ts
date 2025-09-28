@@ -22,7 +22,7 @@ import { Maimai2GameFestaInfo } from '../model/Maimai2GameFestaInfo';
 import { Maimai2UserFestaInfo } from '../model/Maimai2UserFestaInfo';
 import { Maimai2GameFesta } from '../model/Maimai2GameFesta';
 import { Maimai2UserFestaData } from '../model/Maimai2UserFestaData';
-import { Maimai2CircleFestaRankInfo } from '../model/MaiMai2CircleFestaRankInfo';
+import { Maimai2CircleFestaRankInfo } from '../model/Maimai2CircleFestaRankInfo';
 
 @Component({
   selector: 'app-maimai2-festa',
