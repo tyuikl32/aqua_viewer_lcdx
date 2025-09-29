@@ -23,6 +23,7 @@ import { Maimai2UserFestaInfo } from '../model/Maimai2UserFestaInfo';
 import { Maimai2GameFesta } from '../model/Maimai2GameFesta';
 import { Maimai2UserFestaData } from '../model/Maimai2UserFestaData';
 import { Maimai2CircleFestaRankInfo } from '../model/Maimai2CircleFestaRankInfo';
+import { Maimai2CircleFestaData } from '../model/Maimai2CircleFestaData';
 
 @Component({
   selector: 'app-maimai2-festa',
@@ -50,7 +51,10 @@ export class Maimai2FestaComponent implements OnInit {
   userCircleInfo: Maimai2UserCircleInfo = null;
 
   sameSideCircleRankInfoList: Maimai2CircleFestaRankInfo[] = null;
+  isShowSameSideWithoutPlaceIdFilter = false;
+
   allSideCircleRankInfoList: Maimai2CircleFestaRankInfo[] = null;
+  isShowAllSideWithoutPlaceIdFilter = false;
 
   ngOnInit() {
     this.aimeId = String(this.userService.currentUser.defaultCard.extId);
@@ -83,7 +87,7 @@ export class Maimai2FestaComponent implements OnInit {
       .set('aimeId', this.aimeId)
       .set('openEventId', userFestaData.eventId)
       .set('filterFestaSideId', userFestaData.festaSideId)
-      .set('placeId', userFestaData.placeId)
+      .set('placeId', this.isShowSameSideWithoutPlaceIdFilter ? -1 : userFestaData.placeId)
       .set('page', 0)
       .set('size', 10);
 
@@ -106,7 +110,7 @@ export class Maimai2FestaComponent implements OnInit {
       .set('aimeId', this.aimeId)
       .set('openEventId', userFestaData.eventId)
       .set('filterFestaSideId', -1)
-      .set('placeId', userFestaData.placeId)
+      .set('placeId', this.isShowAllSideWithoutPlaceIdFilter ? -1 : userFestaData.placeId)
       .set('page', 0)
       .set('size', 10);
 
@@ -263,12 +267,35 @@ export class Maimai2FestaComponent implements OnInit {
       case 2: { postfix = "nd"; break; };
       case 3: { postfix = "rd"; break; };
     }
-    
+
     return rank.toString() + postfix;
   }
 
   getVotedFestaSideId() {
     return this.userFestaInfo?.userFestaData?.festaSideId ?? 0;
+  }
+
+  refreshAllSideCircleRankInfo() {
+    if (this.userFestaInfo.userFestaData) {
+      this.loadAllSideCircleRankInfo(this.userFestaInfo.userFestaData);
+    }
+  }
+
+  refreshSameSideCircleRankInfo() {
+    if (this.userFestaInfo.userFestaData) {
+      this.loadSameSideCircleRankInfo(this.userFestaInfo.userFestaData);
+    }
+  }
+
+  formatCircleIfShowPlaceId(circleFestaData: Maimai2CircleFestaData, isShowPlaceId: boolean) {
+    if (!isShowPlaceId)
+      return circleFestaData.circleName;
+
+    var formatPostfix = ` #${circleFestaData.placeId}`;
+    var result = circleFestaData.circleName;
+    if (!circleFestaData.circleName.endsWith(formatPostfix))
+      result += formatPostfix;
+    return result;
   }
 
   protected readonly length = length;

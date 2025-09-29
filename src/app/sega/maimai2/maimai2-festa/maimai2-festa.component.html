@@ -156,7 +156,7 @@
                   {{ userFestaInfo?.userFestaData?.placeId }}
                 </p>
                 <p>
-                  <strong>所属队伍与队内排名:</strong>
+                  <strong>所属队伍与同队排名:</strong>
                   <span
                     [style.color]="
                       getFestaSideColor(userFestaInfo.userFestaData.festaSideId)
@@ -205,7 +205,26 @@
         <div class="row mt-4">
           <div class="col-md-6">
             <div class="card" *ngIf="sameSideCircleRankInfoList?.length > 0">
-              <div class="card-header"><span>同队排行</span></div>
+              <div
+                class="card-header d-flex align-items-center justify-content-between"
+              >
+                <span>同队排行榜</span>
+                <div class="form-check align-items-center d-flex">
+                  <input
+                    class="form-check-input me-1"
+                    type="checkbox"
+                    [(ngModel)]="isShowSameSideWithoutPlaceIdFilter"
+                    (change)="refreshSameSideCircleRankInfo()"
+                    id="checkDefault"
+                  />
+                  <label
+                    class="form-check-label small mb-0 mt-0"
+                    for="checkDefault"
+                  >
+                    全服
+                  </label>
+                </div>
+              </div>
               <div class="card-body">
                 <div
                   *ngFor="let item of sameSideCircleRankInfoList"
@@ -226,7 +245,12 @@
                       getFestaSideColor(item.circleFestaData.festaSideId)
                     "
                   >
-                    {{ item.circleFestaData.circleName }}
+                    {{
+                      formatCircleIfShowPlaceId(
+                        item.circleFestaData,
+                        isShowSameSideWithoutPlaceIdFilter
+                      )
+                    }}
                   </span>
                   <span
                     class="score"
@@ -244,7 +268,26 @@
           </div>
           <div class="col-md-6">
             <div class="card" *ngIf="allSideCircleRankInfoList?.length > 0">
-              <div class="card-header"><span>总排行</span></div>
+              <div
+                class="card-header d-flex align-items-center justify-content-between"
+              >
+                <span>总排行榜</span>
+                <div class="form-check align-items-center d-flex">
+                  <input
+                    class="form-check-input me-1"
+                    type="checkbox"
+                    [(ngModel)]="isShowAllSideWithoutPlaceIdFilter"
+                    (change)="refreshAllSideCircleRankInfo()"
+                    id="checkDefault2"
+                  />
+                  <label
+                    class="form-check-label small mb-0 mt-0"
+                    for="checkDefault2"
+                  >
+                    全服
+                  </label>
+                </div>
+              </div>
               <div class="card-body">
                 <div
                   *ngFor="let item of allSideCircleRankInfoList"
@@ -265,7 +308,12 @@
                       getFestaSideColor(item.circleFestaData.festaSideId)
                     "
                   >
-                    {{ item.circleFestaData.circleName }}
+                    {{
+                      formatCircleIfShowPlaceId(
+                        item.circleFestaData,
+                        isShowAllSideWithoutPlaceIdFilter
+                      )
+                    }}
                   </span>
                   <span
                     class="score"

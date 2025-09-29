@@ -111,6 +111,11 @@
   overflow: hidden;
 }
 
+.form-check-input {
+  width: 0.9em;
+  height: 0.9em;
+}
+
 .festa-progress-segment {
   display: flex;
   align-items: center;
