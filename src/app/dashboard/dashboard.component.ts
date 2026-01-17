@@ -13,6 +13,7 @@ import {Announcement, AnnouncementComponent} from '../announcements/announcement
 import {LanguageService} from "../language.service";
 import {HttpParams} from "@angular/common/http";
 import {TranslateService} from "@ngx-translate/core";
+import {compareVersions} from 'compare-versions';
 
 @Component({
   selector: 'app-dashboard',
