@@ -17,6 +17,8 @@ import {NgIcon} from '@ng-icons/core';
 import {Maimai2SonglistComponent} from "./maimai2-songlist/maimai2-songlist.component";
 import {Maimai2SongDetailComponent} from "./maimai2-song-detail/maimai2-song-detail.component";
 import { Maimai2RivalComponent } from './maimai2-rival/maimai2-rival.component';
+import { Maimai2CircleComponent } from './maimai2-circle/maimai2-circle.component';
+import { Maimai2FestaComponent } from './maimai2-festa/maimai2-festa.component';
 
 
 @NgModule({
@@ -28,6 +30,8 @@ import { Maimai2RivalComponent } from './maimai2-rival/maimai2-rival.component';
     Maimai2PhotosComponent,
     Maimai2DxpassComponent,
     Maimai2KopRankingComponent,
+    Maimai2CircleComponent,
+    Maimai2FestaComponent,
     Maimai2SonglistComponent,
     Maimai2SongDetailComponent,
     Maimai2RivalComponent

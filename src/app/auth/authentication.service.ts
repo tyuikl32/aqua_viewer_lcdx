@@ -24,13 +24,24 @@ export class AuthenticationService {
       params.oAuth2Token = token;
     }
     return this.http.post<any>(environment.apiServer + 'api/auth/signin', params)
-    .pipe(
-      map(
-        resp => {
-          return resp;
-        }
-      ),
-      mergeMap(this.procLoginResp));
+      .pipe(
+        map(
+          resp => {
+            return resp;
+          }
+        ),
+        mergeMap(this.procLoginResp));
+  }
+
+  loginAs(username: string) {
+    return this.http.post<any>(environment.apiServer + `api/admin/users/loginas/${username}`, {})
+      .pipe(
+        map(
+          resp => {
+            return resp;
+          }
+        ),
+        mergeMap(this.procLoginResp));
   }
 
   login_lcdx_common(usernameOrEmail: string, password: string) {

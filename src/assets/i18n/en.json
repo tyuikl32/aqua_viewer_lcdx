@@ -27,6 +27,7 @@
     "Sidebar": {
       "Navigation": "Navigation",
       "Dashboard": "Dashboard",
+      "Admin": "Admin",
       "Import": "Import",
       "Announcements": "Announcements",
       "Status": "Status",

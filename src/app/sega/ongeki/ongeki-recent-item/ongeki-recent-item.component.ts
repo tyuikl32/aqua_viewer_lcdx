@@ -43,4 +43,8 @@ export class OngekiRecentItemComponent implements OnInit {
     });
     offcanvasRef.componentInstance.music = music;
   }
+
+  getArrayFromNumber(n: number): any[] {
+    return new Array(n);
+  }
 }

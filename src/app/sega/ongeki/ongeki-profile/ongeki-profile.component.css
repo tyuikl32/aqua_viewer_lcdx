@@ -143,6 +143,7 @@
   bottom: -2%;
   display: flex;
   align-items: flex-end;
+  gap: 2px;
 }
 
 .rating-num-integer{
@@ -156,10 +157,19 @@
   margin-right: -20%;
 }
 
+.rating-new-num-dot {
+  margin-left: -23%;
+  margin-right: -26%;
+}
+
 .rating-num-fractional{
   height: 90%;
   margin-inline: -10%;
   margin-bottom: 4%;
+}
+
+.rating-new-num-fractional {
+  margin-inline: -13%;
 }
 
 .rating-highest{
@@ -238,4 +248,34 @@
 
 .profile-table th{
   font-weight: 500;
+}
+
+.rating-new-num-mask {
+  background: linear-gradient(to right,
+  rgba(255, 255, 255, 0.1) 0%,
+  rgba(255, 255, 255, 0.55) 57.5%,
+  rgba(255, 255, 255, 0.55) 62.5%,
+  rgba(255, 255, 255, 0.1) 100%);
+  mask-mode: alpha;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  transform: scale(0.86);
+}
+
+.rating-num-clip-path {
+  clip-path: polygon(110% 120%, 240% -190%, 160% 100%, 100% 100%);
+  animation: clipMoveFull 3.3s ease-in-out infinite;
+}
+
+
+@keyframes clipMoveFull {
+  0% {
+    clip-path: polygon(-140% 120%, -10% -190%, -80% 100%, -150% 100%);
+  }
+  70% {
+    clip-path: polygon(190% 120%, 330% -190%, 250% 100%, 180% 100%);
+  }
+  100% {
+    clip-path: polygon(190% 120%, 330% -190%, 250% 100%, 180% 100%);
+  }
 }

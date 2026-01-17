@@ -27,6 +27,7 @@
     "Sidebar": {
       "Navigation": "导航",
       "Dashboard": "仪表板",
+      "Admin": "管理员",
       "Import": "导入",
       "Announcements": "公告",
       "Status": "状态",
@@ -45,6 +46,8 @@
       "KOP": "KOP6th",
       "Photos": "相册",
       "Dxpass": "DX通行证",
+      "Circle": "Circle圈子",
+      "Festa": "Festa活动",
       "OnlineBattle": "全国对战"
     },
     "Messages": {
@@ -575,6 +578,12 @@
       "SetDefault": "设为默认类型",
       "Remaining": "剩余",
       "Expired": "已过期"
+    },
+    "CirclePage": {
+      "Title": "Circle圈子"
+    },
+    "FestaPage": {
+      "Title": "Festa活动"
     },
     "Setting": {
       "Title": "设定",

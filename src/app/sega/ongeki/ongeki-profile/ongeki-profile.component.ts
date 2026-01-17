@@ -67,6 +67,25 @@ export class OngekiProfileComponent implements OnInit {
     else{ return '09Rainbow'; }
   }
 
+  getNewRatingType(rt: number): string {
+    switch (true) {
+      case rt >= 22000: return '11Rainbow';
+      case rt >= 21000: return '10Rainbow';
+      case rt >= 20000: return '09Rainbow';
+      case rt >= 19000: return '09Rainbow';
+      case rt >= 18000: return '08Platinum';
+      case rt >= 17000: return '07Gold';
+      case rt >= 15000: return '06Silver';
+      case rt >= 13000: return '05Bronze';
+      case rt >= 11000: return '04Purple';
+      case rt >= 9000: return '03Red';
+      case rt >= 7000: return '02Orange';
+      case rt >= 4000: return '01Green';
+      case rt >= 0: return '00Bule';
+      default: return '09Rainbow';
+    }
+  }
+
   getRankId(bp: number): number{
     if (bp < 200) { return 0; }
     else if (bp < 500) { return 1; }
@@ -104,5 +123,44 @@ export class OngekiProfileComponent implements OnInit {
     else if (bp < 19000) { return 5; }
     else if (bp < 20000) { return 6; }
     else { return 7; }
+  }
+
+  compareVersion(version: string, target: string, operator: '>=' | '<') {
+    const a = version.split('.').map(Number);
+    const b = target.split('.').map(Number);
+    const len = Math.max(a.length, b.length);
+
+    for (let i = 0; i < len; i++) {
+      const n1 = a[i] || 0;
+      const n2 = b[i] || 0;
+
+      if (n1 > n2) { return operator === '>='; }
+      if (n1 < n2) { return operator === '<'; }
+    }
+    return operator === '>=';
+  }
+
+  get maskDigits(): number[] {
+    const rating = this.profile.newPlayerRating;
+    return [
+      Math.floor(rating / 10000),
+      Math.floor(rating / 1000) % 10,
+      -1, // -1 代表小数点
+      Math.floor(rating / 100) % 10,
+      Math.floor(rating / 10) % 10,
+      Math.floor(rating % 10)
+    ];
+  }
+
+  getMaskImage(digit: number, index: number): string {
+    const basePath = `${this.host}assets/ongeki/gameUi/UI_NUM_30pt_Rating_${this.getNewRatingType(this.profile.newPlayerRating)}`;
+    if (digit === -1) { return `url(${basePath}/dot.webp)`; }
+    return `url(${basePath}/${digit}.webp)`;
+  }
+
+  getMaskClass(index: number): string {
+    if (index < 2) { return 'rating-num-integer rating-new-num-mask'; }
+    if (index === 2) { return 'rating-num-dot rating-new-num-dot rating-new-num-mask'; }
+    return 'rating-num-fractional rating-new-num-fractional rating-new-num-mask';
   }
 }

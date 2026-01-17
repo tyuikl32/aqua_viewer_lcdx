@@ -68,4 +68,6 @@ export interface PlayerPlaylog {
   isTechNewRecord: boolean;
   isAllBreak: boolean;
   isBattleNewRecord: boolean;
+  platinumScore: number;
+  platinumScoreStar: number;
 }

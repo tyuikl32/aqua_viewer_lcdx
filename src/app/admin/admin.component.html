@@ -1,0 +1,81 @@
+<h1 class="page-heading">管理员</h1>
+
+<ng-template #pagination>
+  <pagination-template *ngIf="!loading" #p="paginationApi" class="user-select-none" id="server" maxSize="7"
+                       style="cursor: default"
+                       (pageChange)="pageChanged($event)" (pageBoundsCorrection)="pageChanged($event)">
+    <ul class="pagination pagination-sm justify-content-center my-2">
+      <li class="page-item" [class.disabled]="p.isFirstPage()">
+        <a class="page-link" (click)="p.previous()">&nbsp;<&nbsp;</a>
+      </li>
+      <li *ngFor="let page of p.pages" [class.active]="p.getCurrent() === page.value" class="page-item">
+        <a *ngIf="p.getCurrent() == page.value" class="page-link">{{ page.label }}</a>
+        <a *ngIf="p.getCurrent() != page.value" (click)="p.setCurrent(page.value)"
+           class="page-link">{{ page.label }}</a>
+      </li>
+      <li class="page-item" [class.disabled]="p.isLastPage()">
+        <a class="page-link" (click)="p.next()">&nbsp;>&nbsp;</a>
+      </li>
+    </ul>
+  </pagination-template>
+</ng-template>
+
+<div class="row mb-2 g-1">
+  <div class="col-12 p-0">
+    <input type="text" class="form-control form-control-sm" placeholder="pattern" [formControl]="patternControl">
+  </div>
+</div>
+<div class="row mb-2 g-1">
+  <div class="col-12 p-0">
+    <button class="btn btn-primary btn-sm w-100" (click)="search()">搜索</button>
+  </div>
+</div>
+
+<ng-container *ngTemplateOutlet="pagination;"></ng-container>
+<div *ngIf="userList" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-2">
+  <ng-container
+    *ngFor="let item of userList | paginate: { id: 'server', itemsPerPage: 12, currentPage: currentPage, totalItems: totalElements }; let i = index">
+    <div class="col">
+      <div class="card h-100 card-btn user-select-none" (click)="modalService.open(jsonModal, {centered: true, scrollable: true})">
+        <div class="card-header fw-bold">
+          {{ item.user.id }}.{{ item.user.username }}
+        </div>
+        <div class="card-body small">
+          <div>
+            {{ item.user.name }}
+          </div>
+          <div>
+            {{ item.user.email }}
+          </div>
+          <div *ngFor="let oauth2 of item.user.oauth2s">
+            {{ oauth2.email }}
+          </div>
+          <ng-container *ngFor="let profile of item.gameProfiles">
+            <div *ngIf="profile.ongeki">
+              {{ profile.ongeki.userName }}
+            </div>
+            <div *ngIf="profile.chusan">
+              {{ profile.chusan.userName }}
+            </div>
+            <div *ngIf="profile.maimai2">
+              {{ profile.maimai2.userName }}
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <ng-template #jsonModal let-modal>
+      <div class="modal-header">
+        <h5 class="modal-title">Item JSON</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+      </div>
+      <div class="modal-body">
+        <button class="btn btn-primary btn-sm mb-2" (click)="loginAs(item.user.username)">
+          夺舍
+        </button>
+        <pre class="small">{{ item | json }}</pre>
+      </div>
+    </ng-template>
+  </ng-container>
+</div>
+<ng-container *ngTemplateOutlet="pagination;"></ng-container>

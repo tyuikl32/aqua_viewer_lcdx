@@ -1,33 +1,33 @@
-import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
-import {AppComponent} from './app.component';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {AppRoutingModule} from './app-routing.module';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MessageModule} from './message/message.module';
-import {DashboardModule} from './dashboard/dashboard.module';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import {V2Module} from './sega/chunithm/v2/v2.module';
-import {DatabaseModule} from './database/database.module';
-import {NgxPaginationModule} from 'ngx-pagination';
-import {OngekiModule} from './sega/ongeki/ongeki.module';
-import {Maimai2Module} from './sega/maimai2/maimai2.module';
-import {ErrorInterceptorService} from './auth/error-interceptor.service';
-import {LoadingInterceptorService} from './auth/loading-interceptor.service';
-import {ImporterModule} from './importer/importer.module';
-import {ServiceWorkerModule} from '@angular/service-worker';
-import {environment} from '../environments/environment';
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { AppComponent } from './app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AppRoutingModule } from './app-routing.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MessageModule } from './message/message.module';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { V2Module } from './sega/chunithm/v2/v2.module';
+import { DatabaseModule } from './database/database.module';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { OngekiModule } from './sega/ongeki/ongeki.module';
+import { Maimai2Module } from './sega/maimai2/maimai2.module';
+import { ErrorInterceptorService } from './auth/error-interceptor.service';
+import { LoadingInterceptorService } from './auth/loading-interceptor.service';
+import { ImporterModule } from './importer/importer.module';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 import {
   Maimai2UploadUserPortraitDialog
 } from './sega/maimai2/maimai2-setting/maimai2-upload-user-portrait/maimai2-upload-user-portrait.dialog';
 
 import Aegis from 'aegis-web-sdk';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import {TokenInterceptorService} from './auth/token-interceptor.service';
-import {NgIconsModule} from '@ng-icons/core';
-import {HomeComponent} from './home/home.component';
-import {ToastsContainer} from './toasts-container.component';
-import {CardsComponent} from './cards/cards.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { TokenInterceptorService } from './auth/token-interceptor.service';
+import { NgIconsModule } from '@ng-icons/core';
+import { HomeComponent } from './home/home.component';
+import { ToastsContainer } from './toasts-container.component';
+import { CardsComponent } from './cards/cards.component';
 import {
   bootstrapChevronUp,
   bootstrapChevronDown,
@@ -62,6 +62,7 @@ import { LanguageService } from './language.service';
 import { lastValueFrom } from 'rxjs';
 import { KeychipComponent } from './keychip/keychip.component';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { OauthCallbackComponent } from './oauth-callback/oauth-callback.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
@@ -87,10 +88,10 @@ export function HttpLoaderFactory(http: HttpClient) {
 export function initializeApp(
   translateService: TranslateService,
   languageService: LanguageService) {
-    return async () => {
-      const userLang = languageService.getCurrentLang();
-      await lastValueFrom(translateService.use(userLang));
-    };
+  return async () => {
+    const userLang = languageService.getCurrentLang();
+    await lastValueFrom(translateService.use(userLang));
+  };
 }
 
 @NgModule({
@@ -129,7 +130,7 @@ export function initializeApp(
     Maimai2Module,
 
     ReactiveFormsModule,
-    ServiceWorkerModule.register('ngsw-worker.js', {enabled: environment.production}),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     NgbModule,
     FormsModule,
     ToastsContainer,
@@ -164,15 +165,16 @@ export function initializeApp(
         deps: [HttpClient],
       }
     }),
-    ClipboardModule
+    ClipboardModule,
+    NgbModule,
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptorService, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptorService, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true},
-    {provide: APP_INITIALIZER, useFactory: initializeApp, deps: [TranslateService, LanguageService], multi: true},
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptorService, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptorService, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },
+    { provide: APP_INITIALIZER, useFactory: initializeApp, deps: [TranslateService, LanguageService], multi: true },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {
 }

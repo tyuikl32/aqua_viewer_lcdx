@@ -53,6 +53,7 @@ export class AppComponent implements OnInit, OnDestroy {
     protected themeService: ThemeService,
     protected messageService: MessageService,
     protected translateService: TranslateService,
+    protected user: UserService,
     updates: SwUpdate,
     @Inject(DOCUMENT) private document: Document,
   ) {
@@ -172,6 +173,10 @@ export class AppComponent implements OnInit, OnDestroy {
   navigateTo(routerLink: string){
     this.router.navigateByUrl(routerLink);
     this.hideSidebar();
+  }
+
+  isAdmin() {
+    return this.user.currentUser?.roles?.some(r => r.id === 5) ?? false;
   }
 
   @HostListener('window:popstate', ['$event'])

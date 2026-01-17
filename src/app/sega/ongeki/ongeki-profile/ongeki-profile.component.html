@@ -20,15 +20,39 @@
       <img class="rank-bg" src="{{host}}/assets/ongeki/gameUi/UI_CMN_Signage_UserRank_BG_0{{profile.rankPattern}}.webp">
       <img class="rank rank-0{{profile.rankPattern}}" src="{{host}}/assets/ongeki/gameUi/UI_CMN_Signage_UserRank_Rank_{{profile.rankId | number: '2.0-0'}}.webp">
       <div class="battle-point bp-0{{profile.rankPattern}}">{{profile.battlePoint | number}}</div>
-      <img class="rating-header" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}_Header.webp">
-      <div class="rating">
-        <img *ngIf="Math.floor(profile.playerRating / 1000) > 0" class="rating-num-integer" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}/{{Math.floor(profile.playerRating / 1000)}}.webp">
-        <img class="rating-num-integer" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}/{{Math.floor(profile.playerRating / 100) % 10}}.webp">
-        <img class="rating-num-dot" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}/dot.webp">
-        <img class="rating-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}/{{Math.floor(profile.playerRating / 10) % 10}}.webp">
-        <img class="rating-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}/{{Math.floor(profile.playerRating) % 10}}.webp">
-        <div class="rating-highest text-nowrap">(Max: {{(profile.highestRating / 100) | number: '0.2-2'}})</div>
-      </div>
+      <ng-template [ngIf]="compareVersion(profile.lastRomVersion, '1.50.00', '<')">
+        <img class="rating-header" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}_Header.webp">
+        <div class="rating">
+          <img *ngIf="Math.floor(profile.playerRating / 1000) > 0" class="rating-num-integer" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}/{{Math.floor(profile.playerRating / 1000)}}.webp">
+          <img class="rating-num-integer" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}/{{Math.floor(profile.playerRating / 100) % 10}}.webp">
+          <img class="rating-num-dot" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}/dot.webp">
+          <img class="rating-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}/{{Math.floor(profile.playerRating / 10) % 10}}.webp">
+          <img class="rating-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getRatingType(profile.playerRating)}}/{{Math.floor(profile.playerRating) % 10}}.webp">
+          <div class="rating-highest text-nowrap">(Max: {{(profile.highestRating / 100) | number: '0.2-2'}})</div>
+        </div>
+      </ng-template>
+      <ng-template [ngIf]="compareVersion(profile.lastRomVersion, '1.50.00', '>=')">
+        <img class="rating-header" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}_Header.webp" alt="">
+        <div class="rating">
+          <img *ngIf="Math.floor(profile.newPlayerRating / 10000) > 0" class="rating-num-integer" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating / 10000)}}.webp">
+          <img class="rating-num-integer" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating / 1000) % 10}}.webp">
+          <img class="rating-num-dot rating-new-num-dot" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/dot.webp">
+          <img class="rating-num-fractional rating-new-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating / 100) % 10}}.webp">
+          <img class="rating-num-fractional rating-new-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating / 10) % 10}}.webp">
+          <img class="rating-num-fractional rating-new-num-fractional" src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_{{getNewRatingType(profile.newPlayerRating)}}/{{Math.floor(profile.newPlayerRating) % 10}}.webp">
+        </div>
+        <ng-template [ngIf]="profile.newPlayerRating >= 20000">
+          <div class="rating rating-num-clip-path">
+            <img *ngFor="let digit of maskDigits; let i = index"
+                 [style.mask-image]="getMaskImage(digit, i)"
+                 [style.-webkit-mask-image]="getMaskImage(digit, i)"
+                 [class]="getMaskClass(i)"
+                 src="{{host}}/assets/ongeki/gameUi/UI_NUM_30pt_Rating_09Rainbow/0-no.webp"
+                 alt=""
+            />
+          </div>
+        </ng-template>
+      </ng-template>
     </div>
     <div class="chara-container">
       <img class="chara-img" src="{{host}}assets/ongeki/character/{{profile.characterId}}.webp">
