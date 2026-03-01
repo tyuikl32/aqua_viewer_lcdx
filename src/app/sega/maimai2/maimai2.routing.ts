@@ -10,6 +10,8 @@ import { Maimai2SonglistComponent } from './maimai2-songlist/maimai2-songlist.co
 import { Maimai2RivalComponent } from './maimai2-rival/maimai2-rival.component';
 import { Maimai2CircleComponent } from './maimai2-circle/maimai2-circle.component';
 import { Maimai2FestaComponent } from './maimai2-festa/maimai2-festa.component';
+import { Maimai2ServerMissionsComponent } from './maimai2-server-missions/maimai2-server-missions.component';
+import { Maimai2PointExchangesComponent } from './maimai2-point-exchanges/maimai2-point-exchanges.component';
 
 
 const routes: Routes = [
@@ -19,6 +21,8 @@ const routes: Routes = [
   { path: 'rating', component: Maimai2RatingComponent, data: { title: 'Rating' } },
   { path: 'photos', component: Maimai2PhotosComponent, data: { title: 'Photos' } },
   { path: 'dxpass', component: Maimai2DxpassComponent, data: { title: 'DxPass' } },
+    { path: 'servermissions', component: Maimai2ServerMissionsComponent, data: { title: 'ServerMissions' } },
+  { path: 'pointexchanges', component: Maimai2PointExchangesComponent, data: { title: 'PointExchanges' } },
   { path: 'kop', component: Maimai2KopRankingComponent, data: { title: 'KOP6th 在线预选' } },
   { path: 'circle', component: Maimai2CircleComponent, data: { title: 'Circle' } },
   { path: 'festa', component: Maimai2FestaComponent, data: { title: 'Festa' } },

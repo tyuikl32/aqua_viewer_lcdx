@@ -60,6 +60,12 @@ export class MenuService {
             displayCondition: DisplayCondition.HasProfile,
           },
           {
+            id: 10,
+            name: 'ServerMissions',
+            url: 'mai2/servermissions',
+            displayCondition: DisplayCondition.HasProfile,
+          },
+          {
             id: 7,
             name: 'Rival',
             url: 'mai2/rival',

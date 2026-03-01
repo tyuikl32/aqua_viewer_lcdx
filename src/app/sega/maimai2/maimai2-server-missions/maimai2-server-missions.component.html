@@ -1,0 +1,272 @@
+<h1 class="page-heading">{{ "Maimai2.ServerMissions.Title" | translate }}</h1>
+
+<div class="server-missions-container">
+  <!-- 新增：玩家点数卡片 -->
+  <div class="points-card">
+    <div class="points-info">
+      <div class="points-item">
+        <span class="points-label">可用点数</span>
+        <span class="points-value available-points">
+          {{ userPointData?.availablePoints || 0 }}
+        </span>
+      </div>
+      <div class="points-divider"></div>
+      <div class="points-item">
+        <span class="points-label">总获得点数</span>
+        <span class="points-value total-points">
+          {{ userPointData?.totalPoints || 0 }}
+        </span>
+      </div>
+    </div>
+    <div class="points-actions">
+      <button class="btn btn-primary btn-sm" (click)="openExchangeModal()">
+        <i class="bi bi-gift"></i>兑换
+      </button>
+    </div>
+  </div>
+
+  <div
+    *ngIf="!userServerMissionInfoList || !userPointChangelogList"
+    class="loading-indicator"
+  >
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">加载中...</span>
+    </div>
+  </div>
+
+  <div
+    *ngIf="userServerMissionInfoList && userPointChangelogList"
+    class="content"
+  >
+    <div class="missions-section">
+      <div class="section-header">
+        <h3>任务列表</h3>
+        <div class="form-check form-switch hide-completed-toggle">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="hideCompleted"
+            [(ngModel)]="hideCompleted"
+            (ngModelChange)="updateFilterUserServerMissionInfoList()"
+          />
+          <label class="form-check-label" for="hideCompleted">
+            隐藏已完成任务
+          </label>
+        </div>
+        <button
+          class="btn btn-sm btn-outline-primary"
+          (click)="loadUserServerMissionInfo()"
+        >
+          <i class="bi bi-arrow-repeat"></i> 刷新
+        </button>
+      </div>
+
+      <!-- 任务卡片网格 - 三列布局 -->
+      <div
+        class="missions-grid"
+        *ngIf="userServerMissionInfoList.length > 0; else noMissions"
+      >
+        <div
+          class="mission-card"
+          *ngFor="let mission of filterUserServerMissionInfoList"
+          [class.completed-card]="isMissionCompleted(mission)"
+        >
+          <div class="mission-header">
+            <div class="mission-title-wrapper">
+              <!-- 已完成绿色标签 -->
+              <span class="completed-tag" *ngIf="isMissionCompleted(mission)">
+                <i class="bi bi-check-circle-fill"></i> 已完成
+              </span>
+              <h4 class="mission-title">{{ mission.missionTitle }}</h4>
+            </div>
+            <span
+              class="refresh-badge"
+              [ngClass]="'refresh-' + mission.refreshCycle.toLowerCase()"
+            >
+              {{ getRefreshCycleText(mission.refreshCycle) }}
+            </span>
+          </div>
+
+          <div class="mission-description">
+            {{ mission.missionDescription }}
+          </div>
+
+          <!-- 进度条件列表 -->
+          <div class="condition-progresses">
+            <div
+              class="condition-item"
+              *ngFor="let condition of mission.conditionProgresses"
+            >
+              <!-- 条件进度显示：当total为1时显示CheckBox，否则显示进度条 -->
+              <ng-container
+                *ngIf="condition.total === 1; else progressTemplate"
+              >
+                <div class="checkbox-container">
+                  <div class="checkbox-wrapper">
+                    <div
+                      class="custom-checkbox"
+                      [class.checked]="condition.isDone"
+                    ></div>
+                  </div>
+                  <div class="condition-desc">
+                    {{ condition.description }}
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #progressTemplate>
+                <div class="condition-desc">{{ condition.description }}</div>
+                <div class="progress-container">
+                  <div class="progress-wrapper">
+                    <div class="progress">
+                      <div
+                        class="progress-bar"
+                        [style.width.%]="
+                          (condition.current / condition.total) * 100
+                        "
+                        [attr.aria-valuenow]="condition.current"
+                        [attr.aria-valuemax]="condition.total"
+                        [class.bg-success]="condition.isDone"
+                        [class.bg-warning]="!condition.isDone"
+                      ></div>
+                    </div>
+                    <!-- 进度数值放在进度条下方左右两边 -->
+                    <div class="progress-values">
+                      <span class="current-value">{{
+                        condition.current | number: "1.0-0"
+                      }}</span>
+                      <span class="total-value">{{
+                        condition.total | number: "1.0-0"
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+
+          <div class="mission-footer">
+            <div class="reward-info">
+              <span class="reward-label">奖励:</span>
+              <span class="reward-description">{{
+                mission.rewardDescription
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noMissions>
+        <div class="empty-state">
+          <i class="bi bi-inbox"></i>
+          <p>暂无可用任务</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- ========== 下半部分：积分变更记录列表 ========== -->
+    <div class="changelog-section">
+      <div class="section-header">
+        <h3>任务点数变更记录</h3>
+        <div class="changelog-controls">
+          <span class="total-count"
+            >共 {{ userPointChangelogListTotalCount }} 条记录</span
+          >
+          <button
+            class="btn btn-sm btn-outline-primary"
+            (click)="loadUserPointsInfo(userPointChangelogListPage)"
+          >
+            <i class="bi bi-arrow-repeat"></i> 刷新
+          </button>
+        </div>
+      </div>
+
+      <!-- 点数概览卡片 -->
+      <div class="points-summary" *ngIf="userPointChangelogList[0]">
+        <!-- 这里需要从API响应获取当前点数，目前组件中没有存储，建议在loadUserPointsInfo中存储 -->
+        <!-- 暂时先隐藏或从其他地方获取 -->
+      </div>
+
+      <!-- 变更记录表格 -->
+      <div
+        class="changelog-table-container"
+        *ngIf="userPointChangelogList.length > 0; else noChangelogs"
+      >
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>原因</th>
+              <th>变更数量</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of userPointChangelogList">
+              <td>{{ log.recordDate | date: "yyyy-MM-dd HH:mm:ss" }}</td>
+              <td>{{ log.reason }}</td>
+              <td
+                [class.text-success]="log.changedAmount > 0"
+                [class.text-danger]="log.changedAmount < 0"
+              >
+                <span *ngIf="log.changedAmount > 0">+</span
+                >{{ log.changedAmount }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #noChangelogs>
+        <div class="empty-state">
+          <i class="bi bi-journal-text"></i>
+          <p>暂无变更记录</p>
+        </div>
+      </ng-template>
+
+      <!-- 分页控件 -->
+      <div
+        class="pagination-container"
+        *ngIf="userPointChangelogListTotalCount > pageSize"
+      >
+        <nav aria-label="变更记录分页">
+          <ul class="pagination justify-content-center">
+            <li
+              class="page-item"
+              [class.disabled]="userPointChangelogListPage === 0"
+            >
+              <a
+                class="page-link"
+                href="javascript:void(0)"
+                (click)="loadUserPointsInfo(userPointChangelogListPage - 1)"
+              >
+                上一页
+              </a>
+            </li>
+            <li class="page-item active">
+              <span class="page-link">
+                第 {{ userPointChangelogListPage + 1 }} 页 / 共
+                {{ Math.ceil(userPointChangelogListTotalCount / pageSize) }} 页
+              </span>
+            </li>
+            <li
+              class="page-item"
+              [class.disabled]="
+                userPointChangelogListPage >=
+                Math.ceil(userPointChangelogListTotalCount / pageSize) - 1
+              "
+            >
+              <a
+                class="page-link"
+                href="javascript:void(0)"
+                (click)="loadUserPointsInfo(userPointChangelogListPage + 1)"
+              >
+                下一页
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
