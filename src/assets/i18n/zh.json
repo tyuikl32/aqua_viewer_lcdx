@@ -16,7 +16,7 @@
       "Status": "服务状态",
       "Licence": "<a href=\"https://github.com/RinNET-OpenSource/aqua_viewer/blob/master/LICENSE\" target=\"_blank\">开源许可协议</a>",
       "Contributors": "贡献者",
-      "Copyright": "©2024 RinNET项目组"
+      "Copyright": "©2026 RinNET项目组"
     },
     "UserPopup": {
       "MyCards": "卡包",
@@ -48,6 +48,7 @@
       "Dxpass": "DX通行证",
       "Circle": "Circle圈子",
       "Festa": "Festa活动",
+      "ServerMissions": "服务器任务",
       "OnlineBattle": "全国对战"
     },
     "Messages": {
@@ -584,6 +585,9 @@
     },
     "FestaPage": {
       "Title": "Festa活动"
+    },
+    "ServerMissions": {
+      "Title": "服务器任务"
     },
     "Setting": {
       "Title": "设定",
