@@ -43,7 +43,7 @@ export class Maimai2ServerMissionsComponent implements OnInit {
   ) {
   }
   protected readonly Math = Math;
-  host = environment.assetsHost;
+  host = environment.maiAssetsHost;
   enableImages = environment.enableImages;
 
   aimeId: string;

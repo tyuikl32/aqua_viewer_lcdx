@@ -13,7 +13,7 @@ import {KOPRankings} from '../model/Maimai2Profile';
 })
 export class Maimai2KopRankingComponent {
   kopRankings: KOPRankings[] = [];
-  host = environment.assetsHost;
+  host = environment.maiAssetsHost;
 
   constructor(private api: ApiService) { }
 

@@ -22,7 +22,7 @@ import {Maimai2SongDetailComponent} from "../maimai2-song-detail/maimai2-song-de
 export class Maimai2RecentComponent implements OnInit {
 
   protected readonly Math = Math;
-  host = environment.assetsHost;
+  host = environment.maiAssetsHost;
   enableImages = environment.enableImages;
 
   aimeId: string;
@@ -205,6 +205,6 @@ export class Maimai2RecentComponent implements OnInit {
   }
   imgError(event: Event) {
     const target = event.target as HTMLImageElement;
-    target.src = 'assets/mai2/jacket/UI_Jacket_000000.webp';
+    target.src = this.host + 'assets/mai2/jacket/UI_Jacket_000000.webp';
   }
 }

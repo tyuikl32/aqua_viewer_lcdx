@@ -23,7 +23,7 @@ export class Maimai2RivalComponent {
   ) {
   }
 
-  host = environment.assetsHost;
+  host = environment.maiAssetsHost;
   rivalList: Maimai2Rival[] = [];
   loading = true;
   addingFriend: boolean;

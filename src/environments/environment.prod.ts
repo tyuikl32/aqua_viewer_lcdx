@@ -3,5 +3,6 @@ export const environment = {
   lcdxApiServer: '/',
   production: true,
   enableImages: true,
-  assetsHost: ''
+  maiAssetsHost: 'https://sdgb-dist.sys-all.com.cn/d/189/',
+  assetsHost: 'https://rinnet.stehp.cn/'
 };

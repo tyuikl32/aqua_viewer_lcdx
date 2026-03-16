@@ -9,7 +9,8 @@ export const environment = {
   lcdxApiServer: 'https://lcdxnet.sys-all.com.cn/',
   production: false,
   enableImages: true,
-  assetsHost: 'https://rinnet.stehp.cn/'
+  maiAssetsHost: 'https://rinnet.stehp.cn/',
+  assetsHost: 'https://rinnet.stehp.cn/',
 };
 
 /*

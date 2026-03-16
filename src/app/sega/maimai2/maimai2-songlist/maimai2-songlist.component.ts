@@ -26,7 +26,7 @@ export class Maimai2SonglistComponent implements OnInit {
     this.genreOptions.forEach(() => this.genreControls.push(new FormControl(false)));
     this.versionOptions.forEach(() => this.versionControls.push(new FormControl(false)));
   }
-  host = environment.assetsHost;
+  host = environment.maiAssetsHost;
   enableImages = environment.enableImages;
   protected sortOrder$ = new BehaviorSubject<boolean>(true);
   private sortOptionType$ = new BehaviorSubject<number>(0);
@@ -77,7 +77,9 @@ export class Maimai2SonglistComponent implements OnInit {
     { id: 20, name: 'FESTiVAL+' },
     { id: 21, name: 'BUDDiES' },
     { id: 22, name: 'BUDDiES+' },
-    { id: 23, name: 'PRiSM' }
+    { id: 23, name: 'PRiSM' },
+    { id: 24, name: 'PRiSM+' },
+    { id: 25, name: 'CiRCLE' },
   ];
   sortOptions = [
     { id: 0, name: 'Add Version'},

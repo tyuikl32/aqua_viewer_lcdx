@@ -43,7 +43,7 @@ export class Maimai2SongDetailComponent {
   protected readonly Math = Math;
   ranking: Ranking[];
   songData: { [key: number]: ISongData };
-  host = environment.assetsHost;
+  host = environment.maiAssetsHost;
   protected readonly parseFloat = parseFloat;
   @Input() public music: Maimai2Music;
   currentDiffTab = 3;

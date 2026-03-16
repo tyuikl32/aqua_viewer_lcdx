@@ -33,7 +33,7 @@
           <img
             class="song-jacket cover-full"
             *ngIf="enableImages == true"
-            [src]="'assets/mai2/jacket/UI_Jacket_' + getJacketId(item.musicId) + '.webp'"
+            [src]="host + '/assets/mai2/jacket/UI_Jacket_' + getJacketId(item.musicId) + '.webp'"
             (error)="imgError($event)"
             #img alt="">
         </div>
@@ -52,7 +52,7 @@
                   </div>
                 </div>
                 <div class="position-absolute end-0" style="bottom: -0.25rem;">
-                  <img class="rank-icon" src="{{host}}assets/mai2/common/{{getRankIcon(item)}}.webp">
+                  <img class="rank-icon" [src]="host + '/assets/mai2/common/' + getRankIcon(item) + '.webp'">
                 </div>
               </div>
             </div>
@@ -64,16 +64,16 @@
           <div class="col-auto">
             <div class="d-flex flex-row gap-2" style="align-items: center;">
               <div class="col ms-1" *ngIf="getIconVisibility(item,0)">
-                <img class="honor-img" src="assets/mai2/common/{{getComboIcon(item)}}.webp">
+                <img class="honor-img" [src]="host + '/assets/mai2/common/' + getComboIcon(item) + '.webp'">
               </div>
               <div class="col" *ngIf="getIconVisibility(item,1)">
-                <img class="honor-img" src="assets/mai2/common/{{getSyncIcon(item)}}.webp">
+                <img class="honor-img" [src]="host + '/assets/mai2/common/' + getSyncIcon(item) + '.webp'">
               </div>
               <div class="col" *ngIf="getIconVisibility(item,1)">
-                <img class="rival-img" src="assets/mai2/common/{{getRivalNumber(item)}}.webp">
+                <img class="rival-img" [src]="host + '/assets/mai2/common/' + getRivalNumber(item) + '.webp'">
               </div>
               <div class="col ms-2" *ngIf="getIconVisibility(item,2)">
-                <img class="clear-img" src="assets/mai2/common/clear.webp">
+                <img class="clear-img" [src]="host + '/assets/mai2/common/clear.webp'">
               </div>
             </div>
           </div>

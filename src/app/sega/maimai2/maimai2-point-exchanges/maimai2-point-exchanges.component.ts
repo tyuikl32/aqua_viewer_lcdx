@@ -44,7 +44,7 @@ export class Maimai2PointExchangesComponent implements OnInit {
 
   }
   protected readonly Math = Math;
-  host = environment.assetsHost;
+  host = environment.maiAssetsHost;
   enableImages = environment.enableImages;
 
   aimeId: string;
@@ -183,14 +183,14 @@ export class Maimai2PointExchangesComponent implements OnInit {
         fileTypeName = "nameplate";
         break;
       case Maimai2ExchangeItemType.Title:
-        specialPath = `assets/mai2/common/UI_CLC_Base_GetUserTitle.webp`;
+        specialPath = `${environment.maiAssetsHost}assets/mai2/common/UI_CLC_Base_GetUserTitle.webp`;
         break;
       case Maimai2ExchangeItemType.Icon:
         fileNamePrefix = "UI_Icon_";
         fileTypeName = "icon";
         break;
       case Maimai2ExchangeItemType.Present:
-        specialPath = `assets/mai2/common/UI_CHR_Icon_Present.webp`;
+        specialPath = `${environment.maiAssetsHost}assets/mai2/common/UI_CHR_Icon_Present.webp`;
         break;
       case Maimai2ExchangeItemType.Character:
         fileNamePrefix = "UI_Chara_";
@@ -205,23 +205,23 @@ export class Maimai2PointExchangesComponent implements OnInit {
         fileTypeName = "frame";
         break;
       case Maimai2ExchangeItemType.Ticket:
-        specialPath = `assets/mai2/common/UI_CMN_Tix_LinkTix_L.webp`;
+        specialPath = `${environment.maiAssetsHost}assets/mai2/common/UI_CMN_Tix_LinkTix_L.webp`;
         break;
       case Maimai2ExchangeItemType.Mile:
-        specialPath = `assets/mai2/common/UI_CLC_Maimile.webp`;
+        specialPath = `${environment.maiAssetsHost}assets/mai2/common/UI_CLC_Maimile.webp`;
         break;
       case Maimai2ExchangeItemType.KaleidxScopeKey:
-        specialPath = `assets/mai2/common/UI_KLD_DiscoverCourseKey_0${itemData.itemId}.webp`;
+        specialPath = `${environment.maiAssetsHost}assets/mai2/common/UI_KLD_DiscoverCourseKey_0${itemData.itemId}.webp`;
         break;
       case Maimai2ExchangeItemType.DXPass:
-        specialPath = `assets/mai2/common/dxpass_${itemData.itemId}.webp`;
+        specialPath = `${environment.maiAssetsHost}assets/mai2/common/dxpass_${itemData.itemId}.webp`;
         break;
     }
 
     if (specialPath !== undefined)
-      return `${environment.assetsHost}${specialPath}`;
+      return `${environment.maiAssetsHost}${specialPath}`;
 
-    return `${environment.assetsHost}assets/mai2/${fileTypeName}/${fileNamePrefix}${itemData.itemId.toString().padStart(idLength, '0')}.webp`;
+    return `${environment.maiAssetsHost}assets/mai2/${fileTypeName}/${fileNamePrefix}${itemData.itemId.toString().padStart(idLength, '0')}.webp`;
   }
 
   toastShowFailedMessage(apiResp: ApiResponse<any>, contentPrefix: string) {

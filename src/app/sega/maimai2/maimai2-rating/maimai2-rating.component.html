@@ -27,7 +27,7 @@
         <tbody>
         <tr *ngFor="let i of ['sp', 'ss', 'ssp', 'sss', 'sssp']; let rowIndex = index">
           <td>
-            <img class="rank-icon" src="{{host}}assets/mai2/common/music_icon_{{i}}.webp">
+            <img class="rank-icon" [src]="host + 'assets/mai2/common/music_icon_' + i + '.webp'">
           </td>
           <td *ngFor="let j of [0, 1, 2, 3, 4]">
             {{ getRatingInfoByBase(displayRatingTableHeader[j], rowIndex) }}
@@ -43,7 +43,7 @@
         <tr>
           <th></th>
           <th *ngFor="let i of ['sp', 'ss', 'ssp', 'sss', 'sssp']">
-            <img class="rank-icon" src="{{host}}assets/mai2/common/music_icon_{{i}}.webp">
+            <img class="rank-icon" [src]="host + 'assets/mai2/common/music_icon_' + i + '.webp'">
           </th>
         </tr>
         </thead>
@@ -87,7 +87,7 @@
       <div class="hstack">
         <img
           class="jacket rounded-start"
-          [src]="'assets/mai2/jacket/UI_Jacket_' + getJacketId(item.musicId) + '.webp'"
+          [src]="host + 'assets/mai2/jacket/UI_Jacket_' + getJacketId(item.musicId) + '.webp'"
           (error)="imgError($event)"
           #img alt="">
         <div *ngIf="item.musicId != 0" class="card-body overflow-hidden py-0 px-2">
