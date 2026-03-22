@@ -1,24 +1,21 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
+import { of } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { TranslateService } from '@ngx-translate/core';
+import { environment } from '../../../../environments/environment';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
-import { HttpParams } from '@angular/common/http';
-import { NgxIndexedDBService } from 'ngx-indexed-db';
-import { environment } from '../../../../environments/environment';
-import { catchError, map, tap } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
-import { NgbModal, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { UserService } from 'src/app/user.service';
-import { Maimai2Circle } from '../model/Maimai2Circle';
 import { Page } from 'src/app/model/Page';
-import { error } from 'console';
 import { ApiResponse, isOk } from 'src/app/model/ApiResponse';
+import { DialogService } from 'src/app/dialog.service';
+import { Maimai2Circle } from '../model/Maimai2Circle';
 import { Maimai2UserCircleInfo } from '../model/Maimai2UserCircleInfo';
 import { Maimai2RequestJoinCircleUser } from '../model/Maimai2RequestJoinCircleUser';
-import { Maimai2UserCircleData } from '../model/Maimai2UserCircleData';
 import { Maimai2CircleMemberInfo } from '../model/Maimai2CircleMemberInfo';
-import { Clipboard } from '@angular/cdk/clipboard';
-import { json } from 'stream/consumers';
-import { DialogService } from 'src/app/dialog.service';
+import { Maimai2Music } from '../model/Maimai2Music';
 
 @Component({
   selector: 'app-maimai2-circle',
@@ -33,9 +30,11 @@ export class Maimai2CircleComponent implements OnInit {
     private messageService: MessageService,
     private modalService: NgbModal,
     private dialogService: DialogService,
-    protected clipboard: Clipboard
+    protected clipboard: Clipboard,
+    private translate: TranslateService
   ) {
   }
+
   protected readonly Math = Math;
   host = environment.assetsHost;
   enableImages = environment.enableImages;
@@ -43,22 +42,23 @@ export class Maimai2CircleComponent implements OnInit {
   aimeId: string;
 
   requestJoinUserList: Maimai2RequestJoinCircleUser[] = [];
-  requestJoinUserListTotalCount: number = 0;
-  requestJoinUserListPage: number = 0;
+  requestJoinUserListTotalCount = 0;
+  requestJoinUserListPage = 0;
 
   circleMemberUserList: Maimai2CircleMemberInfo[] = [];
-  circleMemberUserListTotalCount: number = 0;
-  circleMemberUserListPage: number = 0;
+  circleMemberUserListTotalCount = 0;
+  circleMemberUserListPage = 0;
 
   publicUserCircleList: Maimai2Circle[] = [];
-  publicUserCircleListTotalCount: number = 0;
-  publicUserCircleListPage: number = 0;
+  publicUserCircleListTotalCount = 0;
+  publicUserCircleListPage = 0;
 
   userCircleInfo: Maimai2UserCircleInfo = null;
+  challengeMusic: Maimai2Music = null;
 
   updateCommentStr: string;
 
-  pageSize: number = 10
+  pageSize = 10;
 
   isModify = false;
   tmpUserCircle: Maimai2Circle;
@@ -76,8 +76,7 @@ export class Maimai2CircleComponent implements OnInit {
         this.publicUserCircleListPage = page;
         this.publicUserCircleListTotalCount = data.totalElements;
         console.log(`loadPublicUserCircleList() loaded successfully, page = ${page}`);
-      }
-      ,
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`loadPublicUserCircleList() failed, error = ${error}`);
@@ -94,8 +93,7 @@ export class Maimai2CircleComponent implements OnInit {
         this.requestJoinUserListPage = page;
         this.requestJoinUserListTotalCount = data.totalElements;
         console.log(`loadRequestJoinCircleList() loaded successfully, page = ${page}`);
-      }
-      ,
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`loadRequestJoinCircleList() failed, error = ${error}`);
@@ -112,8 +110,7 @@ export class Maimai2CircleComponent implements OnInit {
         this.circleMemberUserListPage = page;
         this.circleMemberUserListTotalCount = data.totalElements;
         console.log(`loadCircleMemberUserList() loaded successfully, page = ${page}`);
-      }
-      ,
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`loadCircleMemberUserList() failed, error = ${error}`);
@@ -129,12 +126,12 @@ export class Maimai2CircleComponent implements OnInit {
         if (isOk(data)) {
           this.userCircleInfo = data.data;
           this.updateCommentStr = data.data?.joinedCircle?.comment;
-          console.log(`loadUserCircleInfo() loaded successfully`);
+          this.loadChallengeMusic();
+          console.log('loadUserCircleInfo() loaded successfully');
         } else {
-          this.toastShowFailedMessage(data, "加载用户Circle信息失败");
+          this.toastShowFailedMessage(data, 'LoadUserCircleInfoFailed');
         }
-      }
-      ,
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`loadUserCircleInfo() failed, error = ${error}`);
@@ -145,7 +142,7 @@ export class Maimai2CircleComponent implements OnInit {
 
   copyCircleCode(circle: Maimai2Circle) {
     this.clipboard.copy(circle.circleCode);
-    this.messageService.toastService.show("复制circleCode成功, 可以给其他人搜索并加入Circle");
+    this.messageService.toastService.show(this.t('CopyCircleCodeSuccess'));
   }
 
   load() {
@@ -195,12 +192,12 @@ export class Maimai2CircleComponent implements OnInit {
     const param = new HttpParams().set('aimeId', this.aimeId).set('circleId', circle.circleId);
     this.api.post('api/game/maimai2/requestJoinCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
-        if (isOk(data))
-          this.messageService.toastService.show("申请加入Circle成功, 等待对方同意");
-        else
-          this.toastShowFailedMessage(data, "申请加入Circle失败");
-      }
-      ,
+        if (isOk(data)) {
+          this.messageService.toastService.show(this.t('JoinCircleSuccess'));
+        } else {
+          this.toastShowFailedMessage(data, 'JoinCircleFailed');
+        }
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`joinCircle() failed, error = ${error}`);
@@ -210,21 +207,23 @@ export class Maimai2CircleComponent implements OnInit {
   }
 
   async kickUser(memberInfo: Maimai2CircleMemberInfo) {
-    if (!await this.dialogService.show("警告", `是否踢出用户${memberInfo?.userProfile?.userName}?`))
+    if (!await this.dialogService.show(
+      this.t('Warning'),
+      this.t('KickUserConfirm', { userName: memberInfo?.userProfile?.userName ?? '' })
+    )) {
       return;
+    }
 
     const param = new HttpParams().set('aimeId', this.aimeId).set('userCode', memberInfo?.userCode);
     await this.api.post('api/game/maimai2/deleteUserToCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
         if (isOk(data)) {
-          this.messageService.toastService.show("踢出玩家成功");
-          //refresh
+          this.messageService.toastService.show(this.t('KickUserSuccess'));
           this.loadCircleMemberUserList(this.circleMemberUserListPage);
+        } else {
+          this.toastShowFailedMessage(data, 'KickUserFailed');
         }
-        else
-          this.toastShowFailedMessage(data, "踢出玩家失败");
-      }
-      ,
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`kickUser() failed, error = ${error}`);
@@ -238,15 +237,13 @@ export class Maimai2CircleComponent implements OnInit {
     this.api.post('api/game/maimai2/approveUserJoinCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
         if (isOk(data)) {
-          this.messageService.toastService.show("同意玩家加入Circle成功");
-          //refresh
+          this.messageService.toastService.show(this.t('ApproveJoinSuccess'));
           this.loadRequestJoinCircleList(this.requestJoinUserListPage);
           this.loadCircleMemberUserList(this.circleMemberUserListPage);
+        } else {
+          this.toastShowFailedMessage(data, 'ApproveJoinFailed');
         }
-        else
-          this.toastShowFailedMessage(data, "同意玩家加入Circle失败");
-      }
-      ,
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`approveUser() failed, error = ${error}`);
@@ -260,14 +257,12 @@ export class Maimai2CircleComponent implements OnInit {
     this.api.post('api/game/maimai2/rejectUserJoinCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
         if (isOk(data)) {
-          this.messageService.toastService.show("已拒绝玩家加入Circle");
-          //refresh
+          this.messageService.toastService.show(this.t('RejectJoinSuccess'));
           this.loadRequestJoinCircleList(this.requestJoinUserListPage);
+        } else {
+          this.toastShowFailedMessage(data, 'RejectJoinFailed');
         }
-        else
-          this.toastShowFailedMessage(data, "拒绝玩家加入Circle失败");
-      }
-      ,
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`rejectUser() failed, error = ${error}`);
@@ -281,13 +276,12 @@ export class Maimai2CircleComponent implements OnInit {
     this.api.post('api/game/maimai2/updateCircle', this.tmpUserCircle, param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
         if (isOk(data)) {
-          this.messageService.toastService.show("更新Circle信息成功");
-          this.loadUserCircleInfo(); // refresh
+          this.messageService.toastService.show(this.t('UpdateCircleSuccess'));
+          this.loadUserCircleInfo();
+        } else {
+          this.toastShowFailedMessage(data, 'UpdateCircleFailed');
         }
-        else
-          this.toastShowFailedMessage(data, "更新Circle信息失败");
-      }
-      ,
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`updateCircle() failed, error = ${error}`);
@@ -309,10 +303,11 @@ export class Maimai2CircleComponent implements OnInit {
   }
 
   processComfirmButton() {
-    if (this.isModify)
+    if (this.isModify) {
       this.updateCircle();
-    else
+    } else {
       this.createCircle();
+    }
   }
 
   createCircle() {
@@ -320,13 +315,12 @@ export class Maimai2CircleComponent implements OnInit {
     this.api.post('api/game/maimai2/createCircle', this.tmpUserCircle, param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
         if (isOk(data)) {
-          this.messageService.toastService.show("新建Circle成功");
-          this.loadUserCircleInfo(); // refresh
+          this.messageService.toastService.show(this.t('CreateCircleSuccess'));
+          this.loadUserCircleInfo();
+        } else {
+          this.toastShowFailedMessage(data, 'CreateCircleFailed');
         }
-        else
-          this.toastShowFailedMessage(data, "新建Circle失败");
-      }
-      ,
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`createCircle() failed, error = ${error}`);
@@ -336,19 +330,23 @@ export class Maimai2CircleComponent implements OnInit {
   }
 
   async exitCircle() {
-    if (!await this.dialogService.show("警告", `是否退出Circle圈子${this.userCircleInfo?.joinedCircle?.circleName}?`))
+    if (!await this.dialogService.show(
+      this.t('Warning'),
+      this.t('ExitCircleConfirm', { circleName: this.userCircleInfo?.joinedCircle?.circleName ?? '' })
+    )) {
       return;
+    }
+
     const param = new HttpParams().set('aimeId', this.aimeId);
     await this.api.post('api/game/maimai2/exitCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
         if (isOk(data)) {
-          this.messageService.toastService.show("退出Circle成功");
-          this.loadUserCircleInfo(); // refresh
+          this.messageService.toastService.show(this.t('ExitCircleSuccess'));
+          this.loadUserCircleInfo();
+        } else {
+          this.toastShowFailedMessage(data, 'ExitCircleFailed');
         }
-        else
-          this.toastShowFailedMessage(data, "退出Circle失败");
-      }
-      ,
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`exitCircle() failed, error = ${error}`);
@@ -358,19 +356,23 @@ export class Maimai2CircleComponent implements OnInit {
   }
 
   async dissolveCircle() {
-    if (!await this.dialogService.show("警告", `是否解散Circle圈子${this.userCircleInfo?.joinedCircle?.circleName}?`))
+    if (!await this.dialogService.show(
+      this.t('Warning'),
+      this.t('DissolveCircleConfirm', { circleName: this.userCircleInfo?.joinedCircle?.circleName ?? '' })
+    )) {
       return;
+    }
+
     const param = new HttpParams().set('aimeId', this.aimeId);
     this.api.post('api/game/maimai2/dissolveCircle', param).pipe().subscribe(
       (data: ApiResponse<boolean>) => {
         if (isOk(data)) {
-          this.messageService.toastService.show("解散Circle成功");
-          this.loadUserCircleInfo(); // refresh
+          this.messageService.toastService.show(this.t('DissolveCircleSuccess'));
+          this.loadUserCircleInfo();
+        } else {
+          this.toastShowFailedMessage(data, 'DissolveCircleFailed');
         }
-        else
-          this.toastShowFailedMessage(data, "解散Circle失败");
-      }
-      ,
+      },
       (error: string) => {
         this.messageService.notice(error);
         console.error(`dissolveCircle() failed, error = ${error}`);
@@ -379,10 +381,99 @@ export class Maimai2CircleComponent implements OnInit {
     );
   }
 
-  toastShowFailedMessage(apiResp: ApiResponse<any>, contentPrefix: string) {
-    var msg = `${contentPrefix}: [${apiResp?.status?.code}] ${apiResp?.status?.message}`;
+  toastShowFailedMessage(apiResp: ApiResponse<any>, contentPrefixKey: string) {
+    const msg = `${this.t(contentPrefixKey)}: [${apiResp?.status?.code}] ${apiResp?.status?.message}`;
     this.messageService.toastService.show(msg);
   }
 
-  protected readonly length = length;
+  loadChallengeMusic() {
+    const musicId = this.getCurrentChallengeMusicId();
+    if (!musicId) {
+      this.challengeMusic = null;
+      return;
+    }
+
+    const param = new HttpParams().set('id', musicId);
+    this.api.get('api/game/maimai2/data/music', param).pipe().subscribe(
+      (data: Maimai2Music) => {
+        this.challengeMusic = data;
+      },
+      (error: string) => {
+        this.challengeMusic = null;
+        console.error(`loadChallengeMusic() failed, error = ${error}`);
+        return of({ data: [], error: true });
+      }
+    );
+  }
+
+  formatAchievement(achievement: number | null | undefined) {
+    if (achievement === null || achievement === undefined) {
+      return this.t('Dash');
+    }
+
+    return `${(achievement / 10000).toFixed(4)}%`;
+  }
+
+  formatBoolean(value: boolean | null | undefined) {
+    if (value === null || value === undefined) {
+      return this.t('Dash');
+    }
+
+    return value ? this.t('Yes') : this.t('No');
+  }
+
+  getAchievementProgressPercent(achievement: number | null | undefined) {
+    if (achievement === null || achievement === undefined) {
+      return 0;
+    }
+
+    return Math.max(0, Math.min((achievement / 10000000) * 100, 100));
+  }
+
+  formatRewardStatus(rewardGet: boolean | null | undefined) {
+    if (rewardGet === null || rewardGet === undefined) {
+      return this.t('Dash');
+    }
+
+    return rewardGet ? this.t('Claimed') : this.t('Pending');
+  }
+
+  getCurrentChallengeMusicId() {
+    return this.userCircleInfo?.circleChallenge?.musicId
+      ?? this.userCircleInfo?.userCircleChallenge?.musicId
+      ?? 0;
+  }
+
+  getChallengeLevelSummary(music: Maimai2Music | null | undefined) {
+    if (!music?.details) {
+      return '';
+    }
+
+    const difficultyLabels = [
+      this.t('Basic'),
+      this.t('Advanced'),
+      this.t('Expert'),
+      this.t('Master'),
+      this.t('ReMaster'),
+      this.t('Utage')
+    ];
+
+    return Object.values(music.details)
+      .filter(detail => detail)
+      .sort((a, b) => a.diff - b.diff)
+      .map(detail => `${difficultyLabels[detail.diff] ?? `${this.t('Diff')} ${detail.diff}`} ${(detail.levelDecimal / 10).toFixed(1)}`)
+      .join(' / ');
+  }
+
+  getJacketId(input: number): string {
+    return (input ?? 0).toString().slice(-4).padStart(6, '0');
+  }
+
+  imgError(event: Event) {
+    (event.target as HTMLImageElement).src = this.host + 'assets/mai2/jacket/UI_Jacket_000000.webp';
+  }
+
+  private t(key: string, params?: Record<string, any>) {
+    return this.translate.instant(`Maimai2.CirclePage.${key}`, params);
+  }
 }

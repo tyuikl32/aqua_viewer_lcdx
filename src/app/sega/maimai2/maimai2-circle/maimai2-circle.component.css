@@ -86,6 +86,42 @@
   text-align: left;
 }
 
+.challenge-jacket {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.challenge-meta {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.challenge-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.challenge-cell {
+  min-width: 10rem;
+}
+
+.challenge-progress {
+  margin-top: auto;
+}
+
+.challenge-progress-bar {
+  height: 0.75rem;
+  background-color: #e9ecef;
+}
+
+.challenge-progress-bar .progress-bar {
+  background: #1d976c;
+}
+
 .pagination {
   margin-top: 10px;
 }

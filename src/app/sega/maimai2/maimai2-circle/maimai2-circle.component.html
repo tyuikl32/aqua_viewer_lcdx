@@ -3,7 +3,12 @@
 <ng-template #content let-modal>
   <div class="modal-header">
     <h4 class="modal-title" id="modal-basic-title">
-      {{ isModify ? "编辑" : "新建" }}Circle
+      {{
+        (isModify
+          ? "Maimai2.CirclePage.EditCircle"
+          : "Maimai2.CirclePage.CreateCircle"
+        ) | translate
+      }}
     </h4>
     <button
       type="button"
@@ -14,39 +19,47 @@
   </div>
 
   <div class="modal-body">
-    <label for="userInput" class="form-label">Circle名称:</label>
+    <label for="circleNameInput" class="form-label">{{
+      "Maimai2.CirclePage.CircleName" | translate
+    }}</label>
     <input
-      id="userInput"
+      id="circleNameInput"
       type="text"
       class="form-control"
       [(ngModel)]="tmpUserCircle.circleName"
     />
-    <label for="userInput" class="form-label mt-2">Comment:</label>
+
+    <label for="circleCommentInput" class="form-label mt-2">{{
+      "Maimai2.CirclePage.Comment" | translate
+    }}</label>
     <textarea
-      id="userInput"
-      type="text"
+      id="circleCommentInput"
       rows="5"
       class="form-control multi-line-ellipsis"
       [(ngModel)]="tmpUserCircle.comment"
     ></textarea>
+
     <div class="form-check mt-2">
       <input
+        id="circlePublicInput"
         class="form-check-input"
         type="checkbox"
         [(ngModel)]="tmpUserCircle.isPublic"
-        id="checkDefault"
       />
-      <label class="form-check-label" for="checkDefault"> 是否公开 </label>
+      <label class="form-check-label" for="circlePublicInput">
+        {{ "Maimai2.CirclePage.Public" | translate }}
+      </label>
     </div>
+
     <div class="form-check mt-2">
       <input
+        id="circleJoinInput"
         class="form-check-input"
         type="checkbox"
         [(ngModel)]="tmpUserCircle.isAllowAnyoneJoin"
-        id="checkDefault2"
       />
-      <label class="form-check-label" for="checkDefault2">
-        允许任何人直接加入
+      <label class="form-check-label" for="circleJoinInput">
+        {{ "Maimai2.CirclePage.AllowAnyoneJoin" | translate }}
       </label>
     </div>
   </div>
@@ -57,94 +70,105 @@
       class="btn btn-secondary"
       (click)="modal.close('cancel')"
     >
-      取消
+      {{ "Maimai2.CirclePage.Cancel" | translate }}
     </button>
     <button
       type="button"
       class="btn btn-success"
       (click)="processComfirmButton(); modal.close('ok')"
     >
-      提交
+      {{ "Maimai2.CirclePage.Submit" | translate }}
     </button>
   </div>
 </ng-template>
 
-<h3 class="page-heading">已加入的Circle信息</h3>
+<h3 class="page-heading">
+  {{ "Maimai2.CirclePage.JoinedCircle" | translate }}
+</h3>
 <div class="alert alert-info" *ngIf="!userCircleInfo?.joinedCircle">
-  你目前还没有加入任何Circle, 或者你可以新建Circle
+  {{ "Maimai2.CirclePage.JoinedCircleEmpty" | translate }}
 </div>
+
 <div *ngIf="userCircleInfo?.joinedCircle">
   <div class="card mb-4">
-    <div class="card-body gap-2 d-grid">
-      <div class="d-block gap-2 d-flex align-items-center">
-        <div>
-          <!--
-          <img
-            class="song-jacket cover-full"
-            *ngIf="enableImages == true"
-            [src]="host + 'assets/mai2/jacket/UI_Jacket_' + getJacketId(item.musicId) + '.webp'"
-            (error)="imgError($event)"
-            #img alt="">
-            -->
+    <div class="card-body">
+      <div class="overflow-hidden" style="text-overflow: ellipsis">
+        <h3 class="text-nowrap mb-2 fw-bold m-0">
+          {{ userCircleInfo?.joinedCircle?.circleName }}
+        </h3>
+
+        <div class="d-flex mb-1 align-items-baseline">
+          <span class="fw-bold fs-8 me-2"
+            >{{ "Maimai2.CirclePage.PlaceCircle" | translate }}:</span
+          >
+          <span>{{
+            formatBoolean(userCircleInfo?.joinedCircle?.isPlace)
+          }}</span>
         </div>
-        <div class="d-grid gap-4 position-relative w-100">
-          <div class="overflow-hidden" style="text-overflow: ellipsis">
-            <h3 class="text-nowrap mb-2 fw-bold m-0">
-              {{ userCircleInfo?.joinedCircle?.circleName }}
-            </h3>
-            <div class="d-flex mb-1 align-items-baseline">
-              <span class="fw-bold fs-8 me-2">是否为用户Circle:</span>
-              <span>{{ userCircleInfo?.joinedCircle?.isPlace }}</span>
-            </div>
-            <div class="d-flex mb-1 align-items-baseline">
-              <span class="fw-bold fs-8 me-2">Circle段位:</span>
-              <span>{{ userCircleInfo?.joinedCircle?.circleClass }}</span>
-            </div>
-            <div class="d-flex mb-1 align-items-baseline">
-              <span class="fw-bold fs-8 me-2">是否公开:</span>
-              <span>{{ userCircleInfo?.joinedCircle?.isPublic }}</span>
-            </div>
-            <div class="d-flex mb-1 align-items-baseline">
-              <span class="fw-bold fs-8 me-2">允许任何人直接加入:</span>
-              <span>{{ userCircleInfo?.joinedCircle?.isAllowAnyoneJoin }}</span>
-            </div>
-            <div class="d-flex mb-3 align-items-baseline">
-              <span class="fw-bold fs-8 me-2">PlaceId:</span>
-              <span>{{ userCircleInfo?.joinedCircle?.placeId }}</span>
-            </div>
-            <div class="d-flex mb-1 align-items-baseline">
-              <span class="fw-bold fs-8 me-2">玩家数据更新日期:</span>
-              <span>{{ userCircleInfo?.userCirclePointData?.aggrDate }}</span>
-            </div>
-            <div class="d-flex mb-1 align-items-baseline">
-              <span class="fw-bold fs-8 me-2">此玩家累计point (上月累计):</span>
-              <span
-                >{{ userCircleInfo?.userCirclePointData?.point }}pt ({{
-                  userCircleInfo?.userCirclePointRankingResult?.lastMonthPoint
-                }}pt)</span
-              >
-            </div>
-            <div class="d-flex mb-3 align-items-baseline">
-              <span class="fw-bold fs-8 me-2">此玩家上个月排名:</span>
-              <span>{{
-                userCircleInfo?.userCirclePointRankingResult
-                  ?.lastMonthCircleRank
-              }}</span>
-            </div>
-            <div
-              class="card d-flex"
-              *ngIf="userCircleInfo?.joinedCircle?.comment"
-            >
-              <div class="card-body">
-                <span class="comment-text">{{
-                  userCircleInfo?.joinedCircle?.comment
-                }}</span>
-              </div>
-            </div>
+        <div class="d-flex mb-1 align-items-baseline">
+          <span class="fw-bold fs-8 me-2"
+            >{{ "Maimai2.CirclePage.CircleClass" | translate }}:</span
+          >
+          <span>{{ userCircleInfo?.joinedCircle?.circleClass }}</span>
+        </div>
+        <div class="d-flex mb-1 align-items-baseline">
+          <span class="fw-bold fs-8 me-2"
+            >{{ "Maimai2.CirclePage.Public" | translate }}:</span
+          >
+          <span>{{
+            formatBoolean(userCircleInfo?.joinedCircle?.isPublic)
+          }}</span>
+        </div>
+        <div class="d-flex mb-1 align-items-baseline">
+          <span class="fw-bold fs-8 me-2"
+            >{{ "Maimai2.CirclePage.AllowAnyoneJoin" | translate }}:</span
+          >
+          <span>{{
+            formatBoolean(userCircleInfo?.joinedCircle?.isAllowAnyoneJoin)
+          }}</span>
+        </div>
+        <div class="d-flex mb-3 align-items-baseline">
+          <span class="fw-bold fs-8 me-2"
+            >{{ "Maimai2.CirclePage.PlaceId" | translate }}:</span
+          >
+          <span>{{ userCircleInfo?.joinedCircle?.placeId }}</span>
+        </div>
+
+        <div class="d-flex mb-1 align-items-baseline">
+          <span class="fw-bold fs-8 me-2"
+            >{{ "Maimai2.CirclePage.PointUpdateDate" | translate }}:</span
+          >
+          <span>{{ userCircleInfo?.userCirclePointData?.aggrDate }}</span>
+        </div>
+        <div class="d-flex mb-1 align-items-baseline">
+          <span class="fw-bold fs-8 me-2"
+            >{{ "Maimai2.CirclePage.Point" | translate }}:</span
+          >
+          <span>
+            {{ userCircleInfo?.userCirclePointData?.point ?? 0 }}pt ({{
+              userCircleInfo?.userCirclePointRankingResult?.lastMonthPoint ?? 0
+            }}pt {{ "Maimai2.CirclePage.LastMonth" | translate }})
+          </span>
+        </div>
+        <div class="d-flex mb-3 align-items-baseline">
+          <span class="fw-bold fs-8 me-2"
+            >{{ "Maimai2.CirclePage.LastMonthRank" | translate }}:</span
+          >
+          <span>{{
+            userCircleInfo?.userCirclePointRankingResult?.lastMonthCircleRank
+          }}</span>
+        </div>
+
+        <div class="card d-flex" *ngIf="userCircleInfo?.joinedCircle?.comment">
+          <div class="card-body">
+            <span class="comment-text">{{
+              userCircleInfo?.joinedCircle?.comment
+            }}</span>
           </div>
         </div>
       </div>
     </div>
+
     <div class="card-footer">
       <div class="d-flex justify-content-between">
         <div class="align-items-center d-flex">
@@ -155,14 +179,14 @@
             class="btn btn-primary btn-sm horizon-margin"
             (click)="copyCircleCode(userCircleInfo?.joinedCircle)"
           >
-            复制CircleCode
+            {{ "Maimai2.CirclePage.CopyCircleCode" | translate }}
           </button>
           <button
             class="btn btn-danger btn-sm horizon-margin"
             (click)="exitCircle()"
             *ngIf="!userCircleInfo?.isCircleOwner"
           >
-            退出此Circle圈子
+            {{ "Maimai2.CirclePage.ExitCircle" | translate }}
           </button>
         </div>
       </div>
@@ -170,8 +194,123 @@
   </div>
 </div>
 
+<div
+  *ngIf="userCircleInfo?.circleChallenge || userCircleInfo?.userCircleChallenge"
+>
+  <h3 class="page-heading">
+    {{ "Maimai2.CirclePage.ChallengeSection" | translate }}
+  </h3>
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-start">
+        <div
+          class="col-12 col-md-auto"
+          *ngIf="enableImages && getCurrentChallengeMusicId()"
+        >
+          <img
+            class="challenge-jacket rounded"
+            [src]="
+              host +
+              'assets/mai2/jacket/UI_Jacket_' +
+              getJacketId(getCurrentChallengeMusicId()) +
+              '.webp'
+            "
+            (error)="imgError($event)"
+            alt=""
+          />
+        </div>
+
+        <div class="col">
+          <div class="mb-3" *ngIf="challengeMusic">
+            <div class="small text-body-secondary">
+              {{ "Maimai2.CirclePage.ChallengeSong" | translate }}
+            </div>
+            <h4 class="mb-1">{{ challengeMusic.name }}</h4>
+            <div class="text-body-secondary">
+              {{ challengeMusic.artistName }}
+            </div>
+            <div class="challenge-meta mt-2">
+              <div>
+                <span class="fw-bold me-2"
+                  >{{ "Maimai2.CirclePage.MusicId" | translate }}:</span
+                >
+                <span>{{ challengeMusic.musicId }}</span>
+              </div>
+              <div *ngIf="getChallengeLevelSummary(challengeMusic)">
+                <span class="fw-bold me-2"
+                  >{{ "Maimai2.CirclePage.Levels" | translate }}:</span
+                >
+                <span>{{ getChallengeLevelSummary(challengeMusic) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div
+              class="col-12 col-xl-6"
+              *ngIf="userCircleInfo?.circleChallenge as challenge"
+            >
+              <div class="challenge-panel h-100">
+                <div class="challenge-meta">
+                  <div>
+                    <span class="fw-bold me-2"
+                      >{{ "Maimai2.CirclePage.UpdateDate" | translate }}:</span
+                    >
+                    <span>{{
+                      challenge.updateDate ||
+                        ("Maimai2.CirclePage.Dash" | translate)
+                    }}</span>
+                  </div>
+                  <div>
+                    <span class="fw-bold me-2"
+                      >{{
+                        "Maimai2.CirclePage.RewardStatus" | translate
+                      }}:</span
+                    >
+                    <span>{{
+                      formatRewardStatus(challenge.rewardStatus)
+                    }}</span>
+                  </div>
+                </div>
+                <div class="challenge-progress mt-auto">
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-2"
+                  >
+                    <span class="fw-bold">{{
+                      "Maimai2.CirclePage.TotalAchievement" | translate
+                    }}</span>
+                    <span>{{ formatAchievement(challenge.achievement) }}</span>
+                  </div>
+                  <div
+                    class="progress challenge-progress-bar"
+                    role="progressbar"
+                    [attr.aria-valuenow]="
+                      getAchievementProgressPercent(challenge.achievement)
+                    "
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
+                    <div
+                      class="progress-bar"
+                      [style.width.%]="
+                        getAchievementProgressPercent(challenge.achievement)
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div *ngIf="userCircleInfo?.isCircleOwner">
-  <h3 class="page-heading">管理你的Circle</h3>
+  <h3 class="page-heading">
+    {{ "Maimai2.CirclePage.ManageYourCircle" | translate }}
+  </h3>
   <div class="card mb-4">
     <div class="card-body">
       <div class="d-flex mb-2">
@@ -180,68 +319,86 @@
             class="btn-sm btn btn-primary"
             (click)="openModifyCircleDialog(content)"
           >
-            修改Circle
+            {{ "Maimai2.CirclePage.EditCircle" | translate }}
           </button>
           <button
             class="btn btn-danger btn-sm horizon-margin"
             (click)="dissolveCircle()"
           >
-            解散此Circle圈子
+            {{ "Maimai2.CirclePage.DissolveCircle" | translate }}
           </button>
         </div>
       </div>
+
       <div *ngIf="userCircleInfo?.joinedCircle">
-        <h5 class="page-heading mt-5">Circle成员列表</h5>
+        <h5 class="page-heading mt-5">
+          {{ "Maimai2.CirclePage.CircleMembers" | translate }}
+        </h5>
 
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>昵称</th>
-              <th>Rating</th>
-              <th>积分</th>
-              <th>最后登录</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let member of circleMemberUserList">
-              <td>{{ member.userProfile.userName }}</td>
-              <td>
-                {{ member.userProfile.playerRating }}
-              </td>
-              <td>
-                <span *ngIf="member.userCirclePointData?.point"
-                  >{{ member.userCirclePointData?.point }}pt</span
-                >
-              </td>
-              <td>{{ member.userCircleData?.lastLoginDate }}</td>
-              <td>
-                <button
-                  class="btn btn-outline-danger btn-sm horizon-margin"
-                  (click)="kickUser(member)"
-                >
-                  踢出
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table class="table table-striped align-middle">
+            <thead>
+              <tr>
+                <th>{{ "Maimai2.CirclePage.Name" | translate }}</th>
+                <th>{{ "Maimai2.CirclePage.Rating" | translate }}</th>
+                <th>{{ "Maimai2.CirclePage.Point" | translate }}</th>
+                <th>{{ "Maimai2.CirclePage.Achievement" | translate }}</th>
+                <th>{{ "Maimai2.CirclePage.LastLogin" | translate }}</th>
+                <th>{{ "Maimai2.CirclePage.Action" | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let member of circleMemberUserList">
+                <td>{{ member.userProfile.userName }}</td>
+                <td>{{ member.userProfile.playerRating }}</td>
+                <td>
+                  <span *ngIf="member.userCirclePointData?.point">
+                    {{ member.userCirclePointData?.point }}pt
+                  </span>
+                </td>
+                <td>
+                  <div
+                    class="challenge-meta challenge-cell"
+                    *ngIf="
+                      member.userCircleChallenge as challenge;
+                      else noMemberChallenge
+                    "
+                  >
+                    <div>{{ formatAchievement(challenge.achievement) }}</div>
+                  </div>
+                  <ng-template #noMemberChallenge>{{
+                    "Maimai2.CirclePage.Dash" | translate
+                  }}</ng-template>
+                </td>
+                <td>{{ member.userCircleData?.lastLoginDate }}</td>
+                <td>
+                  <button
+                    class="btn btn-outline-danger btn-sm horizon-margin"
+                    (click)="kickUser(member)"
+                  >
+                    {{ "Maimai2.CirclePage.Kick" | translate }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-        <div
-          class="pagination justify-content-center d-flex align-items-center"
-        >
+        <ul class="pagination justify-content-center d-flex align-items-center">
           <li
             class="page-item"
             [class.disabled]="circleMemberUserListPage === 0"
           >
-            <a class="page-link" (click)="prevCircleMemberUserListPage()"
-              >&nbsp;<&nbsp;</a
-            >
+            <a class="page-link" (click)="prevCircleMemberUserListPage()">
+              &nbsp;&lt;&nbsp;
+            </a>
           </li>
-          <span class="ml-2 mr-2"
-            >第 {{ circleMemberUserListPage + 1 }} 页 / 共
-            {{ Math.ceil(circleMemberUserListTotalCount / pageSize) }} 页</span
-          >
+          <li class="page-item disabled">
+            <span class="page-link">
+              {{ circleMemberUserListPage + 1 }} /
+              {{ Math.ceil(circleMemberUserListTotalCount / pageSize) || 1 }}
+            </span>
+          </li>
           <li
             class="page-item"
             [class.disabled]="
@@ -249,24 +406,26 @@
               circleMemberUserListTotalCount
             "
           >
-            <a class="page-link" (click)="nextCircleMemberUserListPage()"
-              >&nbsp;>&nbsp;</a
-            >
+            <a class="page-link" (click)="nextCircleMemberUserListPage()">
+              &nbsp;&gt;&nbsp;
+            </a>
           </li>
-        </div>
+        </ul>
 
-        <h5 class="page-heading mt-5">申请加入Circle列表</h5>
+        <h5 class="page-heading mt-5">
+          {{ "Maimai2.CirclePage.JoinRequests" | translate }}
+        </h5>
 
-        <div *ngIf="requestJoinUserListTotalCount > 0">
+        <div *ngIf="requestJoinUserListTotalCount > 0; else emptyRequests">
           <table class="user-table">
             <thead>
               <tr>
-                <th>昵称</th>
-                <th>段位(class/grade)</th>
-                <th>Rating</th>
-                <th>上次登录时间</th>
-                <th>申请时间</th>
-                <th>操作</th>
+                <th>{{ "Maimai2.CirclePage.Name" | translate }}</th>
+                <th>{{ "Maimai2.CirclePage.ClassGrade" | translate }}</th>
+                <th>{{ "Maimai2.CirclePage.Rating" | translate }}</th>
+                <th>{{ "Maimai2.CirclePage.LastPlay" | translate }}</th>
+                <th>{{ "Maimai2.CirclePage.RequestTime" | translate }}</th>
+                <th>{{ "Maimai2.CirclePage.Action" | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -284,33 +443,36 @@
                     class="btn btn-outline-success btn-sm horizon-margin"
                     (click)="approveUser(userRequest.userCode)"
                   >
-                    批准
+                    {{ "Maimai2.CirclePage.Approve" | translate }}
                   </button>
                   <button
                     class="btn btn-outline-danger btn-sm horizon-margin"
                     (click)="rejectUser(userRequest.userCode)"
                   >
-                    拒绝
+                    {{ "Maimai2.CirclePage.Reject" | translate }}
                   </button>
                 </td>
               </tr>
             </tbody>
           </table>
-          <div
+
+          <ul
             class="pagination justify-content-center d-flex align-items-center"
           >
             <li
               class="page-item"
               [class.disabled]="requestJoinUserListPage === 0"
             >
-              <a class="page-link" (click)="prevRequestJoinCircleListPage()"
-                >&nbsp;<&nbsp;</a
-              >
+              <a class="page-link" (click)="prevRequestJoinCircleListPage()">
+                &nbsp;&lt;&nbsp;
+              </a>
             </li>
-            <span class="ml-2 mr-2"
-              >第 {{ requestJoinUserListPage + 1 }} 页 / 共
-              {{ Math.ceil(requestJoinUserListTotalCount / pageSize) }} 页</span
-            >
+            <li class="page-item disabled">
+              <span class="page-link">
+                {{ requestJoinUserListPage + 1 }} /
+                {{ Math.ceil(requestJoinUserListTotalCount / pageSize) || 1 }}
+              </span>
+            </li>
             <li
               class="page-item"
               [class.disabled]="
@@ -318,51 +480,53 @@
                 requestJoinUserListTotalCount
               "
             >
-              <a class="page-link" (click)="nextRequestJoinCircleListPage()"
-                >&nbsp;>&nbsp;</a
-              >
+              <a class="page-link" (click)="nextRequestJoinCircleListPage()">
+                &nbsp;&gt;&nbsp;
+              </a>
             </li>
-          </div>
+          </ul>
         </div>
 
-        <div
-          class="alert alert-info"
-          *ngIf="requestJoinUserListTotalCount == 0"
-        >
-          暂无玩家申请加入
-        </div>
+        <ng-template #emptyRequests>
+          <div class="alert alert-info">
+            {{ "Maimai2.CirclePage.NoJoinRequests" | translate }}
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>
 </div>
 
-<h3 class="page-heading mt-4">公开的用户Circle列表</h3>
+<h3 class="page-heading mt-4">
+  {{ "Maimai2.CirclePage.PublicCircles" | translate }}
+</h3>
 <button
   class="btn-sm btn btn-primary mb-4"
   (click)="openCreateCircleDialog(content)"
 >
-  新建Circle
+  {{ "Maimai2.CirclePage.CreateCircle" | translate }}
 </button>
-<div class="mb-4" *ngIf="publicUserCircleListTotalCount > 0">
+
+<div class="mb-4" *ngIf="publicUserCircleListTotalCount > 0; else emptyCircles">
   <div class="row">
     <div *ngFor="let circle of publicUserCircleList" class="col-md-6 mb-3">
       <div class="card position-relative h-100">
-        <!-- 右上角申请加入按钮 -->
         <button
           class="btn btn-primary btn-sm position-absolute top-0 end-0 m-2"
           (click)="joinCircle(circle)"
           *ngIf="!userCircleInfo?.joinedCircle"
         >
-          申请加入
+          {{ "Maimai2.CirclePage.Join" | translate }}
         </button>
 
         <div class="card-body">
           <h5 class="card-title">{{ circle.circleName }}</h5>
           <h6 class="card-subtitle mb-2 text-muted">
-            Place ID: {{ circle.placeId }}
+            {{ "Maimai2.CirclePage.PlaceId" | translate }}: {{ circle.placeId }}
           </h6>
           <h6 class="card-subtitle mb-2 text-muted">
-            Class: {{ circle.circleClass }}
+            {{ "Maimai2.CirclePage.Class" | translate }}:
+            {{ circle.circleClass }}
           </h6>
           <div class="card" *ngIf="circle.comment">
             <div class="card-body">
@@ -373,16 +537,19 @@
       </div>
     </div>
   </div>
-  <div class="pagination justify-content-center d-flex align-items-center">
+
+  <ul class="pagination justify-content-center d-flex align-items-center">
     <li class="page-item" [class.disabled]="publicUserCircleListPage === 0">
-      <a class="page-link" (click)="prevPublicUserCircleListPage()"
-        >&nbsp;<&nbsp;</a
-      >
+      <a class="page-link" (click)="prevPublicUserCircleListPage()">
+        &nbsp;&lt;&nbsp;
+      </a>
     </li>
-    <span class="ml-2 mr-2"
-      >第 {{ publicUserCircleListPage + 1 }} 页 / 共
-      {{ Math.ceil(publicUserCircleListTotalCount / pageSize) }} 页</span
-    >
+    <li class="page-item disabled">
+      <span class="page-link">
+        {{ publicUserCircleListPage + 1 }} /
+        {{ Math.ceil(publicUserCircleListTotalCount / pageSize) || 1 }}
+      </span>
+    </li>
     <li
       class="page-item"
       [class.disabled]="
@@ -390,13 +557,15 @@
         publicUserCircleListTotalCount
       "
     >
-      <a class="page-link" (click)="nextPublicUserCircleListPage()"
-        >&nbsp;>&nbsp;</a
-      >
+      <a class="page-link" (click)="nextPublicUserCircleListPage()">
+        &nbsp;&gt;&nbsp;
+      </a>
     </li>
-  </div>
+  </ul>
 </div>
 
-<div class="alert alert-info" *ngIf="publicUserCircleListTotalCount == 0">
-  暂无可加入的Circle
-</div>
+<ng-template #emptyCircles>
+  <div class="alert alert-info">
+    {{ "Maimai2.CirclePage.NoPublicCircles" | translate }}
+  </div>
+</ng-template>
