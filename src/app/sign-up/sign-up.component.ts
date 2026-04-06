@@ -55,9 +55,13 @@ export class SignUpComponent implements OnDestroy {
 
       email: ['', [
         Validators.required,
-        Validators.maxLength(12)]],
+        Validators.maxLength(12),
+        Validators.pattern('^[0-9]+$')]],
       verifyCode: ['', [
-        Validators.required]],
+        Validators.required,
+        Validators.minLength(4),
+        Validators.maxLength(4),
+        Validators.pattern('^[0-9]{4}$')]],
       password: ['', [
         Validators.required,
         Validators.minLength(8),
@@ -67,8 +71,8 @@ export class SignUpComponent implements OnDestroy {
     this.getVerifyCodeForm = this.fb.group({
       email: ['', [
         Validators.required,
-        Validators.email,
-        Validators.maxLength(40)]]
+        Validators.maxLength(40),
+        Validators.pattern('^[0-9]+$')]]
     });
     if (localStorage.getItem('email')){
       const email = localStorage.getItem('email');

@@ -13,13 +13,13 @@
           <div>
             <label for="email" class="form-label small">QQ号 (将会发送到对应QQ邮箱)</label>
             <div class="input-group input-group-sm has-validation">
-              <input type="email" class="form-control form-control-sm" id="email" formControlName="email"
-                     placeholder=""
+              <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control form-control-sm" id="email" formControlName="email"
+                     placeholder="请输入QQ号"
                      [class.is-invalid]="email.touched && !email.valid && email.errors">
               <div *ngIf="email.errors" class="invalid-tooltip">
                 <div *ngIf="email.errors.required">请输入QQ号</div>
                 <div *ngIf="email.errors.maxlength">{{'SignUpPage.EmailErrors.Maxlength' | translate}}</div>
-                <div *ngIf="email.errors.email">{{'SignUpPage.EmailErrors.Email' | translate}}</div>
+                <div *ngIf="email.errors.pattern">QQ号只能包含数字</div>
               </div>
             </div>
           </div>
