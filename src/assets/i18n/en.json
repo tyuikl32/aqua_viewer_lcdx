@@ -283,16 +283,18 @@
     },
     "RatingPage": {
       "Title": "Rating",
-      "TipLead": "Single track ratings are calculated from fumen constants and scores. Player rating is the average of 55 unique fumen ratings, including:",
-      "Tip1": "15 highest ratings from new version fumens",
-      "Tip2": "30 highest ratings from old version fumens",
-      "Tip3": "10 highest ratings from recent plays, excluding Lunatic difficulty",
-      "DataVersionWarning": "Due to a mismatch between the game and server data versions, the fumen constants or rating calculations may be incorrect.",
-      "PlayerRating": "Player Rating",
+      "Overview": "Overview",
+      "TipLead": "Single track ratings are calculated from internal levels and scores. LUNATIC 0 charts and Bonus Tracks are always excluded. The player rating is the sum of three ratings, including:",
+      "Tip1": "Average of 10 highest ratings from new version charts, divided by 5",
+      "Tip2": "Average of 50 highest ratings from old version charts",
+      "Tip3": "Average of 50 highest platinum star ratings of charts from all version",
+      "DataVersionWarning": "Due to a mismatch between the game and server data versions, the internal levels or rating calculations may be incorrect.",
+      "PlayerRating": "Current Rating",
       "HighestRating": "Highest Rating",
       "New": "Current Version",
-      "Best": "Highest Rating",
-      "Recent": "Recent"
+      "Best": "Previous Versions",
+      "Recent": "Recent",
+      "Platinum": "Platinum Star Rating"
     },
     "RecentPage": {
       "Title": "Play Record",
@@ -518,7 +520,7 @@
       "New": "New",
       "Best": "Best",
       "Recent": "Recent",
-      "DataVersionWarning": "Due to a mismatch between the game and server data versions, the fumen constants or rating calculations may be incorrect."
+      "DataVersionWarning": "Due to a mismatch between the game and server data versions, the internal levels or rating calculations may be incorrect."
     },
     "RecentPage": {
       "Title": "Play Record",
