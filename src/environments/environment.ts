@@ -6,7 +6,7 @@ export const environment = {
   // apiServer: 'http://38.147.172.133/',
   // apiServer: 'http://192.168.123.112/',
   apiServer: 'https://portal.naominet.live/',
-  lcdxApiServer: 'https://lcdxnet.sys-all.com.cn/',
+  lcdxApiServer: 'https://lcdxnet.am-allnet.com/',
   production: false,
   enableImages: true,
   maiAssetsHost: 'https://rinnet.stehp.cn/',
