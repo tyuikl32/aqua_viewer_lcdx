@@ -23,32 +23,53 @@
       <button type="button" class="btn-close shadow-none float-end" aria-label="Close" (click)="activeModal.dismiss();"></button>
       <h3 class="modal-title">{{ 'ChuniV2.UserBoxPage.SelectItem' | translate  }}</h3>
     </div>
+    <p *ngIf="favoriteSupported" class="small text-secondary px-2 mb-1">
+      {{ 'ChuniV2.UserBoxPage.FavoriteTip' | translate }}
+    </p>
     <ng-container *ngTemplateOutlet="pagination;"></ng-container>
     <div class="row p-2">
       <ng-container *ngFor="let item of iList | paginate: { id: 'server', itemsPerPage: 12, currentPage: currentPage, totalItems: iList.length }"
                     [ngSwitch]="item.itemKind">
         <ng-container *ngSwitchCase="1">
-          <div class="item-card col-12 col-sm-6 col-lg-4 text-center my-1" (click)="data.itemId = item.itemId" [ngClass]="{'selected': data.itemId == item.itemId}">
+          <div class="item-card col-12 col-sm-6 col-lg-4 text-center my-1 position-relative" (click)="data.itemId = item.itemId" [ngClass]="{'selected': data.itemId == item.itemId}">
             <p class="card-subtitle text-truncate">{{ item.name }}</p>
             <div class="item-body">
               <img src="{{host}}assets/chuni/namePlate/CHU_UI_NamePlate_{{item.itemId|formatNumber:8}}.webp">
             </div>
+            <button *ngIf="favoriteSupported" type="button" class="btn btn-sm favorite-toggle"
+                    [class.text-warning]="isFavorite(item.itemId)" [class.text-secondary]="!isFavorite(item.itemId)"
+                    (click)="toggleFavorite(item.itemId, $event)"
+                    [title]="'ChuniV2.UserBoxPage.Favorite' | translate">
+              {{ isFavorite(item.itemId) ? '★' : '☆' }}
+            </button>
           </div>
         </ng-container>
         <ng-container *ngSwitchCase="8">
-          <div class="item-card col-6 col-sm-4 col-lg-3 text-center my-1" (click)="data.itemId = item.itemId" [ngClass]="{'selected': data.itemId == item.itemId}">
+          <div class="item-card col-6 col-sm-4 col-lg-3 text-center my-1 position-relative" (click)="data.itemId = item.itemId" [ngClass]="{'selected': data.itemId == item.itemId}">
             <p class="card-subtitle text-truncate">{{ item.name }}</p>
             <div class="item-body">
               <img src="{{host}}assets/chuni/mapIcon/CHU_UI_MapIcon_{{item.itemId|formatNumber:8}}.webp">
             </div>
+            <button *ngIf="favoriteSupported" type="button" class="btn btn-sm favorite-toggle"
+                    [class.text-warning]="isFavorite(item.itemId)" [class.text-secondary]="!isFavorite(item.itemId)"
+                    (click)="toggleFavorite(item.itemId, $event)"
+                    [title]="'ChuniV2.UserBoxPage.Favorite' | translate">
+              {{ isFavorite(item.itemId) ? '★' : '☆' }}
+            </button>
           </div>
         </ng-container>
         <ng-container *ngSwitchCase="9">
-          <div class="item-card col-6 col-sm-4 col-lg-3 text-center my-1" (click)="data.itemId = item.itemId" [ngClass]="{'selected': data.itemId == item.itemId}">
+          <div class="item-card col-6 col-sm-4 col-lg-3 text-center my-1 position-relative" (click)="data.itemId = item.itemId" [ngClass]="{'selected': data.itemId == item.itemId}">
             <p class="card-subtitle text-truncate">{{ item.name }}</p>
             <div class="item-body">
               <img src="{{host}}assets/chuni/systemVoice/CHU_UI_SystemVoice_{{item.itemId|formatNumber:8}}.webp">
             </div>
+            <button *ngIf="favoriteSupported" type="button" class="btn btn-sm favorite-toggle"
+                    [class.text-warning]="isFavorite(item.itemId)" [class.text-secondary]="!isFavorite(item.itemId)"
+                    (click)="toggleFavorite(item.itemId, $event)"
+                    [title]="'ChuniV2.UserBoxPage.Favorite' | translate">
+              {{ isFavorite(item.itemId) ? '★' : '☆' }}
+            </button>
           </div>
         </ng-container>
         <ng-container *ngSwitchCase="11">
@@ -59,14 +80,37 @@
             </div>
           </div>
         </ng-container>
+        <ng-container *ngSwitchCase="13">
+          <div class="item-card col-12 col-sm-6 col-lg-4 text-center my-1 position-relative" (click)="data.itemId = item.itemId" [ngClass]="{'selected': data.itemId == item.itemId}">
+            <p class="card-subtitle text-truncate">{{ item.name }}</p>
+            <div class="item-body">
+              <img src="{{host}}assets/chuni/stage/CHU_UI_Stage_{{item.itemId|formatNumber:5}}.webp">
+            </div>
+            <button *ngIf="favoriteSupported" type="button" class="btn btn-sm favorite-toggle"
+                    [class.text-warning]="isFavorite(item.itemId)" [class.text-secondary]="!isFavorite(item.itemId)"
+                    (click)="toggleFavorite(item.itemId, $event)"
+                    [title]="'ChuniV2.UserBoxPage.Favorite' | translate">
+              {{ isFavorite(item.itemId) ? '★' : '☆' }}
+            </button>
+          </div>
+        </ng-container>
         <ng-container *ngSwitchDefault>
-          <div class="item-card col-12 my-1" (click)="data.itemId = item.itemId" [ngClass]="{'selected': data.itemId == item.itemId}">
+          <div class="item-card col-12 my-1 position-relative" (click)="data.itemId = item.itemId" [ngClass]="{'selected': data.itemId == item.itemId}">
             <p class="card-subtitle text-truncate">{{ item.name}}</p>
+            <button *ngIf="favoriteSupported" type="button" class="btn btn-sm favorite-toggle"
+                    [class.text-warning]="isFavorite(item.itemId)" [class.text-secondary]="!isFavorite(item.itemId)"
+                    (click)="toggleFavorite(item.itemId, $event)"
+                    [title]="'ChuniV2.UserBoxPage.Favorite' | translate">
+              {{ isFavorite(item.itemId) ? '★' : '☆' }}
+            </button>
           </div>
         </ng-container>
       </ng-container>
     </div>
     <ng-container *ngTemplateOutlet="pagination;"></ng-container>
-    <button type="button" class="btn btn-sm btn-primary w-100 mt-2" (click)="parentComponent.handleApplyClick(this.data)">{{ 'Common.OK' | translate  }}</button>
+    <button type="button" class="btn btn-sm btn-primary w-100 mt-2" [class.disabled]="savingFavorites"
+            (click)="apply()">
+      {{ 'Common.OK' | translate }}<span *ngIf="favoriteSupported"> · {{ 'ChuniV2.UserBoxPage.SaveFavorites' | translate }} ({{ favoriteIds.length }})</span>
+    </button>
   </div>
 </div>

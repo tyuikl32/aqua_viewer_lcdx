@@ -12,6 +12,7 @@ import {Observable} from 'rxjs';
 import {ChusanNamePlate} from '../model/ChusanNamePlate';
 import {ChusanSystemVoice} from '../model/ChusanSystemVoice';
 import {ChusanMapIcon} from '../model/ChusanMapIcon';
+import {ChusanStage} from '../model/ChusanStage';
 import {ChusanAvatarAcc} from '../model/ChusanAvatarAcc';
 import {UserService} from 'src/app/user.service';
 import {V2SymbolChat} from '../model/V2SymbolChat';
@@ -69,6 +70,16 @@ export class V2UserBoxComponent implements OnInit {
     this.dbService.getAll<ChusanSymbolChat>('chusanSymbolChat').subscribe(x => this.allSymbolChat = x);
   }
 
+  // CHUNITHM Mate+ (2.50) added stage selection and multi-item favorite collections
+  get supportsMate(): boolean {
+    return !!this.profile?.lastRomVersion && compareVersions(this.profile.lastRomVersion, '2.50.00') >= 0;
+  }
+
+  // 99999 is the game's "no stage set" entry; profiles created before 2.50 have no stageId
+  get currentStageId(): number {
+    return this.profile?.stageId ?? 99999;
+  }
+
   initCustomable() {
     this.customable = [
       {name: 'Nameplate', value: this.getNamePlateName(this.profile.nameplateId), click: () => this.namePlate()},
@@ -84,6 +95,13 @@ export class V2UserBoxComponent implements OnInit {
     this.customable = this.customable.concat([
       {name: 'MapIcon', value: this.getMapIconName(this.profile.mapIconId), click: () => this.mapIcon()},
       {name: 'SystemVoice', value: this.getSystemVoiceName(this.profile.voiceId), click: () => this.systemVoice()},
+    ]);
+    if (this.supportsMate) {
+      this.customable = this.customable.concat([
+        {name: 'Stage', value: this.getStageName(this.currentStageId), click: () => this.stage()},
+      ]);
+    }
+    this.customable = this.customable.concat([
       {
         name: 'AvatarWear', value: this.getAvatarAccName(this.profile.avatarWear),
         click: () => this.avatarAcc(1, this.profile.avatarWear)
@@ -209,6 +227,13 @@ export class V2UserBoxComponent implements OnInit {
     });
   }
 
+  getStageName(stageId: number) {
+    return new Promise(resolve => {
+      this.dbService.getByID<ChusanStage>('chusanStage', stageId)
+        .subscribe(stage => resolve(stage?.name ? stage.name : 'Unknown'));
+    });
+  }
+
   getTrophyName(trophyId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanTrophy>('chusanTrophy', trophyId)
@@ -288,6 +313,10 @@ export class V2UserBoxComponent implements OnInit {
           apiURL = 'api/game/chuni/v2/profile/sysvoice';
           requestBody = {aimeId: this.aimeId, voiceId: itemId};
           break;
+        case 13: // Stage
+          apiURL = 'api/game/chuni/v2/profile/stageId';
+          requestBody = {aimeId: this.aimeId, stageId: itemId};
+          break;
       }
 
       this.api.put(apiURL, requestBody).subscribe(() => {
@@ -299,34 +328,38 @@ export class V2UserBoxComponent implements OnInit {
   }
 
   namePlate() {
-    this.openItemDialog({itemKind: 1, itemId: this.profile.nameplateId, showAllItems: this.showAllItems});
+    this.openItemDialog({itemKind: 1, itemId: this.profile.nameplateId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
   }
 
   frame() {
-    this.openItemDialog({itemKind: 2, itemId: this.profile.frameId, showAllItems: this.showAllItems});
+    this.openItemDialog({itemKind: 2, itemId: this.profile.frameId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
   }
 
   trophy() {
-    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyId, showAllItems: this.showAllItems});
+    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
     this.currentSubTrophyIndex = 0;
   }
 
   trophySub1() {
-    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyIdSub1, showAllItems: this.showAllItems});
+    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyIdSub1, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
     this.currentSubTrophyIndex = 1;
   }
 
   trophySub2() {
-    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyIdSub2, showAllItems: this.showAllItems});
+    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyIdSub2, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
     this.currentSubTrophyIndex = 2;
   }
 
   mapIcon() {
-    this.openItemDialog({itemKind: 8, itemId: this.profile.mapIconId, showAllItems: this.showAllItems});
+    this.openItemDialog({itemKind: 8, itemId: this.profile.mapIconId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
   }
 
   systemVoice() {
-    this.openItemDialog({itemKind: 9, itemId: this.profile.voiceId, showAllItems: this.showAllItems});
+    this.openItemDialog({itemKind: 9, itemId: this.profile.voiceId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
+  }
+
+  stage() {
+    this.openItemDialog({itemKind: 13, itemId: this.currentStageId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
   }
 
   avatarAcc(category: number, accId: number) {

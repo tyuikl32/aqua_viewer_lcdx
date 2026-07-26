@@ -16,6 +16,7 @@ import {ChusanMapIcon} from '../sega/chunithm/v2/model/ChusanMapIcon';
 import {ChusanFrame} from '../sega/chunithm/v2/model/ChusanFrame';
 import {ChusanAvatarAcc} from '../sega/chunithm/v2/model/ChusanAvatarAcc';
 import {ChusanSymbolChat} from '../sega/chunithm/v2/model/ChusanSymbolChat';
+import {ChusanStage} from '../sega/chunithm/v2/model/ChusanStage';
 import {HttpParams} from '@angular/common/http';
 import {AuthenticationService} from '../auth/authentication.service';
 import {MessageService} from '../message.service';
@@ -54,6 +55,8 @@ export class PreloadService {
   chusanAvatarAccState = this.chusanAvatarAcc.asObservable();
   private chusanSymbolChat = new ReplaySubject<string>();
   chusanSymbolChatState = this.chusanSymbolChat.asObservable();
+  private chusanStage = new ReplaySubject<string>();
+  chusanStageState = this.chusanStage.asObservable();
   private maimai2Music = new ReplaySubject<string>();
   maimai2MusicState = this.maimai2Music.asObservable();
 
@@ -88,6 +91,7 @@ export class PreloadService {
     this.loader<ChusanFrame>('chusanFrame', 'api/game/chuni/v2/data/frame', this.chusanFrame);
     this.loader<ChusanAvatarAcc>('chusanAvatarAcc', 'api/game/chuni/v2/data/avatar', this.chusanAvatarAcc);
     this.loader<ChusanSymbolChat>('chusanSymbolChat', 'api/game/chuni/v2/data/symbolChatInfo', this.chusanSymbolChat);
+    this.loader<ChusanStage>('chusanStage', 'api/game/chuni/v2/data/stage', this.chusanStage);
     this.loader<Maimai2Music>('maimai2Music', 'api/game/maimai2/data/musicList', this.maimai2Music);
   }
 
@@ -107,6 +111,7 @@ export class PreloadService {
       this.dbService.clear('chusanFrame'),
       this.dbService.clear('chusanAvatarAcc'),
       this.dbService.clear('chusanSymbolChat'),
+      this.dbService.clear('chusanStage'),
       this.dbService.clear('maimai2Music')
     ]);
   }

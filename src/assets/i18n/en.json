@@ -477,6 +477,7 @@
       "Trophy": "Trophy",
       "TrophySub1": "Sub Trophy 1",
       "TrophySub2": "Sub Trophy 2",
+      "Stage": "Stage",
       "Frame": "Frame",
       "Change": "Change",
       "Preview": "Preview",
@@ -488,6 +489,9 @@
       "BattleResult": "BattleResult",
       "Chat": "Chat",
       "SelectItem": "Select Item",
+      "Favorite": "Favorite",
+      "FavoriteTip": "Tap ☆ to favorite several items — the game picks one of them at random each credit. Requires game version 2.50 or newer.",
+      "SaveFavorites": "Save favorites",
       "MessageSuccess": "Successfully changed.",
       "MessageFailed": "Failed to change item."
     },

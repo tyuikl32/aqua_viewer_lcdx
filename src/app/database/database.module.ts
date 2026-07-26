@@ -1,41 +1,27 @@
 import {NgModule} from '@angular/core';
 import {DBConfig, NgxIndexedDBModule} from 'ngx-indexed-db';
 
+// ngx-indexed-db creates every store listed in objectStoresMeta BEFORE running these
+// migrations, so a migration must never create a store that is also declared there:
+// createObjectStore would throw ConstraintError and abort the whole upgrade transaction,
+// leaving the database at its old version with none of the new stores.
+// Stores added from now on only need an objectStoresMeta entry plus a version bump.
 export function migrationFactory() {
   return {
     3: (db: IDBDatabase, transaction: IDBTransaction) => {
-      db.deleteObjectStore('divaPv');
-      db.deleteObjectStore('divaModule');
-      db.deleteObjectStore('divaCustomize');
-      db.deleteObjectStore('chuniMusic');
-      db.deleteObjectStore('chuniCharacter');
-      db.deleteObjectStore('chuniSkill');
-      const ongekiTrophyStore = db.createObjectStore('ongekiTrophy', {keyPath: 'id', autoIncrement: false});
-      ongekiTrophyStore.createIndex('name', 'name', {unique: false});
-      ongekiTrophyStore.createIndex('rarityType', 'rarityType', {unique: false});
+      ['divaPv', 'divaModule', 'divaCustomize', 'chuniMusic', 'chuniCharacter', 'chuniSkill']
+        .filter(store => db.objectStoreNames.contains(store))
+        .forEach(store => db.deleteObjectStore(store));
     },
     4: (db: IDBDatabase, transaction: IDBTransaction) => {
-      const maimai2MusicStore = db.createObjectStore('maimai2Music', {keyPath: 'musicId', autoIncrement: false});
-      maimai2MusicStore.createIndex('name', 'name', {unique: false});
-      maimai2MusicStore.createIndex('sortName', 'sortName', {unique: false});
-      maimai2MusicStore.createIndex('artistName', 'artistName', {unique: false});
-      maimai2MusicStore.createIndex('genreId', 'genreId', {unique: false});
-      maimai2MusicStore.createIndex('romVersion', 'romVersion', {unique: false});
-      maimai2MusicStore.createIndex('addVersion', 'addVersion', {unique: false});
     },
     5: (db: IDBDatabase, transaction: IDBTransaction) => {
-      const chusanSymbolChatStore = db.createObjectStore('chusanSymbolChat', {keyPath: 'id', autoIncrement: false});
-      chusanSymbolChatStore.createIndex('name', 'name', {unique: false});
-      chusanSymbolChatStore.createIndex('sortName', 'sortName', {unique: false});
-      chusanSymbolChatStore.createIndex('text', 'text', {unique: false});
-      chusanSymbolChatStore.createIndex('balloonId', 'balloonId', {unique: false});
-      chusanSymbolChatStore.createIndex('sceneIds', 'sceneIds', {unique: false});
     },
   };
 }
 const dbConfig: DBConfig = {
   name: 'Aqua',
-  version: 5,
+  version: 6,
   objectStoresMeta: [
     {
       store: 'ongekiCard',
@@ -128,6 +114,12 @@ const dbConfig: DBConfig = {
       ]
     }, {
       store: 'chusanSystemVoice',
+      storeConfig: {keyPath: 'id', autoIncrement: false},
+      storeSchema: [
+        {name: 'name', keypath: 'name', options: {unique: false}}
+      ]
+    }, {
+      store: 'chusanStage',
       storeConfig: {keyPath: 'id', autoIncrement: false},
       storeSchema: [
         {name: 'name', keypath: 'name', options: {unique: false}}

@@ -76,6 +76,7 @@ export class DashboardComponent implements OnInit {
     this.addStatusSubscribe(this.preload.chusanFrameState);
     this.addStatusSubscribe(this.preload.chusanAvatarAccState);
     this.addStatusSubscribe(this.preload.chusanSymbolChatState);
+    this.addStatusSubscribe(this.preload.chusanStageState);
     this.addStatusSubscribe(this.preload.maimai2MusicState);
     this.preload.checkingUpdateObservable.subscribe(checkingUpdate => {
       this.checkingUpdateState = checkingUpdate;
