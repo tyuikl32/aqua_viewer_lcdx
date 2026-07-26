@@ -21,7 +21,7 @@ import {NgxPaginationModule} from 'ngx-pagination';
 import {ToolsModule} from '../../../util/tools.module';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {V2SongScoreRankingComponent} from './v2-song-score-ranking/v2-song-score-ranking.component';
 import {NgIcon} from '@ng-icons/core';
 import {V2RivalListComponent} from './v2-rival-list/v2-rival-list.component';

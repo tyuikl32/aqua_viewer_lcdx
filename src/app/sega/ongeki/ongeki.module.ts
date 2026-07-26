@@ -25,7 +25,7 @@ import {NgbAccordionModule, NgbPopoverModule, NgbCollapseModule, NgbTypeahead, N
 import {OngekiCardLevelComponent} from './ongeki-card-level/ongeki-card-level.component';
 import {TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {OngekiSongScoreRankingComponent} from './ongeki-song-score-ranking/ongeki-song-score-ranking.component';
 import {ToTechHonorSpritePipe} from './util/to-tech-honor-sprite.pipe';
 import {NgIconsModule} from '@ng-icons/core';

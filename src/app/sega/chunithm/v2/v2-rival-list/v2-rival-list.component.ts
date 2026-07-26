@@ -5,7 +5,7 @@ import {ApiService} from '../../../../api.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthenticationService} from '../../../../auth/authentication.service';
 import {MessageService} from '../../../../message.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {StatusCode} from '../../../../status-code';
 import { UserService } from 'src/app/user.service';
 import { debounce } from '../../../../util/debounce';

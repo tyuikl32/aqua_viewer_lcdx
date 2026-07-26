@@ -6,7 +6,7 @@ import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {environment} from '../../../../environments/environment';
 import {PlayerRatingItem} from '../model/PlayerRatingItem';
 import {AttributeType, Difficulty} from '../model/OngekiEnums';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {OngekiMusic} from '../model/OngekiMusic';
 import {DisplayOngekiProfile} from '../model/OngekiProfile';
 import {firstValueFrom} from 'rxjs';

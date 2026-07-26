@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {StatusCode} from '../../../status-code';
 import {MessageService} from '../../../message.service';
 import {PlayerCard} from '../model/PlayerCard';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {lastValueFrom} from 'rxjs';
 import {OngekiCard} from '../model/OngekiCard';
 import {OngekiSkill} from '../model/OngekiSkill';

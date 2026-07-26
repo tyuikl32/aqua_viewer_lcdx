@@ -17,7 +17,7 @@ import {ChusanFrame} from '../sega/chunithm/v2/model/ChusanFrame';
 import {ChusanAvatarAcc} from '../sega/chunithm/v2/model/ChusanAvatarAcc';
 import {ChusanSymbolChat} from '../sega/chunithm/v2/model/ChusanSymbolChat';
 import {ChusanStage} from '../sega/chunithm/v2/model/ChusanStage';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {AuthenticationService} from '../auth/authentication.service';
 import {MessageService} from '../message.service';
 import {Maimai2Music} from '../sega/maimai2/model/Maimai2Music';

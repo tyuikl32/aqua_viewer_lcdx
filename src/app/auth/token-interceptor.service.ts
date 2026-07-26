@@ -1,13 +1,5 @@
 import {Injectable} from '@angular/core';
-import {
-  HttpBackend,
-  HttpClient,
-  HttpErrorResponse,
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest
-} from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import {BehaviorSubject, Observable, throwError} from 'rxjs';
 import {catchError, filter, switchMap, take} from 'rxjs/operators';
 import {environment} from 'src/environments/environment';

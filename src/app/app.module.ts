@@ -6,7 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessageModule } from './message/message.module';
 import { DashboardModule } from './dashboard/dashboard.module';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { V2Module } from './sega/chunithm/v2/v2.module';
 import { DatabaseModule } from './database/database.module';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -93,86 +93,77 @@ export function initializeApp(
   };
 }
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    Maimai2UploadUserPortraitDialog,
-    SignUpComponent,
-    HomeComponent,
-    PasswordResetComponent,
-    CardsComponent,
-    NotFoundComponent,
-    ContributorsComponent,
-    KeychipComponent,
-    OauthCallbackComponent,
-    SignInComponent,
-    ProfileComponent,
-    AnnouncementsComponent,
-    EditComponent,
-    AdminComponent,
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-
-    NgxPaginationModule,
-    DatabaseModule,
-
-    MessageModule,
-    AppRoutingModule,
-    DashboardModule,
-    ImporterModule,
-    V2Module,
-    OngekiModule,
-    Maimai2Module,
-
-    ReactiveFormsModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
-    NgbModule,
-    FormsModule,
-    ToastsContainer,
-    NgIconsModule.withIcons({
-      bootstrapChevronUp,
-      bootstrapChevronDown,
-      bootstrapPerson,
-      bootstrapList,
-      bootstrapEye,
-      bootstrapEyeSlash,
-      bootstrapTrash,
-      bootstrapPencilSquare,
-      bootstrapDatabase,
-      bootstrapSun,
-      bootstrapStars,
-      bootstrapTranslate,
-      bootstrapCircleHalf,
-      bootstrapExclamationTriangleFill,
-      bootstrapClipboard,
-      bootstrapPlusSquareDotted,
-      bootstrapInfoCircleFill,
-      bootstrapGithub,
-      bootstrapArrowUpCircleFill,
-      bootstrapArrowDownCircleFill,
-      bootstrapDashLg,
-      bootstrapArrowRepeat
-    }),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient],
-      }
-    }),
-    ClipboardModule,
-    NgbModule,
-  ],
-  providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptorService, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptorService, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },
-    { provide: APP_INITIALIZER, useFactory: initializeApp, deps: [TranslateService, LanguageService], multi: true },
-  ],
-  bootstrap: [AppComponent],
-})
+@NgModule({ declarations: [
+        AppComponent,
+        Maimai2UploadUserPortraitDialog,
+        SignUpComponent,
+        HomeComponent,
+        PasswordResetComponent,
+        CardsComponent,
+        NotFoundComponent,
+        ContributorsComponent,
+        KeychipComponent,
+        OauthCallbackComponent,
+        SignInComponent,
+        ProfileComponent,
+        AnnouncementsComponent,
+        EditComponent,
+        AdminComponent,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        BrowserAnimationsModule,
+        NgxPaginationModule,
+        DatabaseModule,
+        MessageModule,
+        AppRoutingModule,
+        DashboardModule,
+        ImporterModule,
+        V2Module,
+        OngekiModule,
+        Maimai2Module,
+        ReactiveFormsModule,
+        ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+        NgbModule,
+        FormsModule,
+        ToastsContainer,
+        NgIconsModule.withIcons({
+            bootstrapChevronUp,
+            bootstrapChevronDown,
+            bootstrapPerson,
+            bootstrapList,
+            bootstrapEye,
+            bootstrapEyeSlash,
+            bootstrapTrash,
+            bootstrapPencilSquare,
+            bootstrapDatabase,
+            bootstrapSun,
+            bootstrapStars,
+            bootstrapTranslate,
+            bootstrapCircleHalf,
+            bootstrapExclamationTriangleFill,
+            bootstrapClipboard,
+            bootstrapPlusSquareDotted,
+            bootstrapInfoCircleFill,
+            bootstrapGithub,
+            bootstrapArrowUpCircleFill,
+            bootstrapArrowDownCircleFill,
+            bootstrapDashLg,
+            bootstrapArrowRepeat
+        }),
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient],
+            }
+        }),
+        ClipboardModule,
+        NgbModule], providers: [
+        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptorService, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptorService, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },
+        { provide: APP_INITIALIZER, useFactory: initializeApp, deps: [TranslateService, LanguageService], multi: true },
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {
 }

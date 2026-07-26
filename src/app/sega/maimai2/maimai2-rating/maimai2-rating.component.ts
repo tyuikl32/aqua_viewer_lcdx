@@ -3,7 +3,7 @@ import {environment} from '../../../../environments/environment';
 import {ApiService} from '../../../api.service';
 import {UserService} from '../../../user.service';
 import {MessageService} from '../../../message.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {Maimai2Music} from '../model/Maimai2Music';

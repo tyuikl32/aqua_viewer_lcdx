@@ -5,7 +5,7 @@ import {ApiService} from '../../../../api.service';
 import {AuthenticationService} from '../../../../auth/authentication.service';
 import {MessageService} from '../../../../message.service';
 import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { UserService } from 'src/app/user.service';
 import {Router} from '@angular/router';
 

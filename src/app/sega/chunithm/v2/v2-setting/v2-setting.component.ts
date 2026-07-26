@@ -5,7 +5,7 @@ import {ApiService} from '../../../../api.service';
 import {AuthenticationService} from '../../../../auth/authentication.service';
 import {MessageService} from '../../../../message.service';
 import {V2Profile} from '../model/V2Profile';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import {V2NameSettingDialog} from './v2-name-setting/v2-name-setting.dialog';
 import {V2VersionSettingDialog} from './v2-version-setting/v2-version-setting.dialog';
 import {environment} from '../../../../../environments/environment';

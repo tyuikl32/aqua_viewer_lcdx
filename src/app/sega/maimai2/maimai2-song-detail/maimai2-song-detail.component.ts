@@ -3,7 +3,7 @@ import {environment} from '../../../../environments/environment';
 import {ApiService} from '../../../api.service';
 import {MessageService} from '../../../message.service';
 import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { UserService } from 'src/app/user.service';
 import {Maimai2Music, Maimai2MusicDetail} from '../model/Maimai2Music';
 import {NgxIndexedDBService} from "ngx-indexed-db";

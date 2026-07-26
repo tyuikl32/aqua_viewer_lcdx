@@ -5,7 +5,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StatusCode} from "../status-code";
 import {LanguageService} from "../language.service";
-import {HttpParams} from "@angular/common/http";
+import { HttpParams } from "@angular/common/http";
 import {Announcement, AnnouncementComponent, AnnouncementType} from "./announcement/announcement.component";
 import {UserService} from "../user.service";
 import {TranslateService} from "@ngx-translate/core";

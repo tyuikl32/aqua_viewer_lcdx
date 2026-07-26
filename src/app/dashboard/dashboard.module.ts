@@ -6,7 +6,7 @@ import {NgForOf} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import {TranslateHttpLoader } from '@ngx-translate/http-loader';
-import {HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {NgIconsModule} from '@ng-icons/core';
 import {
   bootstrapBell,

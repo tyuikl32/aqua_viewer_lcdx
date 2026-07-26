@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {MessageService} from '../../../message.service';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import {DisplayMaimai2Profile} from '../model/Maimai2Profile';
 import { Maimai2UploadUserPortraitDialog } from './maimai2-upload-user-portrait/maimai2-upload-user-portrait.dialog';
 import {environment} from '../../../../environments/environment';

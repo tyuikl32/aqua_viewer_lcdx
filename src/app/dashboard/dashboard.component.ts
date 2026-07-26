@@ -11,7 +11,7 @@ import {StatusCode} from '../status-code';
 import {Router} from '@angular/router';
 import {Announcement, AnnouncementComponent} from '../announcements/announcement/announcement.component';
 import {LanguageService} from '../language.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {TranslateService} from '@ngx-translate/core';
 import {Luid} from '../cards/cards.component';
 import {compareVersions} from 'compare-versions';

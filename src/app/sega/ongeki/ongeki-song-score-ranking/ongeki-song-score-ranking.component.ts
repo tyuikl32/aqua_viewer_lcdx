@@ -4,7 +4,7 @@ import { MessageService } from '../../../message.service';
 import {OngekiMusic} from '../model/OngekiMusic';
 import {environment} from '../../../../environments/environment';
 import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { UserService } from 'src/app/user.service';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {OngekiCard} from '../model/OngekiCard';

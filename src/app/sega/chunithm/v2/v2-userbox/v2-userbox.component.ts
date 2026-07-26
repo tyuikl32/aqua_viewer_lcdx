@@ -4,7 +4,7 @@ import {ApiService} from '../../../../api.service';
 import {MessageService} from '../../../../message.service';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {V2Profile} from '../model/V2Profile';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {V2UserBoxSettingDialog, V2UserBoxSettingData} from './v2-userbox-setting/v2-userbox-setting.dialog';
 import {environment} from '../../../../../environments/environment';
 import {ChusanTrophy} from '../model/ChusanTrophy';

@@ -5,7 +5,7 @@ import {UserService} from '../../../user.service';
 import {MessageService} from '../../../message.service';
 import {debounce} from '../../../util/debounce';
 import {Maimai2Rival} from '../model/Maimai2Rival';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {environment} from "../../../../environments/environment";
 
 @Component({

@@ -1,5 +1,5 @@
 import {Component, OnInit, TemplateRef} from '@angular/core';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {ApiService} from '../../../api.service';
 import {MessageService} from '../../../message.service';
 import {NgxIndexedDBService} from 'ngx-indexed-db';

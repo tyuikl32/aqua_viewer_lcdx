@@ -1,7 +1,7 @@
 import {Component, OnInit, Version} from '@angular/core';
 import {MessageService} from '../../../../message.service';
 import {ApiService} from '../../../../api.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {AuthenticationService} from '../../../../auth/authentication.service';
 import {environment} from '../../../../../environments/environment';
 import { UserService } from 'src/app/user.service';

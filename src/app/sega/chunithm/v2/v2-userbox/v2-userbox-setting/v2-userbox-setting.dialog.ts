@@ -3,7 +3,7 @@ import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {MessageService} from '../../../../../message.service';
 import {ApiService} from '../../../../../api.service';
 import {V2Item} from '../../model/V2Item';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {environment} from '../../../../../../environments/environment';
 import { ChusanTrophy } from '../../model/ChusanTrophy';

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MessageService} from '../../message.service';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {AuthenticationService} from '../../auth/authentication.service';
 import {environment} from '../../../environments/environment';
 

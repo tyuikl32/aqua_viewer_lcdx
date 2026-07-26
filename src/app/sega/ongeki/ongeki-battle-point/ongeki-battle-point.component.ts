@@ -3,7 +3,7 @@ import {ApiService} from '../../../api.service';
 import {AuthenticationService} from '../../../auth/authentication.service';
 import {MessageService} from '../../../message.service';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {PlayerRatingItem} from '../model/PlayerRatingItem';
 import {OngekiMusic} from '../model/OngekiMusic';
 import {environment} from '../../../../environments/environment';

@@ -3,7 +3,7 @@ import {MessageService} from '../../../../message.service';
 import {V2Profile} from '../model/V2Profile';
 import {ApiService} from '../../../../api.service';
 import {AuthenticationService} from '../../../../auth/authentication.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { UserService } from 'src/app/user.service';
 
 @Component({

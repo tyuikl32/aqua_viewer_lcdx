@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {MessageService} from '../../../message.service';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import {DisplayOngekiProfile} from '../model/OngekiProfile';
 import {environment} from '../../../../environments/environment';
 import {NgbModal, NgbModalOptions} from '@ng-bootstrap/ng-bootstrap';

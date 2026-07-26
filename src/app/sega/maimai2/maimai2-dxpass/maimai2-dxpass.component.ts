@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {AuthenticationService} from '../../../auth/authentication.service';
 import {MessageService} from '../../../message.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {environment} from '../../../../environments/environment';
 import {map, tap} from 'rxjs/operators';

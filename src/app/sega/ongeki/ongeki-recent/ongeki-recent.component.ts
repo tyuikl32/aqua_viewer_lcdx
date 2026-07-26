@@ -5,7 +5,7 @@ import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {environment} from '../../../../environments/environment';
 import {Observable} from 'rxjs';
 import {PlayerPlaylog} from '../model/PlayerPlaylog';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {catchError, map, tap} from 'rxjs/operators';
 import {OngekiMusic} from '../model/OngekiMusic';
 import {AttributeType, Difficulty} from '../model/OngekiEnums';
