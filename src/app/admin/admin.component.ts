@@ -24,6 +24,8 @@ export class AdminComponent implements OnInit {
   totalElements = 0;
   loading = true;
 
+  tab = 'users';
+
   patternControl = new FormControl('');
   fieldControl = new FormControl('all');
 
@@ -31,7 +33,11 @@ export class AdminComponent implements OnInit {
 
   selectedProfile: any = null;
   creatingUser = false;
+
   keychips: any[] = null;
+  kcPatternControl = new FormControl('');
+  kcCurrentPage = 1;
+  kcTotalElements = 0;
 
   constructor(
     private api: ApiService,
@@ -50,7 +56,7 @@ export class AdminComponent implements OnInit {
     ]).subscribe(([page]) => {
       this.load(page, this.patternControl.value);
     });
-    this.loadKeychips();
+    this.loadKeychips(0);
   }
 
   load(page: number, pattern: string) {
@@ -185,15 +191,29 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  loadKeychips() {
-    this.api.get('api/admin/keychip').subscribe({
+  loadKeychips(page: number) {
+    this.kcCurrentPage = page + 1;
+    const params: any = {page, size: 12};
+    if (this.kcPatternControl.value) {
+      params.pattern = this.kcPatternControl.value;
+    }
+    this.api.get('api/admin/keychip', params).subscribe({
       next: resp => {
-        if (resp?.status?.code === StatusCode.OK) {
-          this.keychips = resp.data ?? [];
+        if (resp?.status?.code === StatusCode.OK && resp.data) {
+          this.keychips = resp.data.content ?? [];
+          this.kcTotalElements = resp.data.totalElements;
         }
       },
       error: err => this.messageService.notice(err.message, 'warning')
     });
+  }
+
+  kcSearch() {
+    this.loadKeychips(0);
+  }
+
+  kcPageChanged(page: number) {
+    this.loadKeychips(page - 1);
   }
 
   addKeychip(keychipId: string, placeName: string) {
@@ -208,7 +228,7 @@ export class AdminComponent implements OnInit {
     this.api.post('api/admin/keychip', body).subscribe({
       next: resp => {
         this.messageService.notice(resp?.status?.message);
-        this.loadKeychips();
+        this.loadKeychips(this.kcCurrentPage - 1);
       },
       error: err => this.messageService.notice(err.message, 'warning')
     });
@@ -219,14 +239,14 @@ export class AdminComponent implements OnInit {
       return;
     }
     this.api.delete(`api/admin/keychip/${id}`).subscribe({
-      next: () => this.loadKeychips(),
+      next: () => this.loadKeychips(this.kcCurrentPage - 1),
       error: err => this.messageService.notice(err.message, 'warning')
     });
   }
 
   toggleWhiteList(keychipId: string) {
     this.api.post('api/admin/keychip/toggleWhiteList', {keychipId}).subscribe({
-      next: () => this.loadKeychips(),
+      next: () => this.loadKeychips(this.kcCurrentPage - 1),
       error: err => this.messageService.notice(err.message, 'warning')
     });
   }

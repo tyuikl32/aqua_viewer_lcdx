@@ -1,5 +1,14 @@
 <h1 class="page-heading">管理员</h1>
 
+<div class="row justify-content-start align-items-center g-1 mb-2">
+  <div class="col-auto">
+    <button class="tab-selector" [class.tab-selector-active]="tab === 'users'" (click)="tab = 'users'">用户</button>
+  </div>
+  <div class="col-auto">
+    <button class="tab-selector" [class.tab-selector-active]="tab === 'keychips'" (click)="tab = 'keychips'">Keychip</button>
+  </div>
+</div>
+
 <ng-template #pagination>
   <pagination-template *ngIf="!loading" #p="paginationApi" class="user-select-none" id="server" maxSize="7"
                        style="cursor: default"
@@ -20,6 +29,7 @@
   </pagination-template>
 </ng-template>
 
+<div *ngIf="tab === 'users'">
 <div class="row mb-2 g-1">
   <div class="col-12 p-0">
     <div class="input-group input-group-sm">
@@ -131,8 +141,13 @@
   </ng-container>
 </div>
 <ng-container *ngTemplateOutlet="pagination;"></ng-container>
+</div>
 
-<h2 class="mt-4 mb-2 fs-5 fw-bold">Keychip 管理</h2>
+<div *ngIf="tab === 'keychips'">
+<div class="input-group input-group-sm mb-2">
+  <input type="text" class="form-control" placeholder="按 Keychip ID 搜索" [formControl]="kcPatternControl" (keyup.enter)="kcSearch()">
+  <button class="btn btn-primary" (click)="kcSearch()">搜索</button>
+</div>
 <div class="input-group input-group-sm mb-2">
   <input type="text" class="form-control" placeholder="Keychip ID" #kcId>
   <input type="text" class="form-control" placeholder="店铺名 (可选)" #kcPlace>
@@ -152,7 +167,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let kc of keychips">
+      <tr *ngFor="let kc of keychips | paginate: {id: 'kc', itemsPerPage: 12, currentPage: kcCurrentPage, totalItems: kcTotalElements}">
         <td>{{ kc.id }}</td>
         <td>{{ kc.keychipId }}</td>
         <td>{{ kc.user?.name ?? '-' }}</td>
@@ -173,4 +188,21 @@
       </tbody>
     </table>
   </div>
+</div>
+<pagination-template *ngIf="keychips" #kp="paginationApi" id="kc" maxSize="7" class="user-select-none"
+                     style="cursor: default"
+                     (pageChange)="kcPageChanged($event)" (pageBoundsCorrection)="kcPageChanged($event)">
+  <ul class="pagination pagination-sm justify-content-center my-2">
+    <li class="page-item" [class.disabled]="kp.isFirstPage()">
+      <a class="page-link" (click)="kp.previous()">&nbsp;<&nbsp;</a>
+    </li>
+    <li *ngFor="let pg of kp.pages" [class.active]="kp.getCurrent() === pg.value" class="page-item">
+      <a *ngIf="kp.getCurrent() == pg.value" class="page-link">{{ pg.label }}</a>
+      <a *ngIf="kp.getCurrent() != pg.value" (click)="kp.setCurrent(pg.value)" class="page-link">{{ pg.label }}</a>
+    </li>
+    <li class="page-item" [class.disabled]="kp.isLastPage()">
+      <a class="page-link" (click)="kp.next()">&nbsp;>&nbsp;</a>
+    </li>
+  </ul>
+</pagination-template>
 </div>
