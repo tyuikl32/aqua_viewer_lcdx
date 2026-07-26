@@ -140,8 +140,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.authenticationService.logout();
-    location.assign('');
+    this.authenticationService.logout().subscribe(() => location.assign(''));
   }
 
   isActive(url: string): boolean {

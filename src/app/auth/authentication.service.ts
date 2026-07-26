@@ -1,4 +1,4 @@
-import {mergeMap, of} from 'rxjs';
+import {catchError, mergeMap, of} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {map} from 'rxjs/operators';
@@ -139,8 +139,17 @@ export class AuthenticationService {
   }
 
   logout() {
-    this.accountService.clear();
-    this.userService.clear();
+    // Revoke the session server-side first (the token must still be attached),
+    // then clear local state whether or not the request succeeded
+    return this.http.get<any>(environment.apiServer + 'api/auth/signout')
+      .pipe(
+        catchError(() => of(null)),
+        map(resp => {
+          this.accountService.clear();
+          this.userService.clear();
+          return resp;
+        })
+      );
   }
 
 }
