@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ApiService } from '../../../api.service';
 import { AuthenticationService } from '../../../auth/authentication.service';
 import { MessageService } from '../../../message.service';
@@ -13,6 +13,7 @@ import { UserService } from 'src/app/user.service';
     selector: 'app-ongeki-profile',
     templateUrl: './ongeki-profile.component.html',
     styleUrls: ['./ongeki-profile.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OngekiProfileComponent implements OnInit {

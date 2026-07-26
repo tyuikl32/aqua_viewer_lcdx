@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {StatusCode} from '../../../status-code';
@@ -15,6 +15,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
     selector: 'app-ongeki-card',
     templateUrl: './ongeki-card.component.html',
     styleUrls: ['./ongeki-card.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OngekiCardComponent implements OnInit {

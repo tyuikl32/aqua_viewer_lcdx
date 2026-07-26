@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {OngekiGameRanking} from '../model/OngekiGameRanking';
 import {ApiService} from '../../../api.service';
 import {environment} from '../../../../environments/environment';
@@ -10,6 +10,7 @@ import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
     selector: 'app-ongeki-music-ranking',
     templateUrl: './ongeki-music-ranking.component.html',
     styleUrls: ['./ongeki-music-ranking.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OngekiMusicRankingComponent implements OnInit {

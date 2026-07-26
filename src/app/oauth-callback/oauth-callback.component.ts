@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import {environment} from '../../environments/environment';
@@ -11,6 +11,7 @@ import {AccountService} from '../auth/account.service';
     selector: 'app-oauth-callback',
     templateUrl: './oauth-callback.component.html',
     styleUrls: ['./oauth-callback.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OauthCallbackComponent {

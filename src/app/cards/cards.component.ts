@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ApiService} from '../api.service';
 import {MessageService} from '../message.service';
@@ -13,6 +13,7 @@ import {TranslateService} from '@ngx-translate/core';
     selector: 'app-cards',
     templateUrl: './cards.component.html',
     styleUrls: ['./cards.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class CardsComponent implements OnInit {

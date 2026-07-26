@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../../api.service';
 import {AuthenticationService} from '../../../../auth/authentication.service';
 import {MessageService} from '../../../../message.service';
@@ -18,6 +18,7 @@ import {ActivatedRoute, Router} from '@angular/router';
     selector: 'app-v2-recent',
     templateUrl: './v2-recent.component.html',
     styleUrls: ['./v2-recent.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class V2RecentComponent implements OnInit {

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {environment} from '../../../../../environments/environment';
 import {ChusanMusic, ChusanMusicLevelInfo, ChusanMusicLevels} from '../model/ChusanMusic';
 import {ApiService} from '../../../../api.service';
@@ -43,6 +43,7 @@ interface UserRanking {
     selector: 'app-v2-song-score-ranking',
     templateUrl: './v2-song-score-ranking.component.html',
     styleUrls: ['./v2-song-score-ranking.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class V2SongScoreRankingComponent {

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {
   Announcement,
   AnnouncementComponent,
@@ -16,6 +16,7 @@ import {ApiService} from '../../api.service';
     selector: 'app-edit',
     templateUrl: './edit.component.html',
     styleUrls: ['./edit.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class EditComponent implements OnInit, AfterViewInit   {

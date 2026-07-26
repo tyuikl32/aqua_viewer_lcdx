@@ -1,5 +1,5 @@
 import {MessageService} from 'src/app/message.service';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UserService} from '../user.service';
 import {OAuthService} from '../auth/oauth.service';
 import {WebAuthnService} from '../auth/webauthn.service';
@@ -16,6 +16,7 @@ import * as QRCode from 'qrcode';
     selector: 'app-profile',
     templateUrl: './profile.component.html',
     styleUrls: ['./profile.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ProfileComponent implements OnInit{

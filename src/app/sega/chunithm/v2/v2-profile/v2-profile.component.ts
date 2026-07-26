@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {MessageService} from '../../../../message.service';
 import {V2Profile} from '../model/V2Profile';
 import {ApiService} from '../../../../api.service';
@@ -10,6 +10,7 @@ import { UserService } from 'src/app/user.service';
     selector: 'app-v2-profile',
     templateUrl: './v2-profile.component.html',
     styleUrls: ['./v2-profile.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class V2ProfileComponent implements OnInit {

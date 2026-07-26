@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {AttributeType} from '../model/OngekiEnums';
 import {environment} from '../../../../environments/environment';
 
@@ -7,6 +7,7 @@ import {environment} from '../../../../environments/environment';
     templateUrl: './ongeki-card-level.component.html',
     styleUrls: ['./ongeki-card-level.component.css'],
     inputs: ['level', 'attribute'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OngekiCardLevelComponent implements OnInit {

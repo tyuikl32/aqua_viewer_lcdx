@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import { HttpParams } from '@angular/common/http';
@@ -30,6 +30,7 @@ import { Maimai2ServerMissionUserPointData } from '../model/Maimai2ServerMission
     selector: 'app-maimai2-point-exchanges',
     templateUrl: './maimai2-point-exchanges.component.html',
     styleUrls: ['./maimai2-point-exchanges.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class Maimai2PointExchangesComponent implements OnInit {

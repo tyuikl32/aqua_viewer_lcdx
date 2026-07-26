@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {AuthenticationService} from '../../../auth/authentication.service';
 import {MessageService} from '../../../message.service';
@@ -18,6 +18,7 @@ import {Maimai2DxPass} from '../model/Maimai2DxPass';
     selector: 'app-maimai2-dxpass',
     templateUrl: './maimai2-dxpass.component.html',
     styleUrls: ['./maimai2-dxpass.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class Maimai2DxpassComponent implements OnInit{

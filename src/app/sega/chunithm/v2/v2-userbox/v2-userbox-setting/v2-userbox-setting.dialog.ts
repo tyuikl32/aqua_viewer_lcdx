@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {MessageService} from '../../../../../message.service';
 import {ApiService} from '../../../../../api.service';
@@ -19,6 +19,7 @@ import { UserService } from 'src/app/user.service';
     selector: 'v2-userbox-setting-dialog',
     templateUrl: 'v2-userbox-setting.html',
     styleUrls: ['v2-userbox.setting.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class V2UserBoxSettingDialog implements OnInit{

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {environment} from '../../../../environments/environment';
 import {ApiService} from '../../../api.service';
 import {MessageService} from '../../../message.service';
@@ -38,6 +38,7 @@ interface UserRanking {
     selector: 'app-v2-song-score-ranking',
     templateUrl: './maimai2-song-detail.component.html',
     styleUrls: ['./maimai2-song-detail.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class Maimai2SongDetailComponent {

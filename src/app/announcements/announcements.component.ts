@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from "../api.service";
 import {MessageService} from "../message.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -14,6 +14,7 @@ import {TranslateService} from "@ngx-translate/core";
     selector: 'app-announcements',
     templateUrl: './announcements.component.html',
     styleUrls: ['./announcements.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AnnouncementsComponent implements OnInit {

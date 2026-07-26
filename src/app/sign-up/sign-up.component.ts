@@ -1,5 +1,5 @@
 import {TranslateService} from '@ngx-translate/core';
-import {Component, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormGroup, ValidatorFn, Validators} from '@angular/forms';
 import {first, take} from 'rxjs/operators';
 import {MessageService} from '../message.service';
@@ -13,6 +13,7 @@ import {OAuthService} from '../auth/oauth.service';
     selector: 'app-sign-up',
     templateUrl: './sign-up.component.html',
     styleUrls: ['./sign-up.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SignUpComponent implements OnDestroy {

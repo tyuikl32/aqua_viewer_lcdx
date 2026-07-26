@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {PlayerPlaylog} from '../model/PlayerPlaylog';
 import {AttributeType, BattleRank, Difficulty, TechnicalRank} from '../model/OngekiEnums';
 import {environment} from '../../../../environments/environment';
@@ -12,6 +12,7 @@ import {OngekiSongScoreRankingComponent} from '../ongeki-song-score-ranking/onge
     templateUrl: './ongeki-recent-item.component.html',
     styleUrls: ['./ongeki-recent-item.component.css'],
     inputs: ['playLog'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OngekiRecentItemComponent implements OnInit {

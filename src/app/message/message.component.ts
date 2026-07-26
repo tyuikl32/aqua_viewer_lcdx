@@ -1,4 +1,4 @@
-import {Component, Injectable, OnInit} from '@angular/core';
+import {Component, Injectable, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -7,6 +7,7 @@ import {Component, Injectable, OnInit} from '@angular/core';
     selector: 'app-message',
     templateUrl: './message.component.html',
     styleUrls: ['./message.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class MessageComponent implements OnInit {

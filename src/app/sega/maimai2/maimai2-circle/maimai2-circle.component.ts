@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import { of } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -21,6 +21,7 @@ import { Maimai2Music } from '../model/Maimai2Music';
     selector: 'app-maimai2-circle',
     templateUrl: './maimai2-circle.component.html',
     styleUrls: ['./maimai2-circle.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class Maimai2CircleComponent implements OnInit {

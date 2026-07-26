@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {combineLatest, ReplaySubject, startWith, tap} from 'rxjs';
 import {ActivatedRoute} from '@angular/router';
@@ -19,6 +19,7 @@ import {IMPERSONATE_GRANT, IMPERSONATE_REQUEST} from '../auth/impersonation.serv
     selector: 'app-admin',
     templateUrl: './admin.component.html',
     styleUrls: ['./admin.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AdminComponent implements OnInit {

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {MessageService} from '../../../message.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -14,6 +14,7 @@ import {TranslateService} from '@ngx-translate/core';
     selector: 'app-ongeki-setting',
     templateUrl: './ongeki-setting.component.html',
     styleUrls: ['./ongeki-setting.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OngekiSettingComponent implements OnInit {

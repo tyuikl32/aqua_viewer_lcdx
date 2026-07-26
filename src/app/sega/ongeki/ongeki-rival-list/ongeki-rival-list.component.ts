@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { OngekiRival } from '../model/OngekiRival';
 import { HttpParams } from '@angular/common/http';
@@ -14,6 +14,7 @@ import { UserService } from 'src/app/user.service';
     selector: 'app-ongeki-rival-list',
     templateUrl: './ongeki-rival-list.component.html',
     styleUrls: ['./ongeki-rival-list.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 

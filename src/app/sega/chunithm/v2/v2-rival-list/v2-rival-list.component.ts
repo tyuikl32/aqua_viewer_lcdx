@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {environment} from '../../../../../environments/environment';
 import {ChusanProfile, ChusanRival} from '../model/ChusanRival';
 import {ApiService} from '../../../../api.service';
@@ -21,6 +21,7 @@ enum V2RivalAPI {
     selector: 'app-v2-rival-list',
     templateUrl: './v2-rival-list.component.html',
     styleUrls: ['./v2-rival-list.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class V2RivalListComponent {

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {MessageService} from '../../../message.service';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -14,6 +14,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
     selector: 'app-maimai2-setting',
     templateUrl: './maimai2-setting.component.html',
     styleUrls: ['./maimai2-setting.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class Maimai2SettingComponent implements OnInit {

@@ -10,7 +10,7 @@ import {
   Subject,
   merge, lastValueFrom
 } from 'rxjs';
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {OngekiMusic} from '../model/OngekiMusic';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -27,6 +27,7 @@ import {OngekiCharacter} from '../model/OngekiCharacter';
     selector: 'app-ongeki-song-list',
     templateUrl: './ongeki-song-list.component.html',
     styleUrls: ['./ongeki-song-list.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OngekiSongListComponent implements OnInit {

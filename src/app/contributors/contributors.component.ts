@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ArrayUtils } from '../util/array-utils';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
@@ -7,6 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
     selector: 'app-contributors',
     templateUrl: './contributors.component.html',
     styleUrls: ['./contributors.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ContributorsComponent implements OnInit {

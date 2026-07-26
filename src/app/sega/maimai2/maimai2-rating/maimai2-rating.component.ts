@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {environment} from '../../../../environments/environment';
 import {ApiService} from '../../../api.service';
 import {UserService} from '../../../user.service';
@@ -14,6 +14,7 @@ import {NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
     selector: 'app-maimai2-rating',
     templateUrl: './maimai2-rating.component.html',
     styleUrls: ['./maimai2-rating.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class Maimai2RatingComponent implements OnInit {

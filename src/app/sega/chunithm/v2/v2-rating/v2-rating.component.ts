@@ -1,4 +1,4 @@
-import {Component, OnInit, Version} from '@angular/core';
+import {Component, OnInit, Version, ChangeDetectionStrategy} from '@angular/core';
 import {MessageService} from '../../../../message.service';
 import {ApiService} from '../../../../api.service';
 import { HttpParams } from '@angular/common/http';
@@ -16,6 +16,7 @@ import {compareVersions} from 'compare-versions';
     selector: 'app-v2-rating',
     templateUrl: './v2-rating.component.html',
     styleUrls: ['./v2-rating.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class V2RatingComponent implements OnInit {

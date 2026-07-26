@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {marked} from 'marked';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import DOMPurify from 'dompurify';
@@ -8,6 +8,7 @@ import {LanguageService} from "../../language.service";
     selector: 'app-announcement',
     templateUrl: './announcement.component.html',
     styleUrls: ['./announcement.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AnnouncementComponent {

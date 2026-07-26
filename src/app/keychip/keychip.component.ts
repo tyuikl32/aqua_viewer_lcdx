@@ -1,5 +1,5 @@
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../api.service';
 import {StatusCode} from '../status-code';
 import {MessageService} from '../message.service';
@@ -11,6 +11,7 @@ import {Clipboard} from '@angular/cdk/clipboard';
     selector: 'app-keychip',
     templateUrl: './keychip.component.html',
     styleUrls: ['./keychip.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class KeychipComponent implements OnInit {

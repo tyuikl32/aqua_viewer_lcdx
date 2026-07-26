@@ -1,6 +1,6 @@
 import {Router} from '@angular/router';
 import {AuthenticationService} from '../auth/authentication.service';
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MessageService} from '../message.service';
 import {StatusCode} from '../status-code';
@@ -12,6 +12,7 @@ import {WebAuthnService} from 'src/app/auth/webauthn.service';
     selector: 'app-sign-in',
     templateUrl: './sign-in.component.html',
     styleUrls: ['./sign-in.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SignInComponent {

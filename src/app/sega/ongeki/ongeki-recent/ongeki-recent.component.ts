@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {MessageService} from '../../../message.service';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
@@ -18,6 +18,7 @@ import { UserService } from 'src/app/user.service';
     selector: 'app-ongeki-recent',
     templateUrl: './ongeki-recent.component.html',
     styleUrls: ['./ongeki-recent.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OngekiRecentComponent implements OnInit {

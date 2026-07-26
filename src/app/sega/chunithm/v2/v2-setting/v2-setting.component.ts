@@ -1,5 +1,5 @@
 import {AccountService} from 'src/app/auth/account.service';
-import {Component, OnInit, Renderer2} from '@angular/core';
+import {Component, OnInit, Renderer2, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal, NgbModalOptions} from '@ng-bootstrap/ng-bootstrap';
 import {ApiService} from '../../../../api.service';
 import {AuthenticationService} from '../../../../auth/authentication.service';
@@ -15,6 +15,7 @@ import {UserService} from 'src/app/user.service';
     selector: 'app-v2-setting',
     templateUrl: './v2-setting.component.html',
     styleUrls: ['./v2-setting.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class V2SettingComponent implements OnInit {

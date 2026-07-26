@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {environment} from '../../../../../../environments/environment';
 import {V2Item} from '../../model/V2Item';
 import {ApiService} from '../../../../../api.service';
@@ -17,6 +17,7 @@ import {lastValueFrom} from 'rxjs';
     selector: 'app-v2-symbol-chat-setting',
     templateUrl: './v2-symbol-chat-setting.component.html',
     styleUrls: ['./v2-symbol-chat-setting.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class V2SymbolChatSettingComponent implements OnInit {

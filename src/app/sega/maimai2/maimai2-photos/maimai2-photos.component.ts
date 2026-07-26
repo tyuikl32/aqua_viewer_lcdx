@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {AuthenticationService} from '../../../auth/authentication.service';
 import {MessageService} from '../../../message.service';
@@ -18,6 +18,7 @@ import {Maimai2Photo} from '../model/Maimai2Photo';
     selector: 'app-maimai2-photos',
     templateUrl: './maimai2-photos.component.html',
     styleUrls: ['./maimai2-photos.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class Maimai2PhotosComponent implements OnInit {

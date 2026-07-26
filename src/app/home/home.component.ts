@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, QueryList, Renderer2, ViewChildren} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, QueryList, Renderer2, ViewChildren, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {MessageService} from '../message.service';
 import {AuthenticationService} from '../auth/authentication.service';
@@ -11,6 +11,7 @@ import { AccountService } from '../auth/account.service';
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class HomeComponent implements OnInit {

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {PreloadService} from '../database/preload.service';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {environment} from '../../environments/environment';
@@ -20,6 +20,7 @@ import {compareVersions} from 'compare-versions';
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DashboardComponent implements OnInit {

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import {OngekiMusic} from '../model/OngekiMusic';
@@ -46,6 +46,7 @@ interface UserRanking {
     selector: 'app-ongeki-song-score-ranking',
     templateUrl: './ongeki-song-score-ranking.component.html',
     styleUrls: ['./ongeki-song-score-ranking.component.css',],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OngekiSongScoreRankingComponent {

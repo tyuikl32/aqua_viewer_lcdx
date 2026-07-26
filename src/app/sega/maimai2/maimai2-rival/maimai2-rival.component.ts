@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {UserService} from '../../../user.service';
@@ -12,6 +12,7 @@ import {environment} from "../../../../environments/environment";
     selector: 'app-maimai2-rival',
     templateUrl: './maimai2-rival.component.html',
     styleUrls: ['./maimai2-rival.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class Maimai2RivalComponent {

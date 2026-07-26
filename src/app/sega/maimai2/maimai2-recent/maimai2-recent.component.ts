@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {AuthenticationService} from '../../../auth/authentication.service';
 import {MessageService} from '../../../message.service';
@@ -18,6 +18,7 @@ import {Maimai2SongDetailComponent} from "../maimai2-song-detail/maimai2-song-de
     selector: 'app-maimai2-recent',
     templateUrl: './maimai2-recent.component.html',
     styleUrls: ['./maimai2-recent.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class Maimai2RecentComponent implements OnInit {

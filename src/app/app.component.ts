@@ -1,6 +1,6 @@
 import {ThemeService} from './theme.service';
 import {LanguageService} from './language.service';
-import {Component, HostListener, Inject, OnChanges, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, Inject, OnChanges, OnDestroy, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {AuthenticationService} from './auth/authentication.service';
 import {NavigationEnd, Router} from '@angular/router';
 import {PreloadService} from './database/preload.service';
@@ -24,6 +24,7 @@ import {TranslateService} from "@ngx-translate/core";
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AppComponent implements OnInit, OnDestroy {

@@ -1,4 +1,4 @@
-import {Component, OnInit, TemplateRef} from '@angular/core';
+import {Component, OnInit, TemplateRef, ChangeDetectionStrategy} from '@angular/core';
 import { HttpParams } from '@angular/common/http';
 import {ApiService} from '../../../api.service';
 import {MessageService} from '../../../message.service';
@@ -68,6 +68,7 @@ import {TranslateService} from '@ngx-translate/core';
             ])
         ])
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OngekiCardGalleryComponent implements OnInit {

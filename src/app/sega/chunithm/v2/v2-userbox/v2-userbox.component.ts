@@ -1,4 +1,4 @@
-import {Component, OnInit, Version} from '@angular/core';
+import {Component, OnInit, Version, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal, NgbModalOptions} from '@ng-bootstrap/ng-bootstrap';
 import {ApiService} from '../../../../api.service';
 import {MessageService} from '../../../../message.service';
@@ -24,6 +24,7 @@ import {compareVersions} from 'compare-versions';
     selector: 'app-v2-userbox',
     templateUrl: './v2-userbox.component.html',
     styleUrls: ['./v2-userbox.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class V2UserBoxComponent implements OnInit {
