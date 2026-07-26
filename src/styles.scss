@@ -376,6 +376,30 @@ h6 {
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
 
+/* Raw JSON viewer. Lives in the global stylesheet because the highlighted
+   markup is injected via [innerHTML], so component-scoped selectors never
+   match it and the production build's critical-CSS pass would strip the
+   rules as "unused". */
+.json-view {
+  max-height: 26rem;
+  overflow: auto;
+  padding: .75rem;
+  border-radius: .375rem;
+  background: var(--bs-secondary-bg);
+}
+
+.json-view .json-key { color: #0b5ed7; }
+.json-view .json-string { color: #1a7f37; }
+.json-view .json-number { color: #b35900; }
+.json-view .json-boolean { color: #6f42c1; }
+.json-view .json-null { color: #6c757d; }
+
+[data-bs-theme="dark"] .json-view .json-key { color: #79c0ff; }
+[data-bs-theme="dark"] .json-view .json-string { color: #7ee787; }
+[data-bs-theme="dark"] .json-view .json-number { color: #ffa657; }
+[data-bs-theme="dark"] .json-view .json-boolean { color: #d2a8ff; }
+[data-bs-theme="dark"] .json-view .json-null { color: #8b949e; }
+
 
 input[type=checkbox] + .checkbox-label:hover{
   color: var(--bs-link-hover-color);

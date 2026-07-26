@@ -167,6 +167,8 @@
             <thead>
             <tr>
               <th class="text-nowrap">ExtId</th>
+              <th class="text-nowrap">Access Code</th>
+              <th class="text-nowrap">关联 Access Code</th>
               <th class="text-nowrap">默认</th>
               <th class="text-nowrap">CHUNITHM</th>
               <th class="text-nowrap">O.N.G.E.K.I.</th>
@@ -176,6 +178,12 @@
             <tbody>
             <tr *ngFor="let profile of item.gameProfiles">
               <td class="text-nowrap">{{ profile.card?.extId }}</td>
+              <td class="text-nowrap font-monospace">{{ profile.card?.luid }}</td>
+              <td class="font-monospace">
+                <ng-container *ngIf="(profile.card?.cardExternalList || []).length; else emptyCell">
+                  <div *ngFor="let ext of profile.card.cardExternalList" class="text-nowrap">{{ ext.luid }}</div>
+                </ng-container>
+              </td>
               <td>{{ profile.card?.default ? '✓' : '' }}</td>
               <td>
                 <ng-container *ngIf="profile.chusan; else emptyCell">
@@ -197,7 +205,7 @@
               </td>
             </tr>
             <tr *ngIf="!(item.gameProfiles || []).length">
-              <td colspan="5" class="text-center text-secondary">未绑定卡片</td>
+              <td colspan="7" class="text-center text-secondary">未绑定卡片</td>
             </tr>
             </tbody>
           </table>
@@ -211,10 +219,9 @@
                 (click)="resetTotp(item.user.username)">
           重置两步验证
         </button>
-        <button class="btn btn-outline-secondary btn-sm mb-2" (click)="toggleRawJson(item)">
-          {{ rawJson ? '隐藏原始 JSON' : '原始 JSON' }}
+        <button class="btn btn-outline-secondary btn-sm mb-2" (click)="openRawJson(item, rawJsonModal)">
+          原始 JSON
         </button>
-        <pre *ngIf="rawJson" class="json-view small mb-2" [innerHTML]="rawJson"></pre>
         <hr class="my-2">
         <div class="fw-bold small mb-1">卡片操作</div>
         <div class="input-group input-group-sm mb-2">
@@ -231,6 +238,15 @@
           <input type="text" class="form-control" placeholder="新卡号" #opNew>
           <button class="btn btn-outline-primary" (click)="changeAccessCode(item.user.username, opOld.value, opNew.value)">变更卡号</button>
         </div>
+      </div>
+    </ng-template>
+    <ng-template #rawJsonModal let-modal>
+      <div class="modal-header">
+        <h5 class="modal-title">原始 JSON — {{ item.user.username }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+      </div>
+      <div class="modal-body">
+        <pre class="json-view small mb-0" [innerHTML]="rawJson"></pre>
       </div>
     </ng-template>
   </ng-container>

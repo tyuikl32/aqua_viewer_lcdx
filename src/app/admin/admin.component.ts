@@ -207,9 +207,10 @@ export class AdminComponent implements OnInit {
       });
   }
 
-  toggleRawJson(item: AdvancedUser) {
+  openRawJson(item: AdvancedUser, tpl: any) {
     // Computed on demand rather than bound, so change detection does not re-highlight
-    this.rawJson = this.rawJson ? null : this.highlightJson(item);
+    this.rawJson = this.highlightJson(item);
+    this.modalService.open(tpl, {centered: true, scrollable: true, size: 'lg'});
   }
 
   gameProfileOf(profile: GameProfile, game: 'chusan' | 'ongeki' | 'maimai2') {
