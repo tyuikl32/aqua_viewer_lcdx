@@ -86,6 +86,8 @@
     "Title": "公告",
     "Announcement": "公告",
     "DraftNew": "撰写公告",
+    "Delete": "删除",
+    "DeleteTip": "确定要删除这条公告吗？删除后无法恢复。",
     "All": "全部",
     "General": "一般",
     "Maintenance": "维护",

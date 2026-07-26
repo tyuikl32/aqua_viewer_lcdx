@@ -28,6 +28,10 @@ export class AdminComponent implements OnInit {
 
   userList: AdvancedUser[];
 
+  selectedProfile: any = null;
+  creatingUser = false;
+  keychips: any[] = null;
+
   constructor(
     private api: ApiService,
     private messageService: MessageService,
@@ -45,6 +49,7 @@ export class AdminComponent implements OnInit {
     ]).subscribe(([page]) => {
       this.load(page, this.patternControl.value);
     });
+    this.loadKeychips();
   }
 
   load(page: number, pattern: string) {
@@ -107,6 +112,122 @@ export class AdminComponent implements OnInit {
           }
         }
       );
+  }
+
+  refresh() {
+    this.load(this.currentPage - 1, this.patternControl.value);
+  }
+
+  openUser(item: AdvancedUser, tpl: any) {
+    this.selectedProfile = null;
+    this.api.get(`api/admin/users/${item.user.username}`).subscribe({
+      next: resp => {
+        const statusCode: StatusCode = resp?.status?.code;
+        if ((statusCode === StatusCode.USER_FETCH_SUCCESS || statusCode === StatusCode.OK) && resp.data) {
+          this.selectedProfile = resp.data;
+        }
+      },
+      error: () => {}
+    });
+    this.modalService.open(tpl, {centered: true, scrollable: true});
+  }
+
+  createUser(userName: string, name: string, email: string, password: string) {
+    if (!userName || !name || !email || !password) {
+      this.messageService.notice('请填写完整的用户信息', 'warning');
+      return;
+    }
+    this.creatingUser = true;
+    this.api.post('api/admin/createUser', {userName, name, email, password}).subscribe({
+      next: resp => {
+        this.creatingUser = false;
+        this.messageService.notice(resp?.status?.message);
+        if (resp?.status?.code === StatusCode.OK) {
+          this.refresh();
+        }
+      },
+      error: err => {
+        this.creatingUser = false;
+        this.messageService.notice(err.message, 'warning');
+      }
+    });
+  }
+
+  bindCard(userName: string, accessCode: string) {
+    this.cardOp('api/admin/bindCard', {userName, accessCode});
+  }
+
+  bindCardViaExtId(userName: string, extId: string) {
+    const parsed = Number(extId);
+    if (!extId || isNaN(parsed)) {
+      this.messageService.notice('请输入正确的 ExtId', 'warning');
+      return;
+    }
+    this.cardOp('api/admin/bindCardViaExtId', {userName, extId: parsed});
+  }
+
+  unbindCard(userName: string, accessCode: string) {
+    this.cardOp('api/admin/unbindCard', {userName, accessCode});
+  }
+
+  changeAccessCode(userName: string, accessCode: string, newAccessCode: string) {
+    this.cardOp('api/admin/changeAccessCode', {userName, accessCode, newAccessCode});
+  }
+
+  private cardOp(path: string, body: any) {
+    this.api.post(path, body).subscribe({
+      next: resp => {
+        this.messageService.notice(resp?.status?.message);
+        this.refresh();
+      },
+      error: err => this.messageService.notice(err.message, 'warning')
+    });
+  }
+
+  loadKeychips() {
+    this.api.get('api/admin/keychip').subscribe({
+      next: resp => {
+        if (resp?.status?.code === StatusCode.OK) {
+          this.keychips = resp.data ?? [];
+        }
+      },
+      error: err => this.messageService.notice(err.message, 'warning')
+    });
+  }
+
+  addKeychip(keychipId: string, placeName: string) {
+    if (!keychipId) {
+      this.messageService.notice('请输入 Keychip ID', 'warning');
+      return;
+    }
+    const body: any = {keychipId};
+    if (placeName) {
+      body.placeName = placeName;
+    }
+    this.api.post('api/admin/keychip', body).subscribe({
+      next: resp => {
+        this.messageService.notice(resp?.status?.message);
+        this.loadKeychips();
+      },
+      error: err => this.messageService.notice(err.message, 'warning')
+    });
+  }
+
+  deleteKeychip(id: number) {
+    if (!confirm('确定要删除这个 Keychip 吗？')) {
+      return;
+    }
+    this.api.delete(`api/admin/keychip/${id}`).subscribe({
+      next: () => this.loadKeychips(),
+      error: err => this.messageService.notice(err.message, 'warning')
+    });
+  }
+
+  toggleWhiteList(keychipId: string) {
+    this.api.post('api/admin/keychip/toggleWhiteList', {keychipId}).subscribe({
+      next: () => this.loadKeychips(),
+      error: err => this.messageService.notice(err.message, 'warning')
+    });
   }
 }
 

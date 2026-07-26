@@ -30,13 +30,34 @@
     <button class="btn btn-primary btn-sm w-100" (click)="search()">搜索</button>
   </div>
 </div>
+<div class="row mb-2 g-1">
+  <div class="col-12 p-0">
+    <button class="btn btn-outline-primary btn-sm w-100" (click)="modalService.open(createUserModal, {centered: true})">创建用户</button>
+  </div>
+</div>
+<ng-template #createUserModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">创建用户</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="d-grid gap-2">
+      <input type="text" class="form-control form-control-sm" placeholder="登录名" #cuUserName>
+      <input type="text" class="form-control form-control-sm" placeholder="昵称" #cuName>
+      <input type="email" class="form-control form-control-sm" placeholder="电子邮箱" #cuEmail>
+      <input type="password" class="form-control form-control-sm" placeholder="密码" #cuPassword>
+      <button class="btn btn-primary btn-sm" [class.disabled]="creatingUser"
+              (click)="createUser(cuUserName.value, cuName.value, cuEmail.value, cuPassword.value); modal.dismiss()">创建</button>
+    </div>
+  </div>
+</ng-template>
 
 <ng-container *ngTemplateOutlet="pagination;"></ng-container>
 <div *ngIf="userList" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-2">
   <ng-container
     *ngFor="let item of userList | paginate: { id: 'server', itemsPerPage: 12, currentPage: currentPage, totalItems: totalElements }; let i = index">
     <div class="col">
-      <div class="card h-100 card-btn user-select-none" (click)="modalService.open(jsonModal, {centered: true, scrollable: true})">
+      <div class="card h-100 card-btn user-select-none" (click)="openUser(item, jsonModal)">
         <div class="card-header fw-bold">
           {{ item.user.id }}.{{ item.user.username }}
         </div>
@@ -66,16 +87,79 @@
     </div>
     <ng-template #jsonModal let-modal>
       <div class="modal-header">
-        <h5 class="modal-title">Item JSON</h5>
+        <h5 class="modal-title">{{ item.user.username }}</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
       </div>
       <div class="modal-body">
+        <div *ngIf="selectedProfile" class="small text-secondary mb-2">
+          注册时间：{{ selectedProfile.createdAt | date: 'yyyy-MM-dd HH:mm' }}
+        </div>
         <button class="btn btn-primary btn-sm mb-2" (click)="loginAs(item.user.username)">
           夺舍
         </button>
+        <hr class="my-2">
+        <div class="fw-bold small mb-1">卡片操作</div>
+        <div class="input-group input-group-sm mb-2">
+          <input type="text" class="form-control" placeholder="卡号 (Access Code)" #opAc>
+          <button class="btn btn-outline-primary" (click)="bindCard(item.user.username, opAc.value)">绑定</button>
+          <button class="btn btn-outline-danger" (click)="unbindCard(item.user.username, opAc.value)">解绑</button>
+        </div>
+        <div class="input-group input-group-sm mb-2">
+          <input type="text" class="form-control" placeholder="ExtId" #opExt>
+          <button class="btn btn-outline-primary" (click)="bindCardViaExtId(item.user.username, opExt.value)">通过ExtId绑定</button>
+        </div>
+        <div class="input-group input-group-sm mb-2">
+          <input type="text" class="form-control" placeholder="旧卡号" #opOld>
+          <input type="text" class="form-control" placeholder="新卡号" #opNew>
+          <button class="btn btn-outline-primary" (click)="changeAccessCode(item.user.username, opOld.value, opNew.value)">变更卡号</button>
+        </div>
+        <hr class="my-2">
         <pre class="small">{{ item | json }}</pre>
       </div>
     </ng-template>
   </ng-container>
 </div>
 <ng-container *ngTemplateOutlet="pagination;"></ng-container>
+
+<h2 class="mt-4 mb-2 fs-5 fw-bold">Keychip 管理</h2>
+<div class="input-group input-group-sm mb-2">
+  <input type="text" class="form-control" placeholder="Keychip ID" #kcId>
+  <input type="text" class="form-control" placeholder="店铺名 (可选)" #kcPlace>
+  <button class="btn btn-primary" (click)="addKeychip(kcId.value, kcPlace.value); kcId.value=''; kcPlace.value=''">添加</button>
+</div>
+<div *ngIf="keychips" class="card mb-4">
+  <div class="table-responsive">
+    <table class="table table-sm table-hover small mb-0 align-middle">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Keychip</th>
+        <th>用户</th>
+        <th>店铺名</th>
+        <th>白名单</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let kc of keychips">
+        <td>{{ kc.id }}</td>
+        <td>{{ kc.keychipId }}</td>
+        <td>{{ kc.user?.name ?? '-' }}</td>
+        <td>{{ kc.placeName }}</td>
+        <td>
+          <span class="badge rounded-pill" [class.bg-success]="kc.whiteListed" [class.bg-secondary]="!kc.whiteListed">
+            {{ kc.whiteListed ? '已加白' : '未加白' }}
+          </span>
+        </td>
+        <td class="text-end">
+          <button class="btn btn-outline-primary btn-sm me-1" (click)="toggleWhiteList(kc.keychipId)">切换白名单</button>
+          <button class="btn btn-outline-danger btn-sm" (click)="deleteKeychip(kc.id)">删除</button>
+        </td>
+      </tr>
+      <tr *ngIf="keychips.length === 0">
+        <td colspan="6" class="text-center text-secondary">暂无数据</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -111,6 +111,26 @@
               {{'AnnouncementsPage.Pinned' | translate}}
             </span>
           </ng-container>
+          <ng-container *ngIf="isAdmin()">
+            <button class="btn btn-outline-danger btn-sm ms-auto py-0"
+                    (click)="$event.stopPropagation(); modalService.open(deleteModal, {centered: true})">
+              {{'AnnouncementsPage.Delete' | translate}}
+            </button>
+            <ng-template #deleteModal let-modal>
+              <div class="modal-header">
+                <h4 class="modal-title">{{'AnnouncementsPage.Delete' | translate}}</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+              </div>
+              <div class="modal-body">
+                <form>
+                  <div class="d-grid">
+                    <p class="mb-3 ms-1">{{'AnnouncementsPage.DeleteTip' | translate}}</p>
+                    <button class="btn btn-danger btn-sm" (click)="deleteAnnouncement(announcement, modal)">{{'Common.OK' | translate}}</button>
+                  </div>
+                </form>
+              </div>
+            </ng-template>
+          </ng-container>
         </div>
         <h4 class="mb-1">{{this.announcement.getLocalTitle(lang.getCurrentLang())}}</h4>
       </li>
