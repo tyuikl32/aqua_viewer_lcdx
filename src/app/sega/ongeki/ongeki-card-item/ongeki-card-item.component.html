@@ -176,7 +176,7 @@
                                                           <!--                </div>-->
                                                           <img class="card-max-atk-title" draggable="false"
                                                             src="{{host}}assets/ongeki/gameUi/UI_Card_max_00.webp">
-                                                            @if (calculateAtk(item.maxLevel, convertToNumberArray(item.cardInfo?.levelParam), item.choKaikaDate != '0000-00-00 00:00:00.0'); as maxAtk) {
+                                                            @if (calculateAtk(item.maxLevel, convertToNumberArray($safeNavigationMigration(item.cardInfo?.levelParam)), item.choKaikaDate != '0000-00-00 00:00:00.0'); as maxAtk) {
                                                               <div
                                                                 class="card-max-atk-value-container">
                                                                 @if (maxAtk>=100) {

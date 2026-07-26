@@ -72,27 +72,27 @@
                   @switch (item.level) {
                     @case (0) {
                       <span class="difficulty difficulty-basic badge rounded-pill">
-                        {{ (item.musicInfo?.level0 | toLevelDecimal) ?? 'Basic' }}
+                        {{ ($safeNavigationMigration(item.musicInfo?.level0) | toLevelDecimal) ?? 'Basic' }}
                       </span>
                     }
                     @case (1) {
                       <span class="difficulty difficulty-advanced badge rounded-pill">
-                        {{ (item.musicInfo?.level1 | toLevelDecimal) ?? 'Advanced' }}
+                        {{ ($safeNavigationMigration(item.musicInfo?.level1) | toLevelDecimal) ?? 'Advanced' }}
                       </span>
                     }
                     @case (2) {
                       <span class="difficulty difficulty-expert badge rounded-pill">
-                        {{ (item.musicInfo?.level2 | toLevelDecimal) ?? 'Expert' }}
+                        {{ ($safeNavigationMigration(item.musicInfo?.level2) | toLevelDecimal) ?? 'Expert' }}
                       </span>
                     }
                     @case (3) {
                       <span class="difficulty difficulty-master badge rounded-pill">
-                        {{ (item.musicInfo?.level3 | toLevelDecimal) ?? 'Master' }}
+                        {{ ($safeNavigationMigration(item.musicInfo?.level3) | toLevelDecimal) ?? 'Master' }}
                       </span>
                     }
                     @case (10) {
                       <span class="difficulty difficulty-lunatic badge rounded-pill text-danger border border-danger">
-                        {{ (item.musicInfo?.level4 | toLevelDecimal) ?? 'Lunatic' }}
+                        {{ ($safeNavigationMigration(item.musicInfo?.level4) | toLevelDecimal) ?? 'Lunatic' }}
                       </span>
                     }
                   }
@@ -174,27 +174,27 @@
                               @switch (item.level) {
                                 @case (0) {
                                   <span class="difficulty difficulty-basic badge rounded-pill">
-                                    {{ (item.musicInfo?.level0 | toLevelDecimal) ?? 'Basic' }}
+                                    {{ ($safeNavigationMigration(item.musicInfo?.level0) | toLevelDecimal) ?? 'Basic' }}
                                   </span>
                                 }
                                 @case (1) {
                                   <span class="difficulty difficulty-advanced badge rounded-pill">
-                                    {{ (item.musicInfo?.level1 | toLevelDecimal) ?? 'Advanced' }}
+                                    {{ ($safeNavigationMigration(item.musicInfo?.level1) | toLevelDecimal) ?? 'Advanced' }}
                                   </span>
                                 }
                                 @case (2) {
                                   <span class="difficulty difficulty-expert badge rounded-pill">
-                                    {{ (item.musicInfo?.level2 | toLevelDecimal) ?? 'Expert' }}
+                                    {{ ($safeNavigationMigration(item.musicInfo?.level2) | toLevelDecimal) ?? 'Expert' }}
                                   </span>
                                 }
                                 @case (3) {
                                   <span class="difficulty difficulty-master badge rounded-pill">
-                                    {{ (item.musicInfo?.level3 | toLevelDecimal) ?? 'Master' }}
+                                    {{ ($safeNavigationMigration(item.musicInfo?.level3) | toLevelDecimal) ?? 'Master' }}
                                   </span>
                                 }
                                 @case (10) {
                                   <span class="difficulty difficulty-lunatic badge rounded-pill text-danger border border-danger">
-                                    {{ (item.musicInfo?.level4 | toLevelDecimal) ?? 'Lunatic' }}
+                                    {{ ($safeNavigationMigration(item.musicInfo?.level4) | toLevelDecimal) ?? 'Lunatic' }}
                                   </span>
                                 }
                               }
@@ -313,27 +313,27 @@
                                     @switch (item.level) {
                                       @case (0) {
                                         <span class="difficulty-basic badge rounded-pill">
-                                          Basic{{ (item.musicInfo?.level0 | toLevelDecimal) ?? '' }}
+                                          Basic{{ ($safeNavigationMigration(item.musicInfo?.level0) | toLevelDecimal) ?? '' }}
                                         </span>
                                       }
                                       @case (1) {
                                         <span class="difficulty-advanced badge rounded-pill">
-                                          Advanced {{ (item.musicInfo?.level1 | toLevelDecimal) ?? '' }}
+                                          Advanced {{ ($safeNavigationMigration(item.musicInfo?.level1) | toLevelDecimal) ?? '' }}
                                         </span>
                                       }
                                       @case (2) {
                                         <span class="difficulty-expert badge rounded-pill">
-                                          Expert {{ (item.musicInfo?.level2 | toLevelDecimal) ?? '' }}
+                                          Expert {{ ($safeNavigationMigration(item.musicInfo?.level2) | toLevelDecimal) ?? '' }}
                                         </span>
                                       }
                                       @case (3) {
                                         <span class="difficulty-master badge rounded-pill">
-                                          Master {{ (item.musicInfo?.level3 | toLevelDecimal) ?? '' }}
+                                          Master {{ ($safeNavigationMigration(item.musicInfo?.level3) | toLevelDecimal) ?? '' }}
                                         </span>
                                       }
                                       @case (10) {
                                         <span class="difficulty-lunatic badge rounded-pill text-danger border border-danger">
-                                          Lunatic {{ (item.musicInfo?.level4 | toLevelDecimal) ?? '' }}
+                                          Lunatic {{ ($safeNavigationMigration(item.musicInfo?.level4) | toLevelDecimal) ?? '' }}
                                         </span>
                                       }
                                     }

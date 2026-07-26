@@ -3,7 +3,7 @@
   @if (profile) {
     <div class="col-12 col-sm-8 col-md-6 col-lg-7 col-xl-6">
       <div class="user-data-container p-0 m-3 mb-0">
-        <div class="trophy-bg" [style.background-image]="'url(' + host + '/assets/ongeki/gameUi/UI_CMN_Signage_UserTitle_' + (getTrophyRarityCode(profile.trophy?.rarityType) | number: '2.0-0') + '.webp)'">
+        <div class="trophy-bg" [style.background-image]="'url(' + host + '/assets/ongeki/gameUi/UI_CMN_Signage_UserTitle_' + (getTrophyRarityCode($safeNavigationMigration(profile.trophy?.rarityType)) | number: '2.0-0') + '.webp)'">
           <div class="trophy">{{profile.trophy?.name??("ID: " + profile.trophyId)}}</div>
         </div>
         <div class="level-bg" [style.background-image]="'url(' + host + '/assets/ongeki/gameUi/' + 'UI_CMN_Signage_UserLevel_BG_00.webp)'">

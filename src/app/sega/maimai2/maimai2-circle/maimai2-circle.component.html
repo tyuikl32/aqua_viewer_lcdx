@@ -104,7 +104,7 @@
                     >{{ "Maimai2.CirclePage.PlaceCircle" | translate }}:</span
                     >
                     <span>{{
-                      formatBoolean(userCircleInfo?.joinedCircle?.isPlace)
+                      formatBoolean($safeNavigationMigration(userCircleInfo?.joinedCircle?.isPlace))
                     }}</span>
                   </div>
                   <div class="d-flex mb-1 align-items-baseline">
@@ -118,7 +118,7 @@
                         >{{ "Maimai2.CirclePage.Public" | translate }}:</span
                         >
                         <span>{{
-                          formatBoolean(userCircleInfo?.joinedCircle?.isPublic)
+                          formatBoolean($safeNavigationMigration(userCircleInfo?.joinedCircle?.isPublic))
                         }}</span>
                       </div>
                       <div class="d-flex mb-1 align-items-baseline">
@@ -126,7 +126,7 @@
                           >{{ "Maimai2.CirclePage.AllowAnyoneJoin" | translate }}:</span
                           >
                           <span>{{
-                            formatBoolean(userCircleInfo?.joinedCircle?.isAllowAnyoneJoin)
+                            formatBoolean($safeNavigationMigration(userCircleInfo?.joinedCircle?.isAllowAnyoneJoin))
                           }}</span>
                         </div>
                         <div class="d-flex mb-3 align-items-baseline">
@@ -178,7 +178,7 @@
                                 <div>
                                   <button
                                     class="btn btn-primary btn-sm horizon-margin"
-                                    (click)="copyCircleCode(userCircleInfo?.joinedCircle)"
+                                    (click)="copyCircleCode($safeNavigationMigration(userCircleInfo?.joinedCircle))"
                                     >
                                     {{ "Maimai2.CirclePage.CopyCircleCode" | translate }}
                                   </button>

@@ -26,35 +26,35 @@
               <span
                 class="difficulty difficulty-basic badge rounded-pill">
                 Basic
-                {{ (playLog.songInfo?.level0 | toLevelDecimal) ?? 'None' }}
+                {{ ($safeNavigationMigration(playLog.songInfo?.level0) | toLevelDecimal) ?? 'None' }}
               </span>
             }
             @case ('Advanced') {
               <span
                 class="difficulty difficulty-advanced badge rounded-pill">
                 Advanced
-                {{ (playLog.songInfo?.level1 | toLevelDecimal) ?? 'None' }}
+                {{ ($safeNavigationMigration(playLog.songInfo?.level1) | toLevelDecimal) ?? 'None' }}
               </span>
             }
             @case ('Expert') {
               <span
                 class="difficulty difficulty-expert badge rounded-pill">
                 Expert
-                {{ (playLog.songInfo?.level2 | toLevelDecimal) ?? 'None' }}
+                {{ ($safeNavigationMigration(playLog.songInfo?.level2) | toLevelDecimal) ?? 'None' }}
               </span>
             }
             @case ('Master') {
               <span
                 class="difficulty difficulty-master badge rounded-pill">
                 Master
-                {{ (playLog.songInfo?.level3 | toLevelDecimal) ?? 'None' }}
+                {{ ($safeNavigationMigration(playLog.songInfo?.level3) | toLevelDecimal) ?? 'None' }}
               </span>
             }
             @case ('Lunatic') {
               <span
                 class="difficulty difficulty-lunatic badge rounded-pill">
                 Lunatic
-                {{ (playLog.songInfo?.level4 | toLevelDecimal) ?? 'None' }}
+                {{ ($safeNavigationMigration(playLog.songInfo?.level4) | toLevelDecimal) ?? 'None' }}
               </span>
             }
           }
