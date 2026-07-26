@@ -14,7 +14,11 @@
     "target": "es2022",
     "typeRoots": [
       "node_modules/@types"
-    ]
+    ],
+    "strict": false,
+    "strictNullChecks": false,
+    "strictPropertyInitialization": false,
+    "ignoreDeprecations": "6.0"
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
