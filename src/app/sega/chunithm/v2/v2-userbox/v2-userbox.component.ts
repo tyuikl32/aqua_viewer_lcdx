@@ -275,6 +275,7 @@ export class V2UserBoxComponent implements OnInit {
   }
 
   openItemDialog(dialogData: V2UserBoxSettingData) {
+    (document.activeElement as HTMLElement)?.blur();
     const dialogRef = this.modalService.open(V2UserBoxSettingDialog, this.dialogOptions);
     dialogRef.componentInstance.data = {mode: 'equip', ...dialogData};
     dialogRef.componentInstance.parentComponent = this;
@@ -299,6 +300,7 @@ export class V2UserBoxComponent implements OnInit {
   }
 
   openFavoriteDialog(kind: number) {
+    (document.activeElement as HTMLElement)?.blur();
     const dialogRef = this.modalService.open(V2UserBoxSettingDialog, this.dialogOptions);
     dialogRef.componentInstance.data = {
       itemKind: kind,
@@ -328,6 +330,7 @@ export class V2UserBoxComponent implements OnInit {
   }
 
   openSymbolChatDialog(dialogData: V2SymbolChat) {
+    (document.activeElement as HTMLElement)?.blur();
     const dialogRef = this.modalService.open(V2SymbolChatSettingComponent, this.dialogOptions);
     dialogRef.componentInstance.data = dialogData;
   }
