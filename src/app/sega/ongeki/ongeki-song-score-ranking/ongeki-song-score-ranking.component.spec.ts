@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { OngekiSongScroeRankingComponent } from './ongeki-song-scroe-ranking.component';
+import { OngekiSongScoreRankingComponent } from './ongeki-song-score-ranking.component';
 
-describe('OngekiSongScroeRankingComponent', () => {
-  let component: OngekiSongScroeRankingComponent;
-  let fixture: ComponentFixture<OngekiSongScroeRankingComponent>;
+describe('OngekiSongScoreRankingComponent', () => {
+  let component: OngekiSongScoreRankingComponent;
+  let fixture: ComponentFixture<OngekiSongScoreRankingComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [OngekiSongScroeRankingComponent]
+      declarations: [OngekiSongScoreRankingComponent]
     });
-    fixture = TestBed.createComponent(OngekiSongScroeRankingComponent);
+    fixture = TestBed.createComponent(OngekiSongScoreRankingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
