@@ -25,6 +25,7 @@ export class AdminComponent implements OnInit {
   loading = true;
 
   patternControl = new FormControl('');
+  fieldControl = new FormControl('all');
 
   userList: AdvancedUser[];
 
@@ -54,7 +55,7 @@ export class AdminComponent implements OnInit {
 
   load(page: number, pattern: string) {
     this.currentPage = page + 1;
-    const params: any = {page, size: 12};
+    const params: any = {page, size: 12, field: this.fieldControl.value || 'all'};
     if (pattern !== '') {
       params.pattern = pattern;
     }

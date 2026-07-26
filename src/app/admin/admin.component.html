@@ -22,7 +22,18 @@
 
 <div class="row mb-2 g-1">
   <div class="col-12 p-0">
-    <input type="text" class="form-control form-control-sm" placeholder="pattern" [formControl]="patternControl">
+    <div class="input-group input-group-sm">
+      <select class="form-select flex-grow-0 w-auto" [formControl]="fieldControl">
+        <option value="all">全部</option>
+        <option value="username">登录名</option>
+        <option value="name">昵称</option>
+        <option value="email">邮箱</option>
+        <option value="game">游戏昵称</option>
+        <option value="card">卡号</option>
+        <option value="extId">ExtId</option>
+      </select>
+      <input type="text" class="form-control" placeholder="搜索内容" [formControl]="patternControl" (keyup.enter)="search()">
+    </div>
   </div>
 </div>
 <div class="row mb-2 g-1">
