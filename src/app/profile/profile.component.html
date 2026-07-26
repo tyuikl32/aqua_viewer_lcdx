@@ -141,7 +141,7 @@
       <input type="password" class="form-control form-control-sm mb-3" #totpPw autocomplete="current-password"
              [attr.placeholder]="'ProfilePage.Password' | translate">
       <button class="btn btn-primary btn-sm" [class.disabled]="totpBusy"
-              (click)="startTotpSetup(totpPw.value, totpSetup); modal.close()">{{'Common.OK' | translate}}</button>
+              (click)="startTotpSetup(totpPw.value, totpSetup, modal)">{{'Common.OK' | translate}}</button>
     </div>
   </div>
 </ng-template>

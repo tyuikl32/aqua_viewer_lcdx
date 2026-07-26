@@ -233,12 +233,13 @@ export class ProfileComponent implements OnInit{
    * The password is required so a stolen token cannot enrol a secret behind the
    * owner's back.
    */
-  startTotpSetup(password: string, modalTemplate: any){
+  startTotpSetup(password: string, modalTemplate: any, passwordModal?: any){
     this.totpBusy = true;
     this.api.post('api/user/totp/setup', {password}).subscribe(
       resp => {
         this.totpBusy = false;
         if (resp?.status?.code === StatusCode.PASSWORD_INCORRECT) {
+          // Leave the modal open so the password can simply be retyped
           this.translate.get('ProfilePage.TotpPasswordIncorrect').subscribe((res: string) => {
             this.messageService.notice(res, 'danger');
           });
@@ -246,8 +247,10 @@ export class ProfileComponent implements OnInit{
         }
         if (resp?.status?.code !== StatusCode.OK || !resp.data) {
           this.messageService.notice(resp?.status?.message);
+          passwordModal?.close();
           return;
         }
+        passwordModal?.close();
         this.totpSecret = resp.data.secret;
         QRCode.toDataURL(resp.data.uri, {margin: 1, width: 220})
           .then(url => {

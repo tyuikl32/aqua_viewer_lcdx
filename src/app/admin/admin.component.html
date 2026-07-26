@@ -113,10 +113,15 @@
       </div>
       <div class="modal-body">
         <div *ngIf="selectedProfile" class="small text-secondary mb-2">
-          注册时间：{{ selectedProfile.createdAt | date: 'yyyy-MM-dd HH:mm' }}
+          注册时间：{{ selectedProfile.joinedAt | date: 'yyyy-MM-dd HH:mm' }}
+          <span class="ms-2">两步验证：{{ selectedProfile.totpEnabled ? '已启用' : '未启用' }}</span>
         </div>
-        <button class="btn btn-primary btn-sm mb-2" (click)="loginAs(item.user.username)">
+        <button class="btn btn-primary btn-sm mb-2 me-1" (click)="loginAs(item.user.username)">
           夺舍
+        </button>
+        <button *ngIf="selectedProfile?.totpEnabled" class="btn btn-outline-danger btn-sm mb-2"
+                (click)="resetTotp(item.user.username)">
+          重置两步验证
         </button>
         <hr class="my-2">
         <div class="fw-bold small mb-1">卡片操作</div>

@@ -181,6 +181,22 @@ export class AdminComponent implements OnInit {
     this.cardOp('api/admin/changeAccessCode', {userName, accessCode, newAccessCode});
   }
 
+  /** Support path for a user who lost both their authenticator and recovery codes. */
+  resetTotp(username: string) {
+    if (!confirm(`确定要重置 ${username} 的两步验证吗？该用户的所有会话会被登出。`)) {
+      return;
+    }
+    this.api.delete(`api/admin/users/${username}/totp`).subscribe({
+      next: resp => {
+        this.messageService.notice(resp?.status?.message);
+        if (this.selectedProfile) {
+          this.selectedProfile.totpEnabled = false;
+        }
+      },
+      error: err => this.messageService.notice(err.message, 'warning')
+    });
+  }
+
   private cardOp(path: string, body: any) {
     this.api.post(path, body).subscribe({
       next: resp => {
