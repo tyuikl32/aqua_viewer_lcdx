@@ -238,7 +238,7 @@
     "TotpRecovery": "Recovery codes",
     "TotpRecoveryRemaining": "{{count}} unused",
     "TotpRecoveryRegenerate": "Regenerate",
-    "TotpRecoveryRegenerateTip": "Enter a current code. Your existing recovery codes will stop working immediately.",
+    "TotpRecoveryRegenerateTip": "Enter a current code, or one of your recovery codes. Your existing recovery codes will stop working immediately.",
     "TotpRecoveryWarning": "Save these codes somewhere safe. Each one works once, and they will not be shown again. Use one if you lose access to your authenticator app.",
     "TotpRecoveryCopy": "Copy",
     "TotpRecoveryCopied": "Recovery codes copied.",
@@ -250,7 +250,7 @@
     "TotpScanTip": "Scan this with your authenticator app, then enter the code it shows.",
     "TotpSecret": "Or enter this key manually",
     "TotpCode": "Verification code",
-    "TotpDisableTip": "Enter a current code to turn off two-factor authentication.",
+    "TotpDisableTip": "Enter a current code, or one of your recovery codes, to turn off two-factor authentication.",
     "TotpEnabledMessage": "Two-factor authentication enabled.",
     "TotpDisabledMessage": "Two-factor authentication disabled.",
     "TotpInvalidMessage": "Incorrect code. Please try again."

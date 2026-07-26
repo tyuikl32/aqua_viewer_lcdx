@@ -173,7 +173,7 @@
     <div class="d-grid">
       <p class="mb-3 ms-1">{{"ProfilePage.TotpDisableTip" | translate}}</p>
       <input type="text" class="form-control form-control-sm mb-3" #disableCode
-             inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+             autocomplete="one-time-code" maxlength="11"
              [attr.placeholder]="'ProfilePage.TotpCode' | translate">
       <button class="btn btn-danger btn-sm" [class.disabled]="totpBusy"
               (click)="disableTotp(disableCode.value, modal)">{{'Common.OK' | translate}}</button>

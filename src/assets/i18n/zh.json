@@ -241,7 +241,7 @@
     "TotpRecovery": "恢复码",
     "TotpRecoveryRemaining": "剩余 {{count}} 个未使用",
     "TotpRecoveryRegenerate": "重新生成",
-    "TotpRecoveryRegenerateTip": "请输入当前验证码。重新生成后，原有恢复码将立即失效。",
+    "TotpRecoveryRegenerateTip": "请输入当前验证码或一个恢复码。重新生成后，原有恢复码将立即失效。",
     "TotpRecoveryWarning": "请将这些恢复码保存在安全的地方。每个只能使用一次，且不会再次显示。当你无法使用验证器应用时可用它登录。",
     "TotpRecoveryCopy": "复制",
     "TotpRecoveryCopied": "恢复码已复制。",
@@ -253,7 +253,7 @@
     "TotpScanTip": "请用验证器应用扫描下方二维码，然后输入应用中显示的验证码。",
     "TotpSecret": "或手动输入此密钥",
     "TotpCode": "验证码",
-    "TotpDisableTip": "请输入当前验证码以关闭两步验证。",
+    "TotpDisableTip": "请输入当前验证码或一个恢复码，以关闭两步验证。",
     "TotpEnabledMessage": "两步验证已启用。",
     "TotpDisabledMessage": "两步验证已关闭。",
     "TotpInvalidMessage": "验证码错误，请重试。"
