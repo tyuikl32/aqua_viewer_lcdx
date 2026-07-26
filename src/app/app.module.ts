@@ -22,7 +22,7 @@ import {
 } from './sega/maimai2/maimai2-setting/maimai2-upload-user-portrait/maimai2-upload-user-portrait.dialog';
 
 import Aegis from 'aegis-web-sdk';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbModal, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { TokenInterceptorService } from './auth/token-interceptor.service';
 import { NgIconsModule } from '@ng-icons/core';
 import { HomeComponent } from './home/home.component';
@@ -70,6 +70,19 @@ import { ProfileComponent } from './profile/profile.component';
 import { AnnouncementsComponent } from './announcements/announcements.component';
 import { EditComponent } from './announcements/edit/edit.component';
 import { AdminComponent } from './admin/admin.component';
+
+// Blur the focused element before any ng-bootstrap modal or offcanvas opens,
+// so ng-bootstrap's aria-hidden on the background doesn't trap focus.
+// Centralised here instead of patching 30+ individual call sites.
+function _patchDialogFocus(ctor: typeof NgbModal | typeof NgbOffcanvas): void {
+  const original = ctor.prototype.open;
+  ctor.prototype.open = function(this: unknown, ...args: unknown[]) {
+    (document.activeElement as HTMLElement | null)?.blur();
+    return (original as (...a: unknown[]) => unknown).apply(this, args);
+  };
+}
+_patchDialogFocus(NgbModal);
+_patchDialogFocus(NgbOffcanvas);
 
 // Redirect deprecated 'unload' event to 'pagehide' (W3C replacement) so SDKs
 // like Aegis that still register unload listeners don't trip the browser's
