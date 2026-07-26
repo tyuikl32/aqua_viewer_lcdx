@@ -124,7 +124,7 @@ export class Maimai2SongDetailComponent {
       index = 0;
     }
     const level: Maimai2MusicDetail = song.details[index];
-    return `${level.levelDecimal / 10}` ?? '0';
+    return `${level.levelDecimal / 10}`;
   }
   getColumnWidth(): string {
     const columnCount = this.music.details[this.currentDiffTab].touchCount !== 0 ? 5 : 4;

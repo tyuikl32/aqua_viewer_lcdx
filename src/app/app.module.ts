@@ -52,7 +52,7 @@ import {
   bootstrapDashLg,
   bootstrapArrowRepeat,
 } from '@ng-icons/bootstrap-icons';
-import { TranslateModule, TranslateLoader, TranslateService } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective, TranslateLoader, TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
 import { APP_INITIALIZER } from '@angular/core';
@@ -79,10 +79,6 @@ const aegis = new Aegis({
   reportAssetSpeed: true, // 静态资源测速
   spa: true // spa 应用页面跳转的时候开启 pv 计算
 });
-
-export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http);
-}
 
 export function initializeApp(
   translateService: TranslateService,
@@ -150,19 +146,20 @@ export function initializeApp(
             bootstrapDashLg,
             bootstrapArrowRepeat
         }),
-        TranslateModule.forRoot({
-            loader: {
-                provide: TranslateLoader,
-                useFactory: HttpLoaderFactory,
-                deps: [HttpClient],
-            }
-        }),
+        TranslatePipe,
+        TranslateDirective,
         ClipboardModule,
         NgbModule], providers: [
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptorService, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptorService, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },
         { provide: APP_INITIALIZER, useFactory: initializeApp, deps: [TranslateService, LanguageService], multi: true },
+        provideTranslateService({
+            loader: {
+                provide: TranslateLoader,
+                useClass: TranslateHttpLoader,
+            }
+        }),
         provideHttpClient(withInterceptorsFromDi()),
     ] })
 export class AppModule {

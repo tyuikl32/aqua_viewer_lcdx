@@ -102,7 +102,7 @@ export class V2SongScoreRankingComponent {
 
   getLevelString(song: ChusanMusic, index: number): string {
     const level: ChusanMusicLevelInfo = song.levels[index.toString()];
-    return `${level.level}.${level.levelDecimal.toString().charAt(0)}` ?? '0';
+    return `${level.level}.${level.levelDecimal.toString().charAt(0)}`;
   }
 
   showPlayLog(id: number, level: any) {

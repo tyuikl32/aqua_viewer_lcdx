@@ -19,9 +19,7 @@ import {V2UserRankingComponent} from './v2-user-ranking/v2-user-ranking.componen
 import {V2UserBoxComponent} from './v2-userbox/v2-userbox.component';
 import {NgxPaginationModule} from 'ngx-pagination';
 import {ToolsModule} from '../../../util/tools.module';
-import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import { HttpClient } from '@angular/common/http';
+import {TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 import {V2SongScoreRankingComponent} from './v2-song-score-ranking/v2-song-score-ranking.component';
 import {NgIcon} from '@ng-icons/core';
 import {V2RivalListComponent} from './v2-rival-list/v2-rival-list.component';
@@ -29,10 +27,6 @@ import {CharacterImagePipe} from './util/character-image.pipe';
 import {ToLevelStringPipe} from './util/to-level-string.pipe';
 import {ToTechRatingPipe} from './util/to-tech-rating.pipe';
 import {V2SymbolChatSettingComponent} from './v2-userbox/v2-symbol-chat-setting/v2-symbol-chat-setting.component';
-
-export function HttpLoaderFactory(http: HttpClient) {
-    return new TranslateHttpLoader(http);
-  }
 
 @NgModule({
   imports: [
@@ -42,13 +36,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ReactiveFormsModule,
     NgxPaginationModule,
     ToolsModule,
-    TranslateModule.forChild({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-      }
-    }),
+    TranslatePipe,
+    TranslateDirective,
     NgIcon
   ],
   exports: [

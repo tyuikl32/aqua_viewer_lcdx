@@ -13,7 +13,6 @@ import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
 import {V2SongScoreRankingComponent} from '../v2-song-score-ranking/v2-song-score-ranking.component';
 import {UserService} from 'src/app/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {load} from '@angular-devkit/build-angular/src/utils/server-rendering/esm-in-memory-file-loader';
 
 @Component({
     selector: 'app-v2-recent',

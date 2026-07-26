@@ -23,9 +23,7 @@ import {OngekiRecentItemComponent} from './ongeki-recent-item/ongeki-recent-item
 import {ToRaritySpritePipe} from './util/to-rarity-sprite.pipe';
 import {NgbAccordionModule, NgbPopoverModule, NgbCollapseModule, NgbTypeahead, NgbHighlight} from '@ng-bootstrap/ng-bootstrap';
 import {OngekiCardLevelComponent} from './ongeki-card-level/ongeki-card-level.component';
-import {TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
-import { HttpClient } from '@angular/common/http';
+import {TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import {OngekiSongScoreRankingComponent} from './ongeki-song-score-ranking/ongeki-song-score-ranking.component';
 import {ToTechHonorSpritePipe} from './util/to-tech-honor-sprite.pipe';
 import {NgIconsModule} from '@ng-icons/core';
@@ -34,10 +32,6 @@ import {
 } from '@ng-icons/bootstrap-icons';
 import { OngekiCardItemComponent } from './ongeki-card-item/ongeki-card-item.component';
 import { OngekiCardComponent } from './ongeki-card/ongeki-card.component';
-
-export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http);
-}
 
 @NgModule({
   declarations: [
@@ -80,13 +74,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgbCollapseModule,
     NgbPopoverModule,
     NgOptimizedImage,
-    TranslateModule.forChild({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-      }
-    }),
+    TranslatePipe,
+    TranslateDirective,
     NgIconsModule.withIcons({
       bootstrapStopFill
     }),

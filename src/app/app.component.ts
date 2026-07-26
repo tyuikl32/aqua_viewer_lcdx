@@ -67,10 +67,11 @@ export class AppComponent implements OnInit, OnDestroy {
     });
     this.loading$ = this.api.loadingState;
     if (updates.isEnabled) {
-      updates.available.subscribe(
-        event => {
+      updates.versionUpdates.subscribe(event => {
+        if (event.type === 'VERSION_READY') {
           updates.activateUpdate().then(() => document.location.reload());
-        });
+        }
+      });
     }
 
     this.router.events.pipe(

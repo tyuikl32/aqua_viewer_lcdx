@@ -6,7 +6,7 @@ import { Maimai2ProfileComponent } from './maimai2-profile/maimai2-profile.compo
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ToolsModule } from '../../util/tools.module';
 import { Maimai2SettingComponent } from './maimai2-setting/maimai2-setting.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { Maimai2RatingComponent } from './maimai2-rating/maimai2-rating.component';
 import { Maimai2RecentComponent } from './maimai2-recent/maimai2-recent.component';
 import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
@@ -44,7 +44,8 @@ import { Maimai2PointExchangesComponent } from './maimai2-point-exchanges/maimai
     Maimai2Routes,
     NgxPaginationModule,
     ToolsModule,
-    TranslateModule,
+    TranslatePipe,
+    TranslateDirective,
     FormsModule,
     ReactiveFormsModule,
     NgOptimizedImage,

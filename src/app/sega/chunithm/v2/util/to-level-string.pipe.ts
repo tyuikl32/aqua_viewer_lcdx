@@ -8,7 +8,7 @@ import {ChusanMusicLevelInfo} from '../model/ChusanMusic';
 export class ToLevelStringPipe implements PipeTransform {
 
   transform(level: ChusanMusicLevelInfo): string {
-    return `${level.level}.${level.levelDecimal.toString().charAt(0)}` ?? '0';
+    return `${level.level}.${level.levelDecimal.toString().charAt(0)}`;
   }
 
 }
