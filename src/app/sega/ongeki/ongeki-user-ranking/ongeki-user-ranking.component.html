@@ -41,7 +41,7 @@
         </th>
         <td>
           <div class="d-flex align-items-center">
-            <img class="ranking-item-icon me-2" [class.ranking-item-icon-xl]="i == 0" [class.ranking-item-icon-lg]="i == 1 || i == 2" src="{{host}}/assets/ongeki/card-icon/UI_Card_Icon_{{item.cardId}}.webp">
+            <img class="ranking-item-icon me-2" [class.ranking-item-icon-xl]="i == 0" [class.ranking-item-icon-lg]="i == 1 || i == 2" src="{{host}}/assets/ongeki/card-icon/UI_Card_Icon_{{$any(item).cardId}}.webp">
             <div>
               <div [class.fw-bold]="i == 0 || i == 1 || i == 2">{{ item.userName | fullWidth }}</div>
               <div><span>{{ item.nowRating.toFixed(3) }}</span><span class="ms-1 text-secondary small">(Max: {{item.highestRating.toFixed(3)}})</span></div>
@@ -88,7 +88,7 @@
         <td>
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-              <img class="ranking-item-icon me-2" [class.ranking-item-icon-xl]="i == 0" [class.ranking-item-icon-lg]="i == 1 || i == 2" src="{{host}}/assets/ongeki/card-icon/UI_Card_Icon_{{item.cardId}}.webp">
+              <img class="ranking-item-icon me-2" [class.ranking-item-icon-xl]="i == 0" [class.ranking-item-icon-lg]="i == 1 || i == 2" src="{{host}}/assets/ongeki/card-icon/UI_Card_Icon_{{$any(item).cardId}}.webp">
               <div [class.fw-bold]="i == 0 || i == 1 || i == 2">{{ item.username | fullWidth }}</div>
             </div>
             <div><span>{{ item.pc }}</span></div>

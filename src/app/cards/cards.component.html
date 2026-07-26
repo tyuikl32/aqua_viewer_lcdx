@@ -27,7 +27,7 @@
                       <p class="mb-3 ms-1">
                         {{'CardsPage.UnbindCardTip' | translate}}
                       </p>
-                      <button class="btn btn-danger btn-sm" (click)="onUnbindCard(card, modal)">{{'Common.OK' | translate}}</button>
+                      <button class="btn btn-danger btn-sm" (click)="onUnbindCard($any(card), modal)">{{'Common.OK' | translate}}</button>
                     </div>
                   </form>
                 </div>
@@ -103,7 +103,7 @@
                         <p class="mb-3 ms-1">
                           {{'CardsPage.RemoveAliasTip' | translate}}
                         </p>
-                        <button class="btn btn-danger btn-sm" (click)="onRemoveExternal(item, modal)">{{'Common.OK' | translate}}</button>
+                        <button class="btn btn-danger btn-sm" (click)="onRemoveExternal($any(item), modal)">{{'Common.OK' | translate}}</button>
                       </div>
                     </form>
                   </div>
@@ -118,7 +118,7 @@
             <button class="btn btn-link p-0"
               [class.disabled]="card.default"
               [class.link-secondary]="card.default"
-              (click)="setDefault(card)">{{'CardsPage.SetDefault' | translate}}
+              (click)="setDefault($any(card))">{{'CardsPage.SetDefault' | translate}}
             </button>
           </div>
           <ng-template #addAccessCode let-modal>

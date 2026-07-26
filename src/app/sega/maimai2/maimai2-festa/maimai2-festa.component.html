@@ -422,7 +422,7 @@
                                     <li
                                       class="list-group-item d-flex justify-content-between align-items-center"
                                       >
-                                      {{ formatRank(side.rank) }}
+                                      {{ formatRank($any(side).rank) }}
                                       {{ getSideName(gameFestaInfo.gameRsultFesta, side.festaSideId) }}
                                       <span>{{ side.advantagePercent }}% </span>
                                     </li>
