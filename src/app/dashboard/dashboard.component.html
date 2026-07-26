@@ -9,37 +9,49 @@
         <a class="more-announcements" routerLink="/announcements">{{'DashboardPage.More' | translate}}</a>
       </div>
       <ng-template #announcementItem let-announcement='announcement'>
-            <li class="list-group-item card-btn" (click)="showAnnouncement(announcement)">
-              <div class="d-flex align-items-center gap-1 mb-1">
-                <div class="fw-light small text-secondary">{{announcement.updatedAt.toLocaleDateString()}}</div>
-                <ng-container [ngSwitch]="announcement.type">
-              <span *ngSwitchCase="'GENERAL'" class="bg-primary badge rounded-pill">
-                {{'AnnouncementsPage.General' | translate}}
-              </span>
-                  <span *ngSwitchCase="'MAINTENANCE'" class="bg-warning badge rounded-pill">
-                {{'AnnouncementsPage.Maintenance' | translate}}
-              </span>
-                  <span *ngSwitchCase="'UPDATE'" class="bg-info badge rounded-pill">
-                {{'AnnouncementsPage.Update' | translate}}
-              </span>
-                  <span *ngSwitchCase="'EVENT'" class="bg-orange badge rounded-pill">
-                {{'AnnouncementsPage.Event' | translate}}
-              </span>
-                  <span *ngSwitchCase="'TUTORIAL'" class="bg-teal badge rounded-pill">
-                {{'AnnouncementsPage.Tutorial' | translate}}
-              </span>
-                  <span *ngSwitchCase="'OTHER'" class="bg-gray badge rounded-pill">
-                {{'AnnouncementsPage.Other' | translate}}
-              </span>
-                </ng-container>
-                <ng-container *ngIf="announcement.priority > 0">
+        <li class="list-group-item card-btn" (click)="showAnnouncement(announcement)">
+          <div class="d-flex align-items-center gap-1 mb-1">
+            <div class="fw-light small text-secondary">{{announcement.updatedAt.toLocaleDateString()}}</div>
+            @switch (announcement.type) {
+              @case ('GENERAL') {
+                <span class="bg-primary badge rounded-pill">
+                  {{'AnnouncementsPage.General' | translate}}
+                </span>
+              }
+              @case ('MAINTENANCE') {
+                <span class="bg-warning badge rounded-pill">
+                  {{'AnnouncementsPage.Maintenance' | translate}}
+                </span>
+              }
+              @case ('UPDATE') {
+                <span class="bg-info badge rounded-pill">
+                  {{'AnnouncementsPage.Update' | translate}}
+                </span>
+              }
+              @case ('EVENT') {
+                <span class="bg-orange badge rounded-pill">
+                  {{'AnnouncementsPage.Event' | translate}}
+                </span>
+              }
+              @case ('TUTORIAL') {
+                <span class="bg-teal badge rounded-pill">
+                  {{'AnnouncementsPage.Tutorial' | translate}}
+                </span>
+              }
+              @case ('OTHER') {
+                <span class="bg-gray badge rounded-pill">
+                  {{'AnnouncementsPage.Other' | translate}}
+                </span>
+              }
+            }
+            @if (announcement.priority > 0) {
               <span class="bg-danger-subtle text-danger badge rounded-pill border-danger-subtle border-1 border-solid">
                 {{'AnnouncementsPage.Pinned' | translate}}
               </span>
-                </ng-container>
-              </div>
-              <h4 class="mb-1">{{announcement.title}}</h4>
-            </li>
+            }
+          </div>
+          <h4 class="mb-1">{{announcement.title}}</h4>
+        </li>
       </ng-template>
       <ng-template #announcementPlaceholder>
         <li class="list-group-item placeholder-glow">
@@ -59,38 +71,38 @@
       </ng-template>
       <div class="card user-select-none mb-2">
         <ul class="list-group list-group-flush">
-          <ng-container *ngIf="loadingAnnouncement">
+          @if (loadingAnnouncement) {
             <ng-container *ngTemplateOutlet="announcementPlaceholder"/>
-          </ng-container>
-          <ng-container *ngIf="!loadingAnnouncement && !announcement">
+          }
+          @if (!loadingAnnouncement && !announcement) {
             <ng-container *ngTemplateOutlet="announcementError"/>
-          </ng-container>
-          <ng-container *ngIf="!loadingAnnouncement && announcement">
+          }
+          @if (!loadingAnnouncement && announcement) {
             <ng-container *ngTemplateOutlet="announcementItem; context: {announcement: announcement}"/>
-          </ng-container>
-          <ng-container *ngIf="loadingUpdate">
+          }
+          @if (loadingUpdate) {
             <ng-container *ngTemplateOutlet="announcementPlaceholder"/>
-          </ng-container>
-          <ng-container *ngIf="!loadingUpdate && !recentUpdate">
+          }
+          @if (!loadingUpdate && !recentUpdate) {
             <ng-container *ngTemplateOutlet="announcementError"/>
-          </ng-container>
-          <ng-container *ngIf="!loadingUpdate && recentUpdate">
+          }
+          @if (!loadingUpdate && recentUpdate) {
             <ng-container *ngTemplateOutlet="announcementItem; context: {announcement: recentUpdate}"/>
-          </ng-container>
+          }
         </ul>
       </div>
-      <ng-container *ngIf="!loadingKeychip && !loadingTrustedKeychip && !hasKeychip && !hasTrustedKeychip">
+      @if (!loadingKeychip && !loadingTrustedKeychip && !hasKeychip && !hasTrustedKeychip) {
         <div class="hstack alert alert-danger" role="alert">
           <ng-icon class="me-2" name="bootstrap-exclamation-triangle-fill" size="1em"></ng-icon>
           <div>{{'DashboardPage.NoKeychipMessage' | translate}}<a routerLink="/keychip">{{'DashboardPage.GoToKeychipPage' | translate}}</a></div>
         </div>
-      </ng-container>
-      <ng-container *ngIf="hasTrustedKeychip">
+      }
+      @if (hasTrustedKeychip) {
         <div class="hstack alert alert-warning" role="alert">
           <ng-icon class="me-2" name="bootstrap-exclamation-triangle-fill"></ng-icon>
           <div>{{'DashboardPage.HasTrustedKeychipMessage' | translate}}<a routerLink="/keychip">{{'DashboardPage.GoToKeychipPage' | translate}}</a></div>
         </div>
-      </ng-container>
+      }
     </div>
     <div class="mb-4">
       <div class="mb-3 d-flex justify-content-between align-items-end">
@@ -98,11 +110,15 @@
           <h3 class="m-0">
             {{'DashboardPage.Profiles' | translate}}
           </h3>
-          <code *ngIf="!loadingProfiles && !profilesError" class="small">({{ currentCard || ('DashboardPage.NoBind' | translate) }})</code>
+          @if (!loadingProfiles && !profilesError) {
+            <code class="small">({{ currentCard || ('DashboardPage.NoBind' | translate) }})</code>
+          }
         </div>
-        <a *ngIf="!loadingProfiles && !profilesError" class="more-announcements" routerLink="/cards">{{'DashboardPage.Switch' | translate}}</a>
+        @if (!loadingProfiles && !profilesError) {
+          <a class="more-announcements" routerLink="/cards">{{'DashboardPage.Switch' | translate}}</a>
+        }
       </div>
-      <ng-container *ngIf="loadingProfiles">
+      @if (loadingProfiles) {
         <div class="card mb-3 placeholder-wave">
           <div class="card-header">
             <span class="placeholder" style="width: 6em;"></span>
@@ -112,30 +128,30 @@
               <img class="placeholder profile-icon">
               <table class="profile-table">
                 <tbody>
-                <tr>
-                  <th>
-                    <span class="placeholder" style="width: 3em;"></span>
-                  </th>
-                  <td>
-                    <span class="placeholder" style="width: 2em;"></span>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <span class="placeholder" style="width: 4em;"></span>
-                  </th>
-                  <td>
-                    <span class="placeholder" style="width: 5em;"></span>
-                  </td>
-                </tr>
-                <tr>
-                  <th>
-                    <span class="placeholder" style="width: 3em;"></span>
-                  </th>
-                  <td>
-                    <span class="placeholder" style="width: 3em;"></span>
-                  </td>
-                </tr>
+                  <tr>
+                    <th>
+                      <span class="placeholder" style="width: 3em;"></span>
+                    </th>
+                    <td>
+                      <span class="placeholder" style="width: 2em;"></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>
+                      <span class="placeholder" style="width: 4em;"></span>
+                    </th>
+                    <td>
+                      <span class="placeholder" style="width: 5em;"></span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>
+                      <span class="placeholder" style="width: 3em;"></span>
+                    </th>
+                    <td>
+                      <span class="placeholder" style="width: 3em;"></span>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -146,52 +162,54 @@
             </div>
           </div>
         </div>
-      </ng-container>
-      <ng-container *ngIf="noCard">
+      }
+      @if (noCard) {
         <div class="hstack alert alert-warning" role="alert">
           <ng-icon class="me-2" name="bootstrap-exclamation-triangle-fill"></ng-icon>
           <div>{{'DashboardPage.NoCardMessage' | translate}}<a routerLink="/cards">{{'DashboardPage.GoToCardPage' | translate}}</a></div>
         </div>
-      </ng-container>
-      <ng-container *ngIf="!loadingProfiles && !profilesError && !noCard && !ongekiProfile && !chusanProfile && !mai2Profile">
+      }
+      @if (!loadingProfiles && !profilesError && !noCard && !ongekiProfile && !chusanProfile && !mai2Profile) {
         <div class="alert alert-warning" role="alert">
           {{'DashboardPage.NoProfileMessage' | translate}}
         </div>
-      </ng-container>
-      <ng-container *ngIf="!loadingProfiles && profilesError">
+      }
+      @if (!loadingProfiles && profilesError) {
         <div class="alert alert-danger" role="alert">
           {{'App.Messages.LoadingFailed' | translate}}
         </div>
-      </ng-container>
-      <ng-container *ngIf="ongekiProfile">
+      }
+      @if (ongekiProfile) {
         <div class="card mb-2">
           <div class="card-header fw-bold d-flex align-items-center gap-2">
             <svg width="1em" height="1em" fill="currentColor" viewBox="0 0 1024 1024">
               <use href="assets/ongeki.svg#icon"/>
             </svg>
-            {{ongekiProfile.userName | fullWidth}}</div>
+          {{ongekiProfile.userName | fullWidth}}</div>
           <div class="card-body p-2">
             <div class="hstack gap-2">
               <img class="profile-icon" src="{{host}}/assets/ongeki/card-icon/UI_Card_Icon_{{ongekiProfile.cardId}}.webp">
               <table class="profile-table">
                 <tbody>
-                <tr>
-                  <th>{{'DashboardPage.Level' | translate}}</th>
-                  <td>{{ongekiProfile.reincarnationNum * 100 + ongekiProfile.level}}</td>
-                </tr>
-                <tr>
-                  <th>{{'DashboardPage.Rating' | translate}}</th>
-                  <ng-template [ngIf]="compareVersion(ongekiProfile.lastRomVersion, '1.50.00', '>=')">
+                  <tr>
+                    <th>{{'DashboardPage.Level' | translate}}</th>
+                    <td>{{ongekiProfile.reincarnationNum * 100 + ongekiProfile.level}}</td>
+                  </tr>
+                  <tr>
+                    <th>{{'DashboardPage.Rating' | translate}}</th>
+                  @if (compareVersion(ongekiProfile.lastRomVersion, '1.50.00', '>=')) {
+
                     <td>{{ongekiProfile.newPlayerRating / 1000 | number: '0.2-2'}}</td>
-                  </ng-template>
-                  <ng-template [ngIf]="compareVersion(ongekiProfile.lastRomVersion, '1.50.00', '<')">
-                    <td>{{ongekiProfile.playerRating / 100 | number: '1.2-2'}}</td>
-                  </ng-template>
-                </tr>
-                <tr>
-                  <th>{{'DashboardPage.BattlePoint' | translate}}</th>
-                  <td>{{ongekiProfile.battlePoint}}</td>
-                </tr>
+                  
+}
+                  @if (compareVersion(ongekiProfile.lastRomVersion, '1.50.00', '<')) {
+                      <td>{{ongekiProfile.playerRating / 100 | number: '1.2-2'}}</td>
+                    }
+                  </tr>
+                  <tr>
+                    <th>{{'DashboardPage.BattlePoint' | translate}}</th>
+                    <td>{{ongekiProfile.battlePoint}}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -202,9 +220,9 @@
             </div>
           </div>
         </div>
-      </ng-container>
+      }
 
-      <ng-container *ngIf="chusanProfile">
+      @if (chusanProfile) {
         <div class="card mb-2">
           <div class="card-header fw-bold d-flex align-items-center gap-2">
             <svg width="1em" height="1em" fill="currentColor" viewBox="0 0 1024 1024">
@@ -217,18 +235,18 @@
               <img class="profile-icon" src="{{host}}/assets/chuni/chara/CHU_UI_Character_{{chusanProfile.characterId|characterImage}}_02.webp">
               <table class="profile-table">
                 <tbody>
-                <tr>
-                  <th>{{'DashboardPage.Level' | translate}}</th>
-                  <td>{{chusanProfile.reincarnationNum * 100 + chusanProfile.level}}</td>
-                </tr>
-                <tr>
-                  <th>{{'DashboardPage.Rating' | translate}}</th>
-                  <td>{{chusanProfile.playerRating / 100 | number: '1.2-2'}}</td>
-                </tr>
-                <tr>
-                  <th>{{'DashboardPage.OverPower' | translate}}</th>
-                  <td>{{chusanProfile.overPowerRate/ 100}}%</td>
-                </tr>
+                  <tr>
+                    <th>{{'DashboardPage.Level' | translate}}</th>
+                    <td>{{chusanProfile.reincarnationNum * 100 + chusanProfile.level}}</td>
+                  </tr>
+                  <tr>
+                    <th>{{'DashboardPage.Rating' | translate}}</th>
+                    <td>{{chusanProfile.playerRating / 100 | number: '1.2-2'}}</td>
+                  </tr>
+                  <tr>
+                    <th>{{'DashboardPage.OverPower' | translate}}</th>
+                    <td>{{chusanProfile.overPowerRate/ 100}}%</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -239,8 +257,8 @@
             </div>
           </div>
         </div>
-      </ng-container>
-      <ng-container *ngIf="mai2Profile">
+      }
+      @if (mai2Profile) {
         <div class="card mb-2">
           <div class="card-header fw-bold d-flex align-items-center gap-2">
             <svg width="1em" height="1em" fill="currentColor" viewBox="0 0 1024 1024">
@@ -253,18 +271,18 @@
               <img class="profile-icon" src="{{host}}assets/mai2/icon/UI_Icon_{{getFormattedNumberByDigit(mai2Profile.iconId,6)}}.webp">
               <table class="profile-table">
                 <tbody>
-                <tr>
-                  <th>{{'DashboardPage.AwakenLevel' | translate}}</th>
-                  <td>{{mai2Profile.totalAwake}}</td>
-                </tr>
-                <tr>
-                  <th>{{'DashboardPage.Rating' | translate}}</th>
-                  <td>{{mai2Profile.playerRating}}</td>
-                </tr>
-                <tr>
-                  <th>{{'DashboardPage.PlayCount' | translate}}</th>
-                  <td>{{mai2Profile.playCount}}</td>
-                </tr>
+                  <tr>
+                    <th>{{'DashboardPage.AwakenLevel' | translate}}</th>
+                    <td>{{mai2Profile.totalAwake}}</td>
+                  </tr>
+                  <tr>
+                    <th>{{'DashboardPage.Rating' | translate}}</th>
+                    <td>{{mai2Profile.playerRating}}</td>
+                  </tr>
+                  <tr>
+                    <th>{{'DashboardPage.PlayCount' | translate}}</th>
+                    <td>{{mai2Profile.playCount}}</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -275,7 +293,7 @@
             </div>
           </div>
         </div>
-      </ng-container>
+      }
     </div>
   </div>
   <div class="col-12 col-lg-4">
@@ -284,30 +302,40 @@
     </h3>
     <div class="card mb-3">
       <div class="card-body">
-        <div *ngIf="checkingUpdateState == 'checking' || (loadingDatabase && downloadingPreloadTaskCount == 0)" class="mb-2">
-          <span class="pe-2">{{'DashboardPage.CheckingUpdate' | translate}}</span>
-          <span class="spinner-border spinner-border-sm" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </span>
-        </div>
-        <div *ngIf="checkingUpdateState != 'checking' && loadingDatabase && downloadingPreloadTaskCount > 0" class="d-flex align-items-center mb-2">
-          <span class="pe-2">{{'DashboardPage.Downloading' | translate}}{{'Common.Colon' | translate}}{{completedPreloadTaskCount}}/{{totalPreloadTaskCount}}</span>
-          <span class="spinner-border spinner-border-sm" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </span>
-        </div>
-        <div *ngIf="checkingUpdateState == 'completed' && !loadingDatabase && errorPreloadTaskCount == 0" class="d-flex align-items-center mb-2">
-          <ng-icon name="bootstrap-check-lg" class="d-flex align-items-center me-2 text-success"></ng-icon>
-          <span class="pe-2">{{'DashboardPage.Version' | translate}}{{'Common.Colon' | translate}}{{dbVersion}}</span>
-        </div>
-        <div *ngIf="checkingUpdateState == 'error' && !loadingDatabase && errorPreloadTaskCount == 0" class="d-flex align-items-center mb-2">
-          <ng-icon name="bootstrap-question-lg" class="d-flex align-items-center me-2 text-warning"></ng-icon>
-          <span class="pe-2">{{'DashboardPage.Version' | translate}}{{'Common.Colon' | translate}}{{dbVersion}}</span>
-        </div>
-        <div *ngIf="checkingUpdateState != 'checking' && !loadingDatabase && errorPreloadTaskCount > 0" class="d-flex align-items-center mb-2">
-          <ng-icon name="bootstrap-x-lg" class="d-flex align-items-center me-2 text-danger"></ng-icon>
-          <span class="pe-2">{{'DashboardPage.DownloadFailed' | translate}}{{'Common.Colon' | translate}}{{completedPreloadTaskCount}}/{{totalPreloadTaskCount}}</span>
-        </div>
+        @if (checkingUpdateState == 'checking' || (loadingDatabase && downloadingPreloadTaskCount == 0)) {
+          <div class="mb-2">
+            <span class="pe-2">{{'DashboardPage.CheckingUpdate' | translate}}</span>
+            <span class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </span>
+          </div>
+        }
+        @if (checkingUpdateState != 'checking' && loadingDatabase && downloadingPreloadTaskCount > 0) {
+          <div class="d-flex align-items-center mb-2">
+            <span class="pe-2">{{'DashboardPage.Downloading' | translate}}{{'Common.Colon' | translate}}{{completedPreloadTaskCount}}/{{totalPreloadTaskCount}}</span>
+            <span class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </span>
+          </div>
+        }
+        @if (checkingUpdateState == 'completed' && !loadingDatabase && errorPreloadTaskCount == 0) {
+          <div class="d-flex align-items-center mb-2">
+            <ng-icon name="bootstrap-check-lg" class="d-flex align-items-center me-2 text-success"></ng-icon>
+            <span class="pe-2">{{'DashboardPage.Version' | translate}}{{'Common.Colon' | translate}}{{dbVersion}}</span>
+          </div>
+        }
+        @if (checkingUpdateState == 'error' && !loadingDatabase && errorPreloadTaskCount == 0) {
+          <div class="d-flex align-items-center mb-2">
+            <ng-icon name="bootstrap-question-lg" class="d-flex align-items-center me-2 text-warning"></ng-icon>
+            <span class="pe-2">{{'DashboardPage.Version' | translate}}{{'Common.Colon' | translate}}{{dbVersion}}</span>
+          </div>
+        }
+        @if (checkingUpdateState != 'checking' && !loadingDatabase && errorPreloadTaskCount > 0) {
+          <div class="d-flex align-items-center mb-2">
+            <ng-icon name="bootstrap-x-lg" class="d-flex align-items-center me-2 text-danger"></ng-icon>
+            <span class="pe-2">{{'DashboardPage.DownloadFailed' | translate}}{{'Common.Colon' | translate}}{{completedPreloadTaskCount}}/{{totalPreloadTaskCount}}</span>
+          </div>
+        }
         <button [class.disabled]="checkingUpdateState == 'checking' || loadingDatabase" class="btn btn-danger btn-sm mt-1" (click)="reload()">{{'DashboardPage.Reload' | translate}}</button>
       </div>
     </div>

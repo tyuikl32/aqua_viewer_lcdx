@@ -1,6 +1,6 @@
 <h1 class="page-heading">{{ "ChuniV2.RatingPage.Title" | translate }}</h1>
 
-<ng-container *ngIf="playerRating">
+@if (playerRating) {
   <div class="mb-3 d-flex align-items-center">
     <h2 class="mb-0">{{ "ChuniV2.RatingPage.Overview" | translate }}</h2>
   </div>
@@ -15,13 +15,13 @@
         </li>
       </ul>
     </div>
-    <ng-container *ngIf="playerRating != calcRating">
+    @if (playerRating != calcRating) {
       <div class="alert alert-warning" role="alert">
         {{ "ChuniV2.RatingPage.DataVersionWarning" | translate }}
       </div>
-    </ng-container>
+    }
   </div>
-</ng-container>
+}
 
 
 <ng-template #itemPlaceholder>
@@ -41,7 +41,7 @@
   </div>
 </ng-template>
 
-<ng-container *ngIf="loadingRating">
+@if (loadingRating) {
   <div class="placeholder-wave">
     <div class="mb-3 d-flex align-items-center">
       <h2 class="mb-0"><span class="placeholder">Best</span></h2>
@@ -50,9 +50,9 @@
       <ng-container *ngTemplateOutlet="itemPlaceholder"></ng-container>
     </div>
   </div>
-</ng-container>
+}
 
-<ng-container *ngIf="loadingRecent">
+@if (loadingRecent) {
   <div class="placeholder-wave">
     <div class="mb-3 d-flex align-items-center">
       <h2 class="mb-0"><span class="placeholder">Recent</span></h2>
@@ -61,95 +61,115 @@
       <ng-container *ngTemplateOutlet="itemPlaceholder"></ng-container>
     </div>
   </div>
-</ng-container>
+}
 
-<ng-container *ngIf="!loadingRating && newRating">
+@if (!loadingRating && newRating) {
   <div class="mb-3 d-flex align-items-center">
     <h2 class="mb-0">{{ "ChuniV2.RatingPage.New" | translate }}</h2>
     <span class="badge bg-primary rounded-pill ms-2">{{ newTotal / 20 | toRating | number: '1.2-2'}}</span>
   </div>
-
   <div class="row mb-4 g-2">
-    <ng-container *ngFor="let item of newRating; index as i">
+    @for (item of newRating; track item; let i = $index) {
       <ng-container *ngTemplateOutlet="record; context: {item: item, index: i}"></ng-container>
-    </ng-container>
+    }
   </div>
-</ng-container>
+}
 
-<ng-container *ngIf="!loadingRating && topRating">
+@if (!loadingRating && topRating) {
   <div class="mb-3 d-flex align-items-center">
     <h2 class="mb-0">{{ "ChuniV2.RatingPage.Best" | translate }}</h2>
     <span class="badge bg-primary rounded-pill ms-2">{{ topTotal / 30 | toRating | number: '1.2-2'}}</span>
   </div>
-
   <div class="row mb-4 g-2">
-    <ng-container *ngFor="let item of topRating; index as i">
+    @for (item of topRating; track item; let i = $index) {
       <ng-container *ngTemplateOutlet="record; context: {item: item, index: i}"></ng-container>
-    </ng-container>
+    }
   </div>
-</ng-container>
+}
 
-<ng-container *ngIf="!loadingRecent && recentRating">
+@if (!loadingRecent && recentRating) {
   <div class="mb-3 d-flex align-items-center">
     <h2 class="mb-0">{{ "ChuniV2.RatingPage.Recent" | translate }}</h2>
     <span class="badge bg-primary rounded-pill ms-2">{{ recentTotal / 10 | toRating | number: '1.2-2'}}</span>
   </div>
-
   <div class="row mb-4 g-2">
-    <ng-container *ngFor="let item of recentRating; index as i">
+    @for (item of recentRating; track item; let i = $index) {
       <ng-container *ngTemplateOutlet="record; context: {item: item, index: i}"></ng-container>
-    </ng-container>
+    }
   </div>
-
-</ng-container>
+}
 
 <ng-template #record let-index="index" let-item="item">
   <div class="col-12 col-md-6 col-xxl-4">
     <div class="card rating-card card-btn" (click)="showDetail(item.musicId)">
       <div class="hstack">
         <img class="jacket rounded-start"
-             src="{{host}}assets/chuni/jacket/CHU_UI_Jacket_{{item.musicId|formatNumber:4}}.webp" alt=""
-        >
-        <div *ngIf="item.musicId != 0" class="card-body overflow-hidden py-0 px-2">
-          <div class="text-truncate fw-bold m-0"><span>#{{ index + 1 }}</span> {{ item.musicName }}</div>
-          <div class="text-truncate">{{ item.score }}</div>
-          <div class="text-truncate small rating-score">
-            <ng-container [ngSwitch]="item.level">
-            <span *ngSwitchCase="0" class="difficulty-basic badge rounded-pill">
-              Basic {{ (item.ratingBase | toRating | number: '1.1-1') ?? 'None' }}
-            </span>
-              <span *ngSwitchCase="1" class="difficulty-advanced badge rounded-pill">
-              Advanced {{ (item.ratingBase | toRating | number: '1.1-1') ?? 'None' }}
-            </span>
-              <span *ngSwitchCase="2" class="difficulty-expert badge rounded-pill">
-              Expert {{ (item.ratingBase | toRating | number: '1.1-1') ?? 'None' }}
-            </span>
-              <span *ngSwitchCase="3" class="difficulty-master badge rounded-pill">
-              Master {{ (item.ratingBase | toRating | number: '1.1-1') ?? 'None' }}
-            </span>
-              <span *ngSwitchCase="4" class="difficulty-ultima badge rounded-pill text-danger border border-danger">
-              Ultima {{ (item.ratingBase | toRating | number: '1.1-1') ?? 'None' }}
-            </span>
-            </ng-container>
-            <b>➛</b>
-            <ng-container [ngSwitch]="item.level">
-            <span *ngSwitchCase="0"
-                  class="score-value">{{ item.rating | toRating | number: '1.2-2'}}</span>
-              <span *ngSwitchCase="1"
+          src="{{host}}assets/chuni/jacket/CHU_UI_Jacket_{{item.musicId|formatNumber:4}}.webp" alt=""
+          >
+          @if (item.musicId != 0) {
+            <div class="card-body overflow-hidden py-0 px-2">
+              <div class="text-truncate fw-bold m-0"><span>#{{ index + 1 }}</span> {{ item.musicName }}</div>
+              <div class="text-truncate">{{ item.score }}</div>
+              <div class="text-truncate small rating-score">
+                @switch (item.level) {
+                  @case (0) {
+                    <span class="difficulty-basic badge rounded-pill">
+                      Basic {{ (item.ratingBase | toRating | number: '1.1-1') ?? 'None' }}
+                    </span>
+                  }
+                  @case (1) {
+                    <span class="difficulty-advanced badge rounded-pill">
+                      Advanced {{ (item.ratingBase | toRating | number: '1.1-1') ?? 'None' }}
+                    </span>
+                  }
+                  @case (2) {
+                    <span class="difficulty-expert badge rounded-pill">
+                      Expert {{ (item.ratingBase | toRating | number: '1.1-1') ?? 'None' }}
+                    </span>
+                  }
+                  @case (3) {
+                    <span class="difficulty-master badge rounded-pill">
+                      Master {{ (item.ratingBase | toRating | number: '1.1-1') ?? 'None' }}
+                    </span>
+                  }
+                  @case (4) {
+                    <span class="difficulty-ultima badge rounded-pill text-danger border border-danger">
+                      Ultima {{ (item.ratingBase | toRating | number: '1.1-1') ?? 'None' }}
+                    </span>
+                  }
+                }
+                <b>➛</b>
+                @switch (item.level) {
+                  @case (0) {
+                    <span
                     class="score-value">{{ item.rating | toRating | number: '1.2-2'}}</span>
-              <span *ngSwitchCase="2"
+                  }
+                  @case (1) {
+                    <span
                     class="score-value">{{ item.rating | toRating | number: '1.2-2'}}</span>
-              <span *ngSwitchCase="3"
+                  }
+                  @case (2) {
+                    <span
                     class="score-value">{{ item.rating | toRating | number: '1.2-2'}}</span>
-              <span *ngSwitchCase="4"
+                  }
+                  @case (3) {
+                    <span
                     class="score-value">{{ item.rating | toRating | number: '1.2-2'}}</span>
-            </ng-container>
-          </div>
-        </div>
-        <div *ngIf="item.musicId == 0" class="card-body overflow-hidden py-0 px-4 text-truncate">
-          No Record
+                  }
+                  @case (4) {
+                    <span
+                    class="score-value">{{ item.rating | toRating | number: '1.2-2'}}</span>
+                  }
+                }
+              </div>
+            </div>
+          }
+          @if (item.musicId == 0) {
+            <div class="card-body overflow-hidden py-0 px-4 text-truncate">
+              No Record
+            </div>
+          }
         </div>
       </div>
     </div>
-  </div>
-</ng-template>
+  </ng-template>

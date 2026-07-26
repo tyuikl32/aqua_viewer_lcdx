@@ -7,64 +7,92 @@
   </ul>
 </div>
 
-<div *ngIf="profile" class="card mb-4">
-  <div class="card-body">
-    {{'Ongeki.BattlePointPage.BattlePoint' | translate}}{{'Common.Colon' | translate}}{{profile.battlePoint}}
+@if (profile) {
+  <div class="card mb-4">
+    <div class="card-body">
+      {{'Ongeki.BattlePointPage.BattlePoint' | translate}}{{'Common.Colon' | translate}}{{profile.battlePoint}}
+    </div>
   </div>
-</div>
+}
 
 <div class="mb-3 d-flex align-items-center">
   <h2 class="mb-0">{{'Ongeki.BattlePointPage.BestBattleScore' | translate}}</h2>
 </div>
 
-<div *ngIf="bPList" class="row mb-4 g-2">
-  <ng-container *ngFor="let item of bPList; index as i">
-    <ng-container *ngTemplateOutlet="record; context: {item: item, index: i}"></ng-container>
-  </ng-container>
-</div>
+@if (bPList) {
+  <div class="row mb-4 g-2">
+    @for (item of bPList; track item; let i = $index) {
+      <ng-container *ngTemplateOutlet="record; context: {item: item, index: i}"></ng-container>
+    }
+  </div>
+}
 
 <ng-template #record let-index="index" let-item="item">
   <div class="col-12 col-md-6 col-xxl-4">
     <div class="card rating-card">
       <div class="hstack">
         <img class="jacket rounded-start" src="{{host}}assets/ongeki/jacket/UI_Jacket_{{item.musicId|formatNumber:4}}_S.webp">
-        <div *ngIf="item.musicId != 0" class="card-body overflow-hidden py-0 px-2">
-          <div class="text-truncate fw-bold m-0"><span>#{{index + 1}}</span> {{item.musicInfo ? item.musicInfo.name : 'MusicID:' + item.musicId}}</div>
-          <div class="text-truncate">{{item.value}}</div>
-          <div *ngIf="item.musicInfo" class="text-truncate small d-flex gap-1 align-items-center">
-            <ng-container *ngIf="item.bossCardInfo" [ngSwitch]="item.bossCardInfo.attribute">
-              <span *ngSwitchCase="'Aqua'" class="attr-aqua badge rounded-pill">
-                Lv. {{(item.musicInfo.bossLevel)??'None'}}
-              </span>
-              <span *ngSwitchCase="'Leaf'" class="attr-leaf badge rounded-pill">
-                Lv. {{(item.musicInfo.bossLevel)??'None'}}
-              </span>
-              <span *ngSwitchCase="'Fire'" class="attr-fire badge rounded-pill">
-                Lv. {{(item.musicInfo.bossLevel)??'None'}}
-              </span>
-            </ng-container>
-            <ng-container [ngSwitch]="item.level">
-              <span *ngSwitchCase="0" class="small">
-                Basic
-              </span>
-              <span *ngSwitchCase="1" class="small">
-                Advanced
-              </span>
-              <span *ngSwitchCase="2" class="small">
-                Expert
-              </span>
-              <span *ngSwitchCase="3" class="small">
-                Master
-              </span>
-              <span *ngSwitchCase="10" class="small">
-                Lunatic
-              </span>
-            </ng-container>
+        @if (item.musicId != 0) {
+          <div class="card-body overflow-hidden py-0 px-2">
+            <div class="text-truncate fw-bold m-0"><span>#{{index + 1}}</span> {{item.musicInfo ? item.musicInfo.name : 'MusicID:' + item.musicId}}</div>
+            <div class="text-truncate">{{item.value}}</div>
+            @if (item.musicInfo) {
+              <div class="text-truncate small d-flex gap-1 align-items-center">
+                @if (item.bossCardInfo) {
+                  @switch (item.bossCardInfo.attribute) {
+                    @case ('Aqua') {
+                      <span class="attr-aqua badge rounded-pill">
+                        Lv. {{(item.musicInfo.bossLevel)??'None'}}
+                      </span>
+                    }
+                    @case ('Leaf') {
+                      <span class="attr-leaf badge rounded-pill">
+                        Lv. {{(item.musicInfo.bossLevel)??'None'}}
+                      </span>
+                    }
+                    @case ('Fire') {
+                      <span class="attr-fire badge rounded-pill">
+                        Lv. {{(item.musicInfo.bossLevel)??'None'}}
+                      </span>
+                    }
+                  }
+                }
+                @switch (item.level) {
+                  @case (0) {
+                    <span class="small">
+                      Basic
+                    </span>
+                  }
+                  @case (1) {
+                    <span class="small">
+                      Advanced
+                    </span>
+                  }
+                  @case (2) {
+                    <span class="small">
+                      Expert
+                    </span>
+                  }
+                  @case (3) {
+                    <span class="small">
+                      Master
+                    </span>
+                  }
+                  @case (10) {
+                    <span class="small">
+                      Lunatic
+                    </span>
+                  }
+                }
+              </div>
+            }
           </div>
-        </div>
-        <div *ngIf="item.musicId == 0" class="card-body overflow-hidden py-0 px-4 text-truncate">
-          No Record
-        </div>
+        }
+        @if (item.musicId == 0) {
+          <div class="card-body overflow-hidden py-0 px-4 text-truncate">
+            No Record
+          </div>
+        }
       </div>
     </div>
   </div>

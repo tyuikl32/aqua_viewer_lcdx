@@ -5,12 +5,12 @@
     <div class="row justify-content-start align-items-center g-1">
       <div class="col-auto">
         <button class="tab-selector" [class.tab-selector-active]="type === CardType.SKILL" [routerLink]="[]"
-                [queryParams]="{type: CardType.SKILL.toLowerCase()}">{{ 'Ongeki.Card.Deck' | translate }}
+          [queryParams]="{type: CardType.SKILL.toLowerCase()}">{{ 'Ongeki.Card.Deck' | translate }}
         </button>
       </div>
       <div class="col-auto">
         <button class="tab-selector" [class.tab-selector-active]="type === CardType.SKIN" [routerLink]="[]"
-                [queryParams]="{type: CardType.SKIN.toLowerCase()}">{{ 'Ongeki.Card.Skin' | translate }}
+          [queryParams]="{type: CardType.SKIN.toLowerCase()}">{{ 'Ongeki.Card.Skin' | translate }}
         </button>
       </div>
     </div>
@@ -20,13 +20,13 @@
   <div class="col-12 col-sm-auto pt-1 me-3">{{ 'Ongeki.Card.DeckID' | translate }}</div>
   <div class="col-12 col-sm">
     <div class="row justify-content-start align-items-center g-1">
-      <ng-container *ngFor="let id of deckIDs">
+      @for (id of deckIDs; track id) {
         <div class="col-auto">
           <button class="tab-selector" [class.tab-selector-active]="currentDeckID === id"
-                  (click)="selectDeck(id)">{{ id }}
+            (click)="selectDeck(id)">{{ id }}
           </button>
         </div>
-      </ng-container>
+      }
     </div>
   </div>
 </div>
@@ -37,9 +37,9 @@
   <ng-icon class="me-2" name="bootstrap-exclamation-triangle-fill"></ng-icon>
   <div>{{ 'Ongeki.Card.Warning1' | translate }}</div>
 </div>
-<ng-container *ngIf="currentDeck">
+@if (currentDeck) {
   <div class="deck-row row row-cols-3">
-    <ng-container *ngFor="let item of currentDeck;let i = index">
+    @for (item of currentDeck; track item; let i = $index) {
       <div class="col">
         <div class="cards-col">
           <app-ongeki-card-item
@@ -57,16 +57,17 @@
         </div>
         <div class="modal-body">
           <app-ongeki-card-gallery isModal="true" [showDummyCard]="type === CardType.SKIN"
-                                   [callback]="getSelectCardCallback(currentDeckID, i)"></app-ongeki-card-gallery>
+          [callback]="getSelectCardCallback(currentDeckID, i)"></app-ongeki-card-gallery>
         </div>
       </ng-template>
-    </ng-container>
+    }
   </div>
-
-  <div *ngIf="type === CardType.SKIN" class="form-check form-check-inline form-switch">
-    <input class="form-check-input" type="checkbox" role="switch" id="showAllItemsSwitch"
-           [(ngModel)]="skinValid[currentDeckID - 1]" (change)="this.ChangeCardSkin(this.currentDeckID, -1, 0)">
-    <label class="form-check-label user-select-none"
-           for="showAllItemsSwitch">{{ 'Ongeki.Card.Valid' | translate }}</label>
-  </div>
-</ng-container>
+  @if (type === CardType.SKIN) {
+    <div class="form-check form-check-inline form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="showAllItemsSwitch"
+        [(ngModel)]="skinValid[currentDeckID - 1]" (change)="this.ChangeCardSkin(this.currentDeckID, -1, 0)">
+        <label class="form-check-label user-select-none"
+        for="showAllItemsSwitch">{{ 'Ongeki.Card.Valid' | translate }}</label>
+      </div>
+    }
+  }
