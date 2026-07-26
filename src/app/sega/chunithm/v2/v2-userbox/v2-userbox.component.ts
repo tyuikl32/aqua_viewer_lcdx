@@ -34,6 +34,19 @@ export class V2UserBoxComponent implements OnInit {
 
   showAllItems = false;
 
+  // Equipping writes a single item to the profile; the favorite collection is a
+  // separate 2.50+ feature, so the two live in separate tabs to avoid confusion
+  tab: 'equip' | 'favorite' = 'equip';
+  readonly favoriteKinds = [
+    {kind: 1, name: 'Nameplate'},
+    {kind: 3, name: 'Trophy'},
+    {kind: 8, name: 'MapIcon'},
+    {kind: 9, name: 'SystemVoice'},
+    {kind: 13, name: 'Stage'},
+  ];
+  favorites: { [kind: number]: number[] } = {};
+  favoritesLoaded = false;
+
   profile: V2Profile;
   symbolChatInfo: V2SymbolChat[];
   aimeId: string;
@@ -261,8 +274,55 @@ export class V2UserBoxComponent implements OnInit {
 
   openItemDialog(dialogData: V2UserBoxSettingData) {
     const dialogRef = this.modalService.open(V2UserBoxSettingDialog, this.dialogOptions);
-    dialogRef.componentInstance.data = dialogData;
+    dialogRef.componentInstance.data = {mode: 'equip', ...dialogData};
     dialogRef.componentInstance.parentComponent = this;
+  }
+
+  selectTab(tab: 'equip' | 'favorite') {
+    this.tab = tab;
+    if (tab === 'favorite' && !this.favoritesLoaded) {
+      this.loadFavorites();
+    }
+  }
+
+  loadFavorites() {
+    const param = new HttpParams().set('aimeId', this.aimeId);
+    for (const entry of this.favoriteKinds) {
+      this.api.get('api/game/chuni/v2/favorite-collection/' + entry.kind, param).subscribe(
+        (data: { itemKind: number, itemId: number }[]) => this.favorites[entry.kind] = (data ?? []).map(f => f.itemId),
+        error => this.messageService.notice(error)
+      );
+    }
+    this.favoritesLoaded = true;
+  }
+
+  openFavoriteDialog(kind: number) {
+    const dialogRef = this.modalService.open(V2UserBoxSettingDialog, this.dialogOptions);
+    dialogRef.componentInstance.data = {
+      itemKind: kind,
+      itemId: null,
+      showAllItems: this.showAllItems,
+      mode: 'favorite',
+      favoriteIds: this.favorites[kind] ?? [],
+    };
+    dialogRef.componentInstance.parentComponent = this;
+  }
+
+  handleFavoriteSaved(kind: number, itemIds: number[]) {
+    this.favorites[kind] = itemIds;
+    this.messageService.notice('Successfully changed');
+  }
+
+  favoriteImage(kind: number, itemId: number): string {
+    const pad = (n: number, len: number) => String(n).padStart(len, '0');
+    switch (kind) {
+      case 1: return `${this.host}assets/chuni/namePlate/CHU_UI_NamePlate_${pad(itemId, 8)}.webp`;
+      case 8: return `${this.host}assets/chuni/mapIcon/CHU_UI_MapIcon_${pad(itemId, 8)}.webp`;
+      case 9: return `${this.host}assets/chuni/systemVoice/CHU_UI_SystemVoice_${pad(itemId, 8)}.webp`;
+      case 13: return `${this.host}assets/chuni/stage/CHU_UI_Stage_${pad(itemId, 5)}.webp`;
+      // Trophies have no artwork; the favorites card shows a count instead
+      default: return null;
+    }
   }
 
   openSymbolChatDialog(dialogData: V2SymbolChat) {
@@ -328,38 +388,38 @@ export class V2UserBoxComponent implements OnInit {
   }
 
   namePlate() {
-    this.openItemDialog({itemKind: 1, itemId: this.profile.nameplateId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
+    this.openItemDialog({itemKind: 1, itemId: this.profile.nameplateId, showAllItems: this.showAllItems});
   }
 
   frame() {
-    this.openItemDialog({itemKind: 2, itemId: this.profile.frameId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
+    this.openItemDialog({itemKind: 2, itemId: this.profile.frameId, showAllItems: this.showAllItems});
   }
 
   trophy() {
-    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
+    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyId, showAllItems: this.showAllItems});
     this.currentSubTrophyIndex = 0;
   }
 
   trophySub1() {
-    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyIdSub1, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
+    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyIdSub1, showAllItems: this.showAllItems});
     this.currentSubTrophyIndex = 1;
   }
 
   trophySub2() {
-    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyIdSub2, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
+    this.openItemDialog({itemKind: 3, itemId: this.profile.trophyIdSub2, showAllItems: this.showAllItems});
     this.currentSubTrophyIndex = 2;
   }
 
   mapIcon() {
-    this.openItemDialog({itemKind: 8, itemId: this.profile.mapIconId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
+    this.openItemDialog({itemKind: 8, itemId: this.profile.mapIconId, showAllItems: this.showAllItems});
   }
 
   systemVoice() {
-    this.openItemDialog({itemKind: 9, itemId: this.profile.voiceId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
+    this.openItemDialog({itemKind: 9, itemId: this.profile.voiceId, showAllItems: this.showAllItems});
   }
 
   stage() {
-    this.openItemDialog({itemKind: 13, itemId: this.currentStageId, showAllItems: this.showAllItems, supportsMate: this.supportsMate});
+    this.openItemDialog({itemKind: 13, itemId: this.currentStageId, showAllItems: this.showAllItems});
   }
 
   avatarAcc(category: number, accId: number) {

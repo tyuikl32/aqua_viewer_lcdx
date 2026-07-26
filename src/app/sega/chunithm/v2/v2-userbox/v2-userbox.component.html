@@ -1,4 +1,41 @@
 <h1 class="page-heading">{{ 'ChuniV2.UserBoxPage.Title' | translate }}</h1>
+<div *ngIf="supportsMate" class="row justify-content-start align-items-center g-1 mb-3">
+  <div class="col-auto">
+    <button class="tab-selector" [class.tab-selector-active]="tab === 'equip'"
+            (click)="selectTab('equip')">{{ 'ChuniV2.UserBoxPage.TabEquip' | translate }}</button>
+  </div>
+  <div class="col-auto">
+    <button class="tab-selector" [class.tab-selector-active]="tab === 'favorite'"
+            (click)="selectTab('favorite')">{{ 'ChuniV2.UserBoxPage.TabFavorite' | translate }}</button>
+  </div>
+</div>
+
+<div *ngIf="tab === 'favorite'">
+  <p class="small text-secondary">{{ 'ChuniV2.UserBoxPage.FavoriteTip' | translate }}</p>
+  <div class="row g-2 mb-3 row-cols-1 row-cols-md-2">
+    <div class="col" *ngFor="let entry of favoriteKinds">
+      <div class="card p-0 h-100">
+        <div class="card-header item-title text-light d-flex justify-content-center align-items-center py-1">
+          <span class="m-0">{{ ('ChuniV2.UserBoxPage.' + entry.name) | translate }}</span>
+        </div>
+        <div class="card-body">
+          <p class="small text-secondary mb-2">
+            {{ 'ChuniV2.UserBoxPage.FavoriteCount' | translate: {count: (favorites[entry.kind] || []).length} }}
+          </p>
+          <div class="row g-1 mb-2" *ngIf="favoriteImage(entry.kind, 0) !== null">
+            <div class="col-4" *ngFor="let itemId of favorites[entry.kind]">
+              <img class="w-100" [src]="favoriteImage(entry.kind, itemId)">
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm text-light"
+                  (click)="openFavoriteDialog(entry.kind)">{{ 'ChuniV2.UserBoxPage.FavoriteManage' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div [hidden]="tab !== 'equip'">
 <div class="mb-2">
   <div class="card p-0 overflow-hidden">
     <div class="card-header item-title text-light d-flex justify-content-center align-items-center py-1">
@@ -136,4 +173,5 @@
   <ng-template #setSymbolChat let-sceneId="sceneId" let-orderId="orderId">
     {{ sceneId }}{{ orderId }}
   </ng-template>
+</div>
 </div>
