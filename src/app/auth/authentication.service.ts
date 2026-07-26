@@ -33,6 +33,13 @@ export class AuthenticationService {
         mergeMap(this.procLoginResp));
   }
 
+  // Second step of a login that requires TOTP; totpToken stands in for the
+  // already verified password or OAuth2 code
+  loginWithTotp(totpToken: string, code: string) {
+    return this.http.post<any>(environment.apiServer + 'api/auth/signin/totp', {totpToken, code})
+      .pipe(mergeMap(this.procLoginResp));
+  }
+
   loginAs(username: string) {
     return this.http.post<any>(environment.apiServer + `api/admin/users/loginas/${username}`, {})
       .pipe(

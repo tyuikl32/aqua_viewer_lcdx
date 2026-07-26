@@ -62,8 +62,11 @@ export class WebAuthnService {
     return processed instanceof Promise ? processed : firstValueFrom(processed);
   }
 
-  async register(nick: string) {
-    const startResp = await firstValueFrom(this.api.get('api/user/webauthn/startRegister'));
+  // totpCode is required when the account has TOTP enabled: registering a passkey
+  // adds a login method that itself skips the second factor
+  async register(nick: string, totpCode?: string) {
+    const startResp = await firstValueFrom(
+      this.api.post('api/user/webauthn/startRegister', totpCode ? {code: totpCode} : {}));
     if (startResp?.status?.code !== StatusCode.OK || !startResp.data) {
       return startResp;
     }

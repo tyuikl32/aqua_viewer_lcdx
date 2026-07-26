@@ -15,6 +15,9 @@ import {WebAuthnService} from 'src/app/auth/webauthn.service';
 })
 export class SignInComponent {
   signInForm: FormGroup;
+  totpForm: FormGroup;
+  // Set once the password step succeeded but the account also needs a TOTP code
+  totpToken: string;
   webAuthnSupported = false;
   passkeySigningIn = false;
   token: string;
@@ -38,6 +41,10 @@ export class SignInComponent {
     this.signInForm = this.fb.group({
       usernameOrEmail: ['', Validators.required],
       password: ['', Validators.required]
+    });
+    // Either a 6-digit TOTP code or a XXXXX-XXXXX recovery code
+    this.totpForm = this.fb.group({
+      code: ['', [Validators.required, Validators.pattern(/^(\d{6}|[A-Za-z0-9]{5}-[A-Za-z0-9]{5})$/)]]
     });
 
     const state = this.router.getCurrentNavigation().extras.state;
@@ -65,6 +72,10 @@ export class SignInComponent {
 
   get password() {
     return this.signInForm.get('password');
+  }
+
+  get totpCode() {
+    return this.totpForm.get('code');
   }
 
   navigateToSignUp(){
@@ -123,6 +134,9 @@ export class SignInComponent {
                 this.messageService.notice(resp.status.message);
                 location.reload();
               }
+              else if (statusCode === StatusCode.TOTP_REQUIRED && resp.data?.totpToken) {
+                this.totpToken = resp.data.totpToken;
+              }
               else if (statusCode === StatusCode.LOGIN_FAILED){
                 this.translate.get("SignInPage.LoginFailedMessage").subscribe((res: string) => {
                   this.messageService.notice(res, 'danger');
@@ -141,6 +155,52 @@ export class SignInComponent {
           }
         }
       );
+  }
+
+  onSubmitTotp() {
+    if (this.totpForm.invalid) {
+      this.totpForm.markAllAsTouched();
+      return;
+    }
+    this.totpForm.disable();
+    this.authenticationService.loginWithTotp(this.totpToken, this.totpForm.value.code).subscribe({
+      next: (resp) => {
+        const statusCode: StatusCode = resp?.status?.code;
+        if (statusCode === StatusCode.OK && resp.data) {
+          this.messageService.notice(resp.status.message);
+          location.reload();
+          return;
+        }
+        if (statusCode === StatusCode.TOTP_INVALID) {
+          // The ticket stays valid, so only the code needs retyping
+          this.translate.get('SignInPage.TotpInvalidMessage').subscribe((res: string) => {
+            this.messageService.notice(res, 'danger');
+          });
+        } else if (statusCode === StatusCode.TOTP_TOO_MANY_ATTEMPTS) {
+          // The server dropped the ticket as well; the whole login restarts
+          this.totpToken = null;
+          this.translate.get('SignInPage.TotpLockedMessage').subscribe((res: string) => {
+            this.messageService.notice(res, 'danger');
+          });
+        } else {
+          // Ticket expired or unusable: start over from the password form
+          this.totpToken = null;
+          this.messageService.notice(resp?.status?.message);
+        }
+        this.totpForm.enable();
+        this.totpForm.reset();
+      },
+      error: (error) => {
+        this.messageService.notice(error);
+        this.totpForm.enable();
+      }
+    });
+  }
+
+  cancelTotp() {
+    this.totpToken = null;
+    this.totpForm.reset();
+    this.signInForm.enable();
   }
 
   async signInWithPasskey() {

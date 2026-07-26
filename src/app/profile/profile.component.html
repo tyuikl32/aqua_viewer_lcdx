@@ -74,6 +74,112 @@
     </ng-container>
   </div>
 </div>
+<h2 class="mb-3">{{"ProfilePage.TwoFactor" | translate}}</h2>
+<div class="card mb-4">
+  <div class="card-body row g-3">
+    <div class="col-container col-12">
+      <div class="row col-content">
+        <div class="col-sm-auto"><span class="col-lead">{{"ProfilePage.Totp" | translate}}</span></div>
+        <div class="col col-value">
+          {{ (totpEnabled ? "ProfilePage.TotpOn" : "ProfilePage.TotpOff") | translate }}
+        </div>
+      </div>
+      <ng-container *ngIf="!totpEnabled">
+        <a class="col-action" (click)="modalService.open(totpPassword, {centered: true})">{{"ProfilePage.TotpEnable" | translate}}</a>
+      </ng-container>
+      <ng-container *ngIf="totpEnabled">
+        <a class="col-action" (click)="modalService.open(totpDisable, {centered: true})">{{"ProfilePage.TotpDisable" | translate}}</a>
+      </ng-container>
+    </div>
+    <div *ngIf="totpEnabled" class="col-container col-12">
+      <div class="row col-content">
+        <div class="col-sm-auto"><span class="col-lead">{{"ProfilePage.TotpRecovery" | translate}}</span></div>
+        <div class="col col-value">{{"ProfilePage.TotpRecoveryRemaining" | translate: {count: totpRecoveryRemaining} }}</div>
+      </div>
+      <a class="col-action" (click)="modalService.open(totpRegenerate, {centered: true})">{{"ProfilePage.TotpRecoveryRegenerate" | translate}}</a>
+    </div>
+    <div class="col-12 small text-secondary">{{"ProfilePage.TotpTip" | translate}}</div>
+  </div>
+</div>
+<ng-template #totpRecovery let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">{{"ProfilePage.TotpRecovery" | translate}}</h4>
+  </div>
+  <div class="modal-body">
+    <div class="d-grid">
+      <p class="mb-3 ms-1 text-danger-emphasis">{{"ProfilePage.TotpRecoveryWarning" | translate}}</p>
+      <pre class="bg-body-secondary rounded p-3 mb-3 user-select-all">{{ recoveryCodes?.join('\n') }}</pre>
+      <button class="btn btn-outline-primary btn-sm mb-2" (click)="copyRecoveryCodes()">{{"ProfilePage.TotpRecoveryCopy" | translate}}</button>
+      <button class="btn btn-primary btn-sm" (click)="closeRecoveryCodes(modal)">{{"ProfilePage.TotpRecoverySaved" | translate}}</button>
+    </div>
+  </div>
+</ng-template>
+<ng-template #totpRegenerate let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">{{"ProfilePage.TotpRecoveryRegenerate" | translate}}</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="d-grid">
+      <p class="mb-3 ms-1">{{"ProfilePage.TotpRecoveryRegenerateTip" | translate}}</p>
+      <input type="text" class="form-control form-control-sm mb-3" #regenCode
+             autocomplete="one-time-code" maxlength="11"
+             [attr.placeholder]="'ProfilePage.TotpCode' | translate">
+      <button class="btn btn-primary btn-sm" [class.disabled]="totpBusy"
+              (click)="regenerateRecoveryCodes(regenCode.value, modal, totpRecovery)">{{'Common.OK' | translate}}</button>
+    </div>
+  </div>
+</ng-template>
+<ng-template #totpPassword let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">{{"ProfilePage.TotpEnable" | translate}}</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="d-grid">
+      <p class="mb-3 ms-1">{{"ProfilePage.TotpPasswordTip" | translate}}</p>
+      <input type="password" class="form-control form-control-sm mb-3" #totpPw autocomplete="current-password"
+             [attr.placeholder]="'ProfilePage.Password' | translate">
+      <button class="btn btn-primary btn-sm" [class.disabled]="totpBusy"
+              (click)="startTotpSetup(totpPw.value, totpSetup); modal.close()">{{'Common.OK' | translate}}</button>
+    </div>
+  </div>
+</ng-template>
+<ng-template #totpSetup let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">{{"ProfilePage.TotpEnable" | translate}}</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="d-grid text-center">
+      <p class="mb-2 small">{{"ProfilePage.TotpScanTip" | translate}}</p>
+      <img *ngIf="totpQr" [src]="totpQr" alt="TOTP QR" class="mx-auto mb-2" style="max-width: 220px;">
+      <p class="mb-1 small text-secondary">{{"ProfilePage.TotpSecret" | translate}}</p>
+      <p class="mb-3 font-monospace user-select-all text-break">{{ totpSecret }}</p>
+      <label for="totp-enable-code" class="form-label small text-start">{{"ProfilePage.TotpCode" | translate}}</label>
+      <input type="text" class="form-control form-control-sm mb-3" id="totp-enable-code" #enableCode
+             inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+      <button class="btn btn-primary btn-sm" [class.disabled]="totpBusy"
+              (click)="enableTotp(enableCode.value, modal, totpRecovery)">{{'Common.OK' | translate}}</button>
+    </div>
+  </div>
+</ng-template>
+<ng-template #totpDisable let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">{{"ProfilePage.TotpDisable" | translate}}</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="d-grid">
+      <p class="mb-3 ms-1">{{"ProfilePage.TotpDisableTip" | translate}}</p>
+      <input type="text" class="form-control form-control-sm mb-3" #disableCode
+             inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+             [attr.placeholder]="'ProfilePage.TotpCode' | translate">
+      <button class="btn btn-danger btn-sm" [class.disabled]="totpBusy"
+              (click)="disableTotp(disableCode.value, modal)">{{'Common.OK' | translate}}</button>
+    </div>
+  </div>
+</ng-template>
 <h2 class="mb-3">{{"ProfilePage.Passkeys" | translate}}</h2>
 <div class="card mb-4">
   <div class="card-body row g-3">
@@ -117,7 +223,13 @@
             <div class="d-grid">
               <label for="passkey-nick" class="form-label small">{{"ProfilePage.PasskeyNick" | translate}}</label>
               <input type="text" class="form-control form-control-sm mb-3" id="passkey-nick" #passkeyNick maxlength="32">
-              <button class="btn btn-primary btn-sm" (click)="onAddPasskey(passkeyNick.value);modal.dismiss()">{{'Common.OK' | translate}}</button>
+              <div [hidden]="!totpEnabled">
+                <label for="passkey-totp" class="form-label small">{{"ProfilePage.TotpCode" | translate}}</label>
+                <input type="text" class="form-control form-control-sm mb-3 w-100" id="passkey-totp" #passkeyTotp
+                       autocomplete="one-time-code" maxlength="11">
+              </div>
+              <button class="btn btn-primary btn-sm" [class.disabled]="addingPasskey"
+                      (click)="onAddPasskey(passkeyNick.value, totpEnabled ? passkeyTotp.value : null, modal)">{{'Common.OK' | translate}}</button>
             </div>
           </form>
         </div>
@@ -136,7 +248,12 @@
         <form>
           <div class="d-grid">
             <p class="mb-3 ms-1" [innerHTML]="'ProfilePage.LinkTip' | translate: {type: oAuthService.tokenTypes.get(type), email: email}"></p>
-            <button class="btn btn-primary btn-sm" (click)="link()">{{'Common.OK' | translate}}</button>
+            <div [hidden]="!totpEnabled">
+              <label for="link-totp" class="form-label small">{{"ProfilePage.TotpCode" | translate}}</label>
+              <input type="text" class="form-control form-control-sm mb-3 w-100" id="link-totp" #linkTotp
+                     autocomplete="one-time-code" maxlength="11">
+            </div>
+            <button class="btn btn-primary btn-sm" (click)="link(totpEnabled ? linkTotp.value : null)">{{'Common.OK' | translate}}</button>
           </div>
         </form>
       </div>

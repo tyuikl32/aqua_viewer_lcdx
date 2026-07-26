@@ -8,7 +8,24 @@
       <div *ngIf="type && token" class="callout callout-info py-3" role="alert">
         {{'SignInPage.BindTip' | translate: {type: oauth.tokenTypes.get(type)} }}
       </div>
-      <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
+      <form *ngIf="totpToken" [formGroup]="totpForm" (ngSubmit)="onSubmitTotp()">
+        <div class="d-grid gap-1 small fw-bold">
+          <p class="fw-normal">{{'SignInPage.TotpTip' | translate}}</p>
+          <div class="position-relative">
+            <label for="totpCode" class="form-label small">{{'SignInPage.TotpCode' | translate}}</label>
+            <input type="text" class="form-control form-control-sm" id="totpCode" formControlName="code"
+                   autocomplete="one-time-code" maxlength="11" autofocus
+                   [class.is-invalid]="totpCode.touched && !totpCode.valid">
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm mb-2" [class.disabled]="totpForm.disabled">
+            {{'SignInPage.SignIn' | translate}}
+          </button>
+          <button type="button" class="btn btn-link btn-sm text-decoration-none" (click)="cancelTotp()">
+            {{'SignInPage.TotpBack' | translate}}
+          </button>
+        </div>
+      </form>
+      <form *ngIf="!totpToken" [formGroup]="signInForm" (ngSubmit)="onSubmit()">
         <div class="d-grid gap-1 small fw-bold">
           <div class="position-relative">
             <label for="usernameOrEmail" class="form-label small">{{'SignInPage.UsernameOrEmail' | translate}}</label>
