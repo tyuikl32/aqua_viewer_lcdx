@@ -6,6 +6,7 @@ import {MessageService} from '../message.service';
 import {StatusCode} from '../status-code';
 import {TranslateService} from '@ngx-translate/core';
 import {OAuthService} from 'src/app/auth/oauth.service';
+import {WebAuthnService} from 'src/app/auth/webauthn.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -14,6 +15,8 @@ import {OAuthService} from 'src/app/auth/oauth.service';
 })
 export class SignInComponent {
   signInForm: FormGroup;
+  webAuthnSupported = false;
+  passkeySigningIn = false;
   token: string;
   type: string;
   name: string;
@@ -28,8 +31,10 @@ export class SignInComponent {
     public messageService: MessageService,
     private translate: TranslateService,
     protected oauth: OAuthService,
+    private webAuthn: WebAuthnService,
   ) {
     this.providers = [...this.oauth.tokenTypes.keys()];
+    this.webAuthnSupported = this.webAuthn.isSupported();
     this.signInForm = this.fb.group({
       usernameOrEmail: ['', Validators.required],
       password: ['', Validators.required]
@@ -136,6 +141,38 @@ export class SignInComponent {
           }
         }
       );
+  }
+
+  async signInWithPasskey() {
+    if (this.passkeySigningIn) {
+      return;
+    }
+    this.passkeySigningIn = true;
+    this.signInForm.disable();
+    try {
+      const resp = await this.webAuthn.login();
+      const statusCode: StatusCode = resp?.status?.code;
+      if (statusCode === StatusCode.OK && resp.data) {
+        this.messageService.notice(resp.status.message);
+        location.reload();
+        return;
+      }
+      this.notifyPasskeyFailed();
+    } catch (e) {
+      if (!this.webAuthn.isAborted(e)) {
+        console.warn('passkey login fail', e);
+        this.notifyPasskeyFailed();
+      }
+    } finally {
+      this.passkeySigningIn = false;
+      this.signInForm.enable();
+    }
+  }
+
+  private notifyPasskeyFailed() {
+    this.translate.get('SignInPage.PasskeyFailedMessage').subscribe((res: string) => {
+      this.messageService.notice(res, 'danger');
+    });
   }
 
 }

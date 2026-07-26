@@ -74,6 +74,57 @@
     </ng-container>
   </div>
 </div>
+<h2 class="mb-3">{{"ProfilePage.Passkeys" | translate}}</h2>
+<div class="card mb-4">
+  <div class="card-body row g-3">
+    <div *ngIf="passkeysLoaded && passkeys.length === 0" class="col-12">
+      {{"ProfilePage.NoPasskeys" | translate}}
+    </div>
+    <ng-container *ngFor="let passkey of passkeys">
+      <div class="col-container col-12">
+        <div class="row col-content">
+          <div class="col-sm-auto"><span class="col-lead">{{passkey.nick}}</span></div>
+          <div class="col col-value">{{passkey.credentialId}}</div>
+        </div>
+        <a class="col-action" (click)="modalService.open(removePasskey, {centered: true})">{{"ProfilePage.RemovePasskey" | translate}}</a>
+        <ng-template #removePasskey let-modal>
+          <div class="modal-header">
+            <h4 class="modal-title">{{"ProfilePage.RemovePasskey" | translate}}</h4>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="d-grid">
+                <p class="mb-3 ms-1">{{"ProfilePage.RemovePasskeyTip" | translate}}</p>
+                <button class="btn btn-danger btn-sm" (click)="onRemovePasskey(passkey.id);modal.dismiss()">{{'Common.OK' | translate}}</button>
+              </div>
+            </form>
+          </div>
+        </ng-template>
+      </div>
+    </ng-container>
+    <div *ngIf="webAuthnSupported" class="col-12">
+      <button class="btn btn-primary btn-sm" [class.disabled]="addingPasskey" (click)="modalService.open(addPasskey, {centered: true})">
+        {{"ProfilePage.AddPasskey" | translate}}
+      </button>
+      <ng-template #addPasskey let-modal>
+        <div class="modal-header">
+          <h4 class="modal-title">{{"ProfilePage.AddPasskey" | translate}}</h4>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="d-grid">
+              <label for="passkey-nick" class="form-label small">{{"ProfilePage.PasskeyNick" | translate}}</label>
+              <input type="text" class="form-control form-control-sm mb-3" id="passkey-nick" #passkeyNick maxlength="32">
+              <button class="btn btn-primary btn-sm" (click)="onAddPasskey(passkeyNick.value);modal.dismiss()">{{'Common.OK' | translate}}</button>
+            </div>
+          </form>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
 <div class="modal fade" id="link-modal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">

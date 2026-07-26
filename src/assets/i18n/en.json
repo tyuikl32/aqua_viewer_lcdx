@@ -118,7 +118,9 @@
     "SignUpTip": "Don't have an account?",
     "SignUp": "Sign up",
     "Or": "Or",
-    "LoginFailedMessage": "Invalid username/email or password. Please try again."
+    "LoginFailedMessage": "Invalid username/email or password. Please try again.",
+    "SignInWithPasskey": "Sign in with a passkey",
+    "PasskeyFailedMessage": "Passkey sign-in failed. Please try again or use your password."
   },
   "SignUpPage": {
     "Title": "Sign up an account",
@@ -210,7 +212,15 @@
     "Unlink": "Unlink",
     "UnlinkTip": "Are you sure you want to unlink?",
     "Link": "Link",
-    "LinkTip": "Do you want to link to <span class=\"fw-bold small\">{{type}}</span> account <span class=\"fw-bold small\">{{email}}</span>?"
+    "LinkTip": "Do you want to link to <span class=\"fw-bold small\">{{type}}</span> account <span class=\"fw-bold small\">{{email}}</span>?",
+    "Passkeys": "Passkeys",
+    "NoPasskeys": "No passkeys yet. Add one to sign in without a password.",
+    "AddPasskey": "Add Passkey",
+    "PasskeyNick": "Passkey name",
+    "RemovePasskey": "Remove",
+    "RemovePasskeyTip": "Are you sure you want to remove this passkey? You will no longer be able to sign in with it.",
+    "PasskeyAddedMessage": "Passkey added.",
+    "PasskeyErrorMessage": "Passkey operation failed."
   },
   "CardsPage": {
     "Title": "Cards",

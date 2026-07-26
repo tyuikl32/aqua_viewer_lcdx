@@ -40,6 +40,10 @@
               </div>
               <hr class="col m-0">
             </div>
+            <button *ngIf="webAuthnSupported" type="button" class="btn btn-theme"
+                    (click)="signInWithPasskey()" [class.disabled]="passkeySigningIn">
+              {{'SignInPage.SignInWithPasskey' | translate}}
+            </button>
             <ng-container *ngFor="let provider of providers">
               <button type="button" class="btn btn-theme" (click)="oauth.getSignInUrl(provider)">
                 <svg class="oauth-icon" viewBox="0 0 16 16">

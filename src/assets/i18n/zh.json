@@ -121,7 +121,9 @@
     "SignUpTip": "没有账号？",
     "SignUp": "注册",
     "Or": "或者",
-    "LoginFailedMessage": "用户名或密码错误。"
+    "LoginFailedMessage": "用户名或密码错误。",
+    "SignInWithPasskey": "使用 Passkey 登录",
+    "PasskeyFailedMessage": "Passkey 登录失败，请重试或使用密码登录。"
   },
   "SignUpPage": {
     "Title": "注册账号",
@@ -213,7 +215,15 @@
     "Unlink": "解除关联",
     "UnlinkTip": "确定解除关联吗？",
     "Link": "关联账户",
-    "LinkTip": "要关联到 <span class=\"fw-bold small\">{{type}}</span> 账户 <span class=\"fw-bold small\">{{email}}</span> 吗？"
+    "LinkTip": "要关联到 <span class=\"fw-bold small\">{{type}}</span> 账户 <span class=\"fw-bold small\">{{email}}</span> 吗？",
+    "Passkeys": "Passkey",
+    "NoPasskeys": "还没有添加 Passkey，添加后可以免密码登录。",
+    "AddPasskey": "添加 Passkey",
+    "PasskeyNick": "Passkey 名称",
+    "RemovePasskey": "删除",
+    "RemovePasskeyTip": "确定要删除这个 Passkey 吗？删除后将无法再使用它登录。",
+    "PasskeyAddedMessage": "Passkey 添加成功。",
+    "PasskeyErrorMessage": "Passkey 操作失败。"
   },
   "CardsPage": {
     "Title": "卡包",
