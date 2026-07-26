@@ -9,7 +9,6 @@ import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {V2UserBoxSettingData} from '../v2-userbox-setting/v2-userbox-setting.dialog';
 import {ChusanSymbolChat} from '../../model/ChusanSymbolChat';
 import {V2SymbolChat} from '../../model/V2SymbolChat';
-import {error} from 'protractor';
 import {TranslateService} from '@ngx-translate/core';
 import {lastValueFrom} from 'rxjs';
 
