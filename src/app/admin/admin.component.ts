@@ -34,6 +34,7 @@ export class AdminComponent implements OnInit {
   userList: AdvancedUser[];
 
   selectedProfile: any = null;
+  rawJson: string = null;
   creatingUser = false;
 
   keychips: any[] = null;
@@ -185,8 +186,39 @@ export class AdminComponent implements OnInit {
     this.load(this.currentPage - 1, this.patternControl.value);
   }
 
+  /** Renders a JSON value with the tokens wrapped for colouring. */
+  private highlightJson(value: any): string {
+    const json = JSON.stringify(value, null, 2)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    return json.replace(
+      /("(?:\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(?:\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+      match => {
+        let cls = 'json-number';
+        if (match.startsWith('"')) {
+          cls = match.trimEnd().endsWith(':') ? 'json-key' : 'json-string';
+        } else if (match === 'true' || match === 'false') {
+          cls = 'json-boolean';
+        } else if (match === 'null') {
+          cls = 'json-null';
+        }
+        return `<span class="${cls}">${match}</span>`;
+      });
+  }
+
+  toggleRawJson(item: AdvancedUser) {
+    // Computed on demand rather than bound, so change detection does not re-highlight
+    this.rawJson = this.rawJson ? null : this.highlightJson(item);
+  }
+
+  gameProfileOf(profile: GameProfile, game: 'chusan' | 'ongeki' | 'maimai2') {
+    return profile[game];
+  }
+
   openUser(item: AdvancedUser, tpl: any) {
     this.selectedProfile = null;
+    this.rawJson = null;
     this.api.get(`api/admin/users/${item.user.username}`).subscribe({
       next: resp => {
         const statusCode: StatusCode = resp?.status?.code;

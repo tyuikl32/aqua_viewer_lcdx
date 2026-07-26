@@ -112,17 +112,109 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
       </div>
       <div class="modal-body">
-        <div *ngIf="selectedProfile" class="small text-secondary mb-2">
-          注册时间：{{ selectedProfile.joinedAt | date: 'yyyy-MM-dd HH:mm' }}
-          <span class="ms-2">两步验证：{{ selectedProfile.totpEnabled ? '已启用' : '未启用' }}</span>
+        <div class="table-responsive mb-3">
+          <table class="table table-sm small mb-0 align-middle">
+            <tbody>
+            <tr>
+              <th class="text-nowrap text-secondary fw-normal">ID</th>
+              <td>{{ item.user.id }}</td>
+              <th class="text-nowrap text-secondary fw-normal">登录名</th>
+              <td>{{ item.user.username }}</td>
+            </tr>
+            <tr>
+              <th class="text-nowrap text-secondary fw-normal">昵称</th>
+              <td>{{ item.user.name }}</td>
+              <th class="text-nowrap text-secondary fw-normal">邮箱</th>
+              <td class="text-break">{{ item.user.email }}</td>
+            </tr>
+            <tr>
+              <th class="text-nowrap text-secondary fw-normal">注册时间</th>
+              <td>{{ selectedProfile ? (selectedProfile.joinedAt | date: 'yyyy-MM-dd HH:mm') : '—' }}</td>
+              <th class="text-nowrap text-secondary fw-normal">两步验证</th>
+              <td>
+                <span class="badge rounded-pill"
+                      [class.bg-success]="selectedProfile?.totpEnabled"
+                      [class.bg-secondary]="!selectedProfile?.totpEnabled">
+                  {{ selectedProfile?.totpEnabled ? '已启用' : '未启用' }}
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <th class="text-nowrap text-secondary fw-normal">角色</th>
+              <td>
+                <ng-container *ngIf="(item.user.roles || []).length; else noRoles">
+                  <span *ngFor="let role of item.user.roles; let last = last">{{ role.name }}{{ last ? '' : '、' }}</span>
+                </ng-container>
+                <ng-template #noRoles>—</ng-template>
+              </td>
+              <th class="text-nowrap text-secondary fw-normal">关联账户</th>
+              <td>
+                <ng-container *ngIf="(item.user.oauth2s || []).length; else noOAuth">
+                  <div *ngFor="let oauth of item.user.oauth2s" class="text-break">
+                    {{ oauth.provider }}：{{ oauth.email }}
+                  </div>
+                </ng-container>
+                <ng-template #noOAuth>—</ng-template>
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </div>
+
+        <div class="fw-bold small mb-1">卡片与游戏档案</div>
+        <div class="table-responsive mb-3">
+          <table class="table table-sm small mb-0 align-middle">
+            <thead>
+            <tr>
+              <th class="text-nowrap">ExtId</th>
+              <th class="text-nowrap">默认</th>
+              <th class="text-nowrap">CHUNITHM</th>
+              <th class="text-nowrap">O.N.G.E.K.I.</th>
+              <th class="text-nowrap">maimai DX</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let profile of item.gameProfiles">
+              <td class="text-nowrap">{{ profile.card?.extId }}</td>
+              <td>{{ profile.card?.default ? '✓' : '' }}</td>
+              <td>
+                <ng-container *ngIf="profile.chusan; else emptyCell">
+                  {{ profile.chusan.userName }}
+                  <span class="text-secondary">({{ profile.chusan.playerRating / 100 | number: '1.2-2' }})</span>
+                </ng-container>
+              </td>
+              <td>
+                <ng-container *ngIf="profile.ongeki; else emptyCell">
+                  {{ profile.ongeki.userName }}
+                  <span class="text-secondary">({{ profile.ongeki.playerRating / 100 | number: '1.2-2' }})</span>
+                </ng-container>
+              </td>
+              <td>
+                <ng-container *ngIf="profile.maimai2; else emptyCell">
+                  {{ profile.maimai2.userName }}
+                  <span class="text-secondary">({{ profile.maimai2.playerRating }})</span>
+                </ng-container>
+              </td>
+            </tr>
+            <tr *ngIf="!(item.gameProfiles || []).length">
+              <td colspan="5" class="text-center text-secondary">未绑定卡片</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #emptyCell><span class="text-secondary">—</span></ng-template>
+
         <button class="btn btn-primary btn-sm mb-2 me-1" (click)="loginAs(item.user.username, impersonateModal)">
           夺舍
         </button>
-        <button *ngIf="selectedProfile?.totpEnabled" class="btn btn-outline-danger btn-sm mb-2"
+        <button *ngIf="selectedProfile?.totpEnabled" class="btn btn-outline-danger btn-sm mb-2 me-1"
                 (click)="resetTotp(item.user.username)">
           重置两步验证
         </button>
+        <button class="btn btn-outline-secondary btn-sm mb-2" (click)="toggleRawJson(item)">
+          {{ rawJson ? '隐藏原始 JSON' : '原始 JSON' }}
+        </button>
+        <pre *ngIf="rawJson" class="json-view small mb-2" [innerHTML]="rawJson"></pre>
         <hr class="my-2">
         <div class="fw-bold small mb-1">卡片操作</div>
         <div class="input-group input-group-sm mb-2">
@@ -139,8 +231,6 @@
           <input type="text" class="form-control" placeholder="新卡号" #opNew>
           <button class="btn btn-outline-primary" (click)="changeAccessCode(item.user.username, opOld.value, opNew.value)">变更卡号</button>
         </div>
-        <hr class="my-2">
-        <pre class="small">{{ item | json }}</pre>
       </div>
     </ng-template>
   </ng-container>
