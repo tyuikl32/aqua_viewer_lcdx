@@ -52,9 +52,8 @@ import {
   bootstrapDashLg,
   bootstrapArrowRepeat,
 } from '@ng-icons/bootstrap-icons';
-import { TranslatePipe, TranslateDirective, TranslateLoader, TranslateService, provideTranslateService } from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpClient } from '@angular/common/http';
+import { TranslatePipe, TranslateDirective, TranslateService, provideTranslateService } from '@ngx-translate/core';
+import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { APP_INITIALIZER } from '@angular/core';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ContributorsComponent } from './contributors/contributors.component';
@@ -154,12 +153,8 @@ export function initializeApp(
         { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptorService, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptorService, multi: true },
         { provide: APP_INITIALIZER, useFactory: initializeApp, deps: [TranslateService, LanguageService], multi: true },
-        provideTranslateService({
-            loader: {
-                provide: TranslateLoader,
-                useClass: TranslateHttpLoader,
-            }
-        }),
+        provideTranslateService(),
+        provideTranslateHttpLoader(),
         provideHttpClient(withXhr(), withInterceptorsFromDi()),
     ] })
 export class AppModule {
