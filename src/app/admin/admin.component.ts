@@ -145,6 +145,7 @@ export class AdminComponent implements OnInit {
     };
     window.addEventListener('message', this.impersonateListener);
 
+    (document.activeElement as HTMLElement)?.blur();
     this.modalService.open(impersonateModal, {fullscreen: true, backdrop: 'static', keyboard: false})
       .result.then(() => this.endImpersonation(), () => this.endImpersonation());
   }
@@ -212,6 +213,7 @@ export class AdminComponent implements OnInit {
   openRawJson(item: AdvancedUser, tpl: any) {
     // Computed on demand rather than bound, so change detection does not re-highlight
     this.rawJson = this.highlightJson(item);
+    (document.activeElement as HTMLElement)?.blur();
     this.modalService.open(tpl, {centered: true, scrollable: true, size: 'lg'});
   }
 

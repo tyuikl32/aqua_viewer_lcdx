@@ -71,6 +71,16 @@ import { AnnouncementsComponent } from './announcements/announcements.component'
 import { EditComponent } from './announcements/edit/edit.component';
 import { AdminComponent } from './admin/admin.component';
 
+// Redirect deprecated 'unload' event to 'pagehide' (W3C replacement) so SDKs
+// like Aegis that still register unload listeners don't trip the browser's
+// Permissions Policy violation. Safe to keep permanently — pagehide fires in
+// all the same scenarios as unload.
+{
+  const _addEventListener = window.addEventListener.bind(window);
+  window.addEventListener = ((type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions) =>
+    _addEventListener(type === 'unload' ? 'pagehide' : type, listener, options)) as typeof window.addEventListener;
+}
+
 const aegis = new Aegis({
   id: 'j4KOYFL0VyajP4KjdG', // 上报 id
   uin: 'xxx', // 用户唯一 ID（可选）

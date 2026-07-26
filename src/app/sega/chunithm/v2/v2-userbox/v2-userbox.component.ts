@@ -210,35 +210,35 @@ export class V2UserBoxComponent implements OnInit {
   getNamePlateName(nameplateId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanNamePlate>('chusanNamePlate', nameplateId)
-        .subscribe(NamePlate => resolve(NamePlate.name ? NamePlate.name : 'Unknown'));
+        .subscribe(NamePlate => resolve(NamePlate?.name ? NamePlate.name : 'Unknown'));
     });
   }
 
   getFrameName(frameId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanTrophy>('chusanFrame', frameId)
-        .subscribe(frame => resolve(frame.name ? frame.name : 'Unknown'));
+        .subscribe(frame => resolve(frame?.name ? frame.name : 'Unknown'));
     });
   }
 
   getMapIconName(mapiconId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanMapIcon>('chusanMapIcon', mapiconId)
-        .subscribe(mapicon => resolve(mapicon.name ? mapicon.name : 'Unknown'));
+        .subscribe(mapicon => resolve(mapicon?.name ? mapicon.name : 'Unknown'));
     });
   }
 
   getSystemVoiceName(sysvoiceId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanSystemVoice>('chusanSystemVoice', sysvoiceId)
-        .subscribe(sysvoice => resolve(sysvoice.name ? sysvoice.name : 'Unknown'));
+        .subscribe(sysvoice => resolve(sysvoice?.name ? sysvoice.name : 'Unknown'));
     });
   }
 
   getAvatarAccName(avatarAccId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanAvatarAcc>('chusanAvatarAcc', avatarAccId)
-        .subscribe(avatarAcc => resolve(avatarAcc.name ? avatarAcc.name : 'Unknown'));
+        .subscribe(avatarAcc => resolve(avatarAcc?.name ? avatarAcc.name : 'Unknown'));
     });
   }
 
@@ -252,7 +252,7 @@ export class V2UserBoxComponent implements OnInit {
   getTrophyName(trophyId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanTrophy>('chusanTrophy', trophyId)
-        .subscribe(trophy => resolve(trophy.name ? trophy.name : 'Unknown'));
+        .subscribe(trophy => resolve(trophy?.name ? trophy.name : 'Unknown'));
     });
   }
 
