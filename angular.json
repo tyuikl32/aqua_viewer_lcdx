@@ -80,23 +80,23 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "aqua-viewer:build",
             "disableHostCheck": true,
             "ssl": true,
             "sslCert": "ssl/naominet.live.crt",
             "sslKey": "ssl/naominet.live.key",
-            "proxyConfig": "proxy.conf.json"
+            "proxyConfig": "proxy.conf.json",
+            "buildTarget": "aqua-viewer:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "aqua-viewer:build:production"
+              "buildTarget": "aqua-viewer:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "aqua-viewer:build"
+            "buildTarget": "aqua-viewer:build"
           }
         },
         "test": {
