@@ -139,9 +139,10 @@ export class AuthenticationService {
   }
 
   logout() {
-    // Revoke the session server-side first (the token must still be attached),
-    // then clear local state whether or not the request succeeded
-    return this.http.get<any>(environment.apiServer + 'api/auth/signout')
+    // Revoke the refresh token server-side, then clear local state whether or
+    // not the request succeeded
+    const refreshToken = this.accountService.currentAccountValue?.refreshToken;
+    return this.http.post<any>(environment.apiServer + 'api/auth/signout', {refreshToken})
       .pipe(
         catchError(() => of(null)),
         map(resp => {

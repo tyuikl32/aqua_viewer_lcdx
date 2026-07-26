@@ -28,4 +28,5 @@ export class AccountService {
 export class Account {
   tokenType: string;
   accessToken: string;
+  refreshToken: string;
 }
