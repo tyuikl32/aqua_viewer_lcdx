@@ -1,7 +1,7 @@
 import {Component, ElementRef, Input, ViewChild} from '@angular/core';
 import {marked} from 'marked';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import * as DOMPurify from 'dompurify';
+import DOMPurify from 'dompurify';
 import {LanguageService} from "../../language.service";
 
 @Component({
