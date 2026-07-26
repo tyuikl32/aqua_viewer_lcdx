@@ -33,6 +33,7 @@ export class V2UserBoxSettingDialog implements OnInit{
   // CHUNITHM Mate+ favorite collection: the game picks one of these at random per credit
   static readonly FAVORITE_KINDS = [1, 3, 8, 9, 13];
   favoriteIds: number[] = [];
+  favoritesLoaded = false;
   savingFavorites = false;
 
   constructor(
@@ -74,7 +75,10 @@ export class V2UserBoxSettingDialog implements OnInit{
     }
     const param = new HttpParams().set('aimeId', this.aimeId);
     this.api.get('api/game/chuni/v2/favorite-collection/' + this.data.itemKind, param).subscribe(
-      (data: { itemKind: number, itemId: number }[]) => this.favoriteIds = (data ?? []).map(f => f.itemId),
+      (data: { itemKind: number, itemId: number }[]) => {
+        this.favoriteIds = (data ?? []).map(f => f.itemId);
+        this.favoritesLoaded = true;
+      },
       error => this.messageService.notice(error)
     );
   }
@@ -84,7 +88,9 @@ export class V2UserBoxSettingDialog implements OnInit{
    * together, so neither silently discards the other.
    */
   apply() {
-    if (!this.favoriteSupported) {
+    // Never PUT a favorite list that was never loaded: the request replaces the whole
+    // set, so an empty one would wipe the user's existing favorites for this kind
+    if (!this.favoriteSupported || !this.favoritesLoaded) {
       this.parentComponent.handleApplyClick(this.data);
       return;
     }
