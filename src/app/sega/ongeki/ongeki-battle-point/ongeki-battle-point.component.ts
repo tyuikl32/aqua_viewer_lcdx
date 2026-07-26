@@ -14,9 +14,10 @@ import {DisplayOngekiProfile} from '../model/OngekiProfile';
 import { UserService } from 'src/app/user.service';
 
 @Component({
-  selector: 'app-ongeki-battle-point',
-  templateUrl: './ongeki-battle-point.component.html',
-  styleUrls: ['./ongeki-battle-point.component.css']
+    selector: 'app-ongeki-battle-point',
+    templateUrl: './ongeki-battle-point.component.html',
+    styleUrls: ['./ongeki-battle-point.component.css'],
+    standalone: false
 })
 export class OngekiBattlePointComponent implements OnInit {
 

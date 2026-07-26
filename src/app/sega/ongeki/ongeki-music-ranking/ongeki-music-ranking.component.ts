@@ -7,9 +7,10 @@ import {OngekiSongScoreRankingComponent} from '../ongeki-song-score-ranking/onge
 import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-ongeki-music-ranking',
-  templateUrl: './ongeki-music-ranking.component.html',
-  styleUrls: ['./ongeki-music-ranking.component.scss']
+    selector: 'app-ongeki-music-ranking',
+    templateUrl: './ongeki-music-ranking.component.html',
+    styleUrls: ['./ongeki-music-ranking.component.scss'],
+    standalone: false
 })
 export class OngekiMusicRankingComponent implements OnInit {
   ongekiGameRankings: OngekiGameRanking[] = [];

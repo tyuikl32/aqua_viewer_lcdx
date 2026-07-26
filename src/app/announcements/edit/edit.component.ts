@@ -13,9 +13,10 @@ import {MessageService} from '../../message.service';
 import {ApiService} from '../../api.service';
 
 @Component({
-  selector: 'app-edit',
-  templateUrl: './edit.component.html',
-  styleUrls: ['./edit.component.css']
+    selector: 'app-edit',
+    templateUrl: './edit.component.html',
+    styleUrls: ['./edit.component.css'],
+    standalone: false
 })
 export class EditComponent implements OnInit, AfterViewInit   {
 

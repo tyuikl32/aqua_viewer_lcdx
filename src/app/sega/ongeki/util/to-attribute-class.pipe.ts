@@ -1,7 +1,8 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-  name: 'toAttributeClass'
+    name: 'toAttributeClass',
+    standalone: false
 })
 export class ToAttributeClassPipe implements PipeTransform {
 

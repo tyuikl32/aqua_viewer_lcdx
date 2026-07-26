@@ -3,10 +3,11 @@ import {AttributeType} from '../model/OngekiEnums';
 import {environment} from '../../../../environments/environment';
 
 @Component({
-  selector: 'app-ongeki-card-level',
-  templateUrl: './ongeki-card-level.component.html',
-  styleUrls: ['./ongeki-card-level.component.css'],
-  inputs: ['level', 'attribute']
+    selector: 'app-ongeki-card-level',
+    templateUrl: './ongeki-card-level.component.html',
+    styleUrls: ['./ongeki-card-level.component.css'],
+    inputs: ['level', 'attribute'],
+    standalone: false
 })
 export class OngekiCardLevelComponent implements OnInit {
 

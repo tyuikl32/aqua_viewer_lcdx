@@ -3,8 +3,9 @@ import {V2SettingComponent} from '../v2-setting.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'v2-version-setting-dialog',
-  templateUrl: 'v2-version-setting.html',
+    selector: 'v2-version-setting-dialog',
+    templateUrl: 'v2-version-setting.html',
+    standalone: false
 })
 export class V2VersionSettingDialog {
 

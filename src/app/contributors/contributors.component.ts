@@ -4,9 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-contributors',
-  templateUrl: './contributors.component.html',
-  styleUrls: ['./contributors.component.css']
+    selector: 'app-contributors',
+    templateUrl: './contributors.component.html',
+    styleUrls: ['./contributors.component.css'],
+    standalone: false
 })
 export class ContributorsComponent implements OnInit {
 

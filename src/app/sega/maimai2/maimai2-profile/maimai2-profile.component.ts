@@ -9,9 +9,10 @@ import {UdemaeName, ClassName} from '../model/Maimai2Enums';
 import { UserService } from 'src/app/user.service';
 
 @Component({
-  selector: 'app-maimai2-profile',
-  templateUrl: './maimai2-profile.component.html',
-  styleUrls: ['./maimai2-profile.component.css']
+    selector: 'app-maimai2-profile',
+    templateUrl: './maimai2-profile.component.html',
+    styleUrls: ['./maimai2-profile.component.css'],
+    standalone: false
 })
 export class Maimai2ProfileComponent implements OnInit {
 

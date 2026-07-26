@@ -15,9 +15,10 @@ import {ActivatedRoute, Router} from '@angular/router';
 import { UserService } from 'src/app/user.service';
 
 @Component({
-  selector: 'app-ongeki-recent',
-  templateUrl: './ongeki-recent.component.html',
-  styleUrls: ['./ongeki-recent.component.css']
+    selector: 'app-ongeki-recent',
+    templateUrl: './ongeki-recent.component.html',
+    styleUrls: ['./ongeki-recent.component.css'],
+    standalone: false
 })
 export class OngekiRecentComponent implements OnInit {
 

@@ -27,9 +27,10 @@ import { Maimai2UserServerMissionPointInfoResp } from '../model/Maimai2UserServe
 import { Maimai2ServerMissionUserPointData } from '../model/Maimai2ServerMissionUserPointData';
 
 @Component({
-  selector: 'app-maimai2-point-exchanges',
-  templateUrl: './maimai2-point-exchanges.component.html',
-  styleUrls: ['./maimai2-point-exchanges.component.css']
+    selector: 'app-maimai2-point-exchanges',
+    templateUrl: './maimai2-point-exchanges.component.html',
+    styleUrls: ['./maimai2-point-exchanges.component.css'],
+    standalone: false
 })
 export class Maimai2PointExchangesComponent implements OnInit {
 

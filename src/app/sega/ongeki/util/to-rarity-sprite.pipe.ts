@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'toRaritySprite'
+    name: 'toRaritySprite',
+    standalone: false
 })
 export class ToRaritySpritePipe implements PipeTransform {
 

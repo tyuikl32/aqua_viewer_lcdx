@@ -21,9 +21,10 @@ import {V2SymbolChatSettingComponent} from './v2-symbol-chat-setting/v2-symbol-c
 import {compareVersions} from 'compare-versions';
 
 @Component({
-  selector: 'app-v2-userbox',
-  templateUrl: './v2-userbox.component.html',
-  styleUrls: ['./v2-userbox.component.css']
+    selector: 'app-v2-userbox',
+    templateUrl: './v2-userbox.component.html',
+    styleUrls: ['./v2-userbox.component.css'],
+    standalone: false
 })
 export class V2UserBoxComponent implements OnInit {
 

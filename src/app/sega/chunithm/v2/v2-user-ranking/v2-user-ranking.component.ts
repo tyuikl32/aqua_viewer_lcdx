@@ -6,9 +6,10 @@ import {environment} from '../../../../../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
-  selector: 'app-v2-user-ranking',
-  templateUrl: './v2-user-ranking.component.html',
-  styleUrls: ['./v2-user-ranking.component.scss']
+    selector: 'app-v2-user-ranking',
+    templateUrl: './v2-user-ranking.component.html',
+    styleUrls: ['./v2-user-ranking.component.scss'],
+    standalone: false
 })
 export class V2UserRankingComponent implements OnInit {
 

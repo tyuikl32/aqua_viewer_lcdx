@@ -1,7 +1,8 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-  name: 'toLevelDecimal'
+    name: 'toLevelDecimal',
+    standalone: false
 })
 export class ToLevelDecimalPipe implements PipeTransform {
 

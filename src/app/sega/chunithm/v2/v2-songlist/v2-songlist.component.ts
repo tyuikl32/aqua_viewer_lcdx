@@ -14,9 +14,10 @@ import {ReleaseTagService} from '../util/release-tag.service';
 
 
 @Component({
-  selector: 'app-v2-songlist',
-  templateUrl: './v2-songlist.component.html',
-  styleUrls: ['./v2-songlist.component.css']
+    selector: 'app-v2-songlist',
+    templateUrl: './v2-songlist.component.html',
+    styleUrls: ['./v2-songlist.component.css'],
+    standalone: false
 })
 export class V2SonglistComponent implements OnInit {
 

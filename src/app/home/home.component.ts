@@ -8,9 +8,10 @@ import {TranslateService} from '@ngx-translate/core';
 import { AccountService } from '../auth/account.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.css'],
+    standalone: false
 })
 export class HomeComponent implements OnInit {
   @ViewChildren('faultLogo') faultLogos: QueryList<ElementRef>;

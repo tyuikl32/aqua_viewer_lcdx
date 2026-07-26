@@ -8,10 +8,11 @@ import {OngekiMusic} from '../model/OngekiMusic';
 import {OngekiSongScoreRankingComponent} from '../ongeki-song-score-ranking/ongeki-song-score-ranking.component';
 
 @Component({
-  selector: 'app-ongeki-recent-item',
-  templateUrl: './ongeki-recent-item.component.html',
-  styleUrls: ['./ongeki-recent-item.component.css'],
-  inputs: ['playLog']
+    selector: 'app-ongeki-recent-item',
+    templateUrl: './ongeki-recent-item.component.html',
+    styleUrls: ['./ongeki-recent-item.component.css'],
+    inputs: ['playLog'],
+    standalone: false
 })
 export class OngekiRecentItemComponent implements OnInit {
   playLog: PlayerPlaylog;

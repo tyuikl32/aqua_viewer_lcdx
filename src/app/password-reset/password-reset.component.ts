@@ -10,9 +10,10 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {OAuthService} from '../auth/oauth.service';
 
 @Component({
-  selector: 'app-password-reset',
-  templateUrl: './password-reset.component.html',
-  styleUrls: ['./password-reset.component.css']
+    selector: 'app-password-reset',
+    templateUrl: './password-reset.component.html',
+    styleUrls: ['./password-reset.component.css'],
+    standalone: false
 })
 export class PasswordResetComponent  implements OnDestroy {
 

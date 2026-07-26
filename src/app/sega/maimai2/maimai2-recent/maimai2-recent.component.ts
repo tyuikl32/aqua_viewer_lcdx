@@ -15,9 +15,10 @@ import {Maimai2Playlog} from '../model/Maimai2Playlog';
 import {Maimai2SongDetailComponent} from "../maimai2-song-detail/maimai2-song-detail.component";
 
 @Component({
-  selector: 'app-maimai2-recent',
-  templateUrl: './maimai2-recent.component.html',
-  styleUrls: ['./maimai2-recent.component.scss']
+    selector: 'app-maimai2-recent',
+    templateUrl: './maimai2-recent.component.html',
+    styleUrls: ['./maimai2-recent.component.scss'],
+    standalone: false
 })
 export class Maimai2RecentComponent implements OnInit {
 

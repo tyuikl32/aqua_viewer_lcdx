@@ -15,9 +15,10 @@ import {Maimai2Playlog} from '../model/Maimai2Playlog';
 import {Maimai2Photo} from '../model/Maimai2Photo';
 
 @Component({
-  selector: 'app-maimai2-photos',
-  templateUrl: './maimai2-photos.component.html',
-  styleUrls: ['./maimai2-photos.component.scss']
+    selector: 'app-maimai2-photos',
+    templateUrl: './maimai2-photos.component.html',
+    styleUrls: ['./maimai2-photos.component.scss'],
+    standalone: false
 })
 export class Maimai2PhotosComponent implements OnInit {
 

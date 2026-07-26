@@ -24,9 +24,10 @@ import {OngekiSkill} from '../model/OngekiSkill';
 import {OngekiCharacter} from '../model/OngekiCharacter';
 
 @Component({
-  selector: 'app-ongeki-song-list',
-  templateUrl: './ongeki-song-list.component.html',
-  styleUrls: ['./ongeki-song-list.component.css']
+    selector: 'app-ongeki-song-list',
+    templateUrl: './ongeki-song-list.component.html',
+    styleUrls: ['./ongeki-song-list.component.css'],
+    standalone: false
 })
 export class OngekiSongListComponent implements OnInit {
   Number = Number;

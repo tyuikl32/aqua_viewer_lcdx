@@ -11,9 +11,10 @@ import {UserService} from "../user.service";
 import {TranslateService} from "@ngx-translate/core";
 
 @Component({
-  selector: 'app-announcements',
-  templateUrl: './announcements.component.html',
-  styleUrls: ['./announcements.component.css']
+    selector: 'app-announcements',
+    templateUrl: './announcements.component.html',
+    styleUrls: ['./announcements.component.css'],
+    standalone: false
 })
 export class AnnouncementsComponent implements OnInit {
   announcementType = AnnouncementType;

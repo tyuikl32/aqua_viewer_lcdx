@@ -35,9 +35,10 @@ interface UserRanking {
 }
 
 @Component({
-  selector: 'app-v2-song-score-ranking',
-  templateUrl: './maimai2-song-detail.component.html',
-  styleUrls: ['./maimai2-song-detail.component.scss']
+    selector: 'app-v2-song-score-ranking',
+    templateUrl: './maimai2-song-detail.component.html',
+    styleUrls: ['./maimai2-song-detail.component.scss'],
+    standalone: false
 })
 export class Maimai2SongDetailComponent {
   protected readonly Math = Math;

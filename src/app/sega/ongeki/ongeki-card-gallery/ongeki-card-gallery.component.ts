@@ -19,55 +19,56 @@ import {Collapse} from 'bootstrap';
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-ongeki-card-gallery',
-  templateUrl: './ongeki-card-gallery.component.html',
-  styleUrls: ['./ongeki-card-gallery.component.css'],
-  inputs: ['isModal', 'callback', 'showDummyCard'],
-  animations: [
-    trigger('cardAnimation', [
-      state('normal', style({
-        transform: 'scale(1)',
-        position: 'static',
-        zIndex: 'auto',
-        width: '*',
-        height: '*',
-        top: '*',
-        left: '*'
-      })),
-      state('expanded', style({
-        transform: 'translate(-50%, -50%) translateZ(10000px)',
-        position: 'fixed',
-        width: '{{expandedWidth}}px',
-        height: '{{expandedHeight}}px',
-        top: '50%',
-        left: '50%',
-        zIndex: 1100
-      }), {params: {expandedWidth: '182.233', expandedHeight: '259.683'}}),
-      transition('* => expanded', [
-        style({
-          transform: 'translate(-50%, -50%)',
-          position: 'fixed',
-          width: '{{width}}px',
-          height: '{{height}}px',
-          top: '{{top}}px',
-          left: '{{left}}px',
-          zIndex: 1100
-        }),
-        animate('1s ease-in-out')
-      ]),
-      transition('expanded => normal', [
-        animate('1s ease-in-out', style({
-          transform: 'translate(-50%, -50%)',
-          position: 'fixed',
-          width: '{{width}}px',
-          height: '{{height}}px',
-          top: '{{top}}px',
-          left: '{{left}}px',
-          zIndex: 1100
-        }))
-      ])
-    ])
-  ]
+    selector: 'app-ongeki-card-gallery',
+    templateUrl: './ongeki-card-gallery.component.html',
+    styleUrls: ['./ongeki-card-gallery.component.css'],
+    inputs: ['isModal', 'callback', 'showDummyCard'],
+    animations: [
+        trigger('cardAnimation', [
+            state('normal', style({
+                transform: 'scale(1)',
+                position: 'static',
+                zIndex: 'auto',
+                width: '*',
+                height: '*',
+                top: '*',
+                left: '*'
+            })),
+            state('expanded', style({
+                transform: 'translate(-50%, -50%) translateZ(10000px)',
+                position: 'fixed',
+                width: '{{expandedWidth}}px',
+                height: '{{expandedHeight}}px',
+                top: '50%',
+                left: '50%',
+                zIndex: 1100
+            }), { params: { expandedWidth: '182.233', expandedHeight: '259.683' } }),
+            transition('* => expanded', [
+                style({
+                    transform: 'translate(-50%, -50%)',
+                    position: 'fixed',
+                    width: '{{width}}px',
+                    height: '{{height}}px',
+                    top: '{{top}}px',
+                    left: '{{left}}px',
+                    zIndex: 1100
+                }),
+                animate('1s ease-in-out')
+            ]),
+            transition('expanded => normal', [
+                animate('1s ease-in-out', style({
+                    transform: 'translate(-50%, -50%)',
+                    position: 'fixed',
+                    width: '{{width}}px',
+                    height: '{{height}}px',
+                    top: '{{top}}px',
+                    left: '{{left}}px',
+                    zIndex: 1100
+                }))
+            ])
+        ])
+    ],
+    standalone: false
 })
 export class OngekiCardGalleryComponent implements OnInit {
   isModal = false;

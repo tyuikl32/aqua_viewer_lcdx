@@ -7,9 +7,10 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 const PACKET_LENGTH = 10240;
 
 @Component({
-  selector: 'app-maimai2-upload-user-portrait',
-  templateUrl: './maimai2-upload-user-portrait.dialog.html',
-  styleUrls: ['./maimai2-upload-user-portrait.dialog.css']
+    selector: 'app-maimai2-upload-user-portrait',
+    templateUrl: './maimai2-upload-user-portrait.dialog.html',
+    styleUrls: ['./maimai2-upload-user-portrait.dialog.css'],
+    standalone: false
 })
 export class Maimai2UploadUserPortraitDialog implements OnInit {
   cropper: Cropper;

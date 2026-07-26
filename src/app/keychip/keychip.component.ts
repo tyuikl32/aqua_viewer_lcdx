@@ -8,9 +8,10 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Clipboard} from '@angular/cdk/clipboard';
 
 @Component({
-  selector: 'app-keychip',
-  templateUrl: './keychip.component.html',
-  styleUrls: ['./keychip.component.css']
+    selector: 'app-keychip',
+    templateUrl: './keychip.component.html',
+    styleUrls: ['./keychip.component.css'],
+    standalone: false
 })
 export class KeychipComponent implements OnInit {
   keychipLoaded = false;

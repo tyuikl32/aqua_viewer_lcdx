@@ -18,9 +18,10 @@ enum V2RivalAPI {
 }
 
 @Component({
-  selector: 'app-v2-rival-list',
-  templateUrl: './v2-rival-list.component.html',
-  styleUrls: ['./v2-rival-list.component.css']
+    selector: 'app-v2-rival-list',
+    templateUrl: './v2-rival-list.component.html',
+    styleUrls: ['./v2-rival-list.component.css'],
+    standalone: false
 })
 export class V2RivalListComponent {
   host = environment.assetsHost;

@@ -16,9 +16,10 @@ import {IMPERSONATION_KEY} from '../auth/account.service';
 import {IMPERSONATE_GRANT, IMPERSONATE_REQUEST} from '../auth/impersonation.service';
 
 @Component({
-  selector: 'app-admin',
-  templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.css']
+    selector: 'app-admin',
+    templateUrl: './admin.component.html',
+    styleUrls: ['./admin.component.css'],
+    standalone: false
 })
 export class AdminComponent implements OnInit {
   private pageSubject = new ReplaySubject<number>();

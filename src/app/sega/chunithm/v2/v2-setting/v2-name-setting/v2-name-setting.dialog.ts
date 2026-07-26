@@ -3,9 +3,10 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {V2SettingComponent} from '../v2-setting.component';
 
 @Component({
-  selector: 'v2-name-setting-dialog',
-  templateUrl: 'v2-name-setting.html',
-  styleUrls: ['v2-name-setting.scss'],
+    selector: 'v2-name-setting-dialog',
+    templateUrl: 'v2-name-setting.html',
+    styleUrls: ['v2-name-setting.scss'],
+    standalone: false
 })
 export class V2NameSettingDialog {
 

@@ -40,9 +40,10 @@ interface UserRanking {
 }
 
 @Component({
-  selector: 'app-v2-song-score-ranking',
-  templateUrl: './v2-song-score-ranking.component.html',
-  styleUrls: ['./v2-song-score-ranking.component.scss']
+    selector: 'app-v2-song-score-ranking',
+    templateUrl: './v2-song-score-ranking.component.html',
+    styleUrls: ['./v2-song-score-ranking.component.scss'],
+    standalone: false
 })
 export class V2SongScoreRankingComponent {
   protected readonly Math = Math;

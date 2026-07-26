@@ -12,9 +12,10 @@ import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-ongeki-card',
-  templateUrl: './ongeki-card.component.html',
-  styleUrls: ['./ongeki-card.component.css']
+    selector: 'app-ongeki-card',
+    templateUrl: './ongeki-card.component.html',
+    styleUrls: ['./ongeki-card.component.css'],
+    standalone: false
 })
 export class OngekiCardComponent implements OnInit {
   protected CardType = CardType;

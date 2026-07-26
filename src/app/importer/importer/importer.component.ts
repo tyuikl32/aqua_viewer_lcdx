@@ -5,9 +5,10 @@ import {AuthenticationService} from '../../auth/authentication.service';
 import {environment} from '../../../environments/environment';
 
 @Component({
-  selector: 'app-importer',
-  templateUrl: './importer.component.html',
-  styleUrls: ['./importer.component.css']
+    selector: 'app-importer',
+    templateUrl: './importer.component.html',
+    styleUrls: ['./importer.component.css'],
+    standalone: false
 })
 export class ImporterComponent implements OnInit {
 

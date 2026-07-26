@@ -2,7 +2,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {BattleRank} from '../model/OngekiEnums';
 
 @Pipe({
-  name: 'toBattleSprite'
+    name: 'toBattleSprite',
+    standalone: false
 })
 export class ToBattleSpritePipe implements PipeTransform {
 

@@ -16,9 +16,10 @@ import {ChusanStage} from '../../model/ChusanStage';
 import { UserService } from 'src/app/user.service';
 
 @Component({
-  selector: 'v2-userbox-setting-dialog',
-  templateUrl: 'v2-userbox-setting.html',
-  styleUrls: ['v2-userbox.setting.css']
+    selector: 'v2-userbox-setting-dialog',
+    templateUrl: 'v2-userbox-setting.html',
+    styleUrls: ['v2-userbox.setting.css'],
+    standalone: false
 })
 export class V2UserBoxSettingDialog implements OnInit{
 

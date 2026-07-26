@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'toTechRating'
+    name: 'toTechRating',
+    standalone: false
 })
 export class ToTechRatingPipe implements PipeTransform {
 

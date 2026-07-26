@@ -43,9 +43,10 @@ interface UserRanking {
 }
 
 @Component({
-  selector: 'app-ongeki-song-score-ranking',
-  templateUrl: './ongeki-song-score-ranking.component.html',
-  styleUrls: ['./ongeki-song-score-ranking.component.css', ]
+    selector: 'app-ongeki-song-score-ranking',
+    templateUrl: './ongeki-song-score-ranking.component.html',
+    styleUrls: ['./ongeki-song-score-ranking.component.css',],
+    standalone: false
 })
 export class OngekiSongScoreRankingComponent {
   protected readonly Math = Math;

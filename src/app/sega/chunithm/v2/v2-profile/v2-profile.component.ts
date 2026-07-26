@@ -7,9 +7,10 @@ import { HttpParams } from '@angular/common/http';
 import { UserService } from 'src/app/user.service';
 
 @Component({
-  selector: 'app-v2-profile',
-  templateUrl: './v2-profile.component.html',
-  styleUrls: ['./v2-profile.component.css']
+    selector: 'app-v2-profile',
+    templateUrl: './v2-profile.component.html',
+    styleUrls: ['./v2-profile.component.css'],
+    standalone: false
 })
 export class V2ProfileComponent implements OnInit {
 

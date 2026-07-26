@@ -9,9 +9,10 @@ import {OAuthService} from 'src/app/auth/oauth.service';
 import {WebAuthnService} from 'src/app/auth/webauthn.service';
 
 @Component({
-  selector: 'app-sign-in',
-  templateUrl: './sign-in.component.html',
-  styleUrls: ['./sign-in.component.css']
+    selector: 'app-sign-in',
+    templateUrl: './sign-in.component.html',
+    styleUrls: ['./sign-in.component.css'],
+    standalone: false
 })
 export class SignInComponent {
   signInForm: FormGroup;

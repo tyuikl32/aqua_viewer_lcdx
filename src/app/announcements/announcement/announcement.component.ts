@@ -5,9 +5,10 @@ import DOMPurify from 'dompurify';
 import {LanguageService} from "../../language.service";
 
 @Component({
-  selector: 'app-announcement',
-  templateUrl: './announcement.component.html',
-  styleUrls: ['./announcement.component.css']
+    selector: 'app-announcement',
+    templateUrl: './announcement.component.html',
+    styleUrls: ['./announcement.component.css'],
+    standalone: false
 })
 export class AnnouncementComponent {
   @Input() announcement: Announcement;

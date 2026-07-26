@@ -17,9 +17,10 @@ import {ClearMarkType, PlayerNewRatingItem} from '../model/PlayerNewRatingItem';
 import {NewRatingService, NewRatingType} from '../new-rating.service';
 
 @Component({
-  selector: 'app-ongeki-rating',
-  templateUrl: './ongeki-rating.component.html',
-  styleUrls: ['./ongeki-rating.component.css']
+    selector: 'app-ongeki-rating',
+    templateUrl: './ongeki-rating.component.html',
+    styleUrls: ['./ongeki-rating.component.css'],
+    standalone: false
 })
 export class OngekiRatingComponent implements OnInit {
 

@@ -2,9 +2,10 @@ import {Component, ElementRef, QueryList, Renderer2, ViewChildren} from '@angula
 import {environment} from '../../environments/environment';
 
 @Component({
-  selector: 'app-not-found',
-  templateUrl: './not-found.component.html',
-  styleUrls: ['./not-found.component.css']
+    selector: 'app-not-found',
+    templateUrl: './not-found.component.html',
+    styleUrls: ['./not-found.component.css'],
+    standalone: false
 })
 export class NotFoundComponent {
   @ViewChildren('faultTurtle') faultTurtle: QueryList<ElementRef>;

@@ -12,9 +12,10 @@ import {environment} from '../../../../../environments/environment';
 import {UserService} from 'src/app/user.service';
 
 @Component({
-  selector: 'app-v2-setting',
-  templateUrl: './v2-setting.component.html',
-  styleUrls: ['./v2-setting.component.css']
+    selector: 'app-v2-setting',
+    templateUrl: './v2-setting.component.html',
+    styleUrls: ['./v2-setting.component.css'],
+    standalone: false
 })
 export class V2SettingComponent implements OnInit {
 

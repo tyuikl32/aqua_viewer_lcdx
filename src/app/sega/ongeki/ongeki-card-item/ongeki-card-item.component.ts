@@ -4,10 +4,11 @@ import {environment} from '../../../../environments/environment';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 
 @Component({
-  selector: 'app-ongeki-card-item',
-  templateUrl: './ongeki-card-item.component.html',
-  styleUrls: ['./ongeki-card-item.component.css'],
-  inputs: ['item', 'showHolo', 'showElements', 'holoSheetStyle1', 'holoSheetStyle2']
+    selector: 'app-ongeki-card-item',
+    templateUrl: './ongeki-card-item.component.html',
+    styleUrls: ['./ongeki-card-item.component.css'],
+    inputs: ['item', 'showHolo', 'showElements', 'holoSheetStyle1', 'holoSheetStyle2'],
+    standalone: false
 })
 export class OngekiCardItemComponent implements OnInit {
 

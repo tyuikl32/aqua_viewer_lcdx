@@ -13,9 +13,10 @@ import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {compareVersions} from 'compare-versions';
 
 @Component({
-  selector: 'app-v2-rating',
-  templateUrl: './v2-rating.component.html',
-  styleUrls: ['./v2-rating.component.scss']
+    selector: 'app-v2-rating',
+    templateUrl: './v2-rating.component.html',
+    styleUrls: ['./v2-rating.component.scss'],
+    standalone: false
 })
 export class V2RatingComponent implements OnInit {
 

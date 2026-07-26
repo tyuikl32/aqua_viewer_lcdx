@@ -12,9 +12,10 @@ import {Maimai2SongDetailComponent} from "../maimai2-song-detail/maimai2-song-de
 import {NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-  selector: 'app-maimai2-songlist',
-  templateUrl: './maimai2-songlist.component.html',
-  styleUrls: ['./maimai2-songlist.component.scss']
+    selector: 'app-maimai2-songlist',
+    templateUrl: './maimai2-songlist.component.html',
+    styleUrls: ['./maimai2-songlist.component.scss'],
+    standalone: false
 })
 export class Maimai2SonglistComponent implements OnInit {
   constructor(

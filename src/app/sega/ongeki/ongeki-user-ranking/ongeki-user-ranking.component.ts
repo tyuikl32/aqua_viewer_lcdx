@@ -6,9 +6,10 @@ import {environment} from '../../../../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
-  selector: 'app-ongeki-user-ranking',
-  templateUrl: './ongeki-user-ranking.component.html',
-  styleUrls: ['./ongeki-user-ranking.component.scss']
+    selector: 'app-ongeki-user-ranking',
+    templateUrl: './ongeki-user-ranking.component.html',
+    styleUrls: ['./ongeki-user-ranking.component.scss'],
+    standalone: false
 })
 export class OngekiUserRankingComponent implements OnInit {
 

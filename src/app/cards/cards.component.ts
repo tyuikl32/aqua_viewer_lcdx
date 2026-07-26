@@ -10,9 +10,10 @@ import {UserService} from '../user.service';
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-cards',
-  templateUrl: './cards.component.html',
-  styleUrls: ['./cards.component.css']
+    selector: 'app-cards',
+    templateUrl: './cards.component.html',
+    styleUrls: ['./cards.component.css'],
+    standalone: false
 })
 export class CardsComponent implements OnInit {
   bindCardForm: FormGroup;

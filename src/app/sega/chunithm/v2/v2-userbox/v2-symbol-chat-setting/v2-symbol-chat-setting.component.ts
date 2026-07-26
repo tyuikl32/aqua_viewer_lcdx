@@ -14,9 +14,10 @@ import {TranslateService} from '@ngx-translate/core';
 import {lastValueFrom} from 'rxjs';
 
 @Component({
-  selector: 'app-v2-symbol-chat-setting',
-  templateUrl: './v2-symbol-chat-setting.component.html',
-  styleUrls: ['./v2-symbol-chat-setting.component.css']
+    selector: 'app-v2-symbol-chat-setting',
+    templateUrl: './v2-symbol-chat-setting.component.html',
+    styleUrls: ['./v2-symbol-chat-setting.component.css'],
+    standalone: false
 })
 export class V2SymbolChatSettingComponent implements OnInit {
 

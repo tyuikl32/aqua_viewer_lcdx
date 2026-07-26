@@ -18,9 +18,10 @@ import { Maimai2CircleMemberInfo } from '../model/Maimai2CircleMemberInfo';
 import { Maimai2Music } from '../model/Maimai2Music';
 
 @Component({
-  selector: 'app-maimai2-circle',
-  templateUrl: './maimai2-circle.component.html',
-  styleUrls: ['./maimai2-circle.component.css']
+    selector: 'app-maimai2-circle',
+    templateUrl: './maimai2-circle.component.html',
+    styleUrls: ['./maimai2-circle.component.css'],
+    standalone: false
 })
 export class Maimai2CircleComponent implements OnInit {
 

@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'fullWidth'
+    name: 'fullWidth',
+    standalone: false
 })
 export class FullWidthPipe implements PipeTransform {
 

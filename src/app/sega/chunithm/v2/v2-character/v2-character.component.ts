@@ -17,9 +17,10 @@ import {TranslateService} from '@ngx-translate/core';
 import {ReleaseTagService} from '../util/release-tag.service';
 
 @Component({
-  selector: 'app-v2-character',
-  templateUrl: './v2-character.component.html',
-  styleUrls: ['./v2-character.component.scss']
+    selector: 'app-v2-character',
+    templateUrl: './v2-character.component.html',
+    styleUrls: ['./v2-character.component.scss'],
+    standalone: false
 })
 export class V2CharacterComponent implements OnInit {
 

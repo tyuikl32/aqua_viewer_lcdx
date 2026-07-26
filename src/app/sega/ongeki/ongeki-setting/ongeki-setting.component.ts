@@ -11,9 +11,10 @@ import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, 
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-ongeki-setting',
-  templateUrl: './ongeki-setting.component.html',
-  styleUrls: ['./ongeki-setting.component.css']
+    selector: 'app-ongeki-setting',
+    templateUrl: './ongeki-setting.component.html',
+    styleUrls: ['./ongeki-setting.component.css'],
+    standalone: false
 })
 export class OngekiSettingComponent implements OnInit {
 

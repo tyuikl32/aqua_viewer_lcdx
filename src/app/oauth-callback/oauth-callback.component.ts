@@ -8,9 +8,10 @@ import {StatusCode} from '../status-code';
 import {AccountService} from '../auth/account.service';
 
 @Component({
-  selector: 'app-oauth-callback',
-  templateUrl: './oauth-callback.component.html',
-  styleUrls: ['./oauth-callback.component.css']
+    selector: 'app-oauth-callback',
+    templateUrl: './oauth-callback.component.html',
+    styleUrls: ['./oauth-callback.component.css'],
+    standalone: false
 })
 export class OauthCallbackComponent {
   constructor(private route: ActivatedRoute,

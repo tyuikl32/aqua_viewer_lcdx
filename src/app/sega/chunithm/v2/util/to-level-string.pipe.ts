@@ -2,7 +2,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 import {ChusanMusicLevelInfo} from '../model/ChusanMusic';
 
 @Pipe({
-  name: 'toLevelString'
+    name: 'toLevelString',
+    standalone: false
 })
 export class ToLevelStringPipe implements PipeTransform {
 

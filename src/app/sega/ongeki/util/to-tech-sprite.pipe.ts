@@ -2,7 +2,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {TechnicalRank} from '../model/OngekiEnums';
 
 @Pipe({
-  name: 'toTechSprite'
+    name: 'toTechSprite',
+    standalone: false
 })
 export class ToTechSpritePipe implements PipeTransform {
 

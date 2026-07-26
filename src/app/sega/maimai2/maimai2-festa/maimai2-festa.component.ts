@@ -26,9 +26,10 @@ import { Maimai2CircleFestaRankInfo } from '../model/Maimai2CircleFestaRankInfo'
 import { Maimai2CircleFestaData } from '../model/Maimai2CircleFestaData';
 
 @Component({
-  selector: 'app-maimai2-festa',
-  templateUrl: './maimai2-festa.component.html',
-  styleUrls: ['./maimai2-festa.component.css']
+    selector: 'app-maimai2-festa',
+    templateUrl: './maimai2-festa.component.html',
+    styleUrls: ['./maimai2-festa.component.css'],
+    standalone: false
 })
 export class Maimai2FestaComponent implements OnInit {
 

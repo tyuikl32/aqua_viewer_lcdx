@@ -1,7 +1,8 @@
 import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
-  name: 'courceIdToClass'
+    name: 'courceIdToClass',
+    standalone: false
 })
 export class CourceIdToClassPipe implements PipeTransform {
 

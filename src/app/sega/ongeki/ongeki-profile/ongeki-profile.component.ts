@@ -10,9 +10,10 @@ import {OngekiTrophy} from '../model/OngekiTrophy';
 import { UserService } from 'src/app/user.service';
 
 @Component({
-  selector: 'app-ongeki-profile',
-  templateUrl: './ongeki-profile.component.html',
-  styleUrls: ['./ongeki-profile.component.css']
+    selector: 'app-ongeki-profile',
+    templateUrl: './ongeki-profile.component.html',
+    styleUrls: ['./ongeki-profile.component.css'],
+    standalone: false
 })
 export class OngekiProfileComponent implements OnInit {
 

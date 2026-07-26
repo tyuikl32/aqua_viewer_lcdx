@@ -11,9 +11,10 @@ import {Maimai2SongDetailComponent} from "../maimai2-song-detail/maimai2-song-de
 import {NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-  selector: 'app-maimai2-rating',
-  templateUrl: './maimai2-rating.component.html',
-  styleUrls: ['./maimai2-rating.component.scss']
+    selector: 'app-maimai2-rating',
+    templateUrl: './maimai2-rating.component.html',
+    styleUrls: ['./maimai2-rating.component.scss'],
+    standalone: false
 })
 export class Maimai2RatingComponent implements OnInit {
   /*

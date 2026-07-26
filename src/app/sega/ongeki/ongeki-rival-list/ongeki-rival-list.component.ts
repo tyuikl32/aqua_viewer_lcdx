@@ -11,9 +11,10 @@ import {StatusCode} from '../../../status-code';
 import { UserService } from 'src/app/user.service';
 
 @Component({
-  selector: 'app-ongeki-rival-list',
-  templateUrl: './ongeki-rival-list.component.html',
-  styleUrls: ['./ongeki-rival-list.component.css']
+    selector: 'app-ongeki-rival-list',
+    templateUrl: './ongeki-rival-list.component.html',
+    styleUrls: ['./ongeki-rival-list.component.css'],
+    standalone: false
 })
 
 export class OngekiRivalListComponent implements OnInit {

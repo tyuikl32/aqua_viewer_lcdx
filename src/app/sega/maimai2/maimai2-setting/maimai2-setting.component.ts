@@ -11,9 +11,10 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-maimai2-setting',
-  templateUrl: './maimai2-setting.component.html',
-  styleUrls: ['./maimai2-setting.component.css']
+    selector: 'app-maimai2-setting',
+    templateUrl: './maimai2-setting.component.html',
+    styleUrls: ['./maimai2-setting.component.css'],
+    standalone: false
 })
 export class Maimai2SettingComponent implements OnInit {
 

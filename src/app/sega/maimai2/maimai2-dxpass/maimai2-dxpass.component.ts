@@ -15,9 +15,10 @@ import {Maimai2Playlog} from '../model/Maimai2Playlog';
 import {Maimai2DxPass} from '../model/Maimai2DxPass';
 
 @Component({
-  selector: 'app-maimai2-dxpass',
-  templateUrl: './maimai2-dxpass.component.html',
-  styleUrls: ['./maimai2-dxpass.component.css']
+    selector: 'app-maimai2-dxpass',
+    templateUrl: './maimai2-dxpass.component.html',
+    styleUrls: ['./maimai2-dxpass.component.css'],
+    standalone: false
 })
 export class Maimai2DxpassComponent implements OnInit{
 

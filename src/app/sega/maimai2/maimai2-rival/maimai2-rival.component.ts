@@ -9,9 +9,10 @@ import { HttpParams } from '@angular/common/http';
 import {environment} from "../../../../environments/environment";
 
 @Component({
-  selector: 'app-maimai2-rival',
-  templateUrl: './maimai2-rival.component.html',
-  styleUrls: ['./maimai2-rival.component.css']
+    selector: 'app-maimai2-rival',
+    templateUrl: './maimai2-rival.component.html',
+    styleUrls: ['./maimai2-rival.component.css'],
+    standalone: false
 })
 export class Maimai2RivalComponent {
 

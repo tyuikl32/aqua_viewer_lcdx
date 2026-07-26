@@ -16,9 +16,10 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {load} from '@angular-devkit/build-angular/src/utils/server-rendering/esm-in-memory-file-loader';
 
 @Component({
-  selector: 'app-v2-recent',
-  templateUrl: './v2-recent.component.html',
-  styleUrls: ['./v2-recent.component.css']
+    selector: 'app-v2-recent',
+    templateUrl: './v2-recent.component.html',
+    styleUrls: ['./v2-recent.component.css'],
+    standalone: false
 })
 export class V2RecentComponent implements OnInit {
 
