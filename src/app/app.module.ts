@@ -6,7 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MessageModule } from './message/message.module';
 import { DashboardModule } from './dashboard/dashboard.module';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { V2Module } from './sega/chunithm/v2/v2.module';
 import { DatabaseModule } from './database/database.module';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -160,7 +160,7 @@ export function initializeApp(
                 useClass: TranslateHttpLoader,
             }
         }),
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
     ] })
 export class AppModule {
 }
