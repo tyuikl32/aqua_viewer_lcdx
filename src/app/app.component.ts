@@ -14,6 +14,7 @@ import {DOCUMENT} from '@angular/common';
 import {SwUpdate} from '@angular/service-worker';
 import {UserService} from './user.service';
 import {Account, AccountService} from './auth/account.service';
+import {ImpersonationService} from './auth/impersonation.service';
 import { MenuService } from './menu.service';
 import {Title} from '@angular/platform-browser';
 import supportedBrowsers from './supportedBrowsers';
@@ -42,6 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     protected authenticationService: AuthenticationService,
     protected accountService: AccountService,
+    protected impersonation: ImpersonationService,
     protected userService: UserService,
     protected router: Router,
     private api: ApiService,
@@ -115,6 +117,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Inside an admin impersonation iframe this picks up the target's tokens and
+    // reloads, so nothing below runs against the wrong account
+    this.impersonation.bootstrap();
     this.initializeApp();
     if (!supportedBrowsers.test(navigator.userAgent)) {
       this.translateService.get('App.Messages.BrowserNotSupported').subscribe( message => {

@@ -10,8 +10,10 @@ import {V2Profile} from '../sega/chunithm/v2/model/V2Profile';
 import {DisplayOngekiProfile} from '../sega/ongeki/model/OngekiProfile';
 import {DisplayMaimai2Profile} from '../sega/maimai2/model/Maimai2Profile';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {AuthenticationService} from '../auth/authentication.service';
 import {TranslateService} from '@ngx-translate/core';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {IMPERSONATION_KEY} from '../auth/account.service';
+import {IMPERSONATE_GRANT, IMPERSONATE_REQUEST} from '../auth/impersonation.service';
 
 @Component({
   selector: 'app-admin',
@@ -39,12 +41,18 @@ export class AdminComponent implements OnInit {
   kcCurrentPage = 1;
   kcTotalElements = 0;
 
+  impersonateUrl: SafeResourceUrl = null;
+  impersonateUsername: string = null;
+  private impersonateNonce: string = null;
+  private impersonateAccount: any = null;
+  private impersonateListener: (event: MessageEvent) => void = null;
+
   constructor(
     private api: ApiService,
     private messageService: MessageService,
     private route: ActivatedRoute,
     private translate: TranslateService,
-    private authenticationService: AuthenticationService,
+    private sanitizer: DomSanitizer,
     protected modalService: NgbModal
   ) {
 
@@ -92,33 +100,85 @@ export class AdminComponent implements OnInit {
     this.pageSubject.next(page - 1);
   }
 
-  loginAs(username: string){
-    this.authenticationService.loginAs(username)
-      .subscribe(
-        {
-          next: (resp) => {
-            if (resp?.status) {
-              const statusCode: StatusCode = resp.status.code;
-              if (statusCode === StatusCode.OK && resp.data) {
-                this.messageService.notice(resp.status.message);
-                location.reload();
-              }
-              else if (statusCode === StatusCode.LOGIN_FAILED){
-                this.translate.get('SignInPage.LoginFailedMessage').subscribe((res: string) => {
-                  this.messageService.notice(res, 'danger');
-                });
-              }
-              else{
-                this.messageService.notice(resp.status.message);
-              }
-            }
-          },
-          error: (error) => {
-            this.messageService.notice(error);
-            console.warn('login fail', error);
-          }
+  /**
+   * Opens the portal as another user in an iframe instead of replacing the admin's
+   * own session, so returning is just closing the frame.
+   */
+  loginAs(username: string, impersonateModal: any){
+    this.api.post(`api/admin/users/loginas/${username}`, {}).subscribe({
+      next: resp => {
+        if (resp?.status?.code !== StatusCode.OK || !resp.data) {
+          this.messageService.notice(resp?.status?.message);
+          return;
         }
-      );
+        this.startImpersonation(username, resp.data, impersonateModal);
+      },
+      error: err => {
+        this.messageService.notice(err.message ?? err, 'warning');
+        console.warn('login as fail', err);
+      }
+    });
+  }
+
+  private startImpersonation(username: string, account: any, impersonateModal: any) {
+    this.impersonateUsername = username;
+    this.impersonateAccount = account;
+    // A fresh nonce tells the iframe to drop any earlier target's session
+    this.impersonateNonce = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    this.impersonateUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+      `${location.origin}/?imp=${this.impersonateNonce}`);
+
+    // The iframe asks for the tokens once it has booted; storage cannot be used to
+    // pass them because it is shared with this page
+    this.impersonateListener = (event: MessageEvent) => {
+      if (event.origin !== location.origin
+        || event.data?.type !== IMPERSONATE_REQUEST
+        || event.data?.nonce !== this.impersonateNonce) {
+        return;
+      }
+      (event.source as Window)?.postMessage(
+        {type: IMPERSONATE_GRANT, nonce: this.impersonateNonce, account: this.impersonateAccount},
+        location.origin);
+    };
+    window.addEventListener('message', this.impersonateListener);
+
+    this.modalService.open(impersonateModal, {fullscreen: true, backdrop: 'static', keyboard: false})
+      .result.then(() => this.endImpersonation(), () => this.endImpersonation());
+  }
+
+  /**
+   * Wipes the impersonated session out of the frame and revokes its refresh token,
+   * so closing the frame really ends the session instead of leaving a week-long
+   * token behind.
+   */
+  closeImpersonation(modal: any) {
+    const frame = document.querySelector('iframe.impersonation-frame') as HTMLIFrameElement;
+    try {
+      frame?.contentWindow?.sessionStorage?.removeItem(IMPERSONATION_KEY);
+    } catch (e) {
+      console.warn('could not clear impersonated session', e);
+    }
+    const refreshToken = this.impersonateAccount?.refreshToken;
+    if (refreshToken) {
+      // signout authorises on the refresh token itself, so the admin's own header
+      // on this request is irrelevant
+      this.api.post('api/auth/signout', {refreshToken}).subscribe({
+        next: () => {},
+        error: err => console.warn('could not revoke impersonated session', err)
+      });
+    }
+    modal.close();
+  }
+
+  private endImpersonation() {
+    if (this.impersonateListener) {
+      window.removeEventListener('message', this.impersonateListener);
+      this.impersonateListener = null;
+    }
+    this.impersonateUrl = null;
+    this.impersonateUsername = null;
+    this.impersonateAccount = null;
+    this.impersonateNonce = null;
   }
 
   refresh() {

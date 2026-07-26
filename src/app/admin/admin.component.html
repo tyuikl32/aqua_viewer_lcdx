@@ -116,7 +116,7 @@
           注册时间：{{ selectedProfile.joinedAt | date: 'yyyy-MM-dd HH:mm' }}
           <span class="ms-2">两步验证：{{ selectedProfile.totpEnabled ? '已启用' : '未启用' }}</span>
         </div>
-        <button class="btn btn-primary btn-sm mb-2 me-1" (click)="loginAs(item.user.username)">
+        <button class="btn btn-primary btn-sm mb-2 me-1" (click)="loginAs(item.user.username, impersonateModal)">
           夺舍
         </button>
         <button *ngIf="selectedProfile?.totpEnabled" class="btn btn-outline-danger btn-sm mb-2"
@@ -211,3 +211,15 @@
   </ul>
 </pagination-template>
 </div>
+
+<ng-template #impersonateModal let-modal>
+  <div class="modal-header py-2 d-flex align-items-center">
+    <h5 class="modal-title me-auto">正在以 {{ impersonateUsername }} 的身份操作</h5>
+    <button type="button" class="btn btn-sm btn-outline-danger" (click)="closeImpersonation(modal)">
+      返回管理员账户
+    </button>
+  </div>
+  <div class="modal-body p-0">
+    <iframe *ngIf="impersonateUrl" class="impersonation-frame" [src]="impersonateUrl"></iframe>
+  </div>
+</ng-template>
