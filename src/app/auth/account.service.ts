@@ -1,4 +1,4 @@
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
 
 /** Storage key for the impersonation session that lives inside the admin's iframe. */
@@ -18,6 +18,9 @@ export function inIframe(): boolean {
 })
 export class AccountService {
   private currentAccountSubject: BehaviorSubject<Account>;
+  // Exposed as Observable so subscribers (e.g. the proactive-refresh scheduler)
+  // cannot emit through it — they have to go through the setter
+  public readonly currentAccount: Observable<Account>;
 
   // An admin impersonating a user runs the portal in a same-origin iframe, which
   // shares localStorage with the admin's own page. Keeping the impersonated session
@@ -27,6 +30,7 @@ export class AccountService {
 
   constructor() {
     this.currentAccountSubject = new BehaviorSubject<Account>(JSON.parse(this.storage.getItem(this.storageKey)));
+    this.currentAccount = this.currentAccountSubject.asObservable();
   }
 
   public get currentAccountValue(): Account {
