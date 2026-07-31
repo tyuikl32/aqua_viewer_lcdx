@@ -305,7 +305,31 @@
     "Warning1": "你的卡片将只能在以下列表及RinNET白名单内的机台使用，以防止未经授权的访问。",
     "Warning2": "如果攻击者同时掌握下列任意机台序列号与你的卡号，将可以随意处置你的游戏数据，如果发现二者遭到泄漏请及时修改它们，如果已经造成一定损失请及时联系管理员挽回。",
     "Warning3": "如果对方不需要在你的机台上游玩，请不要发送给他。",
-    "Warning4": "如果你不在对方的机台上游玩，请不要添加到信任。"
+    "Warning4": "如果你不在对方的机台上游玩，请不要添加到信任。",
+    "GameVersions": {
+      "title": "游戏版本",
+      "CHUSAN": "中二节奏 SUN",
+      "ONGEKI": "音击",
+      "ROM": "ROM",
+      "Data": "数据",
+      "Observed": "检测到的版本",
+      "Manual": "手动版本",
+      "Effective": "当前生效版本",
+      "Source": "来源",
+      "ManualSource": "手动设置",
+      "ObservedSource": "游戏上报",
+      "DefaultSource": "服务器默认",
+      "Edit": "编辑",
+      "VersionFormat": "请使用 X.XX.XX 格式，且只能包含数字。",
+      "Save": "保存",
+      "Cancel": "取消",
+      "SaveSuccess": "游戏版本已保存。",
+      "SaveFailed": "游戏版本保存失败。",
+      "RestoreAutomatic": "恢复自动版本",
+      "RestoreConfirm": "再次点击以同时恢复两个版本",
+      "RestoreSuccess": "已恢复自动游戏版本。",
+      "RestoreFailed": "恢复自动游戏版本失败。"
+    }
   },
   "ImportPage": {
     "Title": "导入",

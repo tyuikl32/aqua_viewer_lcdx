@@ -59,6 +59,51 @@
             <div>
               <a class="card-link cursor-pointer" (click)="renameForm.setValue({name: keychip.placeName});modalService.open(rename, {centered: true})" >{{'KeychipPage.Rename' | translate}}</a>
             </div>
+            @if (keychip.gameVersions?.length) {
+              <section class="game-versions mt-3" [attr.aria-label]="'KeychipPage.GameVersions.title' | translate">
+                <h3 class="game-versions-title">{{'KeychipPage.GameVersions.title' | translate}}</h3>
+                <div class="game-version-grid">
+                  @for (version of keychip.gameVersions; track version.game) {
+                    <article class="game-version-panel">
+                      <div class="game-version-heading">
+                        <strong>{{('KeychipPage.GameVersions.' + version.game) | translate}}</strong>
+                        <button type="button" class="btn btn-sm btn-outline-primary game-version-edit"
+                          (click)="openGameVersionEditor(keychip, version, gameVersionModal)">
+                          {{'KeychipPage.GameVersions.Edit' | translate}}
+                        </button>
+                      </div>
+                      <div class="game-version-effective-label game-version-label">
+                        {{'KeychipPage.GameVersions.Effective' | translate}}
+                      </div>
+                      <div class="game-version-row">
+                        <span class="game-version-label">{{'KeychipPage.GameVersions.ROM' | translate}}</span>
+                        <span class="game-version-value font-monospace">{{version.effective.romVersion}}</span>
+                        @if (version.source.romVersion !== version.source.dataVersion) {
+                          <span class="game-version-source-per-value">
+                            {{gameVersionSourceKey(version.source.romVersion) | translate}}
+                          </span>
+                        }
+                      </div>
+                      <div class="game-version-row">
+                        <span class="game-version-label">{{'KeychipPage.GameVersions.Data' | translate}}</span>
+                        <span class="game-version-value font-monospace">{{version.effective.dataVersion}}</span>
+                        @if (version.source.romVersion !== version.source.dataVersion) {
+                          <span class="game-version-source-per-value">
+                            {{gameVersionSourceKey(version.source.dataVersion) | translate}}
+                          </span>
+                        }
+                      </div>
+                      @if (version.source.romVersion === version.source.dataVersion) {
+                        <div class="game-version-source-combined">
+                          <span class="game-version-label">{{'KeychipPage.GameVersions.Source' | translate}}</span>
+                          <span>{{gameVersionSourceKey(version.source.romVersion) | translate}}</span>
+                        </div>
+                      }
+                    </article>
+                  }
+                </div>
+              </section>
+            }
           </div>
           <ng-template #removeKeychip let-modal>
             <div class="modal-header">
@@ -115,7 +160,7 @@
   <div class="row px-2 mb-3">
     @for (keychip of this.trustKeychips; track keychip) {
       <div class="col-lg-6 p-1">
-        <div class="card">
+        <div class="card trusted-keychip-card">
           <div class="card-header keychip-card-header">
             <div class="keychip-card-title">
               {{keychip.id}}{{"Common.Colon" | translate}}{{keychip.placeName}}
@@ -183,6 +228,86 @@
     </div>
   </div>
 }
+
+<ng-template #gameVersionModal let-modal>
+  @if (gameVersionEditor; as editor) {
+    <div class="game-version-modal">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          {{('KeychipPage.GameVersions.' + editor.version.game) | translate}}
+          · {{'KeychipPage.GameVersions.title' | translate}}
+        </h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+      </div>
+      <form [formGroup]="gameVersionForm" (ngSubmit)="saveGameVersion(modal)">
+        <div class="modal-body">
+          <section class="game-version-observed mb-4">
+            <h5>{{'KeychipPage.GameVersions.Observed' | translate}}</h5>
+            <div class="game-version-modal-grid">
+              <div>
+                <div class="game-version-label">{{'KeychipPage.GameVersions.ROM' | translate}}</div>
+                <div class="game-version-value observed-rom font-monospace">
+                  {{editor.version.observed.romVersion ?? '—'}}
+                </div>
+              </div>
+              <div>
+                <div class="game-version-label">{{'KeychipPage.GameVersions.Data' | translate}}</div>
+                <div class="game-version-value observed-data font-monospace">
+                  {{editor.version.observed.dataVersion ?? '—'}}
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="game-version-manual">
+            <h5>{{'KeychipPage.GameVersions.Manual' | translate}}</h5>
+            <div class="game-version-modal-grid">
+              <div>
+                <label class="form-label game-version-label" for="manualRomVersion">
+                  {{'KeychipPage.GameVersions.ROM' | translate}}
+                </label>
+                <input id="manualRomVersion" class="form-control font-monospace" type="text"
+                  formControlName="romVersion" required autocomplete="off">
+                @if (gameVersionForm.controls.romVersion.touched && gameVersionForm.controls.romVersion.invalid) {
+                  <div class="invalid-feedback d-block game-version-format-error">
+                    {{'KeychipPage.GameVersions.VersionFormat' | translate}}
+                  </div>
+                }
+              </div>
+              <div>
+                <label class="form-label game-version-label" for="manualDataVersion">
+                  {{'KeychipPage.GameVersions.Data' | translate}}
+                </label>
+                <input id="manualDataVersion" class="form-control font-monospace" type="text"
+                  formControlName="dataVersion" required autocomplete="off">
+                @if (gameVersionForm.controls.dataVersion.touched && gameVersionForm.controls.dataVersion.invalid) {
+                  <div class="invalid-feedback d-block game-version-format-error">
+                    {{'KeychipPage.GameVersions.VersionFormat' | translate}}
+                  </div>
+                }
+              </div>
+            </div>
+          </section>
+        </div>
+        <div class="modal-footer game-version-actions">
+          @if (editor.version.manual.romVersion !== null && editor.version.manual.dataVersion !== null) {
+            <button type="button" class="btn btn-danger me-auto game-version-restore"
+              (click)="requestClearGameVersion(modal)">
+              {{(restoreConfirmationPending
+                ? 'KeychipPage.GameVersions.RestoreConfirm'
+                : 'KeychipPage.GameVersions.RestoreAutomatic') | translate}}
+            </button>
+          }
+          <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+            {{'KeychipPage.GameVersions.Cancel' | translate}}
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="gameVersionForm.invalid">
+            {{'KeychipPage.GameVersions.Save' | translate}}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</ng-template>
 
 <ng-template #bindCard let-modal>
   <div class="modal-header">

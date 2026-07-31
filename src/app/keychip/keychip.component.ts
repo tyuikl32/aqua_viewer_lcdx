@@ -29,6 +29,7 @@ export class KeychipComponent implements OnInit {
     dataVersion: FormControl<string>;
   }>;
   gameVersionEditor: GameVersionEditor | null = null;
+  restoreConfirmationPending = false;
 
   constructor(
     private fb: FormBuilder,
@@ -245,6 +246,7 @@ export class KeychipComponent implements OnInit {
   ): NgbModalRef {
     const editor = {keychip, version};
     this.gameVersionEditor = editor;
+    this.restoreConfirmationPending = false;
     const pair = version.manual.romVersion !== null && version.manual.dataVersion !== null
       ? version.manual
       : version.effective;
@@ -257,6 +259,7 @@ export class KeychipComponent implements OnInit {
       if (this.gameVersionEditor === editor) {
         this.gameVersionEditor = null;
       }
+      this.restoreConfirmationPending = false;
     };
     void modal.result.then(clearEditor, clearEditor);
     return modal;
@@ -265,6 +268,7 @@ export class KeychipComponent implements OnInit {
   saveGameVersion(modal: NgbModalRef) {
     const editor = this.gameVersionEditor;
     if (this.gameVersionForm.invalid || !editor) {
+      this.gameVersionForm.markAllAsTouched();
       return;
     }
     const path = this.gameVersionPath(editor);
@@ -289,6 +293,14 @@ export class KeychipComponent implements OnInit {
         'KeychipPage.GameVersions.RestoreFailed'),
       error: () => this.noticeTranslated('KeychipPage.GameVersions.RestoreFailed', 'danger')
     });
+  }
+
+  requestClearGameVersion(modal: NgbModalRef) {
+    if (!this.restoreConfirmationPending) {
+      this.restoreConfirmationPending = true;
+      return;
+    }
+    this.clearGameVersion(modal);
   }
 
   gameVersionSourceKey(source: GameVersionSource): string {
