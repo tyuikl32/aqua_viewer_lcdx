@@ -181,7 +181,7 @@ describe('KeychipComponent game versions', () => {
     expect(component.gameVersionMutationPending).toBeFalse();
   });
 
-  it('blocks dismiss while pending and allows it again after the request settles', () => {
+  it('does not block dismiss while a request is pending', () => {
     const response = new Subject<unknown>();
     component.openGameVersionEditor(keychip, chusan, template());
     const options = modalService.open.calls.mostRecent().args[1] as NgbModalOptions;
@@ -189,20 +189,21 @@ describe('KeychipComponent game versions', () => {
 
     component.saveGameVersion(modal.ref);
 
-    expect(options.beforeDismiss?.()).toBeFalse();
-    response.next({status: {code: StatusCode.BAD_REQUEST}});
-    expect(options.beforeDismiss?.()).toBeTrue();
+    expect(options.beforeDismiss).toBeUndefined();
+    expect(component.gameVersionMutationPending).toBeTrue();
   });
 
-  it('clears pending when the captured modal session settles', async () => {
+  it('unsubscribes and clears pending when the captured modal session settles', async () => {
     const response = new Subject<unknown>();
     component.openGameVersionEditor(keychip, chusan, template());
     api.put.and.returnValue(response);
     component.saveGameVersion(modal.ref);
+    expect(response.observers.length).toBe(1);
 
     modal.dismiss('forced teardown');
     await modal.settled;
 
+    expect(response.observers.length).toBe(0);
     expect(component.gameVersionEditor).toBeNull();
     expect(component.gameVersionMutationPending).toBeFalse();
   });
@@ -229,6 +230,7 @@ describe('KeychipComponent game versions', () => {
     component.saveGameVersion(modal.ref);
     modal.dismiss('forced teardown');
     await modal.settled;
+    expect(firstResponse.observers.length).toBe(0);
 
     modalService.open.and.returnValue(secondModal.ref);
     component.openGameVersionEditor(keychip, ongeki, template());
@@ -620,7 +622,7 @@ describe('KeychipComponent game version UI', () => {
       .toBeFalse();
   });
 
-  it('disables close, cancel, save, and restore while a save is pending and restores them on error', () => {
+  it('keeps close and cancel available while disabling mutation actions during a save', () => {
     const response = new Subject<unknown>();
     api.put.and.returnValue(response);
     click('.game-version-edit');
@@ -630,19 +632,24 @@ describe('KeychipComponent game version UI', () => {
     (modal.querySelector('button[type="submit"]') as HTMLButtonElement).click();
     fixture.detectChanges();
 
-    const selectors = [
+    const cancelSelectors = [
       '.modal-header .btn-close',
-      '.modal-footer .btn-secondary',
+      '.modal-footer .btn-secondary'
+    ];
+    const mutationSelectors = [
       '.modal-footer button[type="submit"]',
       '.game-version-restore'
     ];
-    selectors.forEach(selector => {
+    cancelSelectors.forEach(selector => {
+      expect((modal.querySelector(selector) as HTMLButtonElement).disabled).toBeFalse();
+    });
+    mutationSelectors.forEach(selector => {
       expect((modal.querySelector(selector) as HTMLButtonElement).disabled).toBeTrue();
     });
 
     response.error(new Error('network'));
     fixture.detectChanges();
-    selectors.forEach(selector => {
+    [...cancelSelectors, ...mutationSelectors].forEach(selector => {
       expect((modal.querySelector(selector) as HTMLButtonElement).disabled).toBeFalse();
     });
   });

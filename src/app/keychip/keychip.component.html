@@ -244,7 +244,6 @@
         </h4>
         <button type="button" class="btn-close"
           [attr.aria-label]="'KeychipPage.GameVersions.Close' | translate"
-          [disabled]="gameVersionMutationPending"
           (click)="modal.dismiss()"></button>
       </div>
       <form [formGroup]="gameVersionForm" (ngSubmit)="saveGameVersion(modal)">
@@ -312,8 +311,7 @@
                 : 'KeychipPage.GameVersions.RestoreAutomatic') | translate}}
             </button>
           }
-          <button type="button" class="btn btn-secondary"
-            [disabled]="gameVersionMutationPending" (click)="modal.dismiss()">
+          <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
             {{'KeychipPage.GameVersions.Cancel' | translate}}
           </button>
           <button type="submit" class="btn btn-primary" [disabled]="gameVersionMutationPending">

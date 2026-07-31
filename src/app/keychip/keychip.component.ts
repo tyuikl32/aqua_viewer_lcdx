@@ -7,6 +7,7 @@ import {SHA256, enc} from 'crypto-js';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {TranslateService} from '@ngx-translate/core';
+import {Subscription} from 'rxjs';
 
 const GAME_VERSION_PATTERN = /^[0-9]+\.[0-9]{2}\.[0-9]{2}$/;
 
@@ -30,11 +31,11 @@ export class KeychipComponent implements OnInit {
   }>;
   gameVersionEditor: GameVersionEditor | null = null;
   restoreConfirmationPending = false;
-  private pendingGameVersionEditor: GameVersionEditor | null = null;
+  private activeGameVersionMutation: GameVersionMutation | null = null;
 
   get gameVersionMutationPending(): boolean {
     return this.gameVersionEditor !== null &&
-      this.pendingGameVersionEditor === this.gameVersionEditor;
+      this.activeGameVersionMutation?.editor === this.gameVersionEditor;
   }
 
   constructor(
@@ -262,15 +263,12 @@ export class KeychipComponent implements OnInit {
     });
     const modal = this.modalService.open(modalTemplate, {
       centered: true,
-      ariaLabelledBy: 'keychipGameVersionModalTitle',
-      beforeDismiss: () => this.pendingGameVersionEditor !== editor
+      ariaLabelledBy: 'keychipGameVersionModalTitle'
     });
     const clearEditor = () => {
       if (this.gameVersionEditor === editor) {
+        this.cancelMutation(editor);
         this.gameVersionEditor = null;
-        if (this.pendingGameVersionEditor === editor) {
-          this.pendingGameVersionEditor = null;
-        }
         this.restoreConfirmationPending = false;
       }
     };
@@ -280,39 +278,41 @@ export class KeychipComponent implements OnInit {
 
   saveGameVersion(modal: NgbModalRef) {
     const editor = this.gameVersionEditor;
-    if (!editor || this.pendingGameVersionEditor === editor) {
+    if (!editor || this.activeGameVersionMutation?.editor === editor) {
       return;
     }
     if (this.gameVersionForm.invalid) {
       this.gameVersionForm.markAllAsTouched();
       return;
     }
-    this.pendingGameVersionEditor = editor;
+    const mutation = this.startMutation(editor);
     const path = this.gameVersionPath(editor);
-    this.api.put(path, this.gameVersionForm.getRawValue()).subscribe({
+    const request = this.api.put(path, this.gameVersionForm.getRawValue()).subscribe({
       next: resp => this.handleMutationResponse(
-        resp, editor, modal,
+        resp, mutation, modal,
         'KeychipPage.GameVersions.SaveSuccess',
         'KeychipPage.GameVersions.SaveFailed'),
       error: () => this.handleMutationError(
-        editor, 'KeychipPage.GameVersions.SaveFailed')
+        mutation, 'KeychipPage.GameVersions.SaveFailed')
     });
+    mutation.subscription.add(request);
   }
 
   clearGameVersion(modal: NgbModalRef) {
     const editor = this.gameVersionEditor;
-    if (!editor || this.pendingGameVersionEditor === editor) {
+    if (!editor || this.activeGameVersionMutation?.editor === editor) {
       return;
     }
-    this.pendingGameVersionEditor = editor;
-    this.api.delete(this.gameVersionPath(editor)).subscribe({
+    const mutation = this.startMutation(editor);
+    const request = this.api.delete(this.gameVersionPath(editor)).subscribe({
       next: resp => this.handleMutationResponse(
-        resp, editor, modal,
+        resp, mutation, modal,
         'KeychipPage.GameVersions.RestoreSuccess',
         'KeychipPage.GameVersions.RestoreFailed'),
       error: () => this.handleMutationError(
-        editor, 'KeychipPage.GameVersions.RestoreFailed')
+        mutation, 'KeychipPage.GameVersions.RestoreFailed')
     });
+    mutation.subscription.add(request);
   }
 
   requestClearGameVersion(modal: NgbModalRef) {
@@ -342,15 +342,15 @@ export class KeychipComponent implements OnInit {
 
   private handleMutationResponse(
     response: unknown,
-    editor: GameVersionEditor,
+    mutation: GameVersionMutation,
     modal: NgbModalRef,
     successKey: string,
     failureKey: string
   ) {
-    if (!this.isCurrentMutation(editor)) {
+    if (!this.finishMutation(mutation)) {
       return;
     }
-    this.pendingGameVersionEditor = null;
+    const editor = mutation.editor;
     if (this.isRecord(response) &&
       this.isRecord(response.status) &&
       response.status.code === StatusCode.OK &&
@@ -363,16 +363,36 @@ export class KeychipComponent implements OnInit {
     this.noticeTranslated(failureKey, 'danger');
   }
 
-  private handleMutationError(editor: GameVersionEditor, failureKey: string) {
-    if (!this.isCurrentMutation(editor)) {
+  private handleMutationError(mutation: GameVersionMutation, failureKey: string) {
+    if (!this.finishMutation(mutation)) {
       return;
     }
-    this.pendingGameVersionEditor = null;
     this.noticeTranslated(failureKey, 'danger');
   }
 
-  private isCurrentMutation(editor: GameVersionEditor): boolean {
-    return this.gameVersionEditor === editor && this.pendingGameVersionEditor === editor;
+  private startMutation(editor: GameVersionEditor): GameVersionMutation {
+    const mutation = {editor, subscription: new Subscription()};
+    this.activeGameVersionMutation = mutation;
+    return mutation;
+  }
+
+  private finishMutation(mutation: GameVersionMutation): boolean {
+    if (this.activeGameVersionMutation !== mutation ||
+      this.gameVersionEditor !== mutation.editor) {
+      return false;
+    }
+    this.activeGameVersionMutation = null;
+    mutation.subscription.unsubscribe();
+    return true;
+  }
+
+  private cancelMutation(editor: GameVersionEditor) {
+    const mutation = this.activeGameVersionMutation;
+    if (mutation?.editor !== editor) {
+      return;
+    }
+    this.activeGameVersionMutation = null;
+    mutation.subscription.unsubscribe();
   }
 
   private replaceGameVersion(keychip: Keychip, updated: KeychipGameVersion): boolean {
@@ -492,6 +512,11 @@ export interface KeychipGameVersion {
 interface GameVersionEditor {
   keychip: Keychip;
   version: KeychipGameVersion;
+}
+
+interface GameVersionMutation {
+  editor: GameVersionEditor;
+  subscription: Subscription;
 }
 
 export class KeychipId {
