@@ -208,6 +208,36 @@ describe('KeychipComponent game versions', () => {
     expect(component.gameVersionMutationPending).toBeFalse();
   });
 
+  it('cancels the active mutation and invalidates the editor when destroyed', () => {
+    const response = new Subject<unknown>();
+    const originalEntries = keychip.gameVersions.slice();
+    const updatedChusan = versionEntry('CHUSAN', {
+      observed: chusan.observed,
+      manual: {romVersion: '2.41.01', dataVersion: '2.41.00'},
+      effective: {romVersion: '2.41.01', dataVersion: '2.41.00'},
+      source: {romVersion: 'MANUAL', dataVersion: 'MANUAL'}
+    });
+    component.openGameVersionEditor(keychip, chusan, template());
+    component.requestClearGameVersion(modal.ref);
+    api.put.and.returnValue(response);
+    component.saveGameVersion(modal.ref);
+    expect(response.observers.length).toBe(1);
+    expect(component.restoreConfirmationPending).toBeTrue();
+
+    component.ngOnDestroy();
+
+    expect(response.observers.length).toBe(0);
+    expect(component.gameVersionEditor).toBeNull();
+    expect(component.gameVersionMutationPending).toBeFalse();
+    expect(component.restoreConfirmationPending).toBeFalse();
+    expect(modal.dismiss).toHaveBeenCalled();
+
+    response.next({status: {code: StatusCode.OK}, data: updatedChusan});
+    expect(keychip.gameVersions).toEqual(originalEntries);
+    expect(messages.notice).not.toHaveBeenCalled();
+    expect(modal.close).not.toHaveBeenCalled();
+  });
+
   it('ignores an old session response without changing or closing the new session', async () => {
     const firstResponse = new Subject<unknown>();
     const secondResponse = new Subject<unknown>();
@@ -543,6 +573,20 @@ describe('KeychipComponent game version UI', () => {
     expect(modal.getAttribute('aria-labelledby')).toBe('keychipGameVersionModalTitle');
     expect(title.id).toBe('keychipGameVersionModalTitle');
     expect(close.getAttribute('aria-label')).toBe('KeychipPage.GameVersions.Close');
+  });
+
+  it('dismisses its own open version modal when the fixture is destroyed', () => {
+    const modalService = TestBed.inject(NgbModal);
+    const open = spyOn(modalService, 'open').and.callThrough();
+    click('.game-version-edit');
+    fixture.detectChanges();
+    const modalRef = open.calls.mostRecent().returnValue;
+    const dismiss = spyOn(modalRef, 'dismiss').and.callThrough();
+
+    fixture.destroy();
+
+    expect(dismiss).toHaveBeenCalledTimes(1);
+    expect(component.gameVersionEditor).toBeNull();
   });
 
   it('gives each edit action an accessible name containing its game', () => {

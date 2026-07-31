@@ -1,5 +1,5 @@
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {Component, OnInit, ChangeDetectionStrategy, TemplateRef} from '@angular/core';
+import {Component, OnDestroy, OnInit, ChangeDetectionStrategy, TemplateRef} from '@angular/core';
 import {ApiService} from '../api.service';
 import {StatusCode} from '../status-code';
 import {MessageService} from '../message.service';
@@ -18,7 +18,7 @@ const GAME_VERSION_PATTERN = /^[0-9]+\.[0-9]{2}\.[0-9]{2}$/;
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
-export class KeychipComponent implements OnInit {
+export class KeychipComponent implements OnInit, OnDestroy {
   keychipLoaded = false;
   trustKeychipLoaded = false;
   keychips: Keychip[];
@@ -32,6 +32,7 @@ export class KeychipComponent implements OnInit {
   gameVersionEditor: GameVersionEditor | null = null;
   restoreConfirmationPending = false;
   private activeGameVersionMutation: GameVersionMutation | null = null;
+  private gameVersionModalSession: GameVersionModalSession | null = null;
 
   get gameVersionMutationPending(): boolean {
     return this.gameVersionEditor !== null &&
@@ -69,6 +70,19 @@ export class KeychipComponent implements OnInit {
     });
     this.loadKeychip();
     this.loadTrustedKeychip();
+  }
+
+  ngOnDestroy() {
+    const mutation = this.activeGameVersionMutation;
+    this.activeGameVersionMutation = null;
+    mutation?.subscription.unsubscribe();
+
+    this.gameVersionEditor = null;
+    this.restoreConfirmationPending = false;
+
+    const modalSession = this.gameVersionModalSession;
+    this.gameVersionModalSession = null;
+    modalSession?.modal.dismiss();
   }
 
   checkKeychipId(control: AbstractControl){
@@ -265,7 +279,12 @@ export class KeychipComponent implements OnInit {
       centered: true,
       ariaLabelledBy: 'keychipGameVersionModalTitle'
     });
+    const modalSession = {editor, modal};
+    this.gameVersionModalSession = modalSession;
     const clearEditor = () => {
+      if (this.gameVersionModalSession === modalSession) {
+        this.gameVersionModalSession = null;
+      }
       if (this.gameVersionEditor === editor) {
         this.cancelMutation(editor);
         this.gameVersionEditor = null;
@@ -517,6 +536,11 @@ interface GameVersionEditor {
 interface GameVersionMutation {
   editor: GameVersionEditor;
   subscription: Subscription;
+}
+
+interface GameVersionModalSession {
+  editor: GameVersionEditor;
+  modal: NgbModalRef;
 }
 
 export class KeychipId {
