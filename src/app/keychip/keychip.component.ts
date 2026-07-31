@@ -1,12 +1,14 @@
-import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, OnInit, ChangeDetectionStrategy, TemplateRef} from '@angular/core';
 import {ApiService} from '../api.service';
 import {StatusCode} from '../status-code';
 import {MessageService} from '../message.service';
 import {SHA256, enc} from 'crypto-js';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {Clipboard} from '@angular/cdk/clipboard';
 import {TranslateService} from '@ngx-translate/core';
+
+const GAME_VERSION_PATTERN = /^[0-9]+\.[0-9]{2}\.[0-9]{2}$/;
 
 @Component({
     selector: 'app-keychip',
@@ -22,9 +24,11 @@ export class KeychipComponent implements OnInit {
   trustKeychips: Keychip[];
   trustKeychipForm: FormGroup;
   renameForm: FormGroup;
-  gameVersionForm: FormGroup;
-  selectedKeychip: Keychip | null = null;
-  selectedGameVersion: KeychipGameVersion | null = null;
+  gameVersionForm: FormGroup<{
+    romVersion: FormControl<string>;
+    dataVersion: FormControl<string>;
+  }>;
+  gameVersionEditor: GameVersionEditor | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -33,6 +37,14 @@ export class KeychipComponent implements OnInit {
     private api: ApiService,
     protected clipboard: Clipboard,
     private translate: TranslateService) {
+    this.gameVersionForm = this.fb.nonNullable.group({
+      romVersion: ['', [
+        Validators.required,
+        Validators.pattern(GAME_VERSION_PATTERN)]],
+      dataVersion: ['', [
+        Validators.required,
+        Validators.pattern(GAME_VERSION_PATTERN)]]
+    });
   }
 
   ngOnInit() {
@@ -46,14 +58,6 @@ export class KeychipComponent implements OnInit {
       name: ['', [
         Validators.required,
         Validators.maxLength(20)]]
-    });
-    this.gameVersionForm = this.fb.group({
-      romVersion: ['', [
-        Validators.required,
-        Validators.pattern(/^[0-9]+\.[0-9]{2}\.[0-9]{2}$/)]],
-      dataVersion: ['', [
-        Validators.required,
-        Validators.pattern(/^[0-9]+\.[0-9]{2}\.[0-9]{2}$/)]]
     });
     this.loadKeychip();
     this.loadTrustedKeychip();
@@ -234,9 +238,13 @@ export class KeychipComponent implements OnInit {
     modal.dismiss();
   }
 
-  openGameVersionEditor(keychip: Keychip, version: KeychipGameVersion, modalTemplate) {
-    this.selectedKeychip = keychip;
-    this.selectedGameVersion = version;
+  openGameVersionEditor(
+    keychip: Keychip,
+    version: KeychipGameVersion,
+    modalTemplate: TemplateRef<unknown>
+  ): NgbModalRef {
+    const editor = {keychip, version};
+    this.gameVersionEditor = editor;
     const pair = version.manual.romVersion !== null && version.manual.dataVersion !== null
       ? version.manual
       : version.effective;
@@ -244,43 +252,41 @@ export class KeychipComponent implements OnInit {
       romVersion: pair.romVersion,
       dataVersion: pair.dataVersion
     });
-    this.modalService.open(modalTemplate, {centered: true});
+    const modal = this.modalService.open(modalTemplate, {centered: true});
+    const clearEditor = () => {
+      if (this.gameVersionEditor === editor) {
+        this.gameVersionEditor = null;
+      }
+    };
+    void modal.result.then(clearEditor, clearEditor);
+    return modal;
   }
 
-  saveGameVersion(keychip: Keychip, modal) {
-    if (this.gameVersionForm.invalid || !this.selectedGameVersion) {
+  saveGameVersion(modal: NgbModalRef) {
+    const editor = this.gameVersionEditor;
+    if (this.gameVersionForm.invalid || !editor) {
       return;
     }
-    const body = {
-      romVersion: this.gameVersionForm.value.romVersion,
-      dataVersion: this.gameVersionForm.value.dataVersion
-    };
-    const path = this.gameVersionPath(keychip, this.selectedGameVersion);
-    this.api.put(path, body).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK && resp.data) {
-          this.replaceGameVersion(keychip, resp.data);
-          this.noticeTranslated('KeychipPage.GameVersions.SaveSuccess', 'success');
-          modal.close();
-        } else {
-          this.noticeTranslated('KeychipPage.GameVersions.SaveFailed', 'danger');
-        }
-      },
+    const path = this.gameVersionPath(editor);
+    this.api.put(path, this.gameVersionForm.getRawValue()).subscribe({
+      next: resp => this.handleMutationResponse(
+        resp, editor, modal,
+        'KeychipPage.GameVersions.SaveSuccess',
+        'KeychipPage.GameVersions.SaveFailed'),
       error: () => this.noticeTranslated('KeychipPage.GameVersions.SaveFailed', 'danger')
     });
   }
 
-  clearGameVersion(keychip: Keychip, version: KeychipGameVersion, modal) {
-    this.api.delete(this.gameVersionPath(keychip, version)).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK && resp.data) {
-          this.replaceGameVersion(keychip, resp.data);
-          this.noticeTranslated('KeychipPage.GameVersions.RestoreSuccess', 'success');
-          modal.close();
-        } else {
-          this.noticeTranslated('KeychipPage.GameVersions.RestoreFailed', 'danger');
-        }
-      },
+  clearGameVersion(modal: NgbModalRef) {
+    const editor = this.gameVersionEditor;
+    if (!editor) {
+      return;
+    }
+    this.api.delete(this.gameVersionPath(editor)).subscribe({
+      next: resp => this.handleMutationResponse(
+        resp, editor, modal,
+        'KeychipPage.GameVersions.RestoreSuccess',
+        'KeychipPage.GameVersions.RestoreFailed'),
       error: () => this.noticeTranslated('KeychipPage.GameVersions.RestoreFailed', 'danger')
     });
   }
@@ -294,16 +300,87 @@ export class KeychipComponent implements OnInit {
     return keys[source];
   }
 
-  private gameVersionPath(keychip: Keychip, version: KeychipGameVersion): string {
-    const keychipId = encodeURIComponent(keychip.keychipId.shortValue);
-    return `api/user/keychip/${keychipId}/game-version/${version.game.toUpperCase()}`;
+  private gameVersionPath(editor: GameVersionEditor): string {
+    const keychipId = encodeURIComponent(editor.keychip.keychipId.shortValue);
+    return `api/user/keychip/${keychipId}/game-version/${editor.version.game.toUpperCase()}`;
   }
 
-  private replaceGameVersion(keychip: Keychip, updated: KeychipGameVersion) {
-    const index = keychip.gameVersions?.findIndex(version => version.game === updated.game) ?? -1;
-    if (index >= 0) {
-      keychip.gameVersions[index] = updated;
+  private handleMutationResponse(
+    response: unknown,
+    editor: GameVersionEditor,
+    modal: NgbModalRef,
+    successKey: string,
+    failureKey: string
+  ) {
+    if (this.isRecord(response) &&
+      this.isRecord(response.status) &&
+      response.status.code === StatusCode.OK &&
+      this.isGameVersionResponse(response.data, editor.version.game) &&
+      this.replaceGameVersion(editor.keychip, response.data)) {
+      this.noticeTranslated(successKey, 'success');
+      modal.close();
+      return;
     }
+    this.noticeTranslated(failureKey, 'danger');
+  }
+
+  private replaceGameVersion(keychip: Keychip, updated: KeychipGameVersion): boolean {
+    if (!keychip.gameVersions) {
+      return false;
+    }
+    const index = keychip.gameVersions.findIndex(version => version.game === updated.game);
+    if (index < 0) {
+      return false;
+    }
+    keychip.gameVersions[index] = updated;
+    return true;
+  }
+
+  private isGameVersionResponse(
+    value: unknown,
+    requestedGame: KeychipGameVersion['game']
+  ): value is KeychipGameVersion {
+    if (!this.isRecord(value) || value.game !== requestedGame) {
+      return false;
+    }
+    return this.isNullableVersionPair(value.observed) &&
+      this.isNullableVersionPair(value.manual) &&
+      this.isVersionPair(value.effective) &&
+      this.isVersionSourcePair(value.source);
+  }
+
+  private isNullableVersionPair(value: unknown): value is NullableGameVersionPair {
+    return this.isRecord(value) &&
+      this.isNullableVersion(value.romVersion) &&
+      this.isNullableVersion(value.dataVersion);
+  }
+
+  private isVersionPair(value: unknown): value is GameVersionPair {
+    return this.isRecord(value) &&
+      this.isVersion(value.romVersion) &&
+      this.isVersion(value.dataVersion);
+  }
+
+  private isVersionSourcePair(value: unknown): value is GameVersionSourcePair {
+    return this.isRecord(value) &&
+      this.isGameVersionSource(value.romVersion) &&
+      this.isGameVersionSource(value.dataVersion);
+  }
+
+  private isNullableVersion(value: unknown): value is string | null {
+    return value === null || this.isVersion(value);
+  }
+
+  private isVersion(value: unknown): value is string {
+    return typeof value === 'string' && GAME_VERSION_PATTERN.test(value);
+  }
+
+  private isGameVersionSource(value: unknown): value is GameVersionSource {
+    return value === 'MANUAL' || value === 'OBSERVED' || value === 'DEFAULT';
+  }
+
+  private isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null;
   }
 
   private noticeTranslated(key: string, color: 'danger' | 'success') {
@@ -339,19 +416,31 @@ export interface Keychip {
 export type GameVersionSource = 'MANUAL' | 'OBSERVED' | 'DEFAULT';
 
 export interface GameVersionPair {
+  romVersion: string;
+  dataVersion: string;
+}
+
+export interface NullableGameVersionPair {
   romVersion: string | null;
   dataVersion: string | null;
 }
 
+export interface GameVersionSourcePair {
+  romVersion: GameVersionSource;
+  dataVersion: GameVersionSource;
+}
+
 export interface KeychipGameVersion {
   game: 'CHUSAN' | 'ONGEKI';
-  observed: GameVersionPair;
-  manual: GameVersionPair;
+  observed: NullableGameVersionPair;
+  manual: NullableGameVersionPair;
   effective: GameVersionPair;
-  source: {
-    romVersion: GameVersionSource;
-    dataVersion: GameVersionSource;
-  };
+  source: GameVersionSourcePair;
+}
+
+interface GameVersionEditor {
+  keychip: Keychip;
+  version: KeychipGameVersion;
 }
 
 export class KeychipId {
