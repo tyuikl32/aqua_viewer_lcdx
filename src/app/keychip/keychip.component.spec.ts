@@ -473,6 +473,21 @@ describe('KeychipComponent game version UI', () => {
     expect(panel.querySelector('.game-version-edit')).not.toBeNull();
   });
 
+  it('provides Bootstrap 5.2 fallbacks for newer theme color variables', () => {
+    const componentCss = Array.from(document.styleSheets)
+      .flatMap(sheet => Array.from(sheet.cssRules))
+      .map(rule => rule.cssText)
+      .filter(rule => rule.includes('game-version'))
+      .join('\n');
+
+    expect(componentCss).toContain('var(--bs-emphasis-color, var(--bs-body-color))');
+    expect(componentCss).toContain('var(--bs-secondary-color, var(--bs-secondary))');
+    expect(componentCss).toContain('var(--bs-tertiary-bg, var(--bs-body-bg))');
+    expect(componentCss).not.toContain('var(--bs-emphasis-color)');
+    expect(componentCss).not.toContain('var(--bs-secondary-color)');
+    expect(componentCss).not.toContain('var(--bs-tertiary-bg)');
+  });
+
   function click(selector: string) {
     clickAll(selector, 0);
   }
