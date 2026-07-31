@@ -320,6 +320,7 @@
       "VersionFormat": "Use the exact format X.XX.XX (digits only).",
       "Save": "Save",
       "Cancel": "Cancel",
+      "Close": "Close",
       "SaveSuccess": "Game versions saved.",
       "SaveFailed": "Failed to save game versions.",
       "RestoreAutomatic": "Restore automatic versions",

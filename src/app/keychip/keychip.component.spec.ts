@@ -417,6 +417,18 @@ describe('KeychipComponent game version UI', () => {
       .toBe('2.40.00');
   });
 
+  it('gives the modal and close action translated accessible names', () => {
+    click('.game-version-edit');
+    fixture.detectChanges();
+    const modal = activeModal();
+    const title = modal.querySelector('.modal-title');
+    const close = modal.querySelector('.btn-close');
+
+    expect(modal.getAttribute('aria-labelledby')).toBe('keychipGameVersionModalTitle');
+    expect(title.id).toBe('keychipGameVersionModalTitle');
+    expect(close.getAttribute('aria-label')).toBe('KeychipPage.GameVersions.Close');
+  });
+
   it('shows an inline exact-format error for an invalid manual version', () => {
     click('.game-version-edit');
     component.gameVersionForm.controls.romVersion.setValue('2.4.1');
@@ -426,6 +438,28 @@ describe('KeychipComponent game version UI', () => {
     expect(document.querySelectorAll('.game-version-format-error').length).toBe(1);
     expect(document.querySelector('.game-version-format-error').textContent)
       .toContain('KeychipPage.GameVersions.VersionFormat');
+  });
+
+  it('lets an invalid save reveal both errors without requesting an update', () => {
+    click('.game-version-edit');
+    component.gameVersionForm.setValue({romVersion: '2.4.1', dataVersion: ''});
+    fixture.detectChanges();
+    const modal = activeModal();
+    const save = modal.querySelector('button[type="submit"]') as HTMLButtonElement;
+
+    expect(save.disabled).toBeFalse();
+    save.click();
+    fixture.detectChanges();
+
+    const rom = modal.querySelector('#manualRomVersion') as HTMLInputElement;
+    const data = modal.querySelector('#manualDataVersion') as HTMLInputElement;
+    expect(api.put).not.toHaveBeenCalled();
+    expect(rom.getAttribute('aria-invalid')).toBe('true');
+    expect(rom.getAttribute('aria-describedby')).toBe('manualRomVersionError');
+    expect(data.getAttribute('aria-invalid')).toBe('true');
+    expect(data.getAttribute('aria-describedby')).toBe('manualDataVersionError');
+    expect(modal.querySelector('#manualRomVersionError').getAttribute('role')).toBe('alert');
+    expect(modal.querySelector('#manualDataVersionError').getAttribute('role')).toBe('alert');
   });
 
   it('only shows restore automatic for a complete manual pair', () => {
@@ -473,19 +507,58 @@ describe('KeychipComponent game version UI', () => {
     expect(panel.querySelector('.game-version-edit')).not.toBeNull();
   });
 
-  it('provides Bootstrap 5.2 fallbacks for newer theme color variables', () => {
-    const componentCss = Array.from(document.styleSheets)
-      .flatMap(sheet => Array.from(sheet.cssRules))
-      .map(rule => rule.cssText)
-      .filter(rule => rule.includes('game-version'))
-      .join('\n');
+  it('keeps the panel list single-column while arranging ROM and Data in two columns', () => {
+    const list = fixture.nativeElement.querySelector('.game-version-grid') as HTMLElement;
+    const values = fixture.nativeElement.querySelector('.game-version-values') as HTMLElement;
 
-    expect(componentCss).toContain('var(--bs-emphasis-color, var(--bs-body-color))');
-    expect(componentCss).toContain('var(--bs-secondary-color, var(--bs-secondary))');
-    expect(componentCss).toContain('var(--bs-tertiary-bg, var(--bs-body-bg))');
-    expect(componentCss).not.toContain('var(--bs-emphasis-color)');
-    expect(componentCss).not.toContain('var(--bs-secondary-color)');
-    expect(componentCss).not.toContain('var(--bs-tertiary-bg)');
+    expect(getComputedStyle(list).gridTemplateColumns.split(' ').length).toBe(1);
+    expect(getComputedStyle(values).gridTemplateColumns.split(' ').length).toBe(2);
+  });
+
+  it('places mixed sources on independent lines so long labels can wrap', () => {
+    component.keychips[0].gameVersions[1].source = {
+      romVersion: 'OBSERVED',
+      dataVersion: 'DEFAULT'
+    };
+    fixture.detectChanges();
+    const sources = fixture.nativeElement.querySelectorAll('.game-version-source-per-value');
+
+    expect(sources.length).toBe(2);
+    sources.forEach(source => {
+      const style = getComputedStyle(source);
+      expect(style.gridColumnStart).toBe('1');
+      expect(style.gridColumnEnd).toBe('-1');
+      expect(style.whiteSpace).not.toBe('nowrap');
+    });
+  });
+
+  it('resolves readable colors through Bootstrap 5.2 fallback variables', () => {
+    const panel = fixture.nativeElement.querySelector('.game-version-panel') as HTMLElement;
+    const value = panel.querySelector('.game-version-value') as HTMLElement;
+    const label = panel.querySelector('.game-version-label') as HTMLElement;
+    const properties = [
+      '--bs-emphasis-color', '--bs-secondary-color', '--bs-tertiary-bg',
+      '--bs-body-color', '--bs-secondary', '--bs-body-bg'
+    ];
+    const original = new Map(properties.map(property => [property, panel.style.getPropertyValue(property)]));
+
+    try {
+      panel.style.setProperty('--bs-emphasis-color', 'initial');
+      panel.style.setProperty('--bs-secondary-color', 'initial');
+      panel.style.setProperty('--bs-tertiary-bg', 'initial');
+      panel.style.setProperty('--bs-body-color', 'rgb(1, 2, 3)');
+      panel.style.setProperty('--bs-secondary', 'rgb(4, 5, 6)');
+      panel.style.setProperty('--bs-body-bg', 'rgb(7, 8, 9)');
+
+      expect(getComputedStyle(value).color).toBe('rgb(1, 2, 3)');
+      expect(getComputedStyle(label).color).toBe('rgb(4, 5, 6)');
+      expect(getComputedStyle(panel).backgroundColor).toBe('rgb(7, 8, 9)');
+    } finally {
+      properties.forEach(property => {
+        const value = original.get(property);
+        value ? panel.style.setProperty(property, value) : panel.style.removeProperty(property);
+      });
+    }
   });
 
   function click(selector: string) {

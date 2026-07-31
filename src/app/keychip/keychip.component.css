@@ -23,7 +23,13 @@
   margin-bottom: .5rem;
 }
 
-.game-version-grid,
+.game-version-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: .75rem;
+}
+
+.game-version-values,
 .game-version-modal-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -39,7 +45,6 @@
 }
 
 .game-version-heading,
-.game-version-row,
 .game-version-source-combined {
   align-items: center;
   display: flex;
@@ -58,8 +63,12 @@
   text-transform: uppercase;
 }
 
-.game-version-row + .game-version-row {
-  margin-top: .25rem;
+.game-version-row {
+  align-items: baseline;
+  display: grid;
+  gap: .25rem .5rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-width: 0;
 }
 
 .game-version-label,
@@ -68,18 +77,17 @@
   color: var(--bs-secondary-color, var(--bs-secondary));
 }
 
-.game-version-row .game-version-label {
-  min-width: 2.75rem;
-}
-
 .game-version-value {
   color: var(--bs-emphasis-color, var(--bs-body-color));
   font-weight: 600;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .game-version-source-per-value {
   font-size: .75rem;
-  margin-left: auto;
+  grid-column: 1 / -1;
+  overflow-wrap: anywhere;
 }
 
 .game-version-source-combined {
@@ -111,7 +119,7 @@
 }
 
 @media (max-width: 575.98px) {
-  .game-version-grid,
+  .game-version-values,
   .game-version-modal-grid {
     grid-template-columns: minmax(0, 1fr);
   }

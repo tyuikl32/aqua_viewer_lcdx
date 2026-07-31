@@ -254,7 +254,10 @@ export class KeychipComponent implements OnInit {
       romVersion: pair.romVersion,
       dataVersion: pair.dataVersion
     });
-    const modal = this.modalService.open(modalTemplate, {centered: true});
+    const modal = this.modalService.open(modalTemplate, {
+      centered: true,
+      ariaLabelledBy: 'keychipGameVersionModalTitle'
+    });
     const clearEditor = () => {
       if (this.gameVersionEditor === editor) {
         this.gameVersionEditor = null;

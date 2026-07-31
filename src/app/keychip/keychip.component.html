@@ -75,23 +75,25 @@
                       <div class="game-version-effective-label game-version-label">
                         {{'KeychipPage.GameVersions.Effective' | translate}}
                       </div>
-                      <div class="game-version-row">
-                        <span class="game-version-label">{{'KeychipPage.GameVersions.ROM' | translate}}</span>
-                        <span class="game-version-value font-monospace">{{version.effective.romVersion}}</span>
-                        @if (version.source.romVersion !== version.source.dataVersion) {
-                          <span class="game-version-source-per-value">
-                            {{gameVersionSourceKey(version.source.romVersion) | translate}}
-                          </span>
-                        }
-                      </div>
-                      <div class="game-version-row">
-                        <span class="game-version-label">{{'KeychipPage.GameVersions.Data' | translate}}</span>
-                        <span class="game-version-value font-monospace">{{version.effective.dataVersion}}</span>
-                        @if (version.source.romVersion !== version.source.dataVersion) {
-                          <span class="game-version-source-per-value">
-                            {{gameVersionSourceKey(version.source.dataVersion) | translate}}
-                          </span>
-                        }
+                      <div class="game-version-values">
+                        <div class="game-version-row">
+                          <span class="game-version-label">{{'KeychipPage.GameVersions.ROM' | translate}}</span>
+                          <span class="game-version-value font-monospace">{{version.effective.romVersion}}</span>
+                          @if (version.source.romVersion !== version.source.dataVersion) {
+                            <span class="game-version-source-per-value">
+                              {{gameVersionSourceKey(version.source.romVersion) | translate}}
+                            </span>
+                          }
+                        </div>
+                        <div class="game-version-row">
+                          <span class="game-version-label">{{'KeychipPage.GameVersions.Data' | translate}}</span>
+                          <span class="game-version-value font-monospace">{{version.effective.dataVersion}}</span>
+                          @if (version.source.romVersion !== version.source.dataVersion) {
+                            <span class="game-version-source-per-value">
+                              {{gameVersionSourceKey(version.source.dataVersion) | translate}}
+                            </span>
+                          }
+                        </div>
                       </div>
                       @if (version.source.romVersion === version.source.dataVersion) {
                         <div class="game-version-source-combined">
@@ -233,11 +235,13 @@
   @if (gameVersionEditor; as editor) {
     <div class="game-version-modal">
       <div class="modal-header">
-        <h4 class="modal-title">
+        <h4 id="keychipGameVersionModalTitle" class="modal-title">
           {{('KeychipPage.GameVersions.' + editor.version.game) | translate}}
           · {{'KeychipPage.GameVersions.title' | translate}}
         </h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+        <button type="button" class="btn-close"
+          [attr.aria-label]="'KeychipPage.GameVersions.Close' | translate"
+          (click)="modal.dismiss()"></button>
       </div>
       <form [formGroup]="gameVersionForm" (ngSubmit)="saveGameVersion(modal)">
         <div class="modal-body">
@@ -266,9 +270,12 @@
                   {{'KeychipPage.GameVersions.ROM' | translate}}
                 </label>
                 <input id="manualRomVersion" class="form-control font-monospace" type="text"
-                  formControlName="romVersion" required autocomplete="off">
+                  formControlName="romVersion" required autocomplete="off"
+                  [attr.aria-invalid]="gameVersionForm.controls.romVersion.touched && gameVersionForm.controls.romVersion.invalid"
+                  [attr.aria-describedby]="gameVersionForm.controls.romVersion.touched && gameVersionForm.controls.romVersion.invalid
+                    ? 'manualRomVersionError' : null">
                 @if (gameVersionForm.controls.romVersion.touched && gameVersionForm.controls.romVersion.invalid) {
-                  <div class="invalid-feedback d-block game-version-format-error">
+                  <div id="manualRomVersionError" class="invalid-feedback d-block game-version-format-error" role="alert">
                     {{'KeychipPage.GameVersions.VersionFormat' | translate}}
                   </div>
                 }
@@ -278,9 +285,12 @@
                   {{'KeychipPage.GameVersions.Data' | translate}}
                 </label>
                 <input id="manualDataVersion" class="form-control font-monospace" type="text"
-                  formControlName="dataVersion" required autocomplete="off">
+                  formControlName="dataVersion" required autocomplete="off"
+                  [attr.aria-invalid]="gameVersionForm.controls.dataVersion.touched && gameVersionForm.controls.dataVersion.invalid"
+                  [attr.aria-describedby]="gameVersionForm.controls.dataVersion.touched && gameVersionForm.controls.dataVersion.invalid
+                    ? 'manualDataVersionError' : null">
                 @if (gameVersionForm.controls.dataVersion.touched && gameVersionForm.controls.dataVersion.invalid) {
-                  <div class="invalid-feedback d-block game-version-format-error">
+                  <div id="manualDataVersionError" class="invalid-feedback d-block game-version-format-error" role="alert">
                     {{'KeychipPage.GameVersions.VersionFormat' | translate}}
                   </div>
                 }
@@ -300,7 +310,7 @@
           <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
             {{'KeychipPage.GameVersions.Cancel' | translate}}
           </button>
-          <button type="submit" class="btn btn-primary" [disabled]="gameVersionForm.invalid">
+          <button type="submit" class="btn btn-primary">
             {{'KeychipPage.GameVersions.Save' | translate}}
           </button>
         </div>
