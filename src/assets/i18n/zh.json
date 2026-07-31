@@ -320,6 +320,7 @@
       "ObservedSource": "游戏上报",
       "DefaultSource": "服务器默认",
       "Edit": "编辑",
+      "EditGame": "编辑{{game}}版本",
       "VersionFormat": "请使用 X.XX.XX 格式，且只能包含数字。",
       "Save": "保存",
       "Cancel": "取消",

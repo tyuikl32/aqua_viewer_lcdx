@@ -68,6 +68,9 @@
                       <div class="game-version-heading">
                         <strong>{{('KeychipPage.GameVersions.' + version.game) | translate}}</strong>
                         <button type="button" class="btn btn-sm btn-outline-primary game-version-edit"
+                          [attr.aria-label]="'KeychipPage.GameVersions.EditGame' | translate: {
+                            game: ('KeychipPage.GameVersions.' + version.game | translate)
+                          }"
                           (click)="openGameVersionEditor(keychip, version, gameVersionModal)">
                           {{'KeychipPage.GameVersions.Edit' | translate}}
                         </button>
@@ -241,6 +244,7 @@
         </h4>
         <button type="button" class="btn-close"
           [attr.aria-label]="'KeychipPage.GameVersions.Close' | translate"
+          [disabled]="gameVersionMutationPending"
           (click)="modal.dismiss()"></button>
       </div>
       <form [formGroup]="gameVersionForm" (ngSubmit)="saveGameVersion(modal)">
@@ -301,16 +305,18 @@
         <div class="modal-footer game-version-actions">
           @if (editor.version.manual.romVersion !== null && editor.version.manual.dataVersion !== null) {
             <button type="button" class="btn btn-danger me-auto game-version-restore"
+              [disabled]="gameVersionMutationPending"
               (click)="requestClearGameVersion(modal)">
               {{(restoreConfirmationPending
                 ? 'KeychipPage.GameVersions.RestoreConfirm'
                 : 'KeychipPage.GameVersions.RestoreAutomatic') | translate}}
             </button>
           }
-          <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">
+          <button type="button" class="btn btn-secondary"
+            [disabled]="gameVersionMutationPending" (click)="modal.dismiss()">
             {{'KeychipPage.GameVersions.Cancel' | translate}}
           </button>
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" class="btn btn-primary" [disabled]="gameVersionMutationPending">
             {{'KeychipPage.GameVersions.Save' | translate}}
           </button>
         </div>

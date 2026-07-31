@@ -317,6 +317,7 @@
       "ObservedSource": "Observed",
       "DefaultSource": "Server default",
       "Edit": "Edit",
+      "EditGame": "Edit {{game}} versions",
       "VersionFormat": "Use the exact format X.XX.XX (digits only).",
       "Save": "Save",
       "Cancel": "Cancel",

@@ -4,10 +4,10 @@ import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
 import {ReactiveFormsModule} from '@angular/forms';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal, NgbModalOptions, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 import {provideTranslateService, TranslatePipe, TranslateService} from '@ngx-translate/core';
-import {of, throwError} from 'rxjs';
+import {of, Subject, throwError} from 'rxjs';
 
 import {ApiService} from '../api.service';
 import {MessageService} from '../message.service';
@@ -145,6 +145,107 @@ describe('KeychipComponent game versions', () => {
     component.saveGameVersion(modal.ref);
 
     expect(api.put).not.toHaveBeenCalled();
+  });
+
+  it('allows only one mutation while a PUT is pending', () => {
+    const response = new Subject<unknown>();
+    component.openGameVersionEditor(keychip, chusan, template());
+    api.put.and.returnValue(response);
+
+    component.saveGameVersion(modal.ref);
+    component.saveGameVersion(modal.ref);
+    component.clearGameVersion(modal.ref);
+
+    expect(api.put).toHaveBeenCalledTimes(1);
+    expect(api.delete).not.toHaveBeenCalled();
+    expect(component.gameVersionMutationPending).toBeTrue();
+
+    response.next({status: {code: StatusCode.BAD_REQUEST}});
+    expect(component.gameVersionMutationPending).toBeFalse();
+  });
+
+  it('allows only one DELETE while restore is pending', () => {
+    const response = new Subject<unknown>();
+    component.openGameVersionEditor(keychip, chusan, template());
+    api.delete.and.returnValue(response);
+
+    component.clearGameVersion(modal.ref);
+    component.clearGameVersion(modal.ref);
+    component.saveGameVersion(modal.ref);
+
+    expect(api.delete).toHaveBeenCalledTimes(1);
+    expect(api.put).not.toHaveBeenCalled();
+    expect(component.gameVersionMutationPending).toBeTrue();
+
+    response.error(new Error('network'));
+    expect(component.gameVersionMutationPending).toBeFalse();
+  });
+
+  it('blocks dismiss while pending and allows it again after the request settles', () => {
+    const response = new Subject<unknown>();
+    component.openGameVersionEditor(keychip, chusan, template());
+    const options = modalService.open.calls.mostRecent().args[1] as NgbModalOptions;
+    api.put.and.returnValue(response);
+
+    component.saveGameVersion(modal.ref);
+
+    expect(options.beforeDismiss?.()).toBeFalse();
+    response.next({status: {code: StatusCode.BAD_REQUEST}});
+    expect(options.beforeDismiss?.()).toBeTrue();
+  });
+
+  it('clears pending when the captured modal session settles', async () => {
+    const response = new Subject<unknown>();
+    component.openGameVersionEditor(keychip, chusan, template());
+    api.put.and.returnValue(response);
+    component.saveGameVersion(modal.ref);
+
+    modal.dismiss('forced teardown');
+    await modal.settled;
+
+    expect(component.gameVersionEditor).toBeNull();
+    expect(component.gameVersionMutationPending).toBeFalse();
+  });
+
+  it('ignores an old session response without changing or closing the new session', async () => {
+    const firstResponse = new Subject<unknown>();
+    const secondResponse = new Subject<unknown>();
+    const secondModal = createModal();
+    const updatedChusan = versionEntry('CHUSAN', {
+      observed: chusan.observed,
+      manual: {romVersion: '2.41.01', dataVersion: '2.41.00'},
+      effective: {romVersion: '2.41.01', dataVersion: '2.41.00'},
+      source: {romVersion: 'MANUAL', dataVersion: 'MANUAL'}
+    });
+    const updatedOngeki = versionEntry('ONGEKI', {
+      observed: ongeki.observed,
+      manual: {romVersion: '1.44.00', dataVersion: '1.44.00'},
+      effective: {romVersion: '1.44.00', dataVersion: '1.44.00'},
+      source: {romVersion: 'MANUAL', dataVersion: 'MANUAL'}
+    });
+    api.put.and.returnValues(firstResponse, secondResponse);
+
+    component.openGameVersionEditor(keychip, chusan, template());
+    component.saveGameVersion(modal.ref);
+    modal.dismiss('forced teardown');
+    await modal.settled;
+
+    modalService.open.and.returnValue(secondModal.ref);
+    component.openGameVersionEditor(keychip, ongeki, template());
+    component.saveGameVersion(secondModal.ref);
+    expect(component.gameVersionMutationPending).toBeTrue();
+
+    firstResponse.next({status: {code: StatusCode.OK}, data: updatedChusan});
+
+    expect(keychip.gameVersions).toEqual([chusan, ongeki]);
+    expect(messages.notice).not.toHaveBeenCalled();
+    expect(secondModal.close).not.toHaveBeenCalled();
+    expect(component.gameVersionEditor).toEqual({keychip, version: ongeki});
+    expect(component.gameVersionMutationPending).toBeTrue();
+
+    secondResponse.next({status: {code: StatusCode.OK}, data: updatedOngeki});
+    expect(keychip.gameVersions).toEqual([chusan, updatedOngeki]);
+    expect(component.gameVersionMutationPending).toBeFalse();
   });
 
   it('uses one editor context for the PUT target and replaces only that game entry', () => {
@@ -325,6 +426,7 @@ describe('KeychipComponent game versions', () => {
       'danger'
     );
     expect(modal.close).not.toHaveBeenCalled();
+    expect(component.gameVersionMutationPending).toBeFalse();
   }
 });
 
@@ -351,6 +453,18 @@ describe('KeychipComponent game version UI', () => {
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
+
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('en', {
+      KeychipPage: {
+        GameVersions: {
+          CHUSAN: 'CHUSAN',
+          ONGEKI: 'ONGEKI',
+          EditGame: 'Edit {{game}} versions'
+        }
+      }
+    });
+    translate.use('en');
 
     fixture = TestBed.createComponent(KeychipComponent);
     component = fixture.componentInstance;
@@ -429,6 +543,13 @@ describe('KeychipComponent game version UI', () => {
     expect(close.getAttribute('aria-label')).toBe('KeychipPage.GameVersions.Close');
   });
 
+  it('gives each edit action an accessible name containing its game', () => {
+    const editButtons = fixture.nativeElement.querySelectorAll('.game-version-edit');
+
+    expect(editButtons[0].getAttribute('aria-label')).toContain('CHUSAN');
+    expect(editButtons[1].getAttribute('aria-label')).toContain('ONGEKI');
+  });
+
   it('shows an inline exact-format error for an invalid manual version', () => {
     click('.game-version-edit');
     component.gameVersionForm.controls.romVersion.setValue('2.4.1');
@@ -497,6 +618,53 @@ describe('KeychipComponent game version UI', () => {
     await fixture.whenStable();
     expect((component as unknown as {restoreConfirmationPending: boolean}).restoreConfirmationPending)
       .toBeFalse();
+  });
+
+  it('disables close, cancel, save, and restore while a save is pending and restores them on error', () => {
+    const response = new Subject<unknown>();
+    api.put.and.returnValue(response);
+    click('.game-version-edit');
+    fixture.detectChanges();
+    const modal = activeModal();
+
+    (modal.querySelector('button[type="submit"]') as HTMLButtonElement).click();
+    fixture.detectChanges();
+
+    const selectors = [
+      '.modal-header .btn-close',
+      '.modal-footer .btn-secondary',
+      '.modal-footer button[type="submit"]',
+      '.game-version-restore'
+    ];
+    selectors.forEach(selector => {
+      expect((modal.querySelector(selector) as HTMLButtonElement).disabled).toBeTrue();
+    });
+
+    response.error(new Error('network'));
+    fixture.detectChanges();
+    selectors.forEach(selector => {
+      expect((modal.querySelector(selector) as HTMLButtonElement).disabled).toBeFalse();
+    });
+  });
+
+  it('disables the restore confirmation action while DELETE is pending', () => {
+    const response = new Subject<unknown>();
+    api.delete.and.returnValue(response);
+    click('.game-version-edit');
+    fixture.detectChanges();
+    const restore = activeModal().querySelector('.game-version-restore') as HTMLButtonElement;
+
+    restore.click();
+    fixture.detectChanges();
+    expect(restore.textContent).toContain('KeychipPage.GameVersions.RestoreConfirm');
+
+    restore.click();
+    fixture.detectChanges();
+    expect(restore.disabled).toBeTrue();
+
+    response.next({status: {code: StatusCode.BAD_REQUEST}});
+    fixture.detectChanges();
+    expect(restore.disabled).toBeFalse();
   });
 
   it('provides scoped readable-color hooks for labels, values, and actions', () => {

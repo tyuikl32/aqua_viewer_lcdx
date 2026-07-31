@@ -30,6 +30,12 @@ export class KeychipComponent implements OnInit {
   }>;
   gameVersionEditor: GameVersionEditor | null = null;
   restoreConfirmationPending = false;
+  private pendingGameVersionEditor: GameVersionEditor | null = null;
+
+  get gameVersionMutationPending(): boolean {
+    return this.gameVersionEditor !== null &&
+      this.pendingGameVersionEditor === this.gameVersionEditor;
+  }
 
   constructor(
     private fb: FormBuilder,
@@ -256,13 +262,17 @@ export class KeychipComponent implements OnInit {
     });
     const modal = this.modalService.open(modalTemplate, {
       centered: true,
-      ariaLabelledBy: 'keychipGameVersionModalTitle'
+      ariaLabelledBy: 'keychipGameVersionModalTitle',
+      beforeDismiss: () => this.pendingGameVersionEditor !== editor
     });
     const clearEditor = () => {
       if (this.gameVersionEditor === editor) {
         this.gameVersionEditor = null;
+        if (this.pendingGameVersionEditor === editor) {
+          this.pendingGameVersionEditor = null;
+        }
+        this.restoreConfirmationPending = false;
       }
-      this.restoreConfirmationPending = false;
     };
     void modal.result.then(clearEditor, clearEditor);
     return modal;
@@ -270,35 +280,45 @@ export class KeychipComponent implements OnInit {
 
   saveGameVersion(modal: NgbModalRef) {
     const editor = this.gameVersionEditor;
-    if (this.gameVersionForm.invalid || !editor) {
+    if (!editor || this.pendingGameVersionEditor === editor) {
+      return;
+    }
+    if (this.gameVersionForm.invalid) {
       this.gameVersionForm.markAllAsTouched();
       return;
     }
+    this.pendingGameVersionEditor = editor;
     const path = this.gameVersionPath(editor);
     this.api.put(path, this.gameVersionForm.getRawValue()).subscribe({
       next: resp => this.handleMutationResponse(
         resp, editor, modal,
         'KeychipPage.GameVersions.SaveSuccess',
         'KeychipPage.GameVersions.SaveFailed'),
-      error: () => this.noticeTranslated('KeychipPage.GameVersions.SaveFailed', 'danger')
+      error: () => this.handleMutationError(
+        editor, 'KeychipPage.GameVersions.SaveFailed')
     });
   }
 
   clearGameVersion(modal: NgbModalRef) {
     const editor = this.gameVersionEditor;
-    if (!editor) {
+    if (!editor || this.pendingGameVersionEditor === editor) {
       return;
     }
+    this.pendingGameVersionEditor = editor;
     this.api.delete(this.gameVersionPath(editor)).subscribe({
       next: resp => this.handleMutationResponse(
         resp, editor, modal,
         'KeychipPage.GameVersions.RestoreSuccess',
         'KeychipPage.GameVersions.RestoreFailed'),
-      error: () => this.noticeTranslated('KeychipPage.GameVersions.RestoreFailed', 'danger')
+      error: () => this.handleMutationError(
+        editor, 'KeychipPage.GameVersions.RestoreFailed')
     });
   }
 
   requestClearGameVersion(modal: NgbModalRef) {
+    if (this.gameVersionMutationPending) {
+      return;
+    }
     if (!this.restoreConfirmationPending) {
       this.restoreConfirmationPending = true;
       return;
@@ -327,6 +347,10 @@ export class KeychipComponent implements OnInit {
     successKey: string,
     failureKey: string
   ) {
+    if (!this.isCurrentMutation(editor)) {
+      return;
+    }
+    this.pendingGameVersionEditor = null;
     if (this.isRecord(response) &&
       this.isRecord(response.status) &&
       response.status.code === StatusCode.OK &&
@@ -337,6 +361,18 @@ export class KeychipComponent implements OnInit {
       return;
     }
     this.noticeTranslated(failureKey, 'danger');
+  }
+
+  private handleMutationError(editor: GameVersionEditor, failureKey: string) {
+    if (!this.isCurrentMutation(editor)) {
+      return;
+    }
+    this.pendingGameVersionEditor = null;
+    this.noticeTranslated(failureKey, 'danger');
+  }
+
+  private isCurrentMutation(editor: GameVersionEditor): boolean {
+    return this.gameVersionEditor === editor && this.pendingGameVersionEditor === editor;
   }
 
   private replaceGameVersion(keychip: Keychip, updated: KeychipGameVersion): boolean {
