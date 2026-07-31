@@ -6,6 +6,7 @@ import {MessageService} from '../message.service';
 import {SHA256, enc} from 'crypto-js';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Clipboard} from '@angular/cdk/clipboard';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-keychip',
@@ -21,13 +22,17 @@ export class KeychipComponent implements OnInit {
   trustKeychips: Keychip[];
   trustKeychipForm: FormGroup;
   renameForm: FormGroup;
+  gameVersionForm: FormGroup;
+  selectedKeychip: Keychip | null = null;
+  selectedGameVersion: KeychipGameVersion | null = null;
 
   constructor(
     private fb: FormBuilder,
     private messageService: MessageService,
     protected modalService: NgbModal,
     private api: ApiService,
-    protected clipboard: Clipboard) {
+    protected clipboard: Clipboard,
+    private translate: TranslateService) {
   }
 
   ngOnInit() {
@@ -41,6 +46,14 @@ export class KeychipComponent implements OnInit {
       name: ['', [
         Validators.required,
         Validators.maxLength(20)]]
+    });
+    this.gameVersionForm = this.fb.group({
+      romVersion: ['', [
+        Validators.required,
+        Validators.pattern(/^[0-9]+\.[0-9]{2}\.[0-9]{2}$/)]],
+      dataVersion: ['', [
+        Validators.required,
+        Validators.pattern(/^[0-9]+\.[0-9]{2}\.[0-9]{2}$/)]]
     });
     this.loadKeychip();
     this.loadTrustedKeychip();
@@ -221,6 +234,82 @@ export class KeychipComponent implements OnInit {
     modal.dismiss();
   }
 
+  openGameVersionEditor(keychip: Keychip, version: KeychipGameVersion, modalTemplate) {
+    this.selectedKeychip = keychip;
+    this.selectedGameVersion = version;
+    const pair = version.manual.romVersion !== null && version.manual.dataVersion !== null
+      ? version.manual
+      : version.effective;
+    this.gameVersionForm.setValue({
+      romVersion: pair.romVersion,
+      dataVersion: pair.dataVersion
+    });
+    this.modalService.open(modalTemplate, {centered: true});
+  }
+
+  saveGameVersion(keychip: Keychip, modal) {
+    if (this.gameVersionForm.invalid || !this.selectedGameVersion) {
+      return;
+    }
+    const body = {
+      romVersion: this.gameVersionForm.value.romVersion,
+      dataVersion: this.gameVersionForm.value.dataVersion
+    };
+    const path = this.gameVersionPath(keychip, this.selectedGameVersion);
+    this.api.put(path, body).subscribe({
+      next: resp => {
+        if (resp?.status?.code === StatusCode.OK && resp.data) {
+          this.replaceGameVersion(keychip, resp.data);
+          this.noticeTranslated('KeychipPage.GameVersions.SaveSuccess', 'success');
+          modal.close();
+        } else {
+          this.noticeTranslated('KeychipPage.GameVersions.SaveFailed', 'danger');
+        }
+      },
+      error: () => this.noticeTranslated('KeychipPage.GameVersions.SaveFailed', 'danger')
+    });
+  }
+
+  clearGameVersion(keychip: Keychip, version: KeychipGameVersion, modal) {
+    this.api.delete(this.gameVersionPath(keychip, version)).subscribe({
+      next: resp => {
+        if (resp?.status?.code === StatusCode.OK && resp.data) {
+          this.replaceGameVersion(keychip, resp.data);
+          this.noticeTranslated('KeychipPage.GameVersions.RestoreSuccess', 'success');
+          modal.close();
+        } else {
+          this.noticeTranslated('KeychipPage.GameVersions.RestoreFailed', 'danger');
+        }
+      },
+      error: () => this.noticeTranslated('KeychipPage.GameVersions.RestoreFailed', 'danger')
+    });
+  }
+
+  gameVersionSourceKey(source: GameVersionSource): string {
+    const keys: Record<GameVersionSource, string> = {
+      MANUAL: 'KeychipPage.GameVersions.ManualSource',
+      OBSERVED: 'KeychipPage.GameVersions.ObservedSource',
+      DEFAULT: 'KeychipPage.GameVersions.DefaultSource'
+    };
+    return keys[source];
+  }
+
+  private gameVersionPath(keychip: Keychip, version: KeychipGameVersion): string {
+    const keychipId = encodeURIComponent(keychip.keychipId.shortValue);
+    return `api/user/keychip/${keychipId}/game-version/${version.game.toUpperCase()}`;
+  }
+
+  private replaceGameVersion(keychip: Keychip, updated: KeychipGameVersion) {
+    const index = keychip.gameVersions?.findIndex(version => version.game === updated.game) ?? -1;
+    if (index >= 0) {
+      keychip.gameVersions[index] = updated;
+    }
+  }
+
+  private noticeTranslated(key: string, color: 'danger' | 'success') {
+    this.messageService.notice(this.translate.instant(key), color);
+  }
+
   mapKeychip(keychip){
     keychip.keychipId = new KeychipId(keychip.keychipId);
     return keychip;
@@ -244,6 +333,25 @@ export interface Keychip {
   placeName: string;
   whiteListed: boolean;
   user: {id: number, name: string};
+  gameVersions?: KeychipGameVersion[];
+}
+
+export type GameVersionSource = 'MANUAL' | 'OBSERVED' | 'DEFAULT';
+
+export interface GameVersionPair {
+  romVersion: string | null;
+  dataVersion: string | null;
+}
+
+export interface KeychipGameVersion {
+  game: 'CHUSAN' | 'ONGEKI';
+  observed: GameVersionPair;
+  manual: GameVersionPair;
+  effective: GameVersionPair;
+  source: {
+    romVersion: GameVersionSource;
+    dataVersion: GameVersionSource;
+  };
 }
 
 export class KeychipId {
