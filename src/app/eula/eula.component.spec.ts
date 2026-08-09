@@ -1,6 +1,7 @@
 import {CommonModule} from '@angular/common';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {Router} from '@angular/router';
+import {routes} from '../app-routing.module';
 import {AccountAccessService, EulaDocument} from '../auth/account-access.service';
 import {AuthenticationService} from '../auth/authentication.service';
 import {UserService} from '../user.service';
@@ -51,6 +52,10 @@ describe('EulaComponent', () => {
 
     expect(fixture.nativeElement.textContent).toContain(currentEula.title);
     expect(fixture.nativeElement.textContent).toContain('协议正文');
+    const content = fixture.nativeElement.querySelector('.eula-content');
+    const actions = fixture.nativeElement.querySelector('.eula-actions');
+    expect(content.compareDocumentPosition(actions) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(getComputedStyle(actions).position).toBe('static');
   });
 
   it('shows a retry action when the EULA cannot be loaded', async () => {
@@ -63,5 +68,13 @@ describe('EulaComponent', () => {
 
     expect(fixture.nativeElement.textContent).toContain('无法加载最终用户许可协议');
     expect(fixture.nativeElement.querySelector('button').textContent).toContain('重新加载');
+  });
+
+  it('keeps access restriction pages in the standard site shell without the sidebar', () => {
+    for (const path of ['eula', 'banned']) {
+      const route = routes.find(candidate => candidate.path === path);
+      expect(route?.data?.['disableSidebar']).toBeTrue();
+      expect(route?.data?.['accessLayout']).not.toBeTrue();
+    }
   });
 });

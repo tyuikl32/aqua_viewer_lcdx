@@ -20,7 +20,7 @@ import {AdminComponent} from './admin/admin.component';
 import {EulaComponent} from './eula/eula.component';
 import {BannedComponent} from './banned/banned.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   {path: '', component: HomeComponent, data: {title: 'Home', disableSidebar: true }},
   {path: 'profile', component: ProfileComponent, canActivate: [AuthGuardService], data: {title: 'Profile'}},
   {path: 'cards', component: CardsComponent, canActivate: [AuthGuardService], data: {title: 'Cards'}},
@@ -37,8 +37,8 @@ const routes: Routes = [
   {path: 'sign-in', component: SignInComponent, canActivate: [LoginGuardService], data: {title: 'SignIn', disableSidebar: true }},
   {path: 'sign-up', component: SignUpComponent, canActivate: [LoginGuardService], data: {title: 'SignUp', disableSidebar: true }},
   {path: 'password-reset', component: PasswordResetComponent, canActivate: [LoginGuardService], data: {title: 'ResetPassword', disableSidebar: true }},
-  {path: 'eula', component: EulaComponent, data: {title: 'EULA', disableSidebar: true, accessLayout: true}},
-  {path: 'banned', component: BannedComponent, data: {title: 'Account Banned', disableSidebar: true, accessLayout: true}},
+  {path: 'eula', component: EulaComponent, data: {title: 'EULA', disableSidebar: true}},
+  {path: 'banned', component: BannedComponent, data: {title: 'Account Banned', disableSidebar: true}},
   {path: 'admin', component: AdminComponent, canActivate: [AuthGuardService], data: {title: 'Admin'}},
   {path: 'not-found', component: NotFoundComponent, data: {title: 'NotFound', disableSidebar: true }},
   {path: '**', redirectTo: '/not-found'}

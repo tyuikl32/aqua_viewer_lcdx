@@ -13,7 +13,7 @@
         <h1>{{ document.title }}</h1>
         <p class="text-secondary">版本 {{ document.version }} · 发布于 {{ document.publishedAt | date:'yyyy-MM-dd HH:mm' }}</p>
         <article class="eula-content" [innerHTML]="html()"></article>
-        <div class="d-flex gap-2 mt-4 sticky-actions">
+        <div class="d-flex gap-2 mt-4 eula-actions">
           <button class="btn btn-primary" [disabled]="accepting()" (click)="accept()">同意并继续</button>
           <button class="btn btn-outline-secondary" (click)="logout()">退出登录</button>
         </div>

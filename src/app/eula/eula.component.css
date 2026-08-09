@@ -1,3 +1,3 @@
 .access-page .card, .access-page .alert { max-width: 900px; }
 .eula-content { line-height: 1.75; }
-.sticky-actions { position: sticky; bottom: 1rem; padding: .75rem; background: var(--bs-body-bg); border-top: 1px solid var(--bs-border-color); }
+.eula-actions { padding-top: .75rem; border-top: 1px solid var(--bs-border-color); }
