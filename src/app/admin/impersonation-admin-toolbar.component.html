@@ -1,0 +1,21 @@
+@if (impersonation.active && impersonation.adminContext) {
+  <aside class="admin-toolbar shadow-sm p-2">
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      <strong>管理员工具 · {{ impersonation.adminContext.target }}</strong>
+      <input class="form-control form-control-sm field" placeholder="ExtId" [(ngModel)]="extId">
+      <button class="btn btn-sm btn-outline-primary" (click)="run('bind-card-by-ext-id', {extId: +extId})">绑定</button>
+      <button class="btn btn-sm btn-outline-danger" (click)="run('unbind-card-by-ext-id', {extId: +extId})">解绑</button>
+      <button class="btn btn-sm btn-outline-primary" (click)="run('set-default-card', {extId: +extId})">设默认</button>
+      <input class="form-control form-control-sm field-wide" placeholder="外部 Access Code" [(ngModel)]="externalLuid">
+      <button class="btn btn-sm btn-outline-danger" (click)="run('remove-external-code', {extId: +extId, luid: externalLuid})">删除外部码</button>
+      <select class="form-select form-select-sm field" [(ngModel)]="game"><option>CHUSAN</option><option>MAIMAI2</option><option>ONGEKI</option></select>
+      <select class="form-select form-select-sm state" [(ngModel)]="status"><option [ngValue]="0">0</option><option [ngValue]="1">1</option><option [ngValue]="2">2</option></select>
+      <button class="btn btn-sm btn-outline-primary" (click)="run('set-game-ban-state', {game, extId: +extId, status})">设游戏状态</button>
+      <button class="btn btn-sm btn-outline-secondary" (click)="refresh()">刷新</button>
+    </div>
+    @if (data?.account?.cards) {
+      <div class="small mt-1">卡片：@for (card of data.account.cards; track card.extId) { <span class="me-2">{{ card.extId }} [C {{card.chusanBanState ?? '-'}} / M {{card.maimai2BanState ?? '-'}} / O {{card.ongekiBanState ?? '-'}}]</span> }</div>
+    }
+    @if (message) { <div class="small">{{ message }}</div> }
+  </aside>
+}

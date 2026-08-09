@@ -1,5 +1,5 @@
 import {TranslateService} from '@ngx-translate/core';
-import {Component, OnDestroy, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnDestroy, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormGroup, ValidatorFn, Validators} from '@angular/forms';
 import {first, take} from 'rxjs/operators';
 import {MessageService} from '../message.service';
@@ -8,6 +8,9 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {interval, Subscription} from 'rxjs';
 import {StatusCode} from '../status-code';
 import {OAuthService} from '../auth/oauth.service';
+import {AccountAccessService, EulaDocument} from '../auth/account-access.service';
+import {marked} from 'marked';
+import DOMPurify from 'dompurify';
 
 @Component({
     selector: 'app-sign-up',
@@ -16,7 +19,7 @@ import {OAuthService} from '../auth/oauth.service';
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
-export class SignUpComponent implements OnDestroy {
+export class SignUpComponent implements OnDestroy, OnInit {
   signUpForm: FormGroup;
   getVerifyCodeForm: FormGroup;
   isButtonDisabled = false;
@@ -25,6 +28,8 @@ export class SignUpComponent implements OnDestroy {
   token: string;
   type: string;
   providers: string[];
+  eula: EulaDocument;
+  eulaHtml = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -33,7 +38,8 @@ export class SignUpComponent implements OnDestroy {
     private messageService: MessageService,
     public router: Router,
     private translate: TranslateService,
-    protected oauth: OAuthService) {
+    protected oauth: OAuthService,
+    private accountAccess: AccountAccessService) {
       this.providers = [...this.oauth.tokenTypes.keys()];
       this.initForm();
       const state = this.router.getCurrentNavigation().extras.state;
@@ -47,6 +53,11 @@ export class SignUpComponent implements OnDestroy {
         this.email.setValue(state.email);
         history.replaceState({}, document.title);
       }
+  }
+
+  async ngOnInit() {
+    this.eula = await this.accountAccess.currentEula();
+    this.eulaHtml = DOMPurify.sanitize(marked.parse(this.eula.content) as string);
   }
 
   private initForm(): void {
@@ -72,7 +83,8 @@ export class SignUpComponent implements OnDestroy {
         Validators.required,
         Validators.minLength(8),
         Validators.maxLength(100)]],
-      confirmPassword: ['']
+      confirmPassword: [''],
+      acceptEula: [false, Validators.requiredTrue]
     }, {validators: this.checkPasswords});
     this.getVerifyCodeForm = this.fb.group({
       email: ['', [
@@ -155,7 +167,7 @@ export class SignUpComponent implements OnDestroy {
     this.authenticationService.getVerifyCode(value).pipe(first())
       .subscribe(
         {
-          next: (resp) => {
+          next: async (resp) => {
             if (resp?.status) {
               const statusCode: StatusCode = resp.status.code;
               if (statusCode === StatusCode.OK){
@@ -271,10 +283,10 @@ export class SignUpComponent implements OnDestroy {
     this.signUpForm.disable();
     const value = this.signUpForm.value;
 
-    this.authenticationService.signUp(value.name, value.username, value.email, value.verifyCode, value.password, this.token).pipe(first())
+    this.authenticationService.signUp(value.name, value.username, value.email, value.verifyCode, value.password, this.token, this.eula.version).pipe(first())
       .subscribe(
         {
-          next: (resp) => {
+          next: async (resp) => {
             if (resp?.status) {
               const statusCode: StatusCode = resp.status.code;
               if (statusCode === StatusCode.OK){
@@ -297,6 +309,13 @@ export class SignUpComponent implements OnDestroy {
                 this.translate.get("SignUpPage.Messages.CodeIncorrect").subscribe((res: string) => {
                   this.messageService.notice(res, 'danger');
                 });
+                this.signUpForm.enable();
+              }
+              else if (statusCode === StatusCode.EULA_VERSION_INVALID) {
+                this.eula = await this.accountAccess.currentEula();
+                this.eulaHtml = DOMPurify.sanitize(marked.parse(this.eula.content) as string);
+                this.signUpForm.controls.acceptEula.setValue(false);
+                this.messageService.notice('协议已更新，请阅读并重新勾选同意。', 'warning');
                 this.signUpForm.enable();
               }
               else{

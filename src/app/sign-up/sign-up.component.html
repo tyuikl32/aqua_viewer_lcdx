@@ -140,6 +140,19 @@
                           }
                         </div>
                       </div>
+                      @if (eula) {
+                        <div class="border rounded p-2 my-2 fw-normal">
+                          <div class="fw-bold">{{ eula.title }}（版本 {{ eula.version }}）</div>
+                          <details class="my-2">
+                            <summary class="text-primary">查看协议正文</summary>
+                            <article class="p-2 small" [innerHTML]="eulaHtml"></article>
+                          </details>
+                          <label class="form-check">
+                            <input class="form-check-input" type="checkbox" formControlName="acceptEula">
+                            <span class="form-check-label">我已阅读并同意当前版本的最终用户许可协议</span>
+                          </label>
+                        </div>
+                      }
                       <button type="submit" class="btn btn-primary btn-sm my-2">{{'SignUpPage.SignUp' | translate}}</button>
                       <div class="fw-normal d-flex align-items-center justify-content-center">
                         {{'SignUpPage.SignInTip' | translate}}

@@ -6,6 +6,8 @@ import {environment} from '../../environments/environment';
 import {StatusCode} from '../status-code';
 import {UserService} from '../user.service';
 import {AccountService} from './account.service';
+import {AccountAccessService} from './account-access.service';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +16,9 @@ export class AuthenticationService {
   constructor(
     private accountService: AccountService,
     private http: HttpClient,
-    private userService: UserService
+    private userService: UserService,
+    private access: AccountAccessService,
+    private router: Router
 ) {
   }
 
@@ -62,8 +66,8 @@ export class AuthenticationService {
       mergeMap(this.procLoginResp));
   }
 
-  signUp(name: string, username: string, email: string, verifyCode: string, password: string, token: string) {
-    const params: any = {name, username, email, verifyCode, password};
+  signUp(name: string, username: string, email: string, verifyCode: string, password: string, token: string, eulaVersion: number) {
+    const params: any = {name, username, email, verifyCode, password, eulaVersion};
     if (token){
       params.oAuth2Token = token;
     }
@@ -83,11 +87,18 @@ export class AuthenticationService {
       return of(loginResp);
     }
     this.accountService.currentAccountValue = loginResp.data;
-    return this.userService.load(true).then(
-      resp => {
-        return resp;
+    return this.access.restore(true).then(async status => {
+      if (status?.banned) {
+        await this.router.navigate(['/banned']);
+        return loginResp;
       }
-    );
+      if (status?.eulaRequired) {
+        await this.router.navigate(['/eula']);
+        return loginResp;
+      }
+      await this.userService.load(true);
+      return loginResp;
+    });
   }
 
   resetPassword(emailAddress: string, verifyCode: string, password: string) {
@@ -155,6 +166,7 @@ export class AuthenticationService {
         map(resp => {
           this.accountService.clear();
           this.userService.clear();
+          this.access.clear();
           return resp;
         })
       );

@@ -13,7 +13,11 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateService} from '@ngx-translate/core';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {IMPERSONATION_KEY} from '../auth/account.service';
-import {IMPERSONATE_GRANT, IMPERSONATE_REQUEST} from '../auth/impersonation.service';
+import {IMPERSONATE_GRANT, IMPERSONATE_REQUEST, IMPERSONATE_ADMIN_REQUEST, IMPERSONATE_ADMIN_RESPONSE,
+  IMPERSONATION_ADMIN_CONTEXT_KEY, ImpersonationAdminAction} from '../auth/impersonation.service';
+import {isTrustedImpersonationAdminEnvelope} from '../auth/impersonation.service';
+import {marked} from 'marked';
+import DOMPurify from 'dompurify';
 
 @Component({
     selector: 'app-admin',
@@ -49,6 +53,12 @@ export class AdminComponent implements OnInit {
   private impersonateNonce: string = null;
   private impersonateAccount: any = null;
   private impersonateListener: (event: MessageEvent) => void = null;
+  private readonly impersonateActions: ImpersonationAdminAction[] = ['bind-card-by-ext-id', 'unbind-card-by-ext-id',
+    'set-default-card', 'remove-external-code', 'set-game-ban-state', 'refresh-admin-context'];
+  eulaCurrent: any = null;
+  eulaDraftTitle = '';
+  eulaDraftContent = '';
+  eulaPreview = '';
 
   constructor(
     private api: ApiService,
@@ -127,21 +137,25 @@ export class AdminComponent implements OnInit {
     this.impersonateUsername = username;
     this.impersonateAccount = account;
     // A fresh nonce tells the iframe to drop any earlier target's session
-    this.impersonateNonce = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    this.impersonateNonce = crypto.randomUUID();
     this.impersonateUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
       `${location.origin}/?imp=${this.impersonateNonce}`);
 
     // The iframe asks for the tokens once it has booted; storage cannot be used to
     // pass them because it is shared with this page
     this.impersonateListener = (event: MessageEvent) => {
-      if (event.origin !== location.origin
-        || event.data?.type !== IMPERSONATE_REQUEST
-        || event.data?.nonce !== this.impersonateNonce) {
+      const frame = document.querySelector('iframe.impersonation-frame') as HTMLIFrameElement;
+      if (event.origin !== location.origin || event.source !== frame?.contentWindow ||
+        event.data?.nonce !== this.impersonateNonce) {
         return;
       }
-      (event.source as Window)?.postMessage(
-        {type: IMPERSONATE_GRANT, nonce: this.impersonateNonce, account: this.impersonateAccount},
-        location.origin);
+      if (event.data?.type === IMPERSONATE_REQUEST) {
+        (event.source as Window)?.postMessage({type: IMPERSONATE_GRANT, nonce: this.impersonateNonce,
+          account: this.impersonateAccount, adminContext: {nonce: this.impersonateNonce,
+            target: this.impersonateUsername, actions: this.impersonateActions}}, location.origin);
+        return;
+      }
+      if (event.data?.type === IMPERSONATE_ADMIN_REQUEST) this.handleImpersonationAdminRequest(event);
     };
     window.addEventListener('message', this.impersonateListener);
 
@@ -159,6 +173,7 @@ export class AdminComponent implements OnInit {
     const frame = document.querySelector('iframe.impersonation-frame') as HTMLIFrameElement;
     try {
       frame?.contentWindow?.sessionStorage?.removeItem(IMPERSONATION_KEY);
+      frame?.contentWindow?.sessionStorage?.removeItem(IMPERSONATION_ADMIN_CONTEXT_KEY);
     } catch (e) {
       console.warn('could not clear impersonated session', e);
     }
@@ -171,6 +186,9 @@ export class AdminComponent implements OnInit {
         error: err => console.warn('could not revoke impersonated session', err)
       });
     }
+    // Invalidate source/nonce/target and remove the message listener before the
+    // modal begins closing, so a stale frame cannot race the close lifecycle.
+    this.endImpersonation();
     modal.close();
   }
 
@@ -224,16 +242,174 @@ export class AdminComponent implements OnInit {
   openUser(item: AdvancedUser, tpl: any) {
     this.selectedProfile = null;
     this.rawJson = null;
-    this.api.get(`api/admin/users/${item.user.username}`).subscribe({
+    this.api.get(`api/admin/accounts/${item.user.username}`).subscribe({
       next: resp => {
         const statusCode: StatusCode = resp?.status?.code;
         if ((statusCode === StatusCode.USER_FETCH_SUCCESS || statusCode === StatusCode.OK) && resp.data) {
-          this.selectedProfile = resp.data;
+          this.selectedProfile = {...resp.data.account, totpEnabled: resp.data.totpEnabled,
+            passkeys: resp.data.passkeys, oauthIdentities: resp.data.oauthIdentities, eulaStatus: resp.data.eulaStatus};
         }
       },
       error: () => {}
     });
     this.modalService.open(tpl, {centered: true, scrollable: true});
+  }
+
+  private handleImpersonationAdminRequest(event: MessageEvent) {
+    const message = event.data;
+    const action = message?.action as ImpersonationAdminAction;
+    const frame = document.querySelector('iframe.impersonation-frame') as HTMLIFrameElement;
+    if (!isTrustedImpersonationAdminEnvelope(event, frame?.contentWindow, this.impersonateNonce,
+      this.impersonateUsername, this.impersonateActions) || !this.validAdminPayload(action, message.payload)) return;
+    const target = this.impersonateUsername;
+    const p = message.payload || {};
+    let request: any;
+    switch (action) {
+      case 'bind-card-by-ext-id':
+        request = this.api.post('api/admin/bindCardViaExtId', {userName: target, extId: p.extId}); break;
+      case 'unbind-card-by-ext-id':
+        request = this.api.delete(`api/admin/accounts/${target}/cards/${p.extId}`); break;
+      case 'set-default-card':
+        request = this.api.put(`api/admin/accounts/${target}/cards/${p.extId}/default`, {}); break;
+      case 'remove-external-code':
+        request = this.api.delete(`api/admin/accounts/${target}/cards/${p.extId}/external/${encodeURIComponent(p.luid)}`); break;
+      case 'set-game-ban-state':
+        request = this.api.put(`api/admin/accounts/${target}/games/${p.game}/${p.extId}/ban-state`, {status: p.status}); break;
+      case 'refresh-admin-context':
+        request = this.api.get(`api/admin/accounts/${target}`); break;
+    }
+    request.subscribe({
+      next: resp => {
+        const ok = resp?.status?.code === StatusCode.OK;
+        this.replyImpersonation(event.source as Window, message, ok, resp?.data,
+          ok ? undefined : (resp?.status?.message || 'Admin action failed'));
+      },
+      error: error => this.replyImpersonation(event.source as Window, message, false, null, String(error))
+    });
+  }
+
+  private validAdminPayload(action: ImpersonationAdminAction, payload: any) {
+    if (action === 'refresh-admin-context') return payload && Object.keys(payload).length === 0;
+    if (!payload || !Number.isSafeInteger(payload.extId) || payload.extId < 0) return false;
+    if (action === 'remove-external-code') return Object.keys(payload).sort().join(',') === 'extId,luid' &&
+      typeof payload.luid === 'string' && payload.luid.length === 20;
+    if (action === 'set-game-ban-state') return Object.keys(payload).sort().join(',') === 'extId,game,status' &&
+      ['CHUSAN', 'MAIMAI2', 'ONGEKI'].includes(payload.game) && Number.isInteger(payload.status) &&
+      payload.status >= 0 && payload.status <= 2;
+    return Object.keys(payload).length === 1;
+  }
+
+  private replyImpersonation(target: Window, request: any, ok: boolean, data?: any, error?: string) {
+    if (!this.impersonateNonce || request.nonce !== this.impersonateNonce || request.target !== this.impersonateUsername) return;
+    target.postMessage({type: IMPERSONATE_ADMIN_RESPONSE, nonce: this.impersonateNonce,
+      target: this.impersonateUsername, requestId: request.requestId, ok, data, error}, location.origin);
+  }
+
+  isAdminTarget(item: AdvancedUser) {
+    return (item.user.roles || []).some(role => role.name === 'ROLE_ADMIN');
+  }
+
+  isBanned(item: AdvancedUser) {
+    return !(item.user.roles || []).some(role => role.name === 'ROLE_USER');
+  }
+
+  setAccountBan(item: AdvancedUser, banned: boolean) {
+    const warning = banned
+      ? `封禁 ${item.user.username}？其现有 Chusan、Maimai2、Ongeki 档案会设为 2，所有 refresh 会话会撤销。`
+      : `解除 ${item.user.username} 的面板封禁？游戏封禁值不会自动恢复。`;
+    if (!confirm(warning)) return;
+    this.api.post(`api/admin/accounts/${item.user.username}/${banned ? 'ban' : 'unban'}`, {}).subscribe({
+      next: resp => { this.messageService.notice(resp?.status?.message); this.refresh(); },
+      error: err => this.messageService.notice(err, 'warning')
+    });
+  }
+
+  setGameBan(username: string, game: string, extId: number, status: string) {
+    this.api.put(`api/admin/accounts/${username}/games/${game}/${extId}/ban-state`, {status: Number(status)}).subscribe({
+      next: resp => {
+        this.messageService.notice(resp?.status?.message);
+        this.refresh();
+        if (resp?.status?.code === StatusCode.OK && this.selectedProfile?.username === username) this.openSupport(username);
+      },
+      error: err => this.messageService.notice(err, 'warning')
+    });
+  }
+
+  deleteGameSave(username: string, game: string, extId: number) {
+    const confirmation = prompt(`不可恢复：删除 ${username} / ${extId} / ${game} 的完整游戏存档。下次游玩会创建全新档案。\n请输入完整 ExtId 确认：`);
+    if (confirmation !== String(extId)) return;
+    this.api.delete(`api/admin/accounts/${username}/games/${game}/${extId}`, {confirmExtId: String(extId)} as any).subscribe({
+      next: resp => {
+        this.messageService.notice(resp?.status?.message);
+        this.refresh();
+        if (resp?.status?.code === StatusCode.OK && this.selectedProfile?.username === username) this.openSupport(username);
+      },
+      error: err => this.messageService.notice(err, 'warning')
+    });
+  }
+
+  revokeSessions(username: string) {
+    if (!confirm(`撤销 ${username} 的全部 refresh 会话？现有 access token 最多约 5 分钟后失效。`)) return;
+    this.api.post(`api/admin/accounts/${username}/sessions/revoke`, {}).subscribe(resp => this.messageService.notice(resp?.status?.message));
+  }
+
+  deletePasskey(username: string, id: number) {
+    if (!confirm('删除此 Passkey 并撤销该用户全部 refresh 会话？')) return;
+    this.api.delete(`api/admin/accounts/${username}/passkeys/${id}`).subscribe(() => this.openSupport(username));
+  }
+
+  deleteOauth(username: string, id: number) {
+    if (!confirm('解绑此 OAuth identity 并撤销该用户全部 refresh 会话？')) return;
+    this.api.delete(`api/admin/accounts/${username}/oauth/${id}`).subscribe(() => this.openSupport(username));
+  }
+
+  setDefaultCard(username: string, extId: number) {
+    if (!confirm(`将 ExtId ${extId} 设为 ${username} 的默认卡？`)) return;
+    this.api.put(`api/admin/accounts/${username}/cards/${extId}/default`, {}).subscribe(() => this.openSupport(username));
+  }
+
+  unbindCardByExtId(username: string, extId: number) {
+    if (!confirm(`解绑 ${username} 的 ExtId ${extId}？关联 Access Code 会一并移除。`)) return;
+    this.api.delete(`api/admin/accounts/${username}/cards/${extId}`).subscribe(() => { this.openSupport(username); this.refresh(); });
+  }
+
+  removeExternal(username: string, extId: number, luid: string) {
+    if (!confirm(`从 ExtId ${extId} 删除外部 Access Code ${luid}？`)) return;
+    this.api.delete(`api/admin/accounts/${username}/cards/${extId}/external/${luid}`).subscribe(() => this.openSupport(username));
+  }
+
+  private openSupport(username: string) {
+    this.api.get(`api/admin/accounts/${username}`).subscribe(resp => {
+      this.selectedProfile = {...resp.data.account, totpEnabled: resp.data.totpEnabled,
+        passkeys: resp.data.passkeys, oauthIdentities: resp.data.oauthIdentities, eulaStatus: resp.data.eulaStatus};
+    });
+  }
+
+  loadEula() {
+    this.tab = 'eula';
+    this.api.get('api/admin/eula').subscribe(resp => {
+      this.eulaCurrent = resp.data.current;
+      this.eulaDraftTitle = resp.data.draft?.title ?? `${resp.data.current.title}`;
+      this.eulaDraftContent = resp.data.draft?.content ?? resp.data.current.content;
+      this.updateEulaPreview();
+    });
+  }
+
+  updateEulaPreview() {
+    this.eulaPreview = DOMPurify.sanitize(marked.parse(this.eulaDraftContent || '') as string);
+  }
+
+  saveEulaDraft() {
+    this.api.put('api/admin/eula/draft', {title: this.eulaDraftTitle, content: this.eulaDraftContent})
+      .subscribe(resp => this.messageService.notice(resp?.status?.message));
+  }
+
+  publishEula() {
+    if (!confirm('发布新版本后，全部用户（包括管理员）都必须重新同意。继续发布？')) return;
+    this.api.post('api/admin/eula/publish', {}).subscribe({
+      next: () => location.assign('/eula'),
+      error: err => this.messageService.notice(err, 'warning')
+    });
   }
 
   createUser(userName: string, name: string, email: string, password: string) {
@@ -371,8 +547,8 @@ export interface AdvancedUser{
 }
 
 export interface GameProfile{
-  chusan: V2Profile;
-  ongeki: DisplayOngekiProfile;
-  maimai2: DisplayMaimai2Profile;
+  chusan: any;
+  ongeki: any;
+  maimai2: any;
   card: Card;
 }

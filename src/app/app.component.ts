@@ -19,6 +19,7 @@ import { MenuService } from './menu.service';
 import {Title} from '@angular/platform-browser';
 import supportedBrowsers from './supportedBrowsers';
 import {TranslateService} from "@ngx-translate/core";
+import {AccountAccessService} from './auth/account-access.service';
 
 @Component({
     selector: 'app-root',
@@ -37,6 +38,7 @@ export class AppComponent implements OnInit, OnDestroy {
   sidebarOffcanvasOpened = false;
 
   disableSidebar = false;
+  accessLayout = false;
   isRouterHome = false;
 
   loading$: Observable<boolean>;
@@ -58,6 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
     protected messageService: MessageService,
     protected translateService: TranslateService,
     protected user: UserService,
+    private accountAccess: AccountAccessService,
     updates: SwUpdate,
     @Inject(DOCUMENT) private document: Document,
   ) {
@@ -85,10 +88,10 @@ export class AppComponent implements OnInit, OnDestroy {
         return currentRoute;
       }),
       filter(route => route.outlet === 'primary'),
-      map(route => route.snapshot),
-      map(snapshot => snapshot.data.disableSidebar)
-    ).subscribe((disableSidebar) => {
-      this.disableSidebar = disableSidebar;
+      map(route => route.snapshot.data)
+    ).subscribe((data) => {
+      this.disableSidebar = data.disableSidebar;
+      this.accessLayout = data.accessLayout === true;
     });
 
     this.router.events.pipe(
@@ -136,10 +139,13 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  private initializeApp() {
+  private async initializeApp() {
     if (this.accountService.currentAccountValue) {
+      const status = await this.accountAccess.restore();
+      if (status?.banned) { await this.router.navigate(['/banned']); return; }
+      if (status?.eulaRequired) { await this.router.navigate(['/eula']); return; }
       this.preLoad.checkDbUpdate();
-      this.userService.load();
+      await this.userService.load();
     }
   }
 
@@ -183,7 +189,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   isAdmin() {
-    return this.user.currentUser?.roles?.some(r => r.id === 5) ?? false;
+    return this.user.currentUser?.roles?.some(r => r.name === 'ROLE_ADMIN') ?? false;
   }
 
   @HostListener('window:popstate', ['$event'])

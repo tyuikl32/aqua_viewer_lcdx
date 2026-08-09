@@ -7,6 +7,9 @@
   <div class="col-auto">
     <button class="tab-selector" [class.tab-selector-active]="tab === 'keychips'" (click)="tab = 'keychips'">Keychip</button>
   </div>
+  <div class="col-auto">
+    <button class="tab-selector" [class.tab-selector-active]="tab === 'eula'" (click)="loadEula()">EULA</button>
+  </div>
 </div>
 
 <ng-template #pagination>
@@ -91,6 +94,9 @@
                 {{ item.user.id }}.{{ item.user.username }}
               </div>
               <div class="card-body small">
+                <span class="badge mb-1" [class.bg-danger]="isBanned(item)" [class.bg-success]="!isBanned(item)">
+                  {{ isBanned(item) ? '已封禁' : '正常' }}
+                </span>
                 <div>
                   {{ item.user.name }}
                 </div>
@@ -179,6 +185,17 @@
                         }
                       </td>
                     </tr>
+                    <tr>
+                      <th class="text-nowrap text-secondary fw-normal">EULA 当前版本</th>
+                      <td>{{ selectedProfile?.eulaStatus?.currentVersion ?? '—' }}</td>
+                      <th class="text-nowrap text-secondary fw-normal">用户同意版本</th>
+                      <td>
+                        {{ selectedProfile?.eulaStatus?.acceptedVersion ?? '未同意' }}
+                        @if (selectedProfile?.eulaStatus?.required) {
+                          <span class="badge bg-warning text-dark ms-1">需要重新同意</span>
+                        }
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -248,6 +265,13 @@
               <button class="btn btn-primary btn-sm mb-2 me-1" (click)="loginAs(item.user.username, impersonateModal)">
                 夺舍
               </button>
+              @if (!isAdminTarget(item)) {
+                <button class="btn btn-sm mb-2 me-1" [class.btn-danger]="!isBanned(item)" [class.btn-success]="isBanned(item)"
+                  (click)="setAccountBan(item, !isBanned(item))">
+                  {{ isBanned(item) ? '解除封禁' : '封禁账户' }}
+                </button>
+              }
+              <button class="btn btn-outline-warning btn-sm mb-2 me-1" (click)="revokeSessions(item.user.username)">撤销全部会话</button>
               @if (selectedProfile?.totpEnabled) {
                 <button class="btn btn-outline-danger btn-sm mb-2 me-1"
                   (click)="resetTotp(item.user.username)">
@@ -257,6 +281,52 @@
               <button class="btn btn-outline-secondary btn-sm mb-2" (click)="openRawJson(item, rawJsonModal)">
                 原始 JSON
               </button>
+              <hr class="my-2">
+              <div class="fw-bold small mb-1">游戏封禁与删档</div>
+              @for (profile of item.gameProfiles; track profile) {
+                <div class="border rounded p-2 mb-2">
+                  <div class="small fw-bold mb-1">ExtId {{ profile.card.extId }}</div>
+                  @if (profile.chusan) {
+                    <div class="input-group input-group-sm mb-1">
+                      <span class="input-group-text">Chusan</span>
+                      <select class="form-select" #chusanState [value]="profile.chusan.banState">
+                        <option [value]="0">0</option><option [value]="1">1</option><option [value]="2">2</option>
+                      </select>
+                      <button class="btn btn-outline-primary" (click)="setGameBan(item.user.username, 'CHUSAN', profile.card.extId, chusanState.value)">保存</button>
+                      <button class="btn btn-outline-danger" (click)="deleteGameSave(item.user.username, 'CHUSAN', profile.card.extId)">删除存档</button>
+                    </div>
+                  }
+                  @if (profile.maimai2) {
+                    <div class="input-group input-group-sm mb-1">
+                      <span class="input-group-text">Maimai2</span>
+                      <select class="form-select" #maiState [value]="profile.maimai2.banState">
+                        <option [value]="0">0</option><option [value]="1">1</option><option [value]="2">2</option>
+                      </select>
+                      <button class="btn btn-outline-primary" (click)="setGameBan(item.user.username, 'MAIMAI2', profile.card.extId, maiState.value)">保存</button>
+                      <button class="btn btn-outline-danger" (click)="deleteGameSave(item.user.username, 'MAIMAI2', profile.card.extId)">删除存档</button>
+                    </div>
+                  }
+                  @if (profile.ongeki) {
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text">Ongeki</span>
+                      <select class="form-select" #ongekiState [value]="profile.ongeki.banStatus">
+                        <option [value]="0">0</option><option [value]="1">1</option><option [value]="2">2</option>
+                      </select>
+                      <button class="btn btn-outline-primary" (click)="setGameBan(item.user.username, 'ONGEKI', profile.card.extId, ongekiState.value)">保存</button>
+                      <button class="btn btn-outline-danger" (click)="deleteGameSave(item.user.username, 'ONGEKI', profile.card.extId)">删除存档</button>
+                    </div>
+                  }
+                </div>
+              }
+              @if (selectedProfile?.passkeys?.length || selectedProfile?.oauthIdentities?.length) {
+                <div class="fw-bold small mb-1">凭据恢复</div>
+                @for (passkey of selectedProfile.passkeys; track passkey.id) {
+                  <button class="btn btn-outline-danger btn-sm me-1 mb-1" (click)="deletePasskey(item.user.username, passkey.id)">删除 Passkey：{{ passkey.nick }}</button>
+                }
+                @for (oauth of selectedProfile.oauthIdentities; track oauth.id) {
+                  <button class="btn btn-outline-danger btn-sm me-1 mb-1" (click)="deleteOauth(item.user.username, oauth.id)">解绑 {{ oauth.provider }}：{{ oauth.email }}</button>
+                }
+              }
               <hr class="my-2">
               <div class="fw-bold small mb-1">卡片操作</div>
               <div class="input-group input-group-sm mb-2">
@@ -273,6 +343,16 @@
                 <input type="text" class="form-control" placeholder="新卡号" #opNew>
                 <button class="btn btn-outline-primary" (click)="changeAccessCode(item.user.username, opOld.value, opNew.value)">变更卡号</button>
               </div>
+              @for (card of selectedProfile?.cards || []; track card.extId) {
+                <div class="border rounded p-2 mb-2 small">
+                  <div class="fw-bold">ExtId {{ card.extId }} {{ card.defaultCard ? '（默认）' : '' }}</div>
+                  <button class="btn btn-outline-primary btn-sm me-1" (click)="setDefaultCard(item.user.username, card.extId)">设为默认</button>
+                  <button class="btn btn-outline-danger btn-sm me-1" (click)="unbindCardByExtId(item.user.username, card.extId)">按 ExtId 解绑</button>
+                  @for (luid of card.externalLuids; track luid) {
+                    <button class="btn btn-outline-danger btn-sm me-1" (click)="removeExternal(item.user.username, card.extId, luid)">删除 {{ luid }}</button>
+                  }
+                </div>
+              }
             </div>
           </ng-template>
           <ng-template #rawJsonModal let-modal>
@@ -288,6 +368,28 @@
       </div>
     }
     <ng-container *ngTemplateOutlet="pagination;"></ng-container>
+  </div>
+}
+
+@if (tab === 'eula') {
+  <div class="row g-3">
+    <div class="col-12 col-lg-6">
+      <div class="card"><div class="card-body">
+        <h5>当前已发布版本 {{ eulaCurrent?.version }}</h5>
+        <p class="text-secondary">{{ eulaCurrent?.title }}</p>
+        <label class="form-label">草稿标题</label>
+        <input class="form-control mb-2" [(ngModel)]="eulaDraftTitle">
+        <label class="form-label">Markdown 正文</label>
+        <textarea class="form-control font-monospace" rows="20" [(ngModel)]="eulaDraftContent" (ngModelChange)="updateEulaPreview()"></textarea>
+        <div class="d-flex gap-2 mt-2">
+          <button class="btn btn-outline-primary" (click)="saveEulaDraft()">保存草稿</button>
+          <button class="btn btn-danger" (click)="publishEula()">发布新版本</button>
+        </div>
+      </div></div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="card"><div class="card-body"><h5>安全预览</h5><article [innerHTML]="eulaPreview"></article></div></div>
+    </div>
   </div>
 }
 

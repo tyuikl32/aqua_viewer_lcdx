@@ -1,5 +1,9 @@
 <div class="app-container">
+  @if (impersonation.active && impersonation.adminContext) {
+    <app-impersonation-admin-toolbar></app-impersonation-admin-toolbar>
+  }
   <div class="flex-grow-1">
+    @if (!accessLayout) {
     <nav ngbNav #nav="ngbNav" class="app-navbar navbar navbar-expand-lg position-fixed shadow w-100">
       <div class="container-xxl">
         <button [class.v-not-login]="disableSidebar && !accountService.currentAccountValue" (click)="showSidebar()"
@@ -40,6 +44,7 @@
           </div>
         </div>
       </nav>
+    }
       <div class="position-relative">
         @if (loading$ | async) {
           <div>
@@ -51,7 +56,8 @@
             </div>
           </div>
         }
-        <div class="d-lg-grid container-xxl" style="grid-template-areas: 'sidebar main'; grid-template-columns: auto 1fr">
+        <div class="d-lg-grid" [class.container-xxl]="!accessLayout"
+          style="grid-template-areas: 'sidebar main'; grid-template-columns: auto 1fr">
           <aside #sidebar class="sidebar d-block overflow-y-auto position-sticky"
             [class.d-none]="disableSidebar || !accountService.currentAccountValue">
             <div id="sidebar" class="offcanvas-lg offcanvas-start" tabindex="-1">
@@ -156,7 +162,8 @@
           </div>
         </div>
       </aside>
-      <main class="order-1 ms-0 ms-lg-3 me-lg-2" style="grid-area: main;margin-top: 4.6rem">
+      <main class="order-1 ms-0" [class.ms-lg-3]="!accessLayout" [class.me-lg-2]="!accessLayout"
+        [style.margin-top]="accessLayout ? '0' : '4.6rem'" style="grid-area: main">
         <div>
           <router-outlet></router-outlet>
         </div>
@@ -166,6 +173,7 @@
   </div>
 </div>
 
+@if (!accessLayout) {
 <footer class="footer container-xxl mb-2">
   <hr class="m-0 pt-2">
   <div class="d-flex justify-content-between flex-wrap px-2 px-lg-3 py-3 column-gap-3">
@@ -221,4 +229,5 @@
     </div>
   </div>
 </footer>
+}
 </div>
