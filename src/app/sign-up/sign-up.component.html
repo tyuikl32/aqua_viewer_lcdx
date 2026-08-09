@@ -140,12 +140,19 @@
                           }
                         </div>
                       </div>
-                      @if (eula) {
+                      @if (eulaLoading()) {
+                        <div class="alert alert-secondary py-2 my-2 fw-normal" role="status">正在加载最终用户许可协议…</div>
+                      } @else if (eulaLoadError()) {
+                        <div class="alert alert-danger py-2 my-2 fw-normal" role="alert">
+                          <div>无法加载最终用户许可协议，暂时无法注册。</div>
+                          <button class="btn btn-sm btn-outline-danger mt-2" type="button" (click)="retryEula()">重新加载</button>
+                        </div>
+                      } @else if (eula(); as document) {
                         <div class="border rounded p-2 my-2 fw-normal">
-                          <div class="fw-bold">{{ eula.title }}（版本 {{ eula.version }}）</div>
+                          <div class="fw-bold">{{ document.title }}（版本 {{ document.version }}）</div>
                           <details class="my-2">
                             <summary class="text-primary">查看协议正文</summary>
-                            <article class="p-2 small" [innerHTML]="eulaHtml"></article>
+                            <article class="p-2 small" [innerHTML]="eulaHtml()"></article>
                           </details>
                           <label class="form-check">
                             <input class="form-check-input" type="checkbox" formControlName="acceptEula">
@@ -153,7 +160,7 @@
                           </label>
                         </div>
                       }
-                      <button type="submit" class="btn btn-primary btn-sm my-2">{{'SignUpPage.SignUp' | translate}}</button>
+                      <button type="submit" class="btn btn-primary btn-sm my-2" [disabled]="eulaLoading() || eulaLoadError()">{{'SignUpPage.SignUp' | translate}}</button>
                       <div class="fw-normal d-flex align-items-center justify-content-center">
                         {{'SignUpPage.SignInTip' | translate}}
                         <button class="btn btn-link btn-sm text-decoration-none p-0" (click)="navigateToSignIn()">{{'SignUpPage.SignIn' | translate}}</button>

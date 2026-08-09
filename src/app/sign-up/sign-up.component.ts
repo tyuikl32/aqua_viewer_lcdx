@@ -1,5 +1,5 @@
 import {TranslateService} from '@ngx-translate/core';
-import {Component, OnDestroy, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnDestroy, OnInit, ChangeDetectionStrategy, signal} from '@angular/core';
 import {FormBuilder, FormGroup, ValidatorFn, Validators} from '@angular/forms';
 import {first, take} from 'rxjs/operators';
 import {MessageService} from '../message.service';
@@ -28,8 +28,10 @@ export class SignUpComponent implements OnDestroy, OnInit {
   token: string;
   type: string;
   providers: string[];
-  eula: EulaDocument;
-  eulaHtml = '';
+  readonly eula = signal<EulaDocument | null>(null);
+  readonly eulaHtml = signal('');
+  readonly eulaLoading = signal(true);
+  readonly eulaLoadError = signal(false);
 
   constructor(
     private route: ActivatedRoute,
@@ -56,8 +58,27 @@ export class SignUpComponent implements OnDestroy, OnInit {
   }
 
   async ngOnInit() {
-    this.eula = await this.accountAccess.currentEula();
-    this.eulaHtml = DOMPurify.sanitize(marked.parse(this.eula.content) as string);
+    await this.loadEula();
+  }
+
+  async retryEula() {
+    await this.loadEula();
+  }
+
+  private async loadEula() {
+    this.eulaLoading.set(true);
+    this.eulaLoadError.set(false);
+    try {
+      const eula = await this.accountAccess.currentEula();
+      this.eula.set(eula);
+      this.eulaHtml.set(DOMPurify.sanitize(marked.parse(eula.content) as string));
+    } catch {
+      this.eula.set(null);
+      this.eulaHtml.set('');
+      this.eulaLoadError.set(true);
+    } finally {
+      this.eulaLoading.set(false);
+    }
   }
 
   private initForm(): void {
@@ -276,6 +297,11 @@ export class SignUpComponent implements OnDestroy, OnInit {
   }
 
   onSubmit() {
+    const eula = this.eula();
+    if (!eula) {
+      this.messageService.notice('协议尚未加载，请重新加载后再试。', 'warning');
+      return;
+    }
     if (this.signUpForm.invalid) {
       this.signUpForm.markAllAsTouched();
       return;
@@ -283,7 +309,7 @@ export class SignUpComponent implements OnDestroy, OnInit {
     this.signUpForm.disable();
     const value = this.signUpForm.value;
 
-    this.authenticationService.signUp(value.name, value.username, value.email, value.verifyCode, value.password, this.token, this.eula.version).pipe(first())
+    this.authenticationService.signUp(value.name, value.username, value.email, value.verifyCode, value.password, this.token, eula.version).pipe(first())
       .subscribe(
         {
           next: async (resp) => {
@@ -312,8 +338,7 @@ export class SignUpComponent implements OnDestroy, OnInit {
                 this.signUpForm.enable();
               }
               else if (statusCode === StatusCode.EULA_VERSION_INVALID) {
-                this.eula = await this.accountAccess.currentEula();
-                this.eulaHtml = DOMPurify.sanitize(marked.parse(this.eula.content) as string);
+                await this.loadEula();
                 this.signUpForm.controls.acceptEula.setValue(false);
                 this.messageService.notice('协议已更新，请阅读并重新勾选同意。', 'warning');
                 this.signUpForm.enable();

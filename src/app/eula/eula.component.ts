@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {marked} from 'marked';
 import DOMPurify from 'dompurify';
@@ -8,32 +8,62 @@ import {UserService} from '../user.service';
 
 @Component({selector: 'app-eula', templateUrl: './eula.component.html', styleUrls: ['./eula.component.css'], standalone: false})
 export class EulaComponent implements OnInit {
-  eula: EulaDocument;
-  html = '';
-  accepting = false;
+  readonly eula = signal<EulaDocument | null>(null);
+  readonly html = signal('');
+  readonly loading = signal(true);
+  readonly loadError = signal(false);
+  readonly accepting = signal(false);
 
   constructor(private access: AccountAccessService, private auth: AuthenticationService,
               private users: UserService, private router: Router) {}
 
   async ngOnInit() {
-    const status = await this.access.restore();
-    if (status?.banned) { await this.router.navigate(['/banned']); return; }
-    if (!status?.eulaRequired) { await this.router.navigate(['/dashboard']); return; }
-    this.eula = await this.access.currentEula();
-    this.html = DOMPurify.sanitize(marked.parse(this.eula.content) as string);
+    try {
+      const status = await this.access.restore();
+      if (status?.banned) { await this.router.navigate(['/banned']); return; }
+      if (!status?.eulaRequired) { await this.router.navigate(['/dashboard']); return; }
+      await this.loadEula();
+    } catch {
+      this.loadError.set(true);
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   async accept() {
-    this.accepting = true;
+    const eula = this.eula();
+    if (!eula) return;
+    this.accepting.set(true);
     try {
-      if (await this.access.accept(this.eula.version)) {
+      if (await this.access.accept(eula.version)) {
         await this.users.load(true);
         await this.router.navigate(['/dashboard']);
       } else {
-        this.eula = await this.access.currentEula();
-        this.html = DOMPurify.sanitize(marked.parse(this.eula.content) as string);
+        await this.loadEula();
       }
-    } finally { this.accepting = false; }
+    } finally { this.accepting.set(false); }
+  }
+
+  async retry() {
+    this.loading.set(true);
+    try {
+      await this.loadEula();
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  private async loadEula() {
+    this.loadError.set(false);
+    try {
+      const eula = await this.access.currentEula();
+      this.eula.set(eula);
+      this.html.set(DOMPurify.sanitize(marked.parse(eula.content) as string));
+    } catch {
+      this.eula.set(null);
+      this.html.set('');
+      this.loadError.set(true);
+    }
   }
 
   logout() { this.auth.logout().subscribe(() => location.assign('')); }
