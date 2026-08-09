@@ -11,6 +11,7 @@
   border-bottom: var(--bs-border-width) solid var(--bs-border-color);
 }
 
-.field { width: 8rem; }
-.field-wide { width: 13rem; }
-.state { width: 4rem; }
+.field, .field-wide, .state { min-width: 0; }
+.field { flex: 0 1 8rem; }
+.field-wide { flex: 0 1 13rem; }
+.state { flex: 0 1 4rem; }
