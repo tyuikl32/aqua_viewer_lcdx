@@ -1,2 +1,16 @@
-.admin-toolbar { position: sticky; top: 3.6rem; z-index: 1030; background: #fff3cd; border-bottom: 2px solid #ffca2c; }
-.field { width: 8rem; }.field-wide { width: 13rem; }.state { width: 4rem; }
+:host {
+  display: block;
+  position: sticky;
+  top: 3.6rem;
+  z-index: 1030;
+}
+
+.admin-toolbar {
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border-bottom: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.field { width: 8rem; }
+.field-wide { width: 13rem; }
+.state { width: 4rem; }
