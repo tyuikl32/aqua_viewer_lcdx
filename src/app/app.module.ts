@@ -72,7 +72,6 @@ import { EditComponent } from './announcements/edit/edit.component';
 import { AdminComponent } from './admin/admin.component';
 import { EulaComponent } from './eula/eula.component';
 import { BannedComponent } from './banned/banned.component';
-import { ImpersonationAdminToolbarComponent } from './admin/impersonation-admin-toolbar.component';
 
 // Blur the focused element before any ng-bootstrap modal or offcanvas opens,
 // so ng-bootstrap's aria-hidden on the background doesn't trap focus.
@@ -132,7 +131,6 @@ export function initializeApp(
         AdminComponent,
         EulaComponent,
         BannedComponent,
-        ImpersonationAdminToolbarComponent,
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         BrowserAnimationsModule,

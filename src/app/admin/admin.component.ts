@@ -13,9 +13,7 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateService} from '@ngx-translate/core';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {IMPERSONATION_KEY} from '../auth/account.service';
-import {IMPERSONATE_GRANT, IMPERSONATE_REQUEST, IMPERSONATE_ADMIN_REQUEST, IMPERSONATE_ADMIN_RESPONSE,
-  IMPERSONATION_ADMIN_CONTEXT_KEY, ImpersonationAdminAction} from '../auth/impersonation.service';
-import {isTrustedImpersonationAdminEnvelope} from '../auth/impersonation.service';
+import {IMPERSONATE_GRANT, IMPERSONATE_REQUEST} from '../auth/impersonation.service';
 import {marked} from 'marked';
 import DOMPurify from 'dompurify';
 
@@ -53,8 +51,6 @@ export class AdminComponent implements OnInit {
   private impersonateNonce: string = null;
   private impersonateAccount: any = null;
   private impersonateListener: (event: MessageEvent) => void = null;
-  private readonly impersonateActions: ImpersonationAdminAction[] = ['bind-card-by-ext-id', 'unbind-card-by-ext-id',
-    'set-default-card', 'remove-external-code', 'set-game-ban-state', 'refresh-admin-context'];
   eulaCurrent: any = null;
   eulaDraftTitle = '';
   eulaDraftContent = '';
@@ -151,11 +147,8 @@ export class AdminComponent implements OnInit {
       }
       if (event.data?.type === IMPERSONATE_REQUEST) {
         (event.source as Window)?.postMessage({type: IMPERSONATE_GRANT, nonce: this.impersonateNonce,
-          account: this.impersonateAccount, adminContext: {nonce: this.impersonateNonce,
-            target: this.impersonateUsername, actions: this.impersonateActions}}, location.origin);
-        return;
+          account: this.impersonateAccount}, location.origin);
       }
-      if (event.data?.type === IMPERSONATE_ADMIN_REQUEST) this.handleImpersonationAdminRequest(event);
     };
     window.addEventListener('message', this.impersonateListener);
 
@@ -173,7 +166,6 @@ export class AdminComponent implements OnInit {
     const frame = document.querySelector('iframe.impersonation-frame') as HTMLIFrameElement;
     try {
       frame?.contentWindow?.sessionStorage?.removeItem(IMPERSONATION_KEY);
-      frame?.contentWindow?.sessionStorage?.removeItem(IMPERSONATION_ADMIN_CONTEXT_KEY);
     } catch (e) {
       console.warn('could not clear impersonated session', e);
     }
@@ -253,56 +245,6 @@ export class AdminComponent implements OnInit {
       error: () => {}
     });
     this.modalService.open(tpl, {centered: true, scrollable: true});
-  }
-
-  private handleImpersonationAdminRequest(event: MessageEvent) {
-    const message = event.data;
-    const action = message?.action as ImpersonationAdminAction;
-    const frame = document.querySelector('iframe.impersonation-frame') as HTMLIFrameElement;
-    if (!isTrustedImpersonationAdminEnvelope(event, frame?.contentWindow, this.impersonateNonce,
-      this.impersonateUsername, this.impersonateActions) || !this.validAdminPayload(action, message.payload)) return;
-    const target = this.impersonateUsername;
-    const p = message.payload || {};
-    let request: any;
-    switch (action) {
-      case 'bind-card-by-ext-id':
-        request = this.api.post('api/admin/bindCardViaExtId', {userName: target, extId: p.extId}); break;
-      case 'unbind-card-by-ext-id':
-        request = this.api.delete(`api/admin/accounts/${target}/cards/${p.extId}`); break;
-      case 'set-default-card':
-        request = this.api.put(`api/admin/accounts/${target}/cards/${p.extId}/default`, {}); break;
-      case 'remove-external-code':
-        request = this.api.delete(`api/admin/accounts/${target}/cards/${p.extId}/external/${encodeURIComponent(p.luid)}`); break;
-      case 'set-game-ban-state':
-        request = this.api.put(`api/admin/accounts/${target}/games/${p.game}/${p.extId}/ban-state`, {status: p.status}); break;
-      case 'refresh-admin-context':
-        request = this.api.get(`api/admin/accounts/${target}`); break;
-    }
-    request.subscribe({
-      next: resp => {
-        const ok = resp?.status?.code === StatusCode.OK;
-        this.replyImpersonation(event.source as Window, message, ok, resp?.data,
-          ok ? undefined : (resp?.status?.message || 'Admin action failed'));
-      },
-      error: error => this.replyImpersonation(event.source as Window, message, false, null, String(error))
-    });
-  }
-
-  private validAdminPayload(action: ImpersonationAdminAction, payload: any) {
-    if (action === 'refresh-admin-context') return payload && Object.keys(payload).length === 0;
-    if (!payload || !Number.isSafeInteger(payload.extId) || payload.extId < 0) return false;
-    if (action === 'remove-external-code') return Object.keys(payload).sort().join(',') === 'extId,luid' &&
-      typeof payload.luid === 'string' && payload.luid.length === 20;
-    if (action === 'set-game-ban-state') return Object.keys(payload).sort().join(',') === 'extId,game,status' &&
-      ['CHUSAN', 'MAIMAI2', 'ONGEKI'].includes(payload.game) && Number.isInteger(payload.status) &&
-      payload.status >= 0 && payload.status <= 2;
-    return Object.keys(payload).length === 1;
-  }
-
-  private replyImpersonation(target: Window, request: any, ok: boolean, data?: any, error?: string) {
-    if (!this.impersonateNonce || request.nonce !== this.impersonateNonce || request.target !== this.impersonateUsername) return;
-    target.postMessage({type: IMPERSONATE_ADMIN_RESPONSE, nonce: this.impersonateNonce,
-      target: this.impersonateUsername, requestId: request.requestId, ok, data, error}, location.origin);
   }
 
   isAdminTarget(item: AdvancedUser) {
