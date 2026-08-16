@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import { HttpParams } from '@angular/common/http';
@@ -27,9 +27,11 @@ import { Maimai2UserServerMissionPointInfoResp } from '../model/Maimai2UserServe
 import { Maimai2ServerMissionUserPointData } from '../model/Maimai2ServerMissionUserPointData';
 
 @Component({
-  selector: 'app-maimai2-point-exchanges',
-  templateUrl: './maimai2-point-exchanges.component.html',
-  styleUrls: ['./maimai2-point-exchanges.component.css']
+    selector: 'app-maimai2-point-exchanges',
+    templateUrl: './maimai2-point-exchanges.component.html',
+    styleUrls: ['./maimai2-point-exchanges.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class Maimai2PointExchangesComponent implements OnInit {
 
@@ -183,14 +185,14 @@ export class Maimai2PointExchangesComponent implements OnInit {
         fileTypeName = "nameplate";
         break;
       case Maimai2ExchangeItemType.Title:
-        specialPath = `${environment.maiAssetsHost}assets/mai2/common/UI_CLC_Base_GetUserTitle.webp`;
+        specialPath = `assets/mai2/common/UI_CLC_Base_GetUserTitle.webp`;
         break;
       case Maimai2ExchangeItemType.Icon:
         fileNamePrefix = "UI_Icon_";
         fileTypeName = "icon";
         break;
       case Maimai2ExchangeItemType.Present:
-        specialPath = `${environment.maiAssetsHost}assets/mai2/common/UI_CHR_Icon_Present.webp`;
+        specialPath = `assets/mai2/common/UI_CHR_Icon_Present.webp`;
         break;
       case Maimai2ExchangeItemType.Character:
         fileNamePrefix = "UI_Chara_";
@@ -205,16 +207,16 @@ export class Maimai2PointExchangesComponent implements OnInit {
         fileTypeName = "frame";
         break;
       case Maimai2ExchangeItemType.Ticket:
-        specialPath = `${environment.maiAssetsHost}assets/mai2/common/UI_CMN_Tix_LinkTix_L.webp`;
+        specialPath = `assets/mai2/common/UI_CMN_Tix_LinkTix_L.webp`;
         break;
       case Maimai2ExchangeItemType.Mile:
-        specialPath = `${environment.maiAssetsHost}assets/mai2/common/UI_CLC_Maimile.webp`;
+        specialPath = `assets/mai2/common/UI_CLC_Maimile.webp`;
         break;
       case Maimai2ExchangeItemType.KaleidxScopeKey:
-        specialPath = `${environment.maiAssetsHost}assets/mai2/common/UI_KLD_DiscoverCourseKey_0${itemData.itemId}.webp`;
+        specialPath = `assets/mai2/common/UI_KLD_DiscoverCourseKey_0${itemData.itemId}.webp`;
         break;
       case Maimai2ExchangeItemType.DXPass:
-        specialPath = `${environment.maiAssetsHost}assets/mai2/common/dxpass_${itemData.itemId}.webp`;
+        specialPath = `assets/mai2/common/dxpass_${itemData.itemId}.webp`;
         break;
     }
 

@@ -1,11 +1,13 @@
-import {mergeMap, of} from 'rxjs';
+import {catchError, mergeMap, of} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {map} from 'rxjs/operators';
 import {environment} from '../../environments/environment';
 import {StatusCode} from '../status-code';
 import {UserService} from '../user.service';
 import {AccountService} from './account.service';
+import {AccountAccessService} from './account-access.service';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +16,9 @@ export class AuthenticationService {
   constructor(
     private accountService: AccountService,
     private http: HttpClient,
-    private userService: UserService
+    private userService: UserService,
+    private access: AccountAccessService,
+    private router: Router
 ) {
   }
 
@@ -31,6 +35,13 @@ export class AuthenticationService {
           }
         ),
         mergeMap(this.procLoginResp));
+  }
+
+  // Second step of a login that requires TOTP; totpToken stands in for the
+  // already verified password or OAuth2 code
+  loginWithTotp(totpToken: string, code: string) {
+    return this.http.post<any>(environment.apiServer + 'api/auth/signin/totp', {totpToken, code})
+      .pipe(mergeMap(this.procLoginResp));
   }
 
   loginAs(username: string) {
@@ -79,8 +90,8 @@ export class AuthenticationService {
       mergeMap(this.procLoginResp));
   }
 
-  signUp(name: string, username: string, email: string, verifyCode: string, password: string, token: string) {
-    const params: any = {name, username, email, verifyCode, password};
+  signUp(name: string, username: string, email: string, verifyCode: string, password: string, token: string, eulaVersion: number) {
+    const params: any = {name, username, email, verifyCode, password, eulaVersion};
     if (token){
       params.oAuth2Token = token;
     }
@@ -112,11 +123,18 @@ export class AuthenticationService {
       return of(loginResp);
     }
     this.accountService.currentAccountValue = loginResp.data;
-    return this.userService.load(true).then(
-      resp => {
-        return resp;
+    return this.access.restore(true).then(async status => {
+      if (status?.banned) {
+        await this.router.navigate(['/banned']);
+        return loginResp;
       }
-    );
+      if (status?.eulaRequired) {
+        await this.router.navigate(['/eula']);
+        return loginResp;
+      }
+      await this.userService.load(true);
+      return loginResp;
+    });
   }
 
   resetPassword(emailAddress: string, verifyCode: string, password: string) {
@@ -186,8 +204,19 @@ export class AuthenticationService {
   }
 
   logout() {
-    this.accountService.clear();
-    this.userService.clear();
+    // Revoke the refresh token server-side, then clear local state whether or
+    // not the request succeeded
+    const refreshToken = this.accountService.currentAccountValue?.refreshToken;
+    return this.http.post<any>(environment.apiServer + 'api/auth/signout', {refreshToken})
+      .pipe(
+        catchError(() => of(null)),
+        map(resp => {
+          this.accountService.clear();
+          this.userService.clear();
+          this.access.clear();
+          return resp;
+        })
+      );
   }
 
 }

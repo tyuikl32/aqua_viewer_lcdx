@@ -1,8 +1,10 @@
 import {Injectable} from '@angular/core';
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {AccountService} from './account.service';
+import {Router} from '@angular/router';
+import {StatusCode} from '../status-code';
 
 @Injectable({
   providedIn: 'root'
@@ -10,13 +12,21 @@ import {AccountService} from './account.service';
 export class ErrorInterceptorService implements HttpInterceptor {
 
   constructor(
-    private accountService: AccountService) {
+    private accountService: AccountService,
+    private router: Router) {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(catchError(err => {
-      console.log(err);
-      const error = err.error.message ? err.error.message : `${err.status} ${err.statusText}`;
+      const statusCode = err?.error?.status?.code;
+      if (statusCode === StatusCode.EULA_REQUIRED) {
+        window.dispatchEvent(new CustomEvent('rinnet-account-access-error', {detail: 'EULA_REQUIRED'}));
+        this.router.navigate(['/eula']);
+      } else if (statusCode === StatusCode.ACCOUNT_BANNED) {
+        window.dispatchEvent(new CustomEvent('rinnet-account-access-error', {detail: 'ACCOUNT_BANNED'}));
+        this.router.navigate(['/banned']);
+      }
+      const error = err?.error?.status?.message ?? err?.error?.message ?? `${err.status} ${err.statusText}`;
       if (err.status === 401 && this.accountService.currentAccountValue)
       {
         this.accountService.clear();

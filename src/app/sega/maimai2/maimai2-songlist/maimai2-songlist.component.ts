@@ -1,6 +1,6 @@
 // maimai2-songlist.component.ts
 
-import {Component, HostListener, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import { FormArray, FormControl } from '@angular/forms';
 import { combineLatest, Observable, BehaviorSubject } from 'rxjs';
 import { map, startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -12,9 +12,11 @@ import {Maimai2SongDetailComponent} from "../maimai2-song-detail/maimai2-song-de
 import {NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-  selector: 'app-maimai2-songlist',
-  templateUrl: './maimai2-songlist.component.html',
-  styleUrls: ['./maimai2-songlist.component.scss']
+    selector: 'app-maimai2-songlist',
+    templateUrl: './maimai2-songlist.component.html',
+    styleUrls: ['./maimai2-songlist.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class Maimai2SonglistComponent implements OnInit {
   constructor(

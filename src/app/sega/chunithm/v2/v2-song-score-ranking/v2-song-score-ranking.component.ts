@@ -1,11 +1,11 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {environment} from '../../../../../environments/environment';
 import {ChusanMusic, ChusanMusicLevelInfo, ChusanMusicLevels} from '../model/ChusanMusic';
 import {ApiService} from '../../../../api.service';
 import {AuthenticationService} from '../../../../auth/authentication.service';
 import {MessageService} from '../../../../message.service';
 import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { UserService } from 'src/app/user.service';
 import {Router} from '@angular/router';
 
@@ -40,9 +40,11 @@ interface UserRanking {
 }
 
 @Component({
-  selector: 'app-v2-song-score-ranking',
-  templateUrl: './v2-song-score-ranking.component.html',
-  styleUrls: ['./v2-song-score-ranking.component.scss']
+    selector: 'app-v2-song-score-ranking',
+    templateUrl: './v2-song-score-ranking.component.html',
+    styleUrls: ['./v2-song-score-ranking.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2SongScoreRankingComponent {
   protected readonly Math = Math;
@@ -101,7 +103,7 @@ export class V2SongScoreRankingComponent {
 
   getLevelString(song: ChusanMusic, index: number): string {
     const level: ChusanMusicLevelInfo = song.levels[index.toString()];
-    return `${level.level}.${level.levelDecimal.toString().charAt(0)}` ?? '0';
+    return `${level.level}.${level.levelDecimal.toString().charAt(0)}`;
   }
 
   showPlayLog(id: number, level: any) {

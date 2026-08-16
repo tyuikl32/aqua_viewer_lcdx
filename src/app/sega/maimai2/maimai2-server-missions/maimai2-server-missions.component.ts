@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import { HttpParams } from '@angular/common/http';
@@ -27,9 +27,11 @@ import { Maimai2ServerMissionUserPointData } from '../model/Maimai2ServerMission
 import { Maimai2PointExchangesComponent } from '../maimai2-point-exchanges/maimai2-point-exchanges.component';
 
 @Component({
-  selector: 'app-maimai2-server-missions',
-  templateUrl: './maimai2-server-missions.component.html',
-  styleUrls: ['./maimai2-server-missions.component.css']
+    selector: 'app-maimai2-server-missions',
+    templateUrl: './maimai2-server-missions.component.html',
+    styleUrls: ['./maimai2-server-missions.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class Maimai2ServerMissionsComponent implements OnInit {
 

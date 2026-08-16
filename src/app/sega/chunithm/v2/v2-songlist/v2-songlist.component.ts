@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {ChusanMusic} from '../model/ChusanMusic';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {ApiService} from '../../../../api.service';
@@ -14,9 +14,11 @@ import {ReleaseTagService} from '../util/release-tag.service';
 
 
 @Component({
-  selector: 'app-v2-songlist',
-  templateUrl: './v2-songlist.component.html',
-  styleUrls: ['./v2-songlist.component.css']
+    selector: 'app-v2-songlist',
+    templateUrl: './v2-songlist.component.html',
+    styleUrls: ['./v2-songlist.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2SonglistComponent implements OnInit {
 
@@ -133,7 +135,7 @@ export class V2SonglistComponent implements OnInit {
   isDefaultFilter() {
     return this.weControl.value === false &&
     this.genreControls.controls.every(c => c.value === false) &&
-    this.genreControls.controls.every(c => c.value === false) &&
+    this.versionControls.controls.every(c => c.value === false) &&
     this.patternControl.value === '';
   }
 

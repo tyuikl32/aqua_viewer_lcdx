@@ -96,21 +96,21 @@
       <div class="tab-content" id="nav-tabContent">
         <ng-container *ngIf="music.id < 8e3 && songData">
           <div class="tab-pane fade" id="nav-ba" role="tabpanel" aria-labelledby="nav-ba-tab" tabindex="0">
-            <ng-container *ngTemplateOutlet="rankingTable;context: {playerRanking: songData[0]?.ranking}"/>
+            <ng-container *ngTemplateOutlet="rankingTable;context: {playerRanking: $safeNavigationMigration(songData[0]?.ranking)}"/>
           </div>
           <div class="tab-pane fade" id="nav-ad" role="tabpanel" aria-labelledby="nav-ad-tab" tabindex="0">
-            <ng-container *ngTemplateOutlet="rankingTable;context: {playerRanking: songData[1]?.ranking}"/>
+            <ng-container *ngTemplateOutlet="rankingTable;context: {playerRanking: $safeNavigationMigration(songData[1]?.ranking)}"/>
           </div>
           <div class="tab-pane fade" id="nav-ex" role="tabpanel" aria-labelledby="nav-ex-tab" tabindex="0">
-            <ng-container *ngTemplateOutlet="rankingTable;context: {playerRanking: songData[2]?.ranking}"/>
+            <ng-container *ngTemplateOutlet="rankingTable;context: {playerRanking: $safeNavigationMigration(songData[2]?.ranking)}"/>
           </div>
           <div class="tab-pane fade show active" id="nav-ma" aria-labelledby="nav-ma-tab" tabindex="0">
-            <ng-container *ngTemplateOutlet="rankingTable;context: {playerRanking: songData[3]?.ranking}"/>
+            <ng-container *ngTemplateOutlet="rankingTable;context: {playerRanking: $safeNavigationMigration(songData[3]?.ranking)}"/>
           </div>
         </ng-container>
         <ng-container *ngIf="music.id > 8e3 && songData">
           <div class="tab-pane fade show active" id="nav-ma" aria-labelledby="nav-ma-tab" tabindex="0">
-            <ng-container *ngTemplateOutlet="rankingTable;context: {playerRanking: songData[10]?.ranking}"/>
+            <ng-container *ngTemplateOutlet="rankingTable;context: {playerRanking: $safeNavigationMigration(songData[10]?.ranking)}"/>
           </div>
         </ng-container>
       </div>

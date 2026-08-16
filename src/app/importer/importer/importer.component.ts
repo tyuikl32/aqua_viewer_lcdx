@@ -1,13 +1,15 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {MessageService} from '../../message.service';
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {AuthenticationService} from '../../auth/authentication.service';
 import {environment} from '../../../environments/environment';
 
 @Component({
-  selector: 'app-importer',
-  templateUrl: './importer.component.html',
-  styleUrls: ['./importer.component.css']
+    selector: 'app-importer',
+    templateUrl: './importer.component.html',
+    styleUrls: ['./importer.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class ImporterComponent implements OnInit {
 

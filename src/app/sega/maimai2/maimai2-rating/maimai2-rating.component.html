@@ -17,22 +17,28 @@
     <div class="table-container d-block d-md-none">
       <table class="table table-striped" style="text-align: center;">
         <thead>
-        <tr>
-          <th></th>
-          <th *ngFor="let i of [0, 1, 2, 3, 4]" style="font-weight: bold">
-            {{ displayRatingTableHeader[i] != 0 ? displayRatingTableHeader[i] / 10 : " " }}
-          </th>
-        </tr>
+          <tr>
+            <th></th>
+            @for (i of [0, 1, 2, 3, 4]; track i) {
+              <th style="font-weight: bold">
+                {{ displayRatingTableHeader[i] != 0 ? displayRatingTableHeader[i] / 10 : " " }}
+              </th>
+            }
+          </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let i of ['sp', 'ss', 'ssp', 'sss', 'sssp']; let rowIndex = index">
-          <td>
-            <img class="rank-icon" [src]="host + 'assets/mai2/common/music_icon_' + i + '.webp'">
-          </td>
-          <td *ngFor="let j of [0, 1, 2, 3, 4]">
-            {{ getRatingInfoByBase(displayRatingTableHeader[j], rowIndex) }}
-          </td>
-        </tr>
+          @for (i of ['sp', 'ss', 'ssp', 'sss', 'sssp']; track i; let rowIndex = $index) {
+            <tr>
+              <td>
+                <img class="rank-icon" src="{{host}}assets/mai2/common/music_icon_{{i}}.webp">
+              </td>
+              @for (j of [0, 1, 2, 3, 4]; track j) {
+                <td>
+                  {{ getRatingInfoByBase(displayRatingTableHeader[j], rowIndex) }}
+                </td>
+              }
+            </tr>
+          }
         </tbody>
       </table>
     </div>
@@ -40,20 +46,26 @@
     <div class="table-container d-none d-md-block">
       <table class="table table-striped" style="text-align: center;">
         <thead>
-        <tr>
-          <th></th>
-          <th *ngFor="let i of ['sp', 'ss', 'ssp', 'sss', 'sssp']">
-            <img class="rank-icon" [src]="host + 'assets/mai2/common/music_icon_' + i + '.webp'">
-          </th>
-        </tr>
+          <tr>
+            <th></th>
+            @for (i of ['sp', 'ss', 'ssp', 'sss', 'sssp']; track i) {
+              <th>
+                <img class="rank-icon" src="{{host}}assets/mai2/common/music_icon_{{i}}.webp">
+              </th>
+            }
+          </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let i of [0, 1, 2, 3, 4]">
-          <td style="font-weight: bold">{{ displayRatingTableHeader[i] != 0 ? displayRatingTableHeader[i] / 10 : " " }}</td>
-          <td *ngFor="let j of [0, 1, 2, 3, 4]">
-            {{ getRatingInfoByBase(displayRatingTableHeader[i], j) }}
-          </td>
-        </tr>
+          @for (i of [0, 1, 2, 3, 4]; track i) {
+            <tr>
+              <td style="font-weight: bold">{{ displayRatingTableHeader[i] != 0 ? displayRatingTableHeader[i] / 10 : " " }}</td>
+              @for (j of [0, 1, 2, 3, 4]; track j) {
+                <td>
+                  {{ getRatingInfoByBase(displayRatingTableHeader[i], j) }}
+                </td>
+              }
+            </tr>
+          }
         </tbody>
       </table>
     </div>
@@ -65,9 +77,9 @@
 </div>
 
 <div class="row mb-4 g-2">
-  <ng-container *ngFor="let item of best35Rating; index as i">
+  @for (item of best35Rating; track item; let i = $index) {
     <ng-container *ngTemplateOutlet="record; context: {item: item, index: i}"></ng-container>
-  </ng-container>
+  }
 </div>
 
 <div class="mb-3 d-flex align-items-center mt-3">
@@ -76,9 +88,9 @@
 </div>
 
 <div class="row mb-4 g-2">
-  <ng-container *ngFor="let item of best15Rating; index as i">
+  @for (item of best15Rating; track item; let i = $index) {
     <ng-container *ngTemplateOutlet="record; context: {item: item, index: i}"></ng-container>
-  </ng-container>
+  }
 </div>
 
 <ng-template #record let-index="index" let-item="item">
@@ -90,35 +102,49 @@
           [src]="host + 'assets/mai2/jacket/UI_Jacket_' + getJacketId(item.musicId) + '.webp'"
           (error)="imgError($event)"
           #img alt="">
-        <div *ngIf="item.musicId != 0" class="card-body overflow-hidden py-0 px-2">
-          <div class="text-truncate fw-bold m-0"><span>#{{index + 1}}</span> {{item.musicName}}</div>
-          <div class="text-truncate">{{item.score/10000 | number: '1.4-4'}}%</div>
-          <div class="text-truncate small rating-score">
-            <ng-container [ngSwitch]="item.level">
-            <span *ngSwitchCase="0" class="difficulty-basic badge rounded-pill">
-              Basic {{item.ratingBase/10.0|number:'1.1-1'}}
-            </span>
-              <span *ngSwitchCase="1" class="difficulty-advanced badge rounded-pill">
-              Advanced {{item.ratingBase/10.0|number:'1.1-1'}}
-            </span>
-              <span *ngSwitchCase="2" class="difficulty-expert badge rounded-pill">
-              Expert {{item.ratingBase/10.0|number:'1.1-1'}}
-            </span>
-              <span *ngSwitchCase="3" class="difficulty-master badge rounded-pill">
-              Master {{item.ratingBase/10.0|number:'1.1-1'}}
-            </span>
-              <span *ngSwitchCase="4" class="difficulty-remaster badge rounded-pill">
-              Re:Master {{item.ratingBase/10.0|number:'1.1-1'}}
-            </span>
-            </ng-container>
-            <b>➛</b>
-            {{item.rating}}
-          </div>
-        </div>
-        <div *ngIf="item.musicId == 0" class="card-body overflow-hidden py-0 px-4 text-truncate">
-          No Record
+          @if (item.musicId != 0) {
+            <div class="card-body overflow-hidden py-0 px-2">
+              <div class="text-truncate fw-bold m-0"><span>#{{index + 1}}</span> {{item.musicName}}</div>
+              <div class="text-truncate">{{item.score/10000 | number: '1.4-4'}}%</div>
+              <div class="text-truncate small rating-score">
+                @switch (item.level) {
+                  @case (0) {
+                    <span class="difficulty-basic badge rounded-pill">
+                      Basic {{item.ratingBase/10.0|number:'1.1-1'}}
+                    </span>
+                  }
+                  @case (1) {
+                    <span class="difficulty-advanced badge rounded-pill">
+                      Advanced {{item.ratingBase/10.0|number:'1.1-1'}}
+                    </span>
+                  }
+                  @case (2) {
+                    <span class="difficulty-expert badge rounded-pill">
+                      Expert {{item.ratingBase/10.0|number:'1.1-1'}}
+                    </span>
+                  }
+                  @case (3) {
+                    <span class="difficulty-master badge rounded-pill">
+                      Master {{item.ratingBase/10.0|number:'1.1-1'}}
+                    </span>
+                  }
+                  @case (4) {
+                    <span class="difficulty-remaster badge rounded-pill">
+                      Re:Master {{item.ratingBase/10.0|number:'1.1-1'}}
+                    </span>
+                  }
+                }
+                <b>➛</b>
+                {{item.rating}}
+              </div>
+            </div>
+          }
+          @if (item.musicId == 0) {
+            <div class="card-body overflow-hidden py-0 px-4 text-truncate">
+              No Record
+            </div>
+          }
         </div>
       </div>
     </div>
-  </div>
-</ng-template>
+  </ng-template>

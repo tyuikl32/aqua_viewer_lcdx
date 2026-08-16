@@ -1,9 +1,27 @@
-<p *ngIf="!accountService.currentAccountValue">
-  请先登录
-  <a routerLink="/sign-in">跳转至登录</a>
-</p>
-<div class="footer-container">
-  <footer class="footer mb-2">
-    <a class="text-muted small tiny-text" href="https://beian.miit.gov.cn/" target="_blank">沪ICP备2024087826号-2</a>
+<div class="container-xxl px-3 py-4 py-md-5">
+  <div class="row align-items-center justify-content-center g-4 py-md-4">
+    <div class="col-12 col-md-auto text-center">
+      <img src="assets/laochan.svg" width="144" height="144" alt="NET" class="img-fluid">
+    </div>
+    <div class="col-12 col-md-7 col-lg-6 text-center text-md-start">
+      <h1 class="display-3 fw-semibold mb-2">NET</h1>
+      <p class="lead text-body-secondary mb-4">{{'HomePage.LcdxDescription' | translate}}</p>
+      <a class="btn btn-primary px-4" routerLink="/sign-in">{{'HomePage.SignIn' | translate}}</a>
+    </div>
+  </div>
+
+  <hr class="my-4 my-md-5">
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-9">
+      <h2 class="h4 fw-semibold mb-3">{{'HomePage.MaimaiService' | translate}}</h2>
+      <p class="text-body-secondary mb-0">{{'HomePage.MaimaiServiceDescription' | translate}}</p>
+    </div>
+  </div>
+
+  <footer class="pt-5 text-center">
+    <a class="text-body-secondary small" href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">
+      沪ICP备2024087826号-2
+    </a>
   </footer>
 </div>

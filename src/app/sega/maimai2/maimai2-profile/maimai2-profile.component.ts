@@ -1,17 +1,19 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {AuthenticationService} from '../../../auth/authentication.service';
 import {MessageService} from '../../../message.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {DisplayMaimai2Profile} from '../model/Maimai2Profile';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {UdemaeName, ClassName} from '../model/Maimai2Enums';
 import { UserService } from 'src/app/user.service';
 
 @Component({
-  selector: 'app-maimai2-profile',
-  templateUrl: './maimai2-profile.component.html',
-  styleUrls: ['./maimai2-profile.component.css']
+    selector: 'app-maimai2-profile',
+    templateUrl: './maimai2-profile.component.html',
+    styleUrls: ['./maimai2-profile.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class Maimai2ProfileComponent implements OnInit {
 

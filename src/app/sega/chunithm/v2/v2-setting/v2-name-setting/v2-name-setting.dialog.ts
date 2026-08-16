@@ -1,11 +1,13 @@
-import {Component, Inject, Input} from '@angular/core';
+import {Component, Inject, Input, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {V2SettingComponent} from '../v2-setting.component';
 
 @Component({
-  selector: 'v2-name-setting-dialog',
-  templateUrl: 'v2-name-setting.html',
-  styleUrls: ['v2-name-setting.scss'],
+    selector: 'v2-name-setting-dialog',
+    templateUrl: 'v2-name-setting.html',
+    styleUrls: ['v2-name-setting.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2NameSettingDialog {
 

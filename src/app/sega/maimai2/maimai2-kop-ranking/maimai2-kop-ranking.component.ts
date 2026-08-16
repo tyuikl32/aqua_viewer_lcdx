@@ -1,17 +1,16 @@
-import { Component } from '@angular/core';
-import {V2UserRanking} from '../../chunithm/v2/model/V2UserRanking';
-import {V2PcRanking} from '../../chunithm/v2/model/V2PcRanking';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {environment} from '../../../../environments/environment';
 import {ApiService} from '../../../api.service';
-import {error} from 'protractor';
 import {KOPRankings} from '../model/Maimai2Profile';
 
 @Component({
   selector: 'app-maimai2-kop-ranking',
   templateUrl: './maimai2-kop-ranking.component.html',
-  styleUrls: ['./maimai2-kop-ranking.component.scss']
+  styleUrls: ['./maimai2-kop-ranking.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
-export class Maimai2KopRankingComponent {
+export class Maimai2KopRankingComponent implements OnInit {
   kopRankings: KOPRankings[] = [];
   host = environment.maiAssetsHost;
 

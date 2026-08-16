@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {AuthenticationService} from '../../../auth/authentication.service';
 import {MessageService} from '../../../message.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {environment} from '../../../../environments/environment';
 import {map, tap} from 'rxjs/operators';
@@ -15,9 +15,11 @@ import {Maimai2Playlog} from '../model/Maimai2Playlog';
 import {Maimai2SongDetailComponent} from "../maimai2-song-detail/maimai2-song-detail.component";
 
 @Component({
-  selector: 'app-maimai2-recent',
-  templateUrl: './maimai2-recent.component.html',
-  styleUrls: ['./maimai2-recent.component.scss']
+    selector: 'app-maimai2-recent',
+    templateUrl: './maimai2-recent.component.html',
+    styleUrls: ['./maimai2-recent.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class Maimai2RecentComponent implements OnInit {
 

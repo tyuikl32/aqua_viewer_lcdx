@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../../api.service';
 import {AuthenticationService} from '../../../../auth/authentication.service';
 import {MessageService} from '../../../../message.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {V2PlayLog} from '../model/V2PlayLog';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {ChusanMusic, Difficulty} from '../model/ChusanMusic';
@@ -13,12 +13,13 @@ import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
 import {V2SongScoreRankingComponent} from '../v2-song-score-ranking/v2-song-score-ranking.component';
 import {UserService} from 'src/app/user.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {load} from '@angular-devkit/build-angular/src/utils/server-rendering/esm-in-memory-file-loader';
 
 @Component({
-  selector: 'app-v2-recent',
-  templateUrl: './v2-recent.component.html',
-  styleUrls: ['./v2-recent.component.css']
+    selector: 'app-v2-recent',
+    templateUrl: './v2-recent.component.html',
+    styleUrls: ['./v2-recent.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2RecentComponent implements OnInit {
 

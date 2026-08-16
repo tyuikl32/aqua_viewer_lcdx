@@ -1,13 +1,15 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {PlayerCard} from '../model/PlayerCard';
 import {environment} from '../../../../environments/environment';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 
 @Component({
-  selector: 'app-ongeki-card-item',
-  templateUrl: './ongeki-card-item.component.html',
-  styleUrls: ['./ongeki-card-item.component.css'],
-  inputs: ['item', 'showHolo', 'showElements', 'holoSheetStyle1', 'holoSheetStyle2']
+    selector: 'app-ongeki-card-item',
+    templateUrl: './ongeki-card-item.component.html',
+    styleUrls: ['./ongeki-card-item.component.css'],
+    inputs: ['item', 'showHolo', 'showElements', 'holoSheetStyle1', 'holoSheetStyle2'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class OngekiCardItemComponent implements OnInit {
 

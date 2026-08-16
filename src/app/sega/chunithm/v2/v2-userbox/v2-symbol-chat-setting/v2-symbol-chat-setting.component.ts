@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {environment} from '../../../../../../environments/environment';
 import {V2Item} from '../../model/V2Item';
 import {ApiService} from '../../../../../api.service';
@@ -9,14 +9,15 @@ import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {V2UserBoxSettingData} from '../v2-userbox-setting/v2-userbox-setting.dialog';
 import {ChusanSymbolChat} from '../../model/ChusanSymbolChat';
 import {V2SymbolChat} from '../../model/V2SymbolChat';
-import {error} from 'protractor';
 import {TranslateService} from '@ngx-translate/core';
 import {lastValueFrom} from 'rxjs';
 
 @Component({
-  selector: 'app-v2-symbol-chat-setting',
-  templateUrl: './v2-symbol-chat-setting.component.html',
-  styleUrls: ['./v2-symbol-chat-setting.component.css']
+    selector: 'app-v2-symbol-chat-setting',
+    templateUrl: './v2-symbol-chat-setting.component.html',
+    styleUrls: ['./v2-symbol-chat-setting.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2SymbolChatSettingComponent implements OnInit {
 

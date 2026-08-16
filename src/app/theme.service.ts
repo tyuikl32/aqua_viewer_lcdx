@@ -5,7 +5,7 @@ import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 })
 export class ThemeService {
   private renderer: Renderer2;
-  private Theme: 'dark' | 'light' | 'auto';
+  private Theme: string;
   private ThemeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
   constructor(private rendererFactory: RendererFactory2) {
@@ -25,7 +25,7 @@ export class ThemeService {
     });
   }
 
-  public setTheme(newTheme: 'dark' | 'light' | 'auto') {
+  public setTheme(newTheme: string) {
     this.Theme = newTheme;
     localStorage.setItem('colorTheme', newTheme);
     this.applyColorTheme();

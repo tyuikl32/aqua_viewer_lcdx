@@ -2,17 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import {ApiService} from '../api.service';
 import {Router} from '@angular/router';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {AccountService} from '../auth/account.service';
-import {HttpClient, HttpParams} from '@angular/common/http';
 import {UserService} from '../user.service';
 import {MessageService} from '../message.service';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {Luid} from '../cards/cards.component';
 
 @Component({
   selector: 'app-netcode-bind',
   templateUrl: './netcode-bind.component.html',
-  styleUrls: ['./netcode-bind.component.css']
+  styleUrls: ['./netcode-bind.component.css'],
+  standalone: false
 })
 export class NetcodeBindComponent implements OnInit {
 

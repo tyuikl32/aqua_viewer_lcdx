@@ -1,11 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {MessageService} from '../../../message.service';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {environment} from '../../../../environments/environment';
 import {Observable} from 'rxjs';
 import {PlayerPlaylog} from '../model/PlayerPlaylog';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {catchError, map, tap} from 'rxjs/operators';
 import {OngekiMusic} from '../model/OngekiMusic';
 import {AttributeType, Difficulty} from '../model/OngekiEnums';
@@ -15,9 +15,11 @@ import {ActivatedRoute, Router} from '@angular/router';
 import { UserService } from 'src/app/user.service';
 
 @Component({
-  selector: 'app-ongeki-recent',
-  templateUrl: './ongeki-recent.component.html',
-  styleUrls: ['./ongeki-recent.component.css']
+    selector: 'app-ongeki-recent',
+    templateUrl: './ongeki-recent.component.html',
+    styleUrls: ['./ongeki-recent.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class OngekiRecentComponent implements OnInit {
 

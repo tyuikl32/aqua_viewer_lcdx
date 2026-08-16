@@ -1,47 +1,87 @@
-
-<div class="d-flex justify-content-center">
+<div class="d-flex justify-content-center px-2">
   <div class="card authorization-card col-12 mb-5">
-    <div class="hstack alert alert-info my-2 mx-2">
-      <ng-icon class="me-2" name="bootstrap-sun"></ng-icon>
-      <ul class="m-0 mt-2 mb-2">
-        <li>如果可以，使用Bot的快捷登录指令获得快速登陆网址，并在浏览器中跳转登录.</li>
-        <li>你也可以在下面的表单手动登录.</li>
-      </ul>
+    <div class="alert alert-info d-flex gap-2 m-2 mb-0" role="alert">
+      <ng-icon class="flex-shrink-0 mt-1" name="bootstrap-info-circle-fill"></ng-icon>
+      <div>
+        <div>{{'SignInPage.BotQuickLoginTip' | translate}}</div>
+        <div>{{'SignInPage.ManualLoginTip' | translate}}</div>
+      </div>
     </div>
-    <div class="pt-2 pt-lg-4 px-3 px-sm-5 mb-3">
+
+    <div class="pt-3 pt-lg-4 px-3 px-sm-5 mb-3">
       <div class="mb-4">
-        <div class="fs-1 fw-bold"></div>
+        <div class="fs-1 fw-bold">NET</div>
         <div class="fs-5 fw-bold">{{'SignInPage.Title' | translate}}</div>
       </div>
-      <div *ngIf="type && token" class="callout callout-info py-3" role="alert">
-        {{'SignInPage.BindTip' | translate: {type: oauth.tokenTypes.get(type)} }}
-      </div>
-      <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
-        <div class="d-grid gap-1 small fw-bold">
-          <div class="position-relative">
-            <label for="usernameOrEmail" class="form-label small">{{'SignInPage.UsernameOrEmail' | translate}}</label>
-            <input type="text" class="form-control form-control-sm" id="usernameOrEmail"
-                   formControlName="usernameOrEmail" placeholder=""
-                   [class.is-invalid]="usernameOrEmail.touched && !usernameOrEmail.valid && usernameOrEmail.errors">
+
+      @if (totpToken) {
+        <form [formGroup]="totpForm" (ngSubmit)="onSubmitTotp()">
+          <div class="d-grid gap-2 small fw-bold">
+            <p class="fw-normal mb-2">{{'SignInPage.TotpTip' | translate}}</p>
+            <div>
+              <label for="totpCode" class="form-label small">{{'SignInPage.TotpCode' | translate}}</label>
+              <input
+                type="text"
+                inputmode="numeric"
+                class="form-control form-control-sm"
+                id="totpCode"
+                formControlName="code"
+                autocomplete="one-time-code"
+                maxlength="11"
+                [class.is-invalid]="totpCode.touched && totpCode.invalid">
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm" [disabled]="totpForm.disabled">
+              {{'SignInPage.SignIn' | translate}}
+            </button>
+            <button type="button" class="btn btn-link btn-sm text-decoration-none" (click)="cancelTotp()">
+              {{'SignInPage.TotpBack' | translate}}
+            </button>
           </div>
-          <div class="position-relative">
-            <label for="password" class="form-label small">{{'SignInPage.Password' | translate}}</label>
-            <input type="password" class="form-control form-control-sm" id="password" formControlName="password"
-                   placeholder=""
-                   [class.is-invalid]="password.touched && !password.valid && password.errors">
+        </form>
+      } @else {
+        <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
+          <div class="d-grid gap-2 small fw-bold">
+            <div>
+              <label for="qqNumber" class="form-label small">{{'SignInPage.UsernameOrEmail' | translate}}</label>
+              <input
+                type="text"
+                inputmode="numeric"
+                autocomplete="username"
+                class="form-control form-control-sm"
+                id="qqNumber"
+                formControlName="qqNumber"
+                [class.is-invalid]="qqNumber.touched && qqNumber.invalid">
+              @if (qqNumber.touched && qqNumber.invalid) {
+                <div class="invalid-feedback">{{'SignInPage.QQNumberInvalid' | translate}}</div>
+              }
+            </div>
+            <div>
+              <label for="password" class="form-label small">{{'SignInPage.Password' | translate}}</label>
+              <input
+                type="password"
+                autocomplete="current-password"
+                class="form-control form-control-sm"
+                id="password"
+                formControlName="password"
+                [class.is-invalid]="password.touched && password.invalid">
+            </div>
+            <div class="text-end">
+              <button type="button" class="btn btn-link text-decoration-none btn-sm" (click)="navigateToSignUp()">
+                {{'SignInPage.ResetPasswordTip' | translate}}
+              </button>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm" [disabled]="signInForm.disabled">
+              {{'SignInPage.SignIn' | translate}}
+            </button>
+            <div class="fw-normal d-flex align-items-center justify-content-center gap-1">
+              {{'SignInPage.SignUpTip' | translate}}
+              <button type="button" class="btn btn-link btn-sm text-decoration-none p-0" (click)="navigateToSignUp()">
+                {{'SignInPage.SignUp' | translate}}
+              </button>
+            </div>
           </div>
-          <div class="text-end">
-            <button type="button" class="btn btn-link text-decoration-none btn-sm" (click)="navigateToSignUp()">{{'SignInPage.ResetPasswordTip' | translate}}</button>
-          </div>
-          <button type="submit" class="btn btn-primary btn-sm mb-2" [class.disabled]="signInForm.disabled">
-            {{'SignInPage.SignIn' | translate}}
-          </button>
-          <div class="fw-normal d-flex align-items-center justify-content-center">
-            {{'SignInPage.SignUpTip' | translate}}
-            <button class="btn btn-link btn-sm text-decoration-none p-0" (click)="navigateToSignUp()">{{'SignInPage.SignUp' | translate}}</button>
-          </div>
-        </div>
-      </form>
+        </form>
+      }
     </div>
   </div>
 </div>

@@ -1,6 +1,6 @@
 <h1 class="page-heading">{{ "ChuniV2.SettingsPage.Title" | translate }}</h1>
 
-<ng-container *ngIf="profile">
+@if (profile) {
   <h2 class="mb-3">{{ "ChuniV2.SettingsPage.Profile" | translate }}</h2>
   <div class="card mb-3">
     <div class="card-body">
@@ -14,7 +14,6 @@
     </div>
   </div>
   <h2 class="mb-3">{{ "ChuniV2.SettingsPage.Versionfile" | translate }}</h2>
-
   <div class="version-box">
     <div class="card">
       <div class="card-header">{{ "ChuniV2.SettingsPage.DataVersion" | translate }}</div>
@@ -26,7 +25,6 @@
         </div>
       </div>
     </div>
-
     <div class="card">
       <div class="card-header">{{ "ChuniV2.SettingsPage.RomVersion" | translate }}</div>
       <div class="card-body">
@@ -38,7 +36,5 @@
       </div>
     </div>
   </div>
-
   <button class="mt-3 btn btn-primary w-100" (click)="downloadFile()">{{ "ChuniV2.SettingsPage.Export" | translate }}</button>
-
-</ng-container>
+}

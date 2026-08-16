@@ -1,11 +1,11 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {environment} from '../../../../../environments/environment';
 import {ChusanProfile, ChusanRival} from '../model/ChusanRival';
 import {ApiService} from '../../../../api.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthenticationService} from '../../../../auth/authentication.service';
 import {MessageService} from '../../../../message.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {StatusCode} from '../../../../status-code';
 import { UserService } from 'src/app/user.service';
 import { debounce } from '../../../../util/debounce';
@@ -18,9 +18,11 @@ enum V2RivalAPI {
 }
 
 @Component({
-  selector: 'app-v2-rival-list',
-  templateUrl: './v2-rival-list.component.html',
-  styleUrls: ['./v2-rival-list.component.css']
+    selector: 'app-v2-rival-list',
+    templateUrl: './v2-rival-list.component.html',
+    styleUrls: ['./v2-rival-list.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2RivalListComponent {
   host = environment.assetsHost;

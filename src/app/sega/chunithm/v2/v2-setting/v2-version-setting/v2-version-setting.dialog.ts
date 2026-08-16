@@ -1,10 +1,12 @@
-import {Component, Inject, Input} from '@angular/core';
+import {Component, Inject, Input, ChangeDetectionStrategy} from '@angular/core';
 import {V2SettingComponent} from '../v2-setting.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'v2-version-setting-dialog',
-  templateUrl: 'v2-version-setting.html',
+    selector: 'v2-version-setting-dialog',
+    templateUrl: 'v2-version-setting.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2VersionSettingDialog {
 

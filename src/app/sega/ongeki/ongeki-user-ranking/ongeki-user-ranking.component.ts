@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {OngekiUserRanking} from '../model/OngekiUserRanking';
 import {ApiService} from '../../../api.service';
 import {OngekiPcRanking} from '../model/OngekiPcRanking';
@@ -6,9 +6,11 @@ import {environment} from '../../../../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
-  selector: 'app-ongeki-user-ranking',
-  templateUrl: './ongeki-user-ranking.component.html',
-  styleUrls: ['./ongeki-user-ranking.component.scss']
+    selector: 'app-ongeki-user-ranking',
+    templateUrl: './ongeki-user-ranking.component.html',
+    styleUrls: ['./ongeki-user-ranking.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class OngekiUserRankingComponent implements OnInit {
 

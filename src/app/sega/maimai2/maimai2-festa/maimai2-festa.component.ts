@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import { HttpParams } from '@angular/common/http';
@@ -26,9 +26,11 @@ import { Maimai2CircleFestaRankInfo } from '../model/Maimai2CircleFestaRankInfo'
 import { Maimai2CircleFestaData } from '../model/Maimai2CircleFestaData';
 
 @Component({
-  selector: 'app-maimai2-festa',
-  templateUrl: './maimai2-festa.component.html',
-  styleUrls: ['./maimai2-festa.component.css']
+    selector: 'app-maimai2-festa',
+    templateUrl: './maimai2-festa.component.html',
+    styleUrls: ['./maimai2-festa.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class Maimai2FestaComponent implements OnInit {
 

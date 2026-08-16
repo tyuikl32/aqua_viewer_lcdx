@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {OngekiGameRanking} from '../model/OngekiGameRanking';
 import {ApiService} from '../../../api.service';
 import {environment} from '../../../../environments/environment';
@@ -7,9 +7,11 @@ import {OngekiSongScoreRankingComponent} from '../ongeki-song-score-ranking/onge
 import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-ongeki-music-ranking',
-  templateUrl: './ongeki-music-ranking.component.html',
-  styleUrls: ['./ongeki-music-ranking.component.scss']
+    selector: 'app-ongeki-music-ranking',
+    templateUrl: './ongeki-music-ranking.component.html',
+    styleUrls: ['./ongeki-music-ranking.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class OngekiMusicRankingComponent implements OnInit {
   ongekiGameRankings: OngekiGameRanking[] = [];

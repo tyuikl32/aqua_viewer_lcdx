@@ -1,27 +1,26 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {PreloadService} from '../database/preload.service';
-import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {environment} from '../../environments/environment';
 import {ApiService} from '../api.service';
 import {Observable} from 'rxjs';
 import {MessageService} from '../message.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {AuthenticationService} from '../auth/authentication.service';
 import {StatusCode} from '../status-code';
-import {Router} from '@angular/router';
 import {Announcement, AnnouncementComponent} from '../announcements/announcement/announcement.component';
-import {LanguageService} from "../language.service";
-import {HttpParams} from "@angular/common/http";
-import {TranslateService} from "@ngx-translate/core";
-import {compareVersions} from 'compare-versions';
+import {LanguageService} from '../language.service';
+import { HttpParams } from '@angular/common/http';
+import {TranslateService} from '@ngx-translate/core';
+import {Luid} from '../cards/cards.component';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class DashboardComponent implements OnInit {
-  host = environment.assetsHost;
+  host = environment.maiAssetsHost;
   totalPreloadTaskCount = 0;
   downloadingPreloadTaskCount = 0;
   completedPreloadTaskCount = 0;
@@ -30,31 +29,21 @@ export class DashboardComponent implements OnInit {
   announcement: Announcement;
   announcement2: Announcement;
   loadingAnnouncement = true;
-  recentUpdate: Announcement;
-  loadingUpdate = true;
+  private announcementRequestsPending = 0;
   loadingDatabase = true;
   loadingProfiles = true;
   profilesError = false;
-  loadingKeychip = true;
-  loadingTrustedKeychip = true;
   checkingUpdateState = 'checking';
   dbVersion = 0;
   currentCard = undefined;
   noCard = false;
-  hasKeychip = false;
-  hasTrustedKeychip = false;
-  protected ongekiProfile;
-  protected chusanProfile;
   protected mai2Profile;
 
   constructor(
-    private dbService: NgxIndexedDBService,
     private preload: PreloadService,
-    protected authenticationService: AuthenticationService,
     private api: ApiService,
     private messageService: MessageService,
     private modalService: NgbModal,
-    protected  router: Router,
     protected language: LanguageService,
     private translate: TranslateService
   ) {
@@ -76,6 +65,7 @@ export class DashboardComponent implements OnInit {
     this.addStatusSubscribe(this.preload.chusanFrameState);
     this.addStatusSubscribe(this.preload.chusanAvatarAccState);
     this.addStatusSubscribe(this.preload.chusanSymbolChatState);
+    this.addStatusSubscribe(this.preload.chusanStageState);
     this.addStatusSubscribe(this.preload.maimai2MusicState);
     this.preload.checkingUpdateObservable.subscribe(checkingUpdate => {
       this.checkingUpdateState = checkingUpdate;
@@ -85,13 +75,10 @@ export class DashboardComponent implements OnInit {
     });
     this.translate.onLangChange.subscribe(event => {
       this.loadingAnnouncement = true;
-      this.loadingUpdate = true;
       this.loadAnnouncements();
     });
 
     this.getProfiles();
-    this.loadKeychip();
-    this.loadTrustedKeychip();
   }
 
   getProfiles(){
@@ -100,29 +87,26 @@ export class DashboardComponent implements OnInit {
         if (resp?.status) {
           const statusCode: StatusCode = resp.status.code;
           if (statusCode === StatusCode.OK && resp.data) {
-            this.chusanProfile = resp.data.chusan;
-            this.ongekiProfile = resp.data.ongeki;
             this.mai2Profile = resp.data.maimai2;
-            this.currentCard = resp.data.chusan?.accessCode || resp.data.ongeki?.accessCode || resp.data.maimai2?.accessCode;
-            if(this.currentCard){
-              this.currentCard = this.currentCard.substring(0, 4) + '************' + this.currentCard.substring(16);
+            const accessCode = resp.data.maimai2?.accessCode;
+            if (accessCode){
+              this.currentCard = new Luid(accessCode).getMaskedValue();
             }
           }
           else if (statusCode === StatusCode.NOT_FOUND){
             this.noCard = true;
-            if (this.noCard){
-              this.router.navigate(['/netcode-bind']);
-            }
           }
           else{
             this.messageService.notice(resp.status.message);
+            this.profilesError = true;
           }
-          this.loadingProfiles = false;
         }
+        this.loadingProfiles = false;
       },
       error => {
         this.messageService.notice(error);
         this.loadingProfiles = false;
+        this.profilesError = true;
       });
   }
 
@@ -151,6 +135,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadAnnouncements() {
+    this.announcementRequestsPending = 2;
     const param = new HttpParams().set('lang', this.language.getCurrentLang()).set('index', 0);
     this.api.getLcdx('lcdx/announcement/recent', param).subscribe(
       resp => {
@@ -162,13 +147,14 @@ export class DashboardComponent implements OnInit {
           else{
             this.messageService.notice(resp.status.message);
           }
-          this.loadingAnnouncement = false;
         }
+        this.finishAnnouncementRequest();
       },
       error => {
         this.messageService.notice(error);
-        this.loadingAnnouncement = false;
+        this.finishAnnouncementRequest();
       });
+
     const param2 = new HttpParams().set('lang', this.language.getCurrentLang()).set('index', 1);
     this.api.getLcdx('lcdx/announcement/recent', param2).subscribe(
       resp => {
@@ -180,55 +166,18 @@ export class DashboardComponent implements OnInit {
           else{
             this.messageService.notice(resp.status.message);
           }
-          this.loadingAnnouncement = false;
         }
+        this.finishAnnouncementRequest();
       },
       error => {
         this.messageService.notice(error);
-        this.loadingAnnouncement = false;
+        this.finishAnnouncementRequest();
       });
   }
 
-  loadKeychip(){
-    this.api.get('api/user/keychip').subscribe(
-      resp => {
-        if (resp?.status) {
-          const statusCode: StatusCode = resp.status.code;
-          if (statusCode === StatusCode.OK && resp.data) {
-            this.hasKeychip = resp.data.length > 0;
-          } else {
-            this.messageService.notice(resp.status.message);
-          }
-        } else {
-          this.messageService.notice('Load keychips failed.');
-        }
-        this.loadingKeychip = false;
-      },
-      error => {
-        this.messageService.notice(error);
-      }
-    );
-  }
-
-  loadTrustedKeychip(){
-    this.api.get('api/user/keychip/trustKeychip').subscribe(
-      resp => {
-        if (resp?.status) {
-          const statusCode: StatusCode = resp.status.code;
-          if (statusCode === StatusCode.OK && resp.data) {
-            this.hasTrustedKeychip = resp.data.length > 0;
-          } else {
-            this.messageService.notice(resp.status.message);
-          }
-        } else {
-          this.messageService.notice('Load trusted keychips failed.');
-        }
-        this.loadingTrustedKeychip = false;
-      },
-      error => {
-        this.messageService.notice(error);
-      }
-    );
+  private finishAnnouncementRequest() {
+    this.announcementRequestsPending--;
+    this.loadingAnnouncement = this.announcementRequestsPending > 0;
   }
 
   showAnnouncement(announcement: Announcement) {
@@ -240,22 +189,5 @@ export class DashboardComponent implements OnInit {
     return input.toString().padStart(digit, '0');
   }
 
-  compareVersion(version: string, target: string, operator: '>=' | '<') {
-    const a = version.split('.').map(Number);
-    const b = target.split('.').map(Number);
-    const len = Math.max(a.length, b.length);
-
-    for (let i = 0; i < len; i++) {
-      const n1 = a[i] || 0;
-      const n2 = b[i] || 0;
-
-      if (n1 > n2) { return operator === '>='; }
-      if (n1 < n2) { return operator === '<'; }
-    }
-    return operator === '>=';
-  }
-
-
-  protected readonly compareVersions = compareVersions;
 }
 

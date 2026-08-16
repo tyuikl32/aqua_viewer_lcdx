@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {AuthenticationService} from '../../../auth/authentication.service';
 import {MessageService} from '../../../message.service';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {PlayerRatingItem} from '../model/PlayerRatingItem';
 import {OngekiMusic} from '../model/OngekiMusic';
 import {environment} from '../../../../environments/environment';
@@ -14,9 +14,11 @@ import {DisplayOngekiProfile} from '../model/OngekiProfile';
 import { UserService } from 'src/app/user.service';
 
 @Component({
-  selector: 'app-ongeki-battle-point',
-  templateUrl: './ongeki-battle-point.component.html',
-  styleUrls: ['./ongeki-battle-point.component.css']
+    selector: 'app-ongeki-battle-point',
+    templateUrl: './ongeki-battle-point.component.html',
+    styleUrls: ['./ongeki-battle-point.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class OngekiBattlePointComponent implements OnInit {
 

@@ -11,7 +11,8 @@ import {environment} from '../../../../environments/environment';
 @Component({
   selector: 'app-maimai2-rival',
   templateUrl: './maimai2-rival.component.html',
-  styleUrls: ['./maimai2-rival.component.css']
+  styleUrls: ['./maimai2-rival.component.css'],
+  standalone: false
 })
 export class Maimai2RivalComponent {
 
@@ -30,7 +31,7 @@ export class Maimai2RivalComponent {
   private aimeId: string;
   protected readonly String = String;
 
-  ngOnInit(){
+  ngOnInit() {
     this.loading = true;
     this.aimeId = String(this.userService.currentUser.defaultCard.extId);
     this.loadRival();
@@ -94,11 +95,15 @@ export class Maimai2RivalComponent {
 
 
   convertRivalId(src: string): string {
-    return (59999999 - parseInt(src) + 1234).toString();
+    return this.transformRivalId(src);
   }
 
   revertRivalId(src: string): string {
-    return (-(parseInt(src) - 1234 - 59999999)).toString();
+    return this.transformRivalId(src);
+  }
+
+  private transformRivalId(src: string): string {
+    return (60001233 - Number.parseInt(src, 10)).toString();
   }
   getFormattedNumberByDigit(input: string, digit: number): string {
     return input.toString().padStart(digit, '0');

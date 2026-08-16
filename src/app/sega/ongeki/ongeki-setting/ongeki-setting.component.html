@@ -1,5 +1,5 @@
 <h1 class="page-heading">{{ "Ongeki.SettingsPage.Title" | translate }}</h1>
-<ng-container *ngIf="profile">
+@if (profile) {
   <h2 class="mb-3">{{ "Ongeki.SettingsPage.Profile" | translate }}</h2>
   <div class="card mb-3">
     <div class="card-body">
@@ -77,4 +77,4 @@
     </div>
   </div>
   <a class="btn btn-primary w-100" (click)="downloadFile()">{{ "Ongeki.SettingsPage.Export" | translate }}</a>
-</ng-container>
+}

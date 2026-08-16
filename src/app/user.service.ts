@@ -20,10 +20,7 @@ export class UserService {
     private messageService: MessageService,
   ) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (account.currentAccountValue){
-      this.load();
-    }
-    else{
+    if (!account.currentAccountValue){
       this.clear();
     }
   }

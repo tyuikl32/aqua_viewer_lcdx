@@ -1,8 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
-@import "/node_modules/bootstrap/scss/functions";
-@import "/node_modules/bootstrap/scss/variables";
-@import "/node_modules/bootstrap/scss/mixins/breakpoints";
-@import "/node_modules/bootstrap/scss/bootstrap-grid";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins/breakpoints";
+@import "bootstrap/scss/bootstrap-grid";
 
 
 html, body {
@@ -375,6 +375,30 @@ h6 {
   font-size: .875rem;
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
+
+/* Raw JSON viewer. Lives in the global stylesheet because the highlighted
+   markup is injected via [innerHTML], so component-scoped selectors never
+   match it and the production build's critical-CSS pass would strip the
+   rules as "unused". */
+.json-view {
+  max-height: 26rem;
+  overflow: auto;
+  padding: .75rem;
+  border-radius: .375rem;
+  background: var(--bs-secondary-bg);
+}
+
+.json-view .json-key { color: #0b5ed7; }
+.json-view .json-string { color: #1a7f37; }
+.json-view .json-number { color: #b35900; }
+.json-view .json-boolean { color: #6f42c1; }
+.json-view .json-null { color: #6c757d; }
+
+[data-bs-theme="dark"] .json-view .json-key { color: #79c0ff; }
+[data-bs-theme="dark"] .json-view .json-string { color: #7ee787; }
+[data-bs-theme="dark"] .json-view .json-number { color: #ffa657; }
+[data-bs-theme="dark"] .json-view .json-boolean { color: #d2a8ff; }
+[data-bs-theme="dark"] .json-view .json-null { color: #8b949e; }
 
 
 input[type=checkbox] + .checkbox-label:hover{

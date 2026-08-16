@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../../api.service';
 import {MessageService} from '../../../../message.service';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {map, tap} from 'rxjs/operators';
 import {combineLatest, lastValueFrom, Observable, startWith} from 'rxjs';
 import {V2Character} from '../model/V2Character';
@@ -17,9 +17,11 @@ import {TranslateService} from '@ngx-translate/core';
 import {ReleaseTagService} from '../util/release-tag.service';
 
 @Component({
-  selector: 'app-v2-character',
-  templateUrl: './v2-character.component.html',
-  styleUrls: ['./v2-character.component.scss']
+    selector: 'app-v2-character',
+    templateUrl: './v2-character.component.html',
+    styleUrls: ['./v2-character.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2CharacterComponent implements OnInit {
 

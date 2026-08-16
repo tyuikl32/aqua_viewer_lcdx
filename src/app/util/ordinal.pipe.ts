@@ -2,14 +2,15 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 @Pipe({
-  name: 'ordinal'
+    name: 'ordinal',
+    standalone: false
 })
 export class OrdinalPipe implements PipeTransform {
 
   constructor(private translateService: TranslateService) {}
 
   transform(value: number): string {
-    const locale = this.translateService.currentLang;
+    const locale = this.translateService.currentLang();
     if (locale === 'en') {
       return this.getEnglishOrdinal(value);
     }

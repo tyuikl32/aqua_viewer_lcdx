@@ -12,6 +12,7 @@ import {
   UrlTree
 } from '@angular/router';
 import {Observable} from 'rxjs';
+import {AccountAccessService} from './account-access.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,27 +21,25 @@ export class AuthGuardService implements CanMatch, CanActivate {
 
   constructor(
     private router: Router,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private access: AccountAccessService
   ) {
   }
 
   canMatch(route: Route, segments: UrlSegment[]): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
-    const currentUser = this.accountService.currentAccountValue;
-    if (currentUser) {
-      return true;
-    }
-
-    this.router.navigate(['/']);
-    return false;
+    return this.checkAccess();
     }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const currentUser = this.accountService.currentAccountValue;
-    if (currentUser) {
-      return true;
-    }
-    this.router.navigate(['/']);
-    return false;
+    return this.checkAccess();
+  }
+
+  private async checkAccess(): Promise<boolean | UrlTree> {
+    if (!this.accountService.currentAccountValue) return this.router.parseUrl('/');
+    const status = await this.access.restore();
+    if (status?.banned) return this.router.parseUrl('/banned');
+    if (status?.eulaRequired) return this.router.parseUrl('/eula');
+    return true;
   }
 
 }

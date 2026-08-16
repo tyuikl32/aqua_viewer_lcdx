@@ -4,12 +4,12 @@ import {MessageService} from '../message.service';
 import {StatusCode} from '../status-code';
 import {TranslateService} from '@ngx-translate/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {AccountService} from '../auth/account.service';
 
 @Component({
   selector: 'app-onetime-sign-in',
   templateUrl: './onetime-sign-in.component.html',
-  styleUrls: ['./onetime-sign-in.component.css']
+  styleUrls: ['./onetime-sign-in.component.css'],
+  standalone: false
 })
 
 export class OnetimeSignInComponent {
@@ -21,7 +21,7 @@ export class OnetimeSignInComponent {
     private translate: TranslateService,
   ) {
     this.route.queryParams.subscribe((data) => {
-      this.load(data.token);
+      this.authenticationService.logout().subscribe(() => this.load(data.token));
     });
   }
 
@@ -35,7 +35,9 @@ export class OnetimeSignInComponent {
               const statusCode: StatusCode = resp.status.code;
               if (statusCode === StatusCode.OK && resp.data) {
                 this.messageService.notice(resp.status.message);
-                this.router.navigate(['/dashboard']);
+                if (this.router.url.startsWith('/onetime-sign-in')) {
+                  this.router.navigate(['/dashboard']);
+                }
               }
               else if (statusCode === StatusCode.LOGIN_FAILED){
                 this.translate.get('SignInPage.LoginFailedMessage').subscribe((res: string) => {

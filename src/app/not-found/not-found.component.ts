@@ -1,10 +1,12 @@
-import {Component, ElementRef, QueryList, Renderer2, ViewChildren} from '@angular/core';
+import {Component, ElementRef, QueryList, Renderer2, ViewChildren, ChangeDetectionStrategy} from '@angular/core';
 import {environment} from '../../environments/environment';
 
 @Component({
-  selector: 'app-not-found',
-  templateUrl: './not-found.component.html',
-  styleUrls: ['./not-found.component.css']
+    selector: 'app-not-found',
+    templateUrl: './not-found.component.html',
+    styleUrls: ['./not-found.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class NotFoundComponent {
   @ViewChildren('faultTurtle') faultTurtle: QueryList<ElementRef>;

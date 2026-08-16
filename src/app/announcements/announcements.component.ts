@@ -1,19 +1,21 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from "../api.service";
 import {MessageService} from "../message.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StatusCode} from "../status-code";
 import {LanguageService} from "../language.service";
-import {HttpParams} from "@angular/common/http";
+import { HttpParams } from "@angular/common/http";
 import {Announcement, AnnouncementComponent, AnnouncementType} from "./announcement/announcement.component";
 import {UserService} from "../user.service";
 import {TranslateService} from "@ngx-translate/core";
 
 @Component({
-  selector: 'app-announcements',
-  templateUrl: './announcements.component.html',
-  styleUrls: ['./announcements.component.css']
+    selector: 'app-announcements',
+    templateUrl: './announcements.component.html',
+    styleUrls: ['./announcements.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class AnnouncementsComponent implements OnInit {
   announcementType = AnnouncementType;
@@ -30,7 +32,7 @@ export class AnnouncementsComponent implements OnInit {
     private messageService: MessageService,
     public router: Router,
     public route: ActivatedRoute,
-    private modalService: NgbModal,
+    protected modalService: NgbModal,
     private translate: TranslateService
   ) {
   }
@@ -135,6 +137,22 @@ export class AnnouncementsComponent implements OnInit {
       this.router.navigate(['/announcements/edit'], {queryParams: {id}});
       $event.preventDefault();
     }
+  }
+
+  deleteAnnouncement(announcement: Announcement, modal: any) {
+    this.api.delete('api/admin/announcement/' + announcement.id).subscribe(
+      resp => {
+        if (resp?.status?.code === StatusCode.OK) {
+          this.loadAnnouncements(this.currentPage);
+        } else {
+          this.messageService.notice(resp?.status?.message);
+        }
+        modal.close();
+      },
+      error => {
+        this.messageService.notice(error);
+        modal.close();
+      });
   }
 
   protected readonly AnnouncementType = AnnouncementType;

@@ -1,7 +1,7 @@
-import {Component, OnInit, Version} from '@angular/core';
+import {Component, OnInit, Version, ChangeDetectionStrategy} from '@angular/core';
 import {MessageService} from '../../../../message.service';
 import {ApiService} from '../../../../api.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {AuthenticationService} from '../../../../auth/authentication.service';
 import {environment} from '../../../../../environments/environment';
 import { UserService } from 'src/app/user.service';
@@ -13,9 +13,11 @@ import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {compareVersions} from 'compare-versions';
 
 @Component({
-  selector: 'app-v2-rating',
-  templateUrl: './v2-rating.component.html',
-  styleUrls: ['./v2-rating.component.scss']
+    selector: 'app-v2-rating',
+    templateUrl: './v2-rating.component.html',
+    styleUrls: ['./v2-rating.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2RatingComponent implements OnInit {
 

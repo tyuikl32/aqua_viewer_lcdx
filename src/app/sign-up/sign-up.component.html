@@ -1,75 +1,86 @@
-<div class="d-flex justify-content-center">
+<div class="d-flex justify-content-center px-2">
   <div class="card authorization-card col-12 mb-5">
-    <div class="pt-2 pt-lg-4 px-3 px-sm-5 mb-3">
+    <div class="pt-3 pt-lg-4 px-3 px-sm-5 mb-3">
       <div class="mb-4">
-        <div class="fs-1 fw-bold"></div>
+        <div class="fs-1 fw-bold">NET</div>
         <div class="fs-5 fw-bold">{{'SignUpPage.Title' | translate}}</div>
       </div>
-      <div *ngIf="type && token" class="callout callout-info py-3" role="alert">
-        {{'SignUpPage.BindTip' | translate: {type: oauth.tokenTypes.get(type)} }}
-      </div>
+
       <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
-        <div class="d-grid gap-1 small fw-bold mb-3">
+        <div class="d-grid gap-2 small fw-bold mb-3">
           <div>
-            <label for="email" class="form-label small">QQ号 (将会发送到对应QQ邮箱)</label>
-            <div class="input-group input-group-sm has-validation">
-              <input type="text" inputmode="numeric" pattern="[0-9]*" class="form-control form-control-sm" id="email" formControlName="email"
-                     placeholder="请输入QQ号"
-                     [class.is-invalid]="email.touched && !email.valid && email.errors">
-              <div *ngIf="email.errors" class="invalid-tooltip">
-                <div *ngIf="email.errors.required">请输入QQ号</div>
-                <div *ngIf="email.errors.maxlength">{{'SignUpPage.EmailErrors.Maxlength' | translate}}</div>
-                <div *ngIf="email.errors.pattern">QQ号只能包含数字</div>
-              </div>
-            </div>
+            <label for="qqNumber" class="form-label small">{{'SignUpPage.QQNumber' | translate}}</label>
+            <input
+              type="text"
+              inputmode="numeric"
+              autocomplete="username"
+              class="form-control form-control-sm"
+              id="qqNumber"
+              formControlName="qqNumber"
+              [class.is-invalid]="qqNumber.touched && qqNumber.invalid">
+            @if (qqNumber.touched && qqNumber.invalid) {
+              <div class="invalid-feedback">{{'SignUpPage.QQNumberInvalid' | translate}}</div>
+            }
+            <div class="form-text">{{'SignUpPage.QQMailTip' | translate}}</div>
           </div>
 
           <div>
             <label for="verifyCode" class="form-label small">{{'SignUpPage.VerificationCode' | translate}}</label>
             <div class="input-group input-group-sm has-validation">
-              <input type="text" class="form-control form-control-sm" id="verifyCode" formControlName="verifyCode"
-                     placeholder=""
-                     [class.is-invalid]="verifyCode.touched && !verifyCode.valid && verifyCode.errors">
-              <div *ngIf="verifyCode.errors" class="invalid-tooltip">
-                <div *ngIf="verifyCode.errors.required">{{'SignUpPage.VerificationCodeErrors.Required' | translate}}</div>
-                <div *ngIf="verifyCode.errors.minlength">{{'SignUpPage.VerificationCodeErrors.Length' | translate}}</div>
-                <div *ngIf="verifyCode.errors.maxlength">{{'SignUpPage.VerificationCodeErrors.Length' | translate}}</div>
-              </div>
-              <button class="btn  btn-primary input-group-btn" type="button" (click)="getVerifyCode()" [disabled]="isButtonDisabled">
-                {{ isButtonDisabled ? remainingTime : ('SignUpPage.Send' | translate) }}
+              <input
+                type="text"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                maxlength="4"
+                class="form-control"
+                id="verifyCode"
+                formControlName="verifyCode"
+                [class.is-invalid]="verifyCode.touched && verifyCode.invalid">
+              <button class="btn btn-primary" type="button" (click)="getVerifyCode()" [disabled]="isButtonDisabled">
+                {{isButtonDisabled ? remainingTime : ('SignUpPage.Send' | translate)}}
               </button>
+              @if (verifyCode.touched && verifyCode.invalid) {
+                <div class="invalid-feedback">{{'SignUpPage.VerificationCodeErrors.Length' | translate}}</div>
+              }
             </div>
           </div>
 
           <div>
             <label for="password" class="form-label small">{{'SignUpPage.Password' | translate}}</label>
-            <div class="input-group input-group-sm has-validation">
-              <input type="password" class="form-control form-control-sm" id="password" formControlName="password"
-                     placeholder=""
-                     [class.is-invalid]="password.touched && !password.valid && password.errors">
-              <div *ngIf="password.errors" class="invalid-tooltip">
-                <div *ngIf="password.errors.required">{{'SignUpPage.PasswordErrors.Required' | translate}}</div>
-                <div *ngIf="password.errors.minlength">{{'SignUpPage.PasswordErrors.Minlength' | translate}}</div>
-                <div *ngIf="password.errors.maxlength">{{'SignUpPage.PasswordErrors.Maxlength' | translate}}</div>
-              </div>
-            </div>
+            <input
+              type="password"
+              autocomplete="new-password"
+              class="form-control form-control-sm"
+              id="password"
+              formControlName="password"
+              [class.is-invalid]="password.touched && password.invalid">
+            @if (password.touched && password.invalid) {
+              <div class="invalid-feedback">{{'SignUpPage.PasswordErrors.Minlength' | translate}}</div>
+            }
           </div>
+
           <div>
             <label for="confirmPassword" class="form-label small">{{'SignUpPage.ConfirmPassword' | translate}}</label>
-            <div class="input-group input-group-sm has-validation">
-              <input type="password" class="form-control form-control-sm" id="confirmPassword"
-                     formControlName="confirmPassword"
-                     placeholder=""
-                     [class.is-invalid]="confirmPassword.touched && signUpForm.hasError('notSame') && !password.errors">
-              <div *ngIf="confirmPassword.touched && signUpForm.hasError('notSame') && !password.errors" class="invalid-tooltip">
-                <div>{{'SignUpPage.PasswordErrors.Confirm' | translate}}</div>
-              </div>
-            </div>
+            <input
+              type="password"
+              autocomplete="new-password"
+              class="form-control form-control-sm"
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              [class.is-invalid]="confirmPassword.touched && signUpForm.hasError('notSame')">
+            @if (confirmPassword.touched && signUpForm.hasError('notSame')) {
+              <div class="invalid-feedback">{{'SignUpPage.PasswordErrors.Confirm' | translate}}</div>
+            }
           </div>
-          <button type="submit" class="btn btn-primary btn-sm my-2">{{'SignUpPage.SignUp' | translate}}</button>
-          <div class="fw-normal d-flex align-items-center justify-content-center">
+
+          <button type="submit" class="btn btn-primary btn-sm my-2" [disabled]="signUpForm.disabled">
+            {{'SignUpPage.Submit' | translate}}
+          </button>
+          <div class="fw-normal d-flex align-items-center justify-content-center gap-1">
             {{'SignUpPage.SignInTip' | translate}}
-            <button class="btn btn-link btn-sm text-decoration-none p-0" (click)="navigateToSignIn()">{{'SignUpPage.SignIn' | translate}}</button>
+            <button type="button" class="btn btn-link btn-sm text-decoration-none p-0" (click)="navigateToSignIn()">
+              {{'SignUpPage.SignIn' | translate}}
+            </button>
           </div>
         </div>
       </form>

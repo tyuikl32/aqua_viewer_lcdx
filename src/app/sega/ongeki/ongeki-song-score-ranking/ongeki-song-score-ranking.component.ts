@@ -1,10 +1,10 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import {OngekiMusic} from '../model/OngekiMusic';
 import {environment} from '../../../../environments/environment';
 import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { UserService } from 'src/app/user.service';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {OngekiCard} from '../model/OngekiCard';
@@ -43,9 +43,11 @@ interface UserRanking {
 }
 
 @Component({
-  selector: 'app-ongeki-song-score-ranking',
-  templateUrl: './ongeki-song-score-ranking.component.html',
-  styleUrls: ['./ongeki-song-score-ranking.component.css', ]
+    selector: 'app-ongeki-song-score-ranking',
+    templateUrl: './ongeki-song-score-ranking.component.html',
+    styleUrls: ['./ongeki-song-score-ranking.component.css',],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class OngekiSongScoreRankingComponent {
   protected readonly Math = Math;

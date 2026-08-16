@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ApiService} from '../../../api.service';
 import {AuthenticationService} from '../../../auth/authentication.service';
 import {MessageService} from '../../../message.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {environment} from '../../../../environments/environment';
 import {map, tap} from 'rxjs/operators';
@@ -15,9 +15,11 @@ import {Maimai2Playlog} from '../model/Maimai2Playlog';
 import {Maimai2Photo} from '../model/Maimai2Photo';
 
 @Component({
-  selector: 'app-maimai2-photos',
-  templateUrl: './maimai2-photos.component.html',
-  styleUrls: ['./maimai2-photos.component.scss']
+    selector: 'app-maimai2-photos',
+    templateUrl: './maimai2-photos.component.html',
+    styleUrls: ['./maimai2-photos.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class Maimai2PhotosComponent implements OnInit {
 

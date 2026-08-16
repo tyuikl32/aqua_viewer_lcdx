@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import Cropper from 'cropperjs';
 import { ApiService } from 'src/app/api.service';
 import { MessageService } from 'src/app/message.service';
@@ -7,9 +7,11 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 const PACKET_LENGTH = 10240;
 
 @Component({
-  selector: 'app-maimai2-upload-user-portrait',
-  templateUrl: './maimai2-upload-user-portrait.dialog.html',
-  styleUrls: ['./maimai2-upload-user-portrait.dialog.css']
+    selector: 'app-maimai2-upload-user-portrait',
+    templateUrl: './maimai2-upload-user-portrait.dialog.html',
+    styleUrls: ['./maimai2-upload-user-portrait.dialog.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class Maimai2UploadUserPortraitDialog implements OnInit {
   cropper: Cropper;

@@ -1,10 +1,10 @@
-import {Component, OnInit, Version} from '@angular/core';
+import {Component, OnInit, Version, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal, NgbModalOptions} from '@ng-bootstrap/ng-bootstrap';
 import {ApiService} from '../../../../api.service';
 import {MessageService} from '../../../../message.service';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {V2Profile} from '../model/V2Profile';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {V2UserBoxSettingDialog, V2UserBoxSettingData} from './v2-userbox-setting/v2-userbox-setting.dialog';
 import {environment} from '../../../../../environments/environment';
 import {ChusanTrophy} from '../model/ChusanTrophy';
@@ -12,6 +12,7 @@ import {Observable} from 'rxjs';
 import {ChusanNamePlate} from '../model/ChusanNamePlate';
 import {ChusanSystemVoice} from '../model/ChusanSystemVoice';
 import {ChusanMapIcon} from '../model/ChusanMapIcon';
+import {ChusanStage} from '../model/ChusanStage';
 import {ChusanAvatarAcc} from '../model/ChusanAvatarAcc';
 import {UserService} from 'src/app/user.service';
 import {V2SymbolChat} from '../model/V2SymbolChat';
@@ -20,9 +21,11 @@ import {V2SymbolChatSettingComponent} from './v2-symbol-chat-setting/v2-symbol-c
 import {compareVersions} from 'compare-versions';
 
 @Component({
-  selector: 'app-v2-userbox',
-  templateUrl: './v2-userbox.component.html',
-  styleUrls: ['./v2-userbox.component.css']
+    selector: 'app-v2-userbox',
+    templateUrl: './v2-userbox.component.html',
+    styleUrls: ['./v2-userbox.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2UserBoxComponent implements OnInit {
 
@@ -32,6 +35,19 @@ export class V2UserBoxComponent implements OnInit {
   enableImages = environment.enableImages;
 
   showAllItems = false;
+
+  // Equipping writes a single item to the profile; the favorite collection is a
+  // separate 2.50+ feature, so the two live in separate tabs to avoid confusion
+  tab: 'equip' | 'favorite' = 'equip';
+  readonly favoriteKinds = [
+    {kind: 1, name: 'Nameplate'},
+    {kind: 3, name: 'Trophy'},
+    {kind: 8, name: 'MapIcon'},
+    {kind: 9, name: 'SystemVoice'},
+    {kind: 13, name: 'Stage'},
+  ];
+  favorites: { [kind: number]: number[] } = {};
+  favoritesLoaded = false;
 
   profile: V2Profile;
   symbolChatInfo: V2SymbolChat[];
@@ -69,6 +85,16 @@ export class V2UserBoxComponent implements OnInit {
     this.dbService.getAll<ChusanSymbolChat>('chusanSymbolChat').subscribe(x => this.allSymbolChat = x);
   }
 
+  // CHUNITHM Mate+ (2.50) added stage selection and multi-item favorite collections
+  get supportsMate(): boolean {
+    return !!this.profile?.lastRomVersion && compareVersions(this.profile.lastRomVersion, '2.50.00') >= 0;
+  }
+
+  // 99999 is the game's "no stage set" entry; profiles created before 2.50 have no stageId
+  get currentStageId(): number {
+    return this.profile?.stageId ?? 99999;
+  }
+
   initCustomable() {
     this.customable = [
       {name: 'Nameplate', value: this.getNamePlateName(this.profile.nameplateId), click: () => this.namePlate()},
@@ -84,6 +110,13 @@ export class V2UserBoxComponent implements OnInit {
     this.customable = this.customable.concat([
       {name: 'MapIcon', value: this.getMapIconName(this.profile.mapIconId), click: () => this.mapIcon()},
       {name: 'SystemVoice', value: this.getSystemVoiceName(this.profile.voiceId), click: () => this.systemVoice()},
+    ]);
+    if (this.supportsMate) {
+      this.customable = this.customable.concat([
+        {name: 'Stage', value: this.getStageName(this.currentStageId), click: () => this.stage()},
+      ]);
+    }
+    this.customable = this.customable.concat([
       {
         name: 'AvatarWear', value: this.getAvatarAccName(this.profile.avatarWear),
         click: () => this.avatarAcc(1, this.profile.avatarWear)
@@ -177,42 +210,49 @@ export class V2UserBoxComponent implements OnInit {
   getNamePlateName(nameplateId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanNamePlate>('chusanNamePlate', nameplateId)
-        .subscribe(NamePlate => resolve(NamePlate.name ? NamePlate.name : 'Unknown'));
+        .subscribe(NamePlate => resolve(NamePlate?.name ? NamePlate.name : 'Unknown'));
     });
   }
 
   getFrameName(frameId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanTrophy>('chusanFrame', frameId)
-        .subscribe(frame => resolve(frame.name ? frame.name : 'Unknown'));
+        .subscribe(frame => resolve(frame?.name ? frame.name : 'Unknown'));
     });
   }
 
   getMapIconName(mapiconId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanMapIcon>('chusanMapIcon', mapiconId)
-        .subscribe(mapicon => resolve(mapicon.name ? mapicon.name : 'Unknown'));
+        .subscribe(mapicon => resolve(mapicon?.name ? mapicon.name : 'Unknown'));
     });
   }
 
   getSystemVoiceName(sysvoiceId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanSystemVoice>('chusanSystemVoice', sysvoiceId)
-        .subscribe(sysvoice => resolve(sysvoice.name ? sysvoice.name : 'Unknown'));
+        .subscribe(sysvoice => resolve(sysvoice?.name ? sysvoice.name : 'Unknown'));
     });
   }
 
   getAvatarAccName(avatarAccId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanAvatarAcc>('chusanAvatarAcc', avatarAccId)
-        .subscribe(avatarAcc => resolve(avatarAcc.name ? avatarAcc.name : 'Unknown'));
+        .subscribe(avatarAcc => resolve(avatarAcc?.name ? avatarAcc.name : 'Unknown'));
+    });
+  }
+
+  getStageName(stageId: number) {
+    return new Promise(resolve => {
+      this.dbService.getByID<ChusanStage>('chusanStage', stageId)
+        .subscribe(stage => resolve(stage?.name ? stage.name : 'Unknown'));
     });
   }
 
   getTrophyName(trophyId: number) {
     return new Promise(resolve => {
       this.dbService.getByID<ChusanTrophy>('chusanTrophy', trophyId)
-        .subscribe(trophy => resolve(trophy.name ? trophy.name : 'Unknown'));
+        .subscribe(trophy => resolve(trophy?.name ? trophy.name : 'Unknown'));
     });
   }
 
@@ -235,12 +275,62 @@ export class V2UserBoxComponent implements OnInit {
   }
 
   openItemDialog(dialogData: V2UserBoxSettingData) {
+    (document.activeElement as HTMLElement)?.blur();
     const dialogRef = this.modalService.open(V2UserBoxSettingDialog, this.dialogOptions);
-    dialogRef.componentInstance.data = dialogData;
+    dialogRef.componentInstance.data = {mode: 'equip', ...dialogData};
     dialogRef.componentInstance.parentComponent = this;
   }
 
+  selectTab(tab: 'equip' | 'favorite') {
+    this.tab = tab;
+    if (tab === 'favorite' && !this.favoritesLoaded) {
+      this.loadFavorites();
+    }
+  }
+
+  loadFavorites() {
+    const param = new HttpParams().set('aimeId', this.aimeId);
+    for (const entry of this.favoriteKinds) {
+      this.api.get('api/game/chuni/v2/favorite-collection/' + entry.kind, param).subscribe(
+        (data: { itemKind: number, itemId: number }[]) => this.favorites[entry.kind] = (data ?? []).map(f => f.itemId),
+        error => this.messageService.notice(error)
+      );
+    }
+    this.favoritesLoaded = true;
+  }
+
+  openFavoriteDialog(kind: number) {
+    (document.activeElement as HTMLElement)?.blur();
+    const dialogRef = this.modalService.open(V2UserBoxSettingDialog, this.dialogOptions);
+    dialogRef.componentInstance.data = {
+      itemKind: kind,
+      itemId: null,
+      showAllItems: this.showAllItems,
+      mode: 'favorite',
+      favoriteIds: this.favorites[kind] ?? [],
+    };
+    dialogRef.componentInstance.parentComponent = this;
+  }
+
+  handleFavoriteSaved(kind: number, itemIds: number[]) {
+    this.favorites[kind] = itemIds;
+    this.messageService.notice('Successfully changed');
+  }
+
+  favoriteImage(kind: number, itemId: number): string {
+    const pad = (n: number, len: number) => String(n).padStart(len, '0');
+    switch (kind) {
+      case 1: return `${this.host}assets/chuni/namePlate/CHU_UI_NamePlate_${pad(itemId, 8)}.webp`;
+      case 8: return `${this.host}assets/chuni/mapIcon/CHU_UI_MapIcon_${pad(itemId, 8)}.webp`;
+      case 9: return `${this.host}assets/chuni/systemVoice/CHU_UI_SystemVoice_${pad(itemId, 8)}.webp`;
+      case 13: return `${this.host}assets/chuni/stage/CHU_UI_Stage_${pad(itemId, 5)}.webp`;
+      // Trophies have no artwork; the favorites card shows a count instead
+      default: return null;
+    }
+  }
+
   openSymbolChatDialog(dialogData: V2SymbolChat) {
+    (document.activeElement as HTMLElement)?.blur();
     const dialogRef = this.modalService.open(V2SymbolChatSettingComponent, this.dialogOptions);
     dialogRef.componentInstance.data = dialogData;
   }
@@ -288,6 +378,10 @@ export class V2UserBoxComponent implements OnInit {
           apiURL = 'api/game/chuni/v2/profile/sysvoice';
           requestBody = {aimeId: this.aimeId, voiceId: itemId};
           break;
+        case 13: // Stage
+          apiURL = 'api/game/chuni/v2/profile/stageId';
+          requestBody = {aimeId: this.aimeId, stageId: itemId};
+          break;
       }
 
       this.api.put(apiURL, requestBody).subscribe(() => {
@@ -327,6 +421,10 @@ export class V2UserBoxComponent implements OnInit {
 
   systemVoice() {
     this.openItemDialog({itemKind: 9, itemId: this.profile.voiceId, showAllItems: this.showAllItems});
+  }
+
+  stage() {
+    this.openItemDialog({itemKind: 13, itemId: this.currentStageId, showAllItems: this.showAllItems});
   }
 
   avatarAcc(category: number, accId: number) {

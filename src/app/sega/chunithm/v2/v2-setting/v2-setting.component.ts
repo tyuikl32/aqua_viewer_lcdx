@@ -1,20 +1,22 @@
 import {AccountService} from 'src/app/auth/account.service';
-import {Component, OnInit, Renderer2} from '@angular/core';
+import {Component, OnInit, Renderer2, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal, NgbModalOptions} from '@ng-bootstrap/ng-bootstrap';
 import {ApiService} from '../../../../api.service';
 import {AuthenticationService} from '../../../../auth/authentication.service';
 import {MessageService} from '../../../../message.service';
 import {V2Profile} from '../model/V2Profile';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import {V2NameSettingDialog} from './v2-name-setting/v2-name-setting.dialog';
 import {V2VersionSettingDialog} from './v2-version-setting/v2-version-setting.dialog';
 import {environment} from '../../../../../environments/environment';
 import {UserService} from 'src/app/user.service';
 
 @Component({
-  selector: 'app-v2-setting',
-  templateUrl: './v2-setting.component.html',
-  styleUrls: ['./v2-setting.component.css']
+    selector: 'app-v2-setting',
+    templateUrl: './v2-setting.component.html',
+    styleUrls: ['./v2-setting.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2SettingComponent implements OnInit {
 

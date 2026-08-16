@@ -1,223 +1,132 @@
 <h1 class="page-heading">{{'DashboardPage.Title' | translate}}</h1>
+
 <div class="row">
   <div class="col-12 col-lg-8">
     <div class="mb-3 d-flex justify-content-between align-items-end">
-      <h3 class="m-0">
-        {{'DashboardPage.LatestAnnouncement' | translate}}
-      </h3>
+      <h3 class="m-0">{{'DashboardPage.LatestAnnouncement' | translate}}</h3>
       <a class="more-announcements" routerLink="/announcements">{{'DashboardPage.More' | translate}}</a>
     </div>
-    <div class="card-btn card mb-3 user-select-none" >
+
+    <div class="card-btn card mb-3 user-select-none">
       <div class="card-body py-2">
-        <div *ngIf="loadingAnnouncement" class="placeholder-glow my-1">
-          <div>
-            <div class="placeholder fw-light text-secondary" style="width: 8em;"></div>
+        @if (loadingAnnouncement) {
+          <div class="placeholder-glow my-1">
+            <div><span class="placeholder fw-light text-secondary" style="width: 8em"></span></div>
+            <h4 class="placeholder" style="width: 12em"></h4>
           </div>
-          <div>
-            <h4 class="placeholder" style="width: 12em;"></h4>
+        } @else if (announcement) {
+          <div class="my-1" (click)="showAnnouncement(announcement)">
+            <div class="fw-light text-secondary mb-1">{{announcement.updatedAt.toLocaleDateString()}}</div>
+            <h4>{{announcement.title}}</h4>
           </div>
-        </div>
-        <div *ngIf="!loadingAnnouncement && announcement" class="my-1" (click)="showAnnouncement(announcement)">
-          <div class="fw-light text-secondary mb-1">{{announcement.updatedAt.toLocaleDateString()}}</div>
-          <h4>{{announcement.title}}</h4>
-        </div>
+        }
+
         <hr>
-        <div *ngIf="loadingAnnouncement" class="placeholder-glow my-1">
-          <div>
-            <div class="placeholder fw-light text-secondary" style="width: 8em;"></div>
+
+        @if (loadingAnnouncement) {
+          <div class="placeholder-glow my-1">
+            <div><span class="placeholder fw-light text-secondary" style="width: 8em"></span></div>
+            <h4 class="placeholder" style="width: 12em"></h4>
           </div>
-          <div>
-            <h4 class="placeholder" style="width: 12em;"></h4>
+        } @else if (announcement2) {
+          <div class="my-1" (click)="showAnnouncement(announcement2)">
+            <div class="fw-light text-secondary mb-1">{{announcement2.updatedAt.toLocaleDateString()}}</div>
+            <h4>{{announcement2.title}}</h4>
           </div>
-        </div>
-        <div *ngIf="!loadingAnnouncement && announcement2" class="my-1" (click)="showAnnouncement(announcement2)">
-          <div class="fw-light text-secondary mb-1">{{announcement2.updatedAt.toLocaleDateString()}}</div>
-          <h4>{{announcement2.title}}</h4>
-        </div>
+        }
       </div>
     </div>
 
-    <h3 class="mb-3">
-      {{'DashboardPage.QuickNavigate' | translate}}
-    </h3>
-
+    <h3 class="mb-3">{{'DashboardPage.QuickNavigate' | translate}}</h3>
     <div class="row mb-3 g-2">
-      <div class="row mb-3 g-2">
-        <div class="col-6 col-xxl-3 col-lg-4 col-md-3 col-sm-4">
-          <div class="card-btn rounded-3 quick-navigate mai2-playlog user-select-none" routerLink="/mai2/recent">{{'DashboardPage.PlayRecord' | translate}}</div>
-        </div>
-        <div class="col-6 col-xxl-3 col-lg-4 col-md-3 col-sm-4">
-          <div class="card-btn rounded-3 quick-navigate mai2-rating user-select-none" routerLink="/mai2/rating">{{'DashboardPage.Rating' | translate}}</div>
-        </div>
-        <div class="col-6 col-xxl-3 col-lg-4 col-md-3 col-sm-4">
-          <div class="card-btn rounded-3 quick-navigate mai2-profile user-select-none" routerLink="/mai2/profile">{{'DashboardPage.Profile' | translate}}</div>
-        </div>
-        <div class="col-6 col-xxl-3 col-lg-4 col-md-3 col-sm-4">
-          <div class="card-btn rounded-3 quick-navigate mai2-photo user-select-none" routerLink="/mai2/photos">{{'DashboardPage.Photos' | translate}}</div>
+      <div class="col-6 col-sm-4 col-md-3 col-lg-4 col-xxl-3">
+        <div class="card-btn rounded-3 quick-navigate mai2-playlog user-select-none" routerLink="/mai2/recent">
+          {{'DashboardPage.PlayRecord' | translate}}
         </div>
       </div>
-
+      <div class="col-6 col-sm-4 col-md-3 col-lg-4 col-xxl-3">
+        <div class="card-btn rounded-3 quick-navigate mai2-rating user-select-none" routerLink="/mai2/rating">
+          {{'DashboardPage.Rating' | translate}}
+        </div>
+      </div>
+      <div class="col-6 col-sm-4 col-md-3 col-lg-4 col-xxl-3">
+        <div class="card-btn rounded-3 quick-navigate mai2-profile user-select-none" routerLink="/mai2/profile">
+          {{'DashboardPage.Profile' | translate}}
+        </div>
+      </div>
+      <div class="col-6 col-sm-4 col-md-3 col-lg-4 col-xxl-3">
+        <div class="card-btn rounded-3 quick-navigate mai2-photo user-select-none" routerLink="/mai2/photos">
+          {{'DashboardPage.Photos' | translate}}
+        </div>
+      </div>
     </div>
 
+    <h3 class="mb-3">{{'DashboardPage.Profiles' | translate}}</h3>
 
-    <h3 class="mb-3">
-      {{'DashboardPage.Profiles' | translate}}
-    </h3>
-    <ng-container *ngIf="loadingProfiles">
+    @if (loadingProfiles) {
       <div class="card mb-3 placeholder-wave">
-        <div class="card-header">
-          <span class="placeholder" style="width: 6em;"></span>
-        </div>
+        <div class="card-header"><span class="placeholder" style="width: 6em"></span></div>
         <div class="card-body p-2">
           <div class="hstack gap-2">
-            <img class="placeholder profile-icon">
+            <div class="placeholder profile-icon"></div>
             <table class="profile-table">
               <tbody>
-              <tr>
-                <th>
-                  <span class="placeholder" style="width: 3em;"></span>
-                </th>
-                <td>
-                  <span class="placeholder" style="width: 2em;"></span>
-                </td>
-              </tr>
-              <tr>
-                <th>
-                  <span class="placeholder" style="width: 4em;"></span>
-                </th>
-                <td>
-                  <span class="placeholder" style="width: 5em;"></span>
-                </td>
-              </tr>
-              <tr>
-                <th>
-                  <span class="placeholder" style="width: 3em;"></span>
-                </th>
-                <td>
-                  <span class="placeholder" style="width: 3em;"></span>
-                </td>
-              </tr>
+                <tr><th><span class="placeholder" style="width: 3em"></span></th><td><span class="placeholder" style="width: 2em"></span></td></tr>
+                <tr><th><span class="placeholder" style="width: 4em"></span></th><td><span class="placeholder" style="width: 5em"></span></td></tr>
+                <tr><th><span class="placeholder" style="width: 3em"></span></th><td><span class="placeholder" style="width: 3em"></span></td></tr>
               </tbody>
             </table>
           </div>
         </div>
         <div class="card-footer">
-          <div class="float-end fw-bold small">
-            <span class="placeholder" style="width: 14em;"></span>
-          </div>
+          <div class="float-end fw-bold small"><span class="placeholder" style="width: 14em"></span></div>
         </div>
       </div>
-    </ng-container>
-    <ng-container *ngIf="noCard">
-      <div class="hstack alert alert-warning" role="alert">
-        <ng-icon class="me-2" name="bootstrap-exclamation-triangle-fill"></ng-icon>
-        <div>{{'DashboardPage.NoCardMessage' | translate}}<a routerLink="/cards">{{'DashboardPage.GoToCardPage' | translate}}</a></div>
-      </div>
-    </ng-container>
-    <ng-container *ngIf="!loadingProfiles && !noCard && !ongekiProfile && !chusanProfile && !mai2Profile">
-      <div class="card mb-3 placeholder-glow">
-        <div class="card-body">
-          {{'DashboardPage.NoProfileMessage' | translate}}
-        </div>
-      </div>
-    </ng-container>
-    <ng-container *ngIf="ongekiProfile">
-      <div class="card mb-3">
-        <div class="card-header fw-bold d-flex align-items-center gap-2">
-          <svg width="1em" height="1em" fill="currentColor" viewBox="0 0 1024 1024">
-            <use href="assets/ongeki.svg#icon"/>
-          </svg>
-          {{ongekiProfile.userName | fullWidth}}</div>
-        <div class="card-body p-2">
-          <div class="hstack gap-2">
-            <img class="profile-icon" src="assets/ongeki/card-icon/UI_Card_Icon_{{ongekiProfile.cardId}}.webp">
-            <table class="profile-table">
-              <tbody>
-              <tr>
-                <th>{{'DashboardPage.Level' | translate}}</th>
-                <td>{{ongekiProfile.reincarnationNum * 100 + ongekiProfile.level}}</td>
-              </tr>
-              <tr>
-                <th>{{'DashboardPage.Rating' | translate}}</th>
-                <td>{{ongekiProfile.playerRating / 100 | number: '1.2-2'}}</td>
-              </tr>
-              <tr>
-                <th>{{'DashboardPage.BattlePoint' | translate}}</th>
-                <td>{{ongekiProfile.battlePoint}}</td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="float-end fw-bold small">
-            {{'DashboardPage.LastPlay' | translate}}{{'Common.Colon' | translate}}{{(ongekiProfile.lastPlayDate | toDate).toLocaleString()}}
-          </div>
-        </div>
-      </div>
-    </ng-container>
+    }
 
-    <ng-container *ngIf="chusanProfile">
-      <div class="card mb-3">
-        <div class="card-header fw-bold d-flex align-items-center gap-2">
-          <svg width="1em" height="1em" fill="currentColor" viewBox="0 0 1024 1024">
-            <use href="assets/chunithm.svg#icon"/>
-          </svg>
-          {{chusanProfile.userName | fullWidth}}
+    @if (noCard) {
+      <div class="alert alert-warning d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3" role="alert">
+        <div class="d-flex align-items-center">
+          <ng-icon class="me-2 flex-shrink-0" name="bootstrap-exclamation-triangle-fill"></ng-icon>
+          <span>{{'DashboardPage.NoCardMessage' | translate}}</span>
         </div>
-        <div class="card-body p-2">
-          <div class="hstack gap-2">
-            <img class="profile-icon" src="{{host}}/assets/chuni/chara/CHU_UI_Character_{{chusanProfile.characterId|characterImage}}_02.webp">
-            <table class="profile-table">
-              <tbody>
-              <tr>
-                <th>{{'DashboardPage.Level' | translate}}</th>
-                <td>{{chusanProfile.reincarnationNum * 100 + chusanProfile.level}}</td>
-              </tr>
-              <tr>
-                <th>{{'DashboardPage.Rating' | translate}}</th>
-                <td>{{chusanProfile.playerRating / 100 | number: '1.2-2'}}</td>
-              </tr>
-              <tr>
-                <th>{{'DashboardPage.OverPower' | translate}}</th>
-                <td>{{chusanProfile.overPowerRate/ 100}}%</td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="float-end fw-bold small">
-            {{'DashboardPage.LastPlay' | translate}}{{'Common.Colon' | translate}}{{(chusanProfile.lastPlayDate | toDate).toLocaleString()}}
-          </div>
-        </div>
+        <a class="btn btn-warning flex-shrink-0" routerLink="/netcode-bind">
+          {{'DashboardPage.BindGameAccount' | translate}}
+        </a>
       </div>
-    </ng-container>
-    <ng-container *ngIf="mai2Profile">
+    }
+
+    @if (profilesError) {
+      <div class="alert alert-danger" role="alert">{{'DashboardPage.ProfileLoadFailed' | translate}}</div>
+    }
+
+    @if (!loadingProfiles && !noCard && !profilesError && !mai2Profile) {
+      <div class="card mb-3">
+        <div class="card-body">{{'DashboardPage.NoProfileMessage' | translate}}</div>
+      </div>
+    }
+
+    @if (mai2Profile) {
       <div class="card mb-3">
         <div class="card-header fw-bold d-flex align-items-center gap-2">
           <svg width="1em" height="1em" fill="currentColor" viewBox="0 0 1024 1024">
-            <use href="assets/mai2.svg#icon"/>
+            <use href="assets/mai2.svg#icon"></use>
           </svg>
           {{mai2Profile.userName | fullWidth}}
         </div>
         <div class="card-body p-2">
           <div class="hstack gap-2">
-            <img class="profile-icon" src="https://sdgb-dist.sys-all.com.cn/d/189/assets/mai2/icon/UI_Icon_{{getFormattedNumberByDigit(mai2Profile.iconId,6)}}.webp">
+            @if (enableImages) {
+              <img
+                class="profile-icon"
+                [src]="host + 'assets/mai2/icon/UI_Icon_' + getFormattedNumberByDigit(mai2Profile.iconId, 6) + '.webp'"
+                alt="">
+            }
             <table class="profile-table">
               <tbody>
-              <tr>
-                <th>{{'DashboardPage.AwakenLevel' | translate}}</th>
-                <td>{{mai2Profile.totalAwake}}</td>
-              </tr>
-              <tr>
-                <th>{{'DashboardPage.Rating' | translate}}</th>
-                <td>{{mai2Profile.playerRating}}</td>
-              </tr>
-              <tr>
-                <th>{{'DashboardPage.PlayCount' | translate}}</th>
-                <td>{{mai2Profile.playCount}}</td>
-              </tr>
+                <tr><th>{{'DashboardPage.AwakenLevel' | translate}}</th><td>{{mai2Profile.totalAwake}}</td></tr>
+                <tr><th>{{'DashboardPage.Rating' | translate}}</th><td>{{mai2Profile.playerRating}}</td></tr>
+                <tr><th>{{'DashboardPage.PlayCount' | translate}}</th><td>{{mai2Profile.playCount}}</td></tr>
               </tbody>
             </table>
           </div>
@@ -228,39 +137,54 @@
           </div>
         </div>
       </div>
-    </ng-container>
+    }
   </div>
+
   <div class="col-12 col-lg-4">
-    <h3 class="mb-3">
-      {{'DashboardPage.GameData' | translate}}
-    </h3>
+    <h3 class="mb-3">{{'DashboardPage.GameData' | translate}}</h3>
     <div class="card mb-3">
       <div class="card-body">
-        <div *ngIf="checkingUpdateState == 'checking' || (loadingDatabase && downloadingPreloadTaskCount == 0)" class="mb-2">
-          <span class="pe-2">{{'DashboardPage.CheckingUpdate' | translate}}</span>
-          <span class="spinner-border spinner-border-sm" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </span>
-        </div>
-        <div *ngIf="checkingUpdateState != 'checking' && loadingDatabase && downloadingPreloadTaskCount > 0" class="d-flex align-items-center mb-2">
-          <span class="pe-2">{{'DashboardPage.Downloading' | translate}}{{'Common.Colon' | translate}}{{completedPreloadTaskCount}}/{{totalPreloadTaskCount}}</span>
-          <span class="spinner-border spinner-border-sm" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </span>
-        </div>
-        <div *ngIf="checkingUpdateState == 'completed' && !loadingDatabase && errorPreloadTaskCount == 0" class="d-flex align-items-center mb-2">
-          <ng-icon name="bootstrap-check-lg" class="d-flex align-items-center me-2 text-success"></ng-icon>
-          <span class="pe-2">{{'DashboardPage.Version' | translate}}{{'Common.Colon' | translate}}{{dbVersion}}</span>
-        </div>
-        <div *ngIf="checkingUpdateState == 'error' && !loadingDatabase && errorPreloadTaskCount == 0" class="d-flex align-items-center mb-2">
-          <ng-icon name="bootstrap-question-lg" class="d-flex align-items-center me-2 text-warning"></ng-icon>
-          <span class="pe-2">{{'DashboardPage.Version' | translate}}{{'Common.Colon' | translate}}{{dbVersion}}</span>
-        </div>
-        <div *ngIf="checkingUpdateState != 'checking' && !loadingDatabase && errorPreloadTaskCount > 0" class="d-flex align-items-center mb-2">
-          <ng-icon name="bootstrap-x-lg" class="d-flex align-items-center me-2 text-danger"></ng-icon>
-          <span class="pe-2">{{'DashboardPage.DownloadFailed' | translate}}{{'Common.Colon' | translate}}{{completedPreloadTaskCount}}/{{totalPreloadTaskCount}}</span>
-        </div>
-        <button [class.disabled]="checkingUpdateState == 'checking' || loadingDatabase" class="btn btn-danger btn-sm mt-1" (click)="reload()">{{'DashboardPage.Reload' | translate}}</button>
+        @if (checkingUpdateState === 'checking' || (loadingDatabase && downloadingPreloadTaskCount === 0)) {
+          <div class="mb-2">
+            <span class="pe-2">{{'DashboardPage.CheckingUpdate' | translate}}</span>
+            <span class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </span>
+          </div>
+        }
+        @if (checkingUpdateState !== 'checking' && loadingDatabase && downloadingPreloadTaskCount > 0) {
+          <div class="d-flex align-items-center mb-2">
+            <span class="pe-2">{{'DashboardPage.Downloading' | translate}}{{'Common.Colon' | translate}}{{completedPreloadTaskCount}}/{{totalPreloadTaskCount}}</span>
+            <span class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </span>
+          </div>
+        }
+        @if (checkingUpdateState === 'completed' && !loadingDatabase && errorPreloadTaskCount === 0) {
+          <div class="d-flex align-items-center mb-2">
+            <ng-icon name="bootstrap-check-lg" class="d-flex align-items-center me-2 text-success"></ng-icon>
+            <span>{{'DashboardPage.Version' | translate}}{{'Common.Colon' | translate}}{{dbVersion}}</span>
+          </div>
+        }
+        @if (checkingUpdateState === 'error' && !loadingDatabase && errorPreloadTaskCount === 0) {
+          <div class="d-flex align-items-center mb-2">
+            <ng-icon name="bootstrap-question-lg" class="d-flex align-items-center me-2 text-warning"></ng-icon>
+            <span>{{'DashboardPage.Version' | translate}}{{'Common.Colon' | translate}}{{dbVersion}}</span>
+          </div>
+        }
+        @if (checkingUpdateState !== 'checking' && !loadingDatabase && errorPreloadTaskCount > 0) {
+          <div class="d-flex align-items-center mb-2">
+            <ng-icon name="bootstrap-x-lg" class="d-flex align-items-center me-2 text-danger"></ng-icon>
+            <span>{{'DashboardPage.DownloadFailed' | translate}}{{'Common.Colon' | translate}}{{completedPreloadTaskCount}}/{{totalPreloadTaskCount}}</span>
+          </div>
+        }
+        <button
+          type="button"
+          [disabled]="checkingUpdateState === 'checking' || loadingDatabase"
+          class="btn btn-danger btn-sm mt-1"
+          (click)="reload()">
+          {{'DashboardPage.Reload' | translate}}
+        </button>
       </div>
     </div>
   </div>

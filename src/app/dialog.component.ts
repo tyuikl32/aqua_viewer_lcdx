@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 export interface DialogCustomModel {
@@ -11,8 +11,8 @@ export interface DialogCustomModel {
 }
 
 @Component({
-  selector: 'app-dialog',
-  template: `
+    selector: 'app-dialog',
+    template: `
     <div class="modal-header">
       <h4 class="modal-title">{{ customModel.title }}</h4>
     </div>
@@ -27,7 +27,9 @@ export interface DialogCustomModel {
       <button class="btn {{customModel.yesClass}}" (click)="activeModal.close(true)">{{customModel.yesContent}}</button>
       <button class="btn {{customModel.noClass}}" (click)="activeModal.close(false)">{{customModel.noContent}}</button>
     </div>
-  `
+  `,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class DialogComponent {
   customModel: DialogCustomModel = null;

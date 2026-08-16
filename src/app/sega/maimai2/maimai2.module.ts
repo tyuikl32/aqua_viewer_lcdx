@@ -6,21 +6,21 @@ import { Maimai2ProfileComponent } from './maimai2-profile/maimai2-profile.compo
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ToolsModule } from '../../util/tools.module';
 import { Maimai2SettingComponent } from './maimai2-setting/maimai2-setting.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { Maimai2RatingComponent } from './maimai2-rating/maimai2-rating.component';
 import { Maimai2RecentComponent } from './maimai2-recent/maimai2-recent.component';
 import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
-import { Maimai2KopRankingComponent } from './maimai2-kop-ranking/maimai2-kop-ranking.component';
 import { Maimai2PhotosComponent } from "./maimai2-photos/maimai2-photos.component";
 import { Maimai2DxpassComponent } from './maimai2-dxpass/maimai2-dxpass.component';
-import { NgIcon } from '@ng-icons/core';
 import { Maimai2SonglistComponent } from "./maimai2-songlist/maimai2-songlist.component";
 import { Maimai2SongDetailComponent } from "./maimai2-song-detail/maimai2-song-detail.component";
+import { NgIcon } from "@ng-icons/core";
 import { Maimai2RivalComponent } from './maimai2-rival/maimai2-rival.component';
 import { Maimai2CircleComponent } from './maimai2-circle/maimai2-circle.component';
 import { Maimai2FestaComponent } from './maimai2-festa/maimai2-festa.component';
 import { Maimai2ServerMissionsComponent } from './maimai2-server-missions/maimai2-server-missions.component';
 import { Maimai2PointExchangesComponent } from './maimai2-point-exchanges/maimai2-point-exchanges.component';
+import { Maimai2KopRankingComponent } from './maimai2-kop-ranking/maimai2-kop-ranking.component';
 
 
 @NgModule({
@@ -31,10 +31,10 @@ import { Maimai2PointExchangesComponent } from './maimai2-point-exchanges/maimai
     Maimai2RecentComponent,
     Maimai2PhotosComponent,
     Maimai2DxpassComponent,
-    Maimai2KopRankingComponent,
     Maimai2CircleComponent,
     Maimai2ServerMissionsComponent,
     Maimai2PointExchangesComponent,
+    Maimai2KopRankingComponent,
     Maimai2FestaComponent,
     Maimai2SonglistComponent,
     Maimai2SongDetailComponent,
@@ -46,8 +46,8 @@ import { Maimai2PointExchangesComponent } from './maimai2-point-exchanges/maimai
     Maimai2Routes,
     NgxPaginationModule,
     ToolsModule,
-    TranslateModule,
-    FormsModule,
+    TranslatePipe,
+    TranslateDirective,
     ReactiveFormsModule,
     NgOptimizedImage,
     NgbCollapse,

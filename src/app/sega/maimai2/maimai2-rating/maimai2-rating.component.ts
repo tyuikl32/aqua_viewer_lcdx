@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {environment} from '../../../../environments/environment';
 import {ApiService} from '../../../api.service';
 import {UserService} from '../../../user.service';
 import {MessageService} from '../../../message.service';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
 import {Maimai2Music} from '../model/Maimai2Music';
@@ -11,9 +11,11 @@ import {Maimai2SongDetailComponent} from "../maimai2-song-detail/maimai2-song-de
 import {NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-  selector: 'app-maimai2-rating',
-  templateUrl: './maimai2-rating.component.html',
-  styleUrls: ['./maimai2-rating.component.scss']
+    selector: 'app-maimai2-rating',
+    templateUrl: './maimai2-rating.component.html',
+    styleUrls: ['./maimai2-rating.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class Maimai2RatingComponent implements OnInit {
   /*

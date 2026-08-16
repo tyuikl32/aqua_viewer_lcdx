@@ -43,6 +43,7 @@ export interface V2Profile {
   overPowerRate: number;
   mapIconId: number;
   voiceId: number;
+  stageId: number;
   avatarWear: number;
   avatarHead: number;
   avatarFace: number;

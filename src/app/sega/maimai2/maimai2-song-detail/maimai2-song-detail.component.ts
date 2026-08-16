@@ -1,9 +1,9 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {environment} from '../../../../environments/environment';
 import {ApiService} from '../../../api.service';
 import {MessageService} from '../../../message.service';
 import {NgbOffcanvas} from '@ng-bootstrap/ng-bootstrap';
-import {HttpParams} from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
 import { UserService } from 'src/app/user.service';
 import {Maimai2Music, Maimai2MusicDetail} from '../model/Maimai2Music';
 import {NgxIndexedDBService} from "ngx-indexed-db";
@@ -35,9 +35,11 @@ interface UserRanking {
 }
 
 @Component({
-  selector: 'app-v2-song-score-ranking',
-  templateUrl: './maimai2-song-detail.component.html',
-  styleUrls: ['./maimai2-song-detail.component.scss']
+    selector: 'app-v2-song-score-ranking',
+    templateUrl: './maimai2-song-detail.component.html',
+    styleUrls: ['./maimai2-song-detail.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class Maimai2SongDetailComponent {
   protected readonly Math = Math;
@@ -123,7 +125,7 @@ export class Maimai2SongDetailComponent {
       index = 0;
     }
     const level: Maimai2MusicDetail = song.details[index];
-    return `${level.levelDecimal / 10}` ?? '0';
+    return `${level.levelDecimal / 10}`;
   }
   getColumnWidth(): string {
     const columnCount = this.music.details[this.currentDiffTab].touchCount !== 0 ? 5 : 4;

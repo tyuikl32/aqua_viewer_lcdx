@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {V2UserRanking} from '../model/V2UserRanking';
 import {ApiService} from '../../../../api.service';
 import {V2PcRanking} from '../model/V2PcRanking';
@@ -6,9 +6,11 @@ import {environment} from '../../../../../environments/environment';
 import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
-  selector: 'app-v2-user-ranking',
-  templateUrl: './v2-user-ranking.component.html',
-  styleUrls: ['./v2-user-ranking.component.scss']
+    selector: 'app-v2-user-ranking',
+    templateUrl: './v2-user-ranking.component.html',
+    styleUrls: ['./v2-user-ranking.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class V2UserRankingComponent implements OnInit {
 
