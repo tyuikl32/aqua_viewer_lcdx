@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,29 +25,42 @@ jobs:
         run: npm run build-prod
       - name: Compress dist folder
         run: tar -czf dist.tar.gz dist/
+      - name: Delete old artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ids=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?per_page=100" --paginate --jq '.artifacts[].id')
+          for id in $ids; do
+            echo "Deleting artifact $id"
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/artifacts/$id" || true
+          done
+      - name: Delete failed workflow runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ids=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100" --paginate --jq '.workflow_runs[] | select(.conclusion == "failure") | .id')
+          for id in $ids; do
+            echo "Deleting failed run $id"
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$id" || true
+          done
       - name: Upload artifact
         uses: actions/upload-artifact@v4.6.1
         with:
           name: dist
           path: dist.tar.gz
+          retention-days: 7
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      HAS_DEPLOY_SECRETS: ${{ secrets.REMOTE_HOST != '' && secrets.REMOTE_USER != '' && secrets.SSH_PRIVATE_KEY != '' }}
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: dist
-      - name: Add SSH private key to the agent
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        run: |
-          mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
       - name: Copy files to server
+        if: env.HAS_DEPLOY_SECRETS == 'true'
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
@@ -54,6 +70,7 @@ jobs:
           source: "dist.tar.gz"
           target: "/root/"
       - name: Run deployment script on server
+        if: env.HAS_DEPLOY_SECRETS == 'true'
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.REMOTE_HOST }}
@@ -67,6 +84,3 @@ jobs:
             docker exec nginx rm -rf /var/www/portal
             docker cp dist/aqua-viewer/browser nginx:/var/www/portal
             echo "Finished Deployment!"
-
-            
-
