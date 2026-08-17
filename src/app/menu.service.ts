@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from './user.service';
 import { AccountService } from './auth/account.service';
+import { BotPermissionService } from './bot-permission.service';
 
 @Injectable({
   providedIn: 'root'
@@ -72,6 +73,36 @@ export class MenuService {
             displayCondition: DisplayCondition.HasProfile,
           },
           {
+            id: 11,
+            name: 'Cabinets',
+            url: 'mai2/cabinets',
+            displayCondition: DisplayCondition.AfterLogin,
+            // EP-18 hasManage 门控：无任何授权且非 Admin 的登录用户不显示（设计 §8）
+            requiredBotPermission: 0,
+          },
+          {
+            id: 12,
+            name: 'CabinetControl',
+            url: 'mai2/cabmode',
+            displayCondition: DisplayCondition.AfterLogin,
+            requiredBotPermission: 0,
+          },
+          {
+            id: 13,
+            name: 'RemoteControl',
+            url: 'mai2/remotecontrol',
+            displayCondition: DisplayCondition.AfterLogin,
+            requiredBotPermission: 0,
+          },
+          {
+            id: 14,
+            name: 'Locks',
+            url: 'mai2/locks',
+            displayCondition: DisplayCondition.AfterLogin,
+            // 操作记录与授权管理：P≥10
+            requiredBotPermission: 10,
+          },
+          {
             id: 6,
             name: 'MusicList',
             url: 'mai2/songlist',
@@ -89,7 +120,8 @@ export class MenuService {
   );
 
   constructor(
-    private accountService: AccountService
+    private accountService: AccountService,
+    private botPermission: BotPermissionService
   ) { }
 
   public showItem(game: string, item: Menu, user: User): boolean{
@@ -97,6 +129,14 @@ export class MenuService {
       return true;
     }
     else if(item.displayCondition == DisplayCondition.AfterLogin && this.accountService.currentAccountValue){
+      // 机台管理菜单组：附加 EP-18/EP-01 权限门控（设计 §8）
+      if (item.requiredBotPermission !== undefined && item.requiredBotPermission !== null) {
+        const state = this.botPermission.currentValue;
+        if (item.requiredBotPermission === 0) {
+          return state.hasManage;
+        }
+        return state.permission >= item.requiredBotPermission;
+      }
       return true;
     }
     else if(item.displayCondition == DisplayCondition.HasProfile && user?.games.includes(game)){
@@ -120,6 +160,8 @@ export class Menu {
   name: string;
   url: string;
   displayCondition: DisplayCondition;
+  /** LCDX 机台管理门控：0=EP-18 hasManage；>=10=permission 下限；undefined=无门控 */
+  requiredBotPermission?: number;
 }
 
 export enum DisplayCondition {

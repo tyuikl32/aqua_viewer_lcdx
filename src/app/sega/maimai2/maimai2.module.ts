@@ -21,6 +21,10 @@ import { Maimai2FestaComponent } from './maimai2-festa/maimai2-festa.component';
 import { Maimai2ServerMissionsComponent } from './maimai2-server-missions/maimai2-server-missions.component';
 import { Maimai2PointExchangesComponent } from './maimai2-point-exchanges/maimai2-point-exchanges.component';
 import { Maimai2KopRankingComponent } from './maimai2-kop-ranking/maimai2-kop-ranking.component';
+import { Maimai2CabinetsComponent } from './maimai2-cabinets/maimai2-cabinets.component';
+import { Maimai2CabmodeComponent } from './maimai2-cabmode/maimai2-cabmode.component';
+import { Maimai2RemoteControlComponent } from './maimai2-remote-control/maimai2-remote-control.component';
+import { Maimai2LocksComponent } from './maimai2-locks/maimai2-locks.component';
 
 
 @NgModule({
@@ -38,7 +42,11 @@ import { Maimai2KopRankingComponent } from './maimai2-kop-ranking/maimai2-kop-ra
     Maimai2FestaComponent,
     Maimai2SonglistComponent,
     Maimai2SongDetailComponent,
-    Maimai2RivalComponent
+    Maimai2RivalComponent,
+    Maimai2CabinetsComponent,
+    Maimai2CabmodeComponent,
+    Maimai2RemoteControlComponent,
+    Maimai2LocksComponent
   ],
   imports: [
     CommonModule,
