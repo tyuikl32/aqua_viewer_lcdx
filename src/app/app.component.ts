@@ -137,7 +137,6 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.accountService.currentAccountValue) {
       const status = await this.accountAccess.restore();
       if (status?.banned) { await this.router.navigate(['/banned']); return; }
-      if (status?.eulaRequired) { await this.router.navigate(['/eula']); return; }
       this.preLoad.checkDbUpdate();
       await this.userService.load();
     }

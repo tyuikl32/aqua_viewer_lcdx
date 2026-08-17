@@ -5,6 +5,7 @@
     "Mai2": "舞萌DX",
     "Colon": "：",
     "OK": "确定",
+    "Cancel": "取消",
     "FailedToLoad": "加载失败"
   },
   "App": {
@@ -87,7 +88,20 @@
     "QuickNavigate": "快速导航",
     "Profile": "档案",
     "PlayRecord": "游玩记录",
-    "Photos": "相册"
+    "Photos": "相册",
+    "UnbindGameAccount": "解除绑定",
+    "UnbindGameAccountTip": "确定要解除当前游戏档案与此账号的绑定吗？解除后仍可查看公告，并可随时重新绑定。",
+    "ConfirmUnbind": "确认解除绑定"
+  },
+  "NetCodeBindPage": {
+    "Title": "绑定游戏档案",
+    "Description": "你可以通过游戏内的 Net 绑定码，将游戏档案与当前账号绑定。",
+    "InputTitle": "输入你的 Net 绑定码",
+    "Bind": "绑定",
+    "Instruction1": "绑定码需通过机台查看。",
+    "Instruction2": "在游戏 Entry 界面通过二维码或 Aime 读取游戏数据后，点击“访问码”按钮。",
+    "Instruction3": "在打开的视图中查看你的 Net 绑定码。",
+    "ContinueWithoutBinding": "在没有绑定下的情况继续"
   },
   "AnnouncementsPage": {
     "Title": "公告",

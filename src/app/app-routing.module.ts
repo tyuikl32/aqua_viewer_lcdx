@@ -5,7 +5,6 @@ import {AuthGuardService} from './auth/auth-guard.service';
 import {LoginGuardService} from './auth/login-guard.service';
 import {BannedComponent} from './banned/banned.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
-import {EulaComponent} from './eula/eula.component';
 import {HomeComponent} from './home/home.component';
 import {NetcodeBindComponent} from './netcode-bind/netcode-bind.component';
 import {NotFoundComponent} from './not-found/not-found.component';
@@ -42,7 +41,6 @@ export const routes: Routes = [
     canActivate: [LoginGuardService],
     data: {title: 'SignUp', disableSidebar: true}
   },
-  {path: 'eula', component: EulaComponent, data: {title: 'EULA', disableSidebar: true, accessLayout: true}},
   {path: 'banned', component: BannedComponent, data: {title: 'Account Banned', disableSidebar: true, accessLayout: true}},
   {path: 'not-found', component: NotFoundComponent, data: {title: 'NotFound', disableSidebar: true}},
   {path: '**', redirectTo: '/not-found'}

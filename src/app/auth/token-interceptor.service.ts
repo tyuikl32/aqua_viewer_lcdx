@@ -36,7 +36,7 @@ export class TokenInterceptorService implements HttpInterceptor {
       // If the refresh fails too, rethrow so ErrorInterceptorService clears the
       // account and reloads the page.
       if (err instanceof HttpErrorResponse && err.status === 401
-        && request.url.startsWith(environment.apiServer)
+        && this.isAuthenticatedApiRequest(request.url)
         && account?.refreshToken) {
         return this.refreshAndRetry(request, next, err);
       }
@@ -46,7 +46,7 @@ export class TokenInterceptorService implements HttpInterceptor {
 
   private withToken(request: HttpRequest<any>): HttpRequest<any> {
     const account = this.accountService.currentAccountValue;
-    if (request.url.startsWith(environment.apiServer) && account?.tokenType && account?.accessToken) {
+    if (this.isAuthenticatedApiRequest(request.url) && account?.tokenType && account?.accessToken) {
       request = request.clone({
         setHeaders: {
           Authorization: `${account.tokenType} ${account.accessToken}`
@@ -54,6 +54,10 @@ export class TokenInterceptorService implements HttpInterceptor {
       });
     }
     return request;
+  }
+
+  private isAuthenticatedApiRequest(url: string): boolean {
+    return url.startsWith(environment.apiServer) || url.startsWith(environment.lcdxApiServer);
   }
 
   private refreshAndRetry(request: HttpRequest<any>, next: HttpHandler, originalError: any): Observable<HttpEvent<any>> {

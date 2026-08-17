@@ -11,6 +11,7 @@ import {LanguageService} from '../language.service';
 import { HttpParams } from '@angular/common/http';
 import {TranslateService} from '@ngx-translate/core';
 import {Luid} from '../cards/cards.component';
+import {UserService} from '../user.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -36,7 +37,9 @@ export class DashboardComponent implements OnInit {
   checkingUpdateState = 'checking';
   dbVersion = 0;
   currentCard = undefined;
+  private currentCardAccessCode: string;
   noCard = false;
+  unbindingCard = false;
   protected mai2Profile;
 
   constructor(
@@ -45,7 +48,8 @@ export class DashboardComponent implements OnInit {
     private messageService: MessageService,
     private modalService: NgbModal,
     protected language: LanguageService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private userService: UserService
   ) {
     this.loadAnnouncements();
   }
@@ -82,14 +86,23 @@ export class DashboardComponent implements OnInit {
   }
 
   getProfiles(){
+    this.loadingProfiles = true;
+    this.profilesError = false;
+    this.noCard = false;
+    this.mai2Profile = null;
+    this.currentCard = undefined;
+    this.currentCardAccessCode = undefined;
     this.api.get('api/user/profiles').subscribe(
       resp => {
         if (resp?.status) {
           const statusCode: StatusCode = resp.status.code;
           if (statusCode === StatusCode.OK && resp.data) {
             this.mai2Profile = resp.data.maimai2;
-            const accessCode = resp.data.maimai2?.accessCode;
+            const accessCode = resp.data.maimai2?.accessCode
+              || resp.data.chusan?.accessCode
+              || resp.data.ongeki?.accessCode;
             if (accessCode){
+              this.currentCardAccessCode = accessCode;
               this.currentCard = new Luid(accessCode).getMaskedValue();
             }
           }
@@ -173,6 +186,31 @@ export class DashboardComponent implements OnInit {
         this.messageService.notice(error);
         this.finishAnnouncementRequest();
       });
+  }
+
+  openUnbindCard(content) {
+    this.modalService.open(content, {centered: true});
+  }
+
+  onUnbindCard(modal) {
+    if (!this.currentCardAccessCode || this.unbindingCard) return;
+
+    this.unbindingCard = true;
+    this.api.post('api/user/unbindCard', {accessCode: this.currentCardAccessCode}).subscribe({
+      next: resp => {
+        this.unbindingCard = false;
+        this.messageService.notice(resp?.status?.message);
+        if (resp?.status?.code === StatusCode.OK) {
+          modal.close();
+          void this.userService.load(true).catch(() => null);
+          this.getProfiles();
+        }
+      },
+      error: error => {
+        this.unbindingCard = false;
+        this.messageService.notice(error);
+      }
+    });
   }
 
   private finishAnnouncementRequest() {

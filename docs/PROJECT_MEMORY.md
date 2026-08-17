@@ -86,16 +86,12 @@ The user-facing sign-in and QQ-number registration flows call LCDXNetApi, but LC
 - One-time sign-in also ends in the normal frontend account response.
 - `AccountService` stores `{ tokenType, accessToken, refreshToken }` in `localStorage.currentAccount` for the normal application session.
 - `AuthenticationService.procLoginResp` writes that response into `AccountService`, after which normal `/api` calls use it.
-- Successful login/registration/one-time login runs the upstream account-access restoration first. Banned accounts go to `/banned`; accounts requiring the current EULA go to `/eula`; normal navigation to Dashboard happens only if neither redirect took over.
-- The token interceptor proactively refreshes short-lived access tokens and retries a single failed `/api` request after refresh.
+- Successful login/registration/one-time login runs the upstream account-access restoration first. Banned accounts go to `/banned`; otherwise the user record is loaded and an account with no bound cards goes to `/netcode-bind` once for that login flow. Bound users continue to Dashboard through the calling sign-in flow.
+- The frontend intentionally has no EULA page or administrative EULA UI. It does not inspect EULA status, redirect for EULA, fetch EULA content, call an acceptance endpoint, or include an EULA version in the inherited RinNET sign-up request. Any remaining backend EULA policy or proxy endpoint is outside the frontend contract.
+- The token interceptor proactively refreshes short-lived access tokens and retries a single failed `/api` or protected `/lcdx` request after refresh.
 - LCDX binding and AccessCode controllers validate the presented bearer token against RinNET and may call RinNET admin endpoints to mutate card ownership.
 
-The token interceptor attaches the stored token only when a request URL starts with `environment.apiServer`.
-
-- Production: both bases are `/`, so `/api` and `/lcdx` requests match and receive the token.
-- Development: the bases are different absolute origins, so protected LCDX requests do not match `apiServer` and may be sent without authorization. Login/registration/public announcements do not require this header, but NetCode binding and AccessCode mutation do.
-
-Treat that development-origin behavior as a known issue to test when touching auth or LCDX settings. Do not solve it incidentally inside unrelated work.
+The token interceptor attaches the stored token when a request URL starts with either `environment.apiServer` or `environment.lcdxApiServer`. This keeps protected LCDX requests authenticated when development uses separate absolute origins and when production uses the shared `/` base. A 401 from either backend enters the same single-refresh-and-retry path through RinNET's refresh endpoint.
 
 ## 5. Product differences from current upstream
 
@@ -105,7 +101,7 @@ The durable product-level differences are more useful than a raw tree diff:
 
 - Separate LCDX API base and explicit HTTP helpers.
 - LCDX common login, QQ-number verification/registration, and one-time token sign-in.
-- NetCode binding for an authenticated RinNET account with no card/profile. The dashboard stays on `/dashboard` for `NOT_FOUND` and shows an explicit button to `/netcode-bind`; it must not auto-redirect.
+- NetCode binding for an authenticated RinNET account with no card/profile. A successful login redirects an unbound user to `/netcode-bind` once for that login flow. The binding page offers an explicit continue-without-binding action, and subsequent Dashboard visits stay on `/dashboard` for `NOT_FOUND` so announcements remain available. Dashboard keeps a binding entry for unbound users and an unbind action for the current card.
 - LCDX-backed AccessCode lookup/add/remove in maimai DX settings.
 - LCDX-backed announcement list/recent/detail reads.
 - LCDX KOP 6th ranking page.
@@ -113,8 +109,8 @@ The durable product-level differences are more useful than a raw tree diff:
 
 ### Scope and navigation
 
-- The root router exposes home, dashboard, announcements, maimai DX, one-time sign-in, NetCode binding, QQ sign-in/sign-up, EULA, banned, and not-found.
-- Profile, cards, keychip, importer, contributors, admin, OAuth callback, ordinary RinNET password reset, Ongeki, and Chunithm are intentionally absent from root navigation even though inherited source code remains. EULA and banned are the only upstream account-access pages enabled.
+- The root router exposes home, dashboard, announcements, maimai DX, one-time sign-in, NetCode binding, QQ sign-in/sign-up, banned, and not-found.
+- Profile, cards, keychip, importer, contributors, admin, OAuth callback, ordinary RinNET password reset, EULA, Ongeki, and Chunithm are intentionally absent from root navigation even though some inherited source code remains. Banned is the only upstream account-access page enabled.
 - The root shell contains Dashboard, announcements, and maimai DX navigation only. The user popover contains sign-out only. Admin impersonation sources may exist from upstream, but there is no root route, menu, declaration, or bootstrap call enabling that workflow.
 - `MenuService` contains only the maimai DX menu. It includes profile, rating, records, KOP, photos, DX Pass, circle, festa, server missions, rival, song list, and settings. The point-exchange route exists but currently has no menu item.
 
@@ -161,7 +157,6 @@ The successful build still reports non-fatal warnings: the Browserslist includes
 Known facts worth rechecking during related tasks:
 
 - `proxy.conf.json` is empty despite the README mentioning it.
-- Development LCDX protected calls may miss the authorization header, as described in section 4.
 - The root module eagerly imports game modules while the root router also lazy-loads maimai DX; preserve behavior unless performing a deliberate module-graph cleanup.
 - Some imports/routes/components remain declared but unreachable from the fork UI.
 - The PWA manifest name/icon branding is partly LCDX-specific and partly inherited (`turtle-*` icon files).

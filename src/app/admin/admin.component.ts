@@ -14,8 +14,6 @@ import {TranslateService} from '@ngx-translate/core';
 import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {IMPERSONATION_KEY} from '../auth/account.service';
 import {IMPERSONATE_GRANT, IMPERSONATE_REQUEST} from '../auth/impersonation.service';
-import {marked} from 'marked';
-import DOMPurify from 'dompurify';
 
 @Component({
     selector: 'app-admin',
@@ -51,10 +49,6 @@ export class AdminComponent implements OnInit {
   private impersonateNonce: string = null;
   private impersonateAccount: any = null;
   private impersonateListener: (event: MessageEvent) => void = null;
-  eulaCurrent: any = null;
-  eulaDraftTitle = '';
-  eulaDraftContent = '';
-  eulaPreview = '';
 
   constructor(
     private api: ApiService,
@@ -239,7 +233,7 @@ export class AdminComponent implements OnInit {
         const statusCode: StatusCode = resp?.status?.code;
         if ((statusCode === StatusCode.USER_FETCH_SUCCESS || statusCode === StatusCode.OK) && resp.data) {
           this.selectedProfile = {...resp.data.account, totpEnabled: resp.data.totpEnabled,
-            passkeys: resp.data.passkeys, oauthIdentities: resp.data.oauthIdentities, eulaStatus: resp.data.eulaStatus};
+            passkeys: resp.data.passkeys, oauthIdentities: resp.data.oauthIdentities};
         }
       },
       error: () => {}
@@ -323,34 +317,7 @@ export class AdminComponent implements OnInit {
   private openSupport(username: string) {
     this.api.get(`api/admin/accounts/${username}`).subscribe(resp => {
       this.selectedProfile = {...resp.data.account, totpEnabled: resp.data.totpEnabled,
-        passkeys: resp.data.passkeys, oauthIdentities: resp.data.oauthIdentities, eulaStatus: resp.data.eulaStatus};
-    });
-  }
-
-  loadEula() {
-    this.tab = 'eula';
-    this.api.get('api/admin/eula').subscribe(resp => {
-      this.eulaCurrent = resp.data.current;
-      this.eulaDraftTitle = resp.data.draft?.title ?? `${resp.data.current.title}`;
-      this.eulaDraftContent = resp.data.draft?.content ?? resp.data.current.content;
-      this.updateEulaPreview();
-    });
-  }
-
-  updateEulaPreview() {
-    this.eulaPreview = DOMPurify.sanitize(marked.parse(this.eulaDraftContent || '') as string);
-  }
-
-  saveEulaDraft() {
-    this.api.put('api/admin/eula/draft', {title: this.eulaDraftTitle, content: this.eulaDraftContent})
-      .subscribe(resp => this.messageService.notice(resp?.status?.message));
-  }
-
-  publishEula() {
-    if (!confirm('发布新版本后，全部用户（包括管理员）都必须重新同意。继续发布？')) return;
-    this.api.post('api/admin/eula/publish', {}).subscribe({
-      next: () => location.assign('/eula'),
-      error: err => this.messageService.notice(err, 'warning')
+        passkeys: resp.data.passkeys, oauthIdentities: resp.data.oauthIdentities};
     });
   }
 

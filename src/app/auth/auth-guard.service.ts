@@ -38,7 +38,6 @@ export class AuthGuardService implements CanMatch, CanActivate {
     if (!this.accountService.currentAccountValue) return this.router.parseUrl('/');
     const status = await this.access.restore();
     if (status?.banned) return this.router.parseUrl('/banned');
-    if (status?.eulaRequired) return this.router.parseUrl('/eula');
     return true;
   }
 

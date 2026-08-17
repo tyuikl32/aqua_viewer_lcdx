@@ -7,9 +7,6 @@
   <div class="col-auto">
     <button class="tab-selector" [class.tab-selector-active]="tab === 'keychips'" (click)="tab = 'keychips'">Keychip</button>
   </div>
-  <div class="col-auto">
-    <button class="tab-selector" [class.tab-selector-active]="tab === 'eula'" (click)="loadEula()">EULA</button>
-  </div>
 </div>
 
 <ng-template #pagination>
@@ -185,17 +182,6 @@
                         }
                       </td>
                     </tr>
-                    <tr>
-                      <th class="text-nowrap text-secondary fw-normal">EULA 当前版本</th>
-                      <td>{{ selectedProfile?.eulaStatus?.currentVersion ?? '—' }}</td>
-                      <th class="text-nowrap text-secondary fw-normal">用户同意版本</th>
-                      <td>
-                        {{ selectedProfile?.eulaStatus?.acceptedVersion ?? '未同意' }}
-                        @if (selectedProfile?.eulaStatus?.required) {
-                          <span class="badge bg-warning text-dark ms-1">需要重新同意</span>
-                        }
-                      </td>
-                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -368,28 +354,6 @@
       </div>
     }
     <ng-container *ngTemplateOutlet="pagination;"></ng-container>
-  </div>
-}
-
-@if (tab === 'eula') {
-  <div class="row g-3">
-    <div class="col-12 col-lg-6">
-      <div class="card"><div class="card-body">
-        <h5>当前已发布版本 {{ eulaCurrent?.version }}</h5>
-        <p class="text-secondary">{{ eulaCurrent?.title }}</p>
-        <label class="form-label">草稿标题</label>
-        <input class="form-control mb-2" [(ngModel)]="eulaDraftTitle">
-        <label class="form-label">Markdown 正文</label>
-        <textarea class="form-control font-monospace" rows="20" [(ngModel)]="eulaDraftContent" (ngModelChange)="updateEulaPreview()"></textarea>
-        <div class="d-flex gap-2 mt-2">
-          <button class="btn btn-outline-primary" (click)="saveEulaDraft()">保存草稿</button>
-          <button class="btn btn-danger" (click)="publishEula()">发布新版本</button>
-        </div>
-      </div></div>
-    </div>
-    <div class="col-12 col-lg-6">
-      <div class="card"><div class="card-body"><h5>安全预览</h5><article [innerHTML]="eulaPreview"></article></div></div>
-    </div>
   </div>
 }
 

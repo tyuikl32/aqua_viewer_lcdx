@@ -2,23 +2,10 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, firstValueFrom} from 'rxjs';
 import {ApiService} from '../api.service';
 import {AccountService} from './account.service';
-import {StatusCode} from '../status-code';
 
 export interface AccountAccessStatus {
   banned: boolean;
-  eulaRequired: boolean;
-  currentEulaVersion: number;
-  acceptedEulaVersion: number | null;
   appeal: string;
-}
-
-export interface EulaDocument {
-  id: number;
-  version: number;
-  title: string;
-  content: string;
-  publishedAt: string;
-  draft?: boolean;
 }
 
 @Injectable({providedIn: 'root'})
@@ -29,7 +16,6 @@ export class AccountAccessService {
 
   constructor(private api: ApiService, private accounts: AccountService) {
     window.addEventListener('rinnet-account-access-error', ((event: CustomEvent<string>) => {
-      if (event.detail === 'EULA_REQUIRED') this.requireEula();
       if (event.detail === 'ACCOUNT_BANNED') this.markBanned();
     }) as EventListener);
   }
@@ -53,26 +39,9 @@ export class AccountAccessService {
     return this.loadPromise;
   }
 
-  currentEula(): Promise<EulaDocument> {
-    return firstValueFrom(this.api.get('api/eula/current')).then(resp => resp.data);
-  }
-
-  async accept(version: number): Promise<boolean> {
-    const resp = await firstValueFrom(this.api.post('api/account/eula/accept', {version}));
-    if (resp?.status?.code === StatusCode.OK) await this.restore(true);
-    return !this.status?.eulaRequired;
-  }
-
-  requireEula() {
-    const previous = this.status;
-    this.statusSubject.next({banned: false, eulaRequired: true, currentEulaVersion: previous?.currentEulaVersion,
-      acceptedEulaVersion: previous?.acceptedEulaVersion ?? null, appeal: previous?.appeal ?? 'QQ群 295954906'});
-  }
-
   markBanned() {
     const previous = this.status;
-    this.statusSubject.next({banned: true, eulaRequired: false, currentEulaVersion: previous?.currentEulaVersion,
-      acceptedEulaVersion: previous?.acceptedEulaVersion ?? null, appeal: previous?.appeal ?? 'QQ群 295954906'});
+    this.statusSubject.next({banned: true, appeal: previous?.appeal ?? 'QQ群 295954906'});
   }
 
   clear() { this.statusSubject.next(null); }

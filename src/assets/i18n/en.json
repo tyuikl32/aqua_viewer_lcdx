@@ -5,6 +5,7 @@
     "Mai2": "Maimai DX",
     "Colon": ": ",
     "OK": "OK",
+    "Cancel": "Cancel",
     "FailedToLoad": "Failed to load"
   },
   "App": {
@@ -84,7 +85,20 @@
     "QuickNavigate": "Navigation",
     "Profile": "Profile",
     "PlayRecord": "Play Record",
-    "Photos": "Photos"
+    "Photos": "Photos",
+    "UnbindGameAccount": "Unbind",
+    "UnbindGameAccountTip": "Unbind the current game profile from this account? You can still view announcements and bind again later.",
+    "ConfirmUnbind": "Confirm unbind"
+  },
+  "NetCodeBindPage": {
+    "Title": "Bind game profile",
+    "Description": "You can bind a game profile to this account using the NetCode shown in game.",
+    "InputTitle": "Enter your NetCode",
+    "Bind": "Bind",
+    "Instruction1": "The binding code is available on the arcade cabinet.",
+    "Instruction2": "After reading your data with a QR code or Aime on the Entry screen, select the Access Code button.",
+    "Instruction3": "Your NetCode is shown in the view that opens.",
+    "ContinueWithoutBinding": "Continue without binding"
   },
   "AnnouncementsPage": {
     "Title": "Announcements",

@@ -10,7 +10,7 @@ export class BannedComponent implements OnInit {
   constructor(private access: AccountAccessService, private auth: AuthenticationService, private router: Router) {}
   async ngOnInit() {
     const status = await this.access.restore();
-    if (!status?.banned) await this.router.navigate([status?.eulaRequired ? '/eula' : '/dashboard']);
+    if (!status?.banned) await this.router.navigate(['/dashboard']);
   }
   async copy() { await navigator.clipboard.writeText(this.appealGroup); this.copied = true; }
   logout() { this.auth.logout().subscribe(() => location.assign('')); }

@@ -19,10 +19,7 @@ export class ErrorInterceptorService implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(catchError(err => {
       const statusCode = err?.error?.status?.code;
-      if (statusCode === StatusCode.EULA_REQUIRED) {
-        window.dispatchEvent(new CustomEvent('rinnet-account-access-error', {detail: 'EULA_REQUIRED'}));
-        this.router.navigate(['/eula']);
-      } else if (statusCode === StatusCode.ACCOUNT_BANNED) {
+      if (statusCode === StatusCode.ACCOUNT_BANNED) {
         window.dispatchEvent(new CustomEvent('rinnet-account-access-error', {detail: 'ACCOUNT_BANNED'}));
         this.router.navigate(['/banned']);
       }

@@ -68,7 +68,6 @@ import { PasswordResetComponent } from './password-reset/password-reset.componen
 import { ProfileComponent } from './profile/profile.component';
 import { AnnouncementsComponent } from './announcements/announcements.component';
 import { EditComponent } from './announcements/edit/edit.component';
-import { EulaComponent } from './eula/eula.component';
 import { BannedComponent } from './banned/banned.component';
 import { NetcodeBindComponent } from './netcode-bind/netcode-bind.component';
 import { OnetimeSignInComponent } from './onetime-sign-in/onetime-sign-in.component';
@@ -128,7 +127,6 @@ export function initializeApp(
         ProfileComponent,
         AnnouncementsComponent,
         EditComponent,
-        EulaComponent,
         BannedComponent,
         NetcodeBindComponent,
         OnetimeSignInComponent,

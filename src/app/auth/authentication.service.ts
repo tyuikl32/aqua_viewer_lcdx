@@ -90,8 +90,8 @@ export class AuthenticationService {
       mergeMap(this.procLoginResp));
   }
 
-  signUp(name: string, username: string, email: string, verifyCode: string, password: string, token: string, eulaVersion: number) {
-    const params: any = {name, username, email, verifyCode, password, eulaVersion};
+  signUp(name: string, username: string, email: string, verifyCode: string, password: string, token: string) {
+    const params: any = {name, username, email, verifyCode, password};
     if (token){
       params.oAuth2Token = token;
     }
@@ -128,11 +128,10 @@ export class AuthenticationService {
         await this.router.navigate(['/banned']);
         return loginResp;
       }
-      if (status?.eulaRequired) {
-        await this.router.navigate(['/eula']);
-        return loginResp;
+      const userResp = await this.userService.load(true);
+      if (userResp?.status?.code === StatusCode.OK && this.userService.currentUser?.cards?.length === 0) {
+        await this.router.navigate(['/netcode-bind']);
       }
-      await this.userService.load(true);
       return loginResp;
     });
   }
