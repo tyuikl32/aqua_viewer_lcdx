@@ -5,3 +5,20 @@
 
 ---
 
+## 2026-08-18 项目迁移 + 第五轮设计审批通过（实施就绪）
+
+**仓库迁移**（审核通过后、正式实施前的归位操作）：
+- 两仓库迁入 `E:\ALL.Net\Project_LCDX_NET\`：**LCDXNetApi 已移入**；**aqua_viewer_lcdx 被 Trae 客户端锁定根目录**，需完全退出 Trae 后在系统终端执行：
+  `Move-Item 'E:\ALL.Net\aqua_viewer_lcdx' 'E:\ALL.Net\Project_LCDX_NET'`
+- 9 个文档中的旧绝对路径引用已批量替换为新路径（两仓库 .trellis/.trae 下 .md/.jsonl）
+- Trae 跨会话记忆按项目路径建档：新路径打开后是全新记忆空间，**上下文锚点以仓库内文档为准**（本 journal + `.trae/documents/mai2-cabinet-management-v3-design.md` + 两侧 .trellis/tasks）
+
+**项目状态**：
+- 设计第五轮已审批通过：EP-18（manage-access 入口探测，hasManage=∃Enabled授权∨P10）/ EP-19（controllable 可操控清单，统一下拉数据源）；L2=授权行∨P10（Admin 隐式超集）；EP-02/03 废弃
+- `.trae/documents/export/` 已刷新为第五轮包（8 文件）
+- 下一步：正式实施——后端 13 步（`LCDXNetApi/.trellis/tasks/08-17-mai2-cabinet-backend/implement.md`）、前端 11 步（本仓库 `.trellis/tasks/08-16-mai2-cabinet-features/implement.md`）；新代码必须带单元测试（xUnit/Karma）
+- 开工前待确认项见主设计文档 §11 Open questions（6 项，含 Bootstrap 管理员 QQ 号）
+
+---
+
+
