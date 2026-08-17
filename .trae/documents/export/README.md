@@ -13,7 +13,7 @@ export/
 ├── 02-后端任务-LCDXNetApi/                   # 后端 Trellis 任务三件套
 │   ├── prd.md                               # 需求与验收标准
 │   ├── design.md                            # 文件结构与实现约束
-│   └── implement.md                         # 13 步执行清单
+│   └── implement.md                         # 分层递进执行清单（5 层，每层带验收点）
 └── 03-前端任务-aqua_viewer_lcdx/             # 前端 Trellis 任务三件套
     ├── prd.md / design.md / implement.md
 ```
