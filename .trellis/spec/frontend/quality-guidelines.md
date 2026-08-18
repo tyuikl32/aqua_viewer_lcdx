@@ -6,46 +6,53 @@
 
 ## Overview
 
-<!--
-Document your project's quality standards here.
-
-Questions to answer:
-- What patterns are forbidden?
-- What linting rules do you enforce?
-- What are your testing requirements?
-- What code review standards apply?
--->
-
-(To be filled by the team)
+Standards distilled from the mai2 cabinet management work (2026-08). Scope: `aqua_viewer_lcdx` frontend and its integration with `LCDXNetApi`.
 
 ---
 
 ## Forbidden Patterns
 
-<!-- Patterns that should never be used and why -->
+### HTTP DELETE with a request body (non-standard transport)
 
-(To be filled by the team)
+- `ApiService.deleteLcdx(path, body)` sends a body via HttpClient's `{body}` option (see `api.service.ts`). ASP.NET Core accepts `[FromBody]` on DELETE, but some proxies/gateways strip DELETE bodies.
+- For **new** endpoints, prefer path/query parameters. The existing `deleteLcdx` variant is kept for already-settled cabinet endpoints — do not add new body-carrying DELETE calls.
 
 ---
 
 ## Required Patterns
 
-<!-- Patterns that must always be used -->
+### Service stubbing in specs
 
-(To be filled by the team)
+- `jasmine.createSpyObj` requires a **non-empty** method-name array; and its third-argument property object already installs property spies — calling `spyOnProperty` on the same property afterwards throws `currentValue#get has already been spied upon`.
+- For services consumed via getter properties (`currentValue`, `currentAccountValue`), stub with a plain object + closure-backed getter:
+
+```typescript
+let permState = {permission: 0, hasManage: false, loaded: true};
+botPermission = {get currentValue() { return permState; }} as unknown as BotPermissionService;
+```
+
+This allows re-stubbing per test case without spy bookkeeping.
+
+### Guards
+
+- Guard classes: `providedIn: 'root'`, synchronous `canActivate(): boolean | UrlTree` unless async work is genuinely required (sync exemplar: `cabinet-guards.service.ts`; justified-async case: `auth-guard.service.ts`).
 
 ---
 
 ## Testing Requirements
 
-<!-- What level of testing is expected -->
+- `ng test` **baseline is NOT all-green**: 54 pre-existing failures from Ongeki/Chunithm legacy specs (missing providers) — unrelated to new work (session-observed count, 2026-08; re-count on the next full run). Run scoped specs instead and compare totals against this baseline:
 
-(To be filled by the team)
+```powershell
+npx ng test --include "src/app/auth/*.spec.ts" --watch=false --browsers=ChromeHeadless
+```
+
+- Backend counterpart: `dotnet test LCDXNetApi.sln` (cwd = `LCDXNetApi`), expected 95/95 green; use `--filter` for scoped runs.
 
 ---
 
 ## Code Review Checklist
 
-<!-- What reviewers should check -->
-
-(To be filled by the team)
+- **IDE auto-revert hazard**: this workspace's IDE occasionally restores old buffer contents over just-edited files (hit ~10× during cabinet work). After each edit batch, re-verify the critical file state before building; if a change vanished, re-apply it via a one-shot script instead of repeating single edits.
+- New user-facing strings: prefer i18n keys unless the surrounding feature is deliberately single-language.
+- Route-guard changes: confirm guard tier (`hasManage` vs `ADMIN_PERMISSION >= 10`) matches the page's permission tier in design §3.2.
