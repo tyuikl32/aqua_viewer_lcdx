@@ -22,3 +22,42 @@
 ---
 
 
+
+
+## Session 1: 机台管理实施完成 + 逐功能提交纪律落地
+
+**Date**: 2026-08-18
+**Task**: 机台管理实施完成 + 逐功能提交纪律落地
+**Branch**: `master`
+
+### Summary
+
+前端路由守卫/spec经验沉淀/任务簿记三单元逐个审计后单独提交；双仓库clean；联调验收待后端部署
+
+### Main Changes
+
+- 路由守卫 CabinetManageGuard/CabinetAdminGuard（§8 直访防护，单测 6/6，ec2e420）
+- spec 经验沉淀 quality-guidelines.md（IDE 还原风险/DELETE body/54 例存量基线/闭包 getter stub，447af2b）
+- 任务 08-16 簿记（prd 本地验收 2/7，其余 5 项待联调，0c06efd）
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ec2e420` | (see git log) |
+| `447af2b` | (see git log) |
+| `0c06efd` | (see git log) |
+
+### Testing
+
+- [OK] 守卫 spec 6/6 绿；ng build 零错误（存量 Sass 警告除外）
+- [OK] 后端 95/95 已绿（ab7ff69）
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 部署后端 + cll.net 三表 DDL/Bootstrap 后联调验收 5 项
+- 联调通过后 archive 两任务
