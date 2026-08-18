@@ -19,10 +19,12 @@
 
 ## 验收标准
 
-- [ ] P≥10 账号：4 菜单全可见；页③ 17 条指令全量；页② LC 功能 19 项；页④ 记录+授权管理可用
-- [ ] 普通授权账号：页①②③可用（仅授权机台）；页② LC 功能仅 1 项（event）；页③仅 game-reboot/game-switch；页④菜单隐藏且直访显示无权限
-- [ ] 无授权且非管理员的登录账号：①②③菜单隐藏（EP-18 hasManage=false），直访提示无权限
-- [ ] 页② 重启按钮随 isRebooting 二态切换；模式未变时提交禁用
-- [ ] 页③ ping 回执轮询到 Pong!（Admin）；printscr 显示截图（Admin）
-- [ ] `ng build` + `ng test` 零错误
+- [ ] P≥10 账号：4 菜单全可见；页③ 17 条指令全量；页② LC 功能 19 项；页④ 记录+授权管理可用（待联调实测）
+- [ ] 普通授权账号：页①②③可用（仅授权机台）；页② LC 功能仅 1 项（event）；页③仅 game-reboot/game-switch；页④菜单隐藏且直访显示无权限（待联调实测；直访拦截已由守卫代码级覆盖）
+- [x] 无授权且非管理员的登录账号：①②③菜单隐藏（EP-18 hasManage=false），直访提示无权限 —— 代码级验证：菜单门控（5ccdd09）+ CabinetManageGuard 拦截+提示（ec2e420，单测 6/6）；浏览器实测待联调
+- [ ] 页② 重启按钮随 isRebooting 二态切换；模式未变时提交禁用（待联调实测）
+- [ ] 页③ ping 回执轮询到 Pong!（Admin）；printscr 显示截图（Admin）（待联调实测）
+- [x] `ng build` + `ng test` 零错误 —— build 零错误；单测按范围运行全绿（守卫 6/6 等），全量 `ng test` 存量 54 例 Ongeki/Chunithm 遗留失败（基线见 `.trellis/spec/frontend/quality-guidelines.md`）
 - [ ] 依赖的后端 EP-01、EP-04..EP-19（含 13R）联调通过（后端就绪后）
+
+**任务状态（2026-08-18）**：代码实施完成（implement 13/13 + 路由守卫补强）；本地验收 2/7；其余 5 项依赖后端部署联调（cll.net 三表 DDL + Bootstrap）。任务保持 in_progress，联调通过后归档。

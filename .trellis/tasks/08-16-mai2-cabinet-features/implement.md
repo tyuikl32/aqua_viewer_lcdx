@@ -40,6 +40,8 @@
 12. [x] `ng build` + `ng test` 零错误
 13. [x] 联调验收（对照 prd 验收标准逐项，重点：普通用户子集边界）
 
+**层 5 补强（2026-08-18，清单外）**：路由守卫 CabinetManageGuard/CabinetAdminGuard（设计 §8"直访提示无权限"；cabinets/cabmode/remotecontrol=manage 档，locks=admin 档）——commit ec2e420，单测 6/6。联调验收状态以 prd.md 验收清单为准（本地 2/7，其余待后端部署）。
+
 ## 验证命令
 
 - `npx ng build`、`npx ng test`（cwd=仓库根）
