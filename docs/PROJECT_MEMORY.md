@@ -148,6 +148,12 @@ For future conflicts:
 - Keep API response handling compatible with `ApiResponse<T>` and status code `92001` (`StatusCode.OK`). Some endpoints, notably KOP ranking, currently return a raw collection instead; confirm the controller contract before normalizing anything.
 - For changes involving `/api`, inspect `RinNET_backend`. For changes involving `/lcdx`, inspect `LCDXNetApi`. For login, registration, card binding, or bearer validation, inspect both.
 
+### Trellis commit discipline (user-mandated 2026-08-17)
+
+- Work in small Trellis loops: implement ONE functional unit → run the check/audit step (`trellis-check`) on it → commit only that unit's files → move to the next unit.
+- Never accumulate several finished features into one large commit; commit boundaries follow the layered `implement.md` checklists (each layer or functional unit is its own check + commit).
+- Work commits first; Trellis bookkeeping (task checkbox updates, archive, journal) commits after — per `.trellis/workflow.md` Phase 3.4.
+
 ## 8. Verification baseline and known rough edges
 
 CI on `master` uses Node 22, runs `npm install`, and then `npm run build-prod`. Dependencies were installed and `npm run build-prod` completed successfully on 2026-08-17 after resolving the synchronization conflicts.

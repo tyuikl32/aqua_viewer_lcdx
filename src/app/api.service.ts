@@ -38,6 +38,11 @@ export class ApiService {
     return this.http.delete<any>(this.getHost() + path, {params, body});
   }
 
+  /** LCDX 删除（Authorization 头由 TokenInterceptor 统一注入，同 getLcdx/postLcdx） */
+  deleteLcdx(path: string, body?: object, params?: HttpParams) {
+    return this.http.delete<any>(environment.lcdxApiServer + path, {params, body});
+  }
+
   getHost(): string {
     return environment.apiServer;
   }

@@ -1,0 +1,142 @@
+<h1 class="page-heading">{{ "Maimai2.LocksPage.Title" | translate }}</h1>
+
+@if (noPermission) {
+  <div class="alert alert-warning">{{ "Maimai2.LocksPage.NoPermission" | translate }}</div>
+} @else {
+  <div class="row">
+    <!-- 卡A 操作记录 -->
+    <div class="col-12 mb-4">
+      <div class="card shadow">
+        <div class="card-header"><h5 class="mb-0">{{ "Maimai2.LocksPage.AuditCard" | translate }}</h5></div>
+        <div class="card-body">
+          <div class="row g-2 mb-3">
+            <div class="col-md-2">
+              <input class="form-control" type="number" [ngModel]="filterQQ"
+                     (ngModelChange)="filterQQ = $event ? Number($event) : null"
+                     placeholder="{{ 'Maimai2.LocksPage.FilterQQ' | translate }}">
+            </div>
+            <div class="col-md-2">
+              <input class="form-control" [(ngModel)]="filterKeychip"
+                     placeholder="{{ 'Maimai2.LocksPage.FilterKeychip' | translate }}">
+            </div>
+            <div class="col-md-2">
+              <select class="form-select" [(ngModel)]="filterAction">
+                <option value="">{{ "Maimai2.LocksPage.AllActions" | translate }}</option>
+                @for (a of actions; track a) {
+                  <option [ngValue]="a">{{ a }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-2">
+              <input class="form-control" type="datetime-local" [(ngModel)]="filterSince">
+            </div>
+            <div class="col-md-2">
+              <input class="form-control" type="datetime-local" [(ngModel)]="filterUntil">
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-primary w-100" (click)="applyFilter()">{{ "Maimai2.LocksPage.Filter" | translate }}</button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+              <thead>
+              <tr>
+                <th>{{ "Maimai2.LocksPage.ColTime" | translate }}</th>
+                <th>QQ</th>
+                <th>{{ "Maimai2.LocksPage.ColAction" | translate }}</th>
+                <th>{{ "Maimai2.LocksPage.ColCabinet" | translate }}</th>
+                <th>{{ "Maimai2.LocksPage.ColParams" | translate }}</th>
+                <th>{{ "Maimai2.LocksPage.ColResult" | translate }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              @for (lock of locks; track lock.time + lock.qqNumber + lock.action) {
+                <tr>
+                  <td class="text-nowrap">{{ lock.time | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
+                  <td>{{ lock.qqNumber }}</td>
+                  <td><code>{{ lock.action }}</code></td>
+                  <td class="text-nowrap">{{ lock.fullKeychip || '-' }}</td>
+                  <td class="text-truncate" style="max-width: 220px" [title]="lock.params || ''">{{ lock.params || '-' }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="resultBadge(lock.result)">{{ lock.result }}</span>
+                    @if (lock.detail) {<small class="d-block text-muted text-truncate" style="max-width: 160px" [title]="lock.detail">{{ lock.detail }}</small>}
+                  </td>
+                </tr>
+              }
+              </tbody>
+            </table>
+          </div>
+
+          <pagination-controls (pageChange)="pageChanged($event)"
+                               [maxSize]="5" [autoHide]="true" [rotate]="true"></pagination-controls>
+        </div>
+      </div>
+    </div>
+
+    <!-- 卡B 授权管理 -->
+    <div class="col-12 mb-4">
+      <div class="card shadow">
+        <div class="card-header"><h5 class="mb-0">{{ "Maimai2.LocksPage.GrantsCard" | translate }}</h5></div>
+        <div class="card-body">
+          <div class="row g-2 mb-3 align-items-end">
+            <div class="col-md-4">
+              <label class="form-label">{{ "Maimai2.LocksPage.TargetQQ" | translate }}</label>
+              <input class="form-control" type="number" [ngModel]="grantQQ" (ngModelChange)="grantQQ = $event ? Number($event) : null">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">{{ "Maimai2.Cabinets.SelectCabinet" | translate }}</label>
+              <select class="form-select" [(ngModel)]="grantNick">
+                <option value="" disabled>{{ "Maimai2.LocksPage.SelectGrantCabinet" | translate }}</option>
+                @for (cab of cabinets; track cab.fullKeychip) {
+                  <option [ngValue]="cab.nickName ?? cab.fullKeychip">{{ cab.nickName || cab.fullKeychip }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-success w-100" [disabled]="grantQQ == null || !grantNick" (click)="addGrant()">
+                {{ "Maimai2.LocksPage.AddGrant" | translate }}
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm table-hover align-middle">
+              <thead>
+              <tr>
+                <th>QQ</th>
+                <th>{{ "Maimai2.LocksPage.ColCabinet" | translate }}</th>
+                <th>{{ "Maimai2.LocksPage.ColStatus" | translate }}</th>
+                <th>{{ "Maimai2.LocksPage.ColGrantedAt" | translate }}</th>
+                <th>{{ "Maimai2.LocksPage.ColGrantedBy" | translate }}</th>
+                <th></th>
+              </tr>
+              </thead>
+              <tbody>
+              @for (g of grants; track g.qqNumber + g.fullKeychip + g.grantedAt) {
+                <tr [class.table-secondary]="!g.enabled">
+                  <td>{{ g.qqNumber }}</td>
+                  <td class="text-nowrap">{{ g.fullKeychip }}</td>
+                  <td>
+                    @if (g.enabled) {<span class="badge text-bg-success">{{ "Maimai2.LocksPage.Enabled" | translate }}</span>}
+                    @else {<span class="badge text-bg-secondary">{{ "Maimai2.LocksPage.Disabled" | translate }}</span>}
+                  </td>
+                  <td>{{ g.grantedAt | date: 'yyyy-MM-dd HH:mm' }}</td>
+                  <td>{{ g.grantedBy ?? '-' }}</td>
+                  <td>
+                    @if (g.enabled) {
+                      <button class="btn btn-sm btn-outline-danger" (click)="removeGrant(g)">
+                        {{ "Maimai2.LocksPage.Revoke" | translate }}
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

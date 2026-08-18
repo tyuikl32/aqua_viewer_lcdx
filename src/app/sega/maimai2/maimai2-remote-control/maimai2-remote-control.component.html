@@ -1,0 +1,66 @@
+<h1 class="page-heading">{{ "Maimai2.RemoteControlPage.Title" | translate }}</h1>
+
+@if (cabinets.length === 0) {
+  <div class="alert alert-info">{{ "Maimai2.CabinetsPage.NoCabinets" | translate }}</div>
+} @else {
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label">{{ "Maimai2.Cabinets.SelectCabinet" | translate }}</label>
+          <select class="form-select" [(ngModel)]="selectedNick">
+            @for (cab of cabinets; track cab.fullKeychip) {
+              <option [ngValue]="cab.nickName ?? cab.fullKeychip">{{ cab.nickName || cab.fullKeychip }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">{{ "Maimai2.RemoteControl.Command" | translate }}</label>
+          <select class="form-select" [(ngModel)]="selectedCommand">
+            <option value="" disabled>{{ "Maimai2.RemoteControl.SelectCommand" | translate }}</option>
+            @for (c of commands; track c.command) {
+              <option [ngValue]="c.command">{{ c.command }}</option>
+            }
+          </select>
+          @if (selectedCommandDef; as def) {
+            <div class="form-text">
+              @if (def.hasArg) {<text>{{ def.argHintKey | translate }}</text>}
+              @else {<text>{{ "Maimai2.RemoteControl.NoArgCommand" | translate }}</text>}
+            </div>
+          }
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">{{ "Maimai2.RemoteControl.Params" | translate }}</label>
+          <input class="form-control" [(ngModel)]="message"
+                 [disabled]="selectedCommandDef && !selectedCommandDef.hasArg"
+                 placeholder="{{ 'Maimai2.RemoteControl.ParamsPlaceholder' | translate }}">
+        </div>
+      </div>
+      <button class="btn btn-primary mt-3" [disabled]="!selectedCommand || !selectedNick || sending" (click)="send()">
+        @if (sending) {<span class="spinner-border spinner-border-sm me-1"></span>}
+        {{ "Maimai2.RemoteControl.Send" | translate }}
+      </button>
+    </div>
+  </div>
+
+  @if (sessions.length > 0) {
+    <div class="card shadow">
+      <div class="card-header"><h5 class="mb-0">{{ "Maimai2.RemoteControl.SessionLog" | translate }}</h5></div>
+      <div class="card-body">
+        @for (s of sessions; track s.requestId) {
+          <div class="border rounded p-2 mb-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <span><code>{{ s.command }}</code> <small class="text-muted">#{{ s.requestId }}</small></span>
+              <span class="badge" [ngClass]="statusBadge(s)">{{ s.status }}</span>
+            </div>
+            @if (s.imageUrl) {
+              <img [src]="s.imageUrl" class="img-fluid rounded mt-2" alt="screenshot">
+            } @else if (s.message) {
+              <pre class="mb-0 mt-2 small">{{ s.message }}</pre>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+}

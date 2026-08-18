@@ -3,6 +3,7 @@ import {StatusCode} from './status-code';
 import {MessageService} from './message.service';
 import {ApiService} from './api.service';
 import {AccountService} from './auth/account.service';
+import {BotPermissionService} from './bot-permission.service';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -18,6 +19,7 @@ export class UserService {
     private api: ApiService,
     account: AccountService,
     private messageService: MessageService,
+    private botPermission: BotPermissionService,
   ) {
     this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
     if (!account.currentAccountValue){
@@ -74,6 +76,7 @@ export class UserService {
     this.cancelRequest?.next();
     localStorage.removeItem('currentUser');
     this.currentUser = null;
+    this.botPermission.clear();
   }
 }
 

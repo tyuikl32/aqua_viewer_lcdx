@@ -1,0 +1,98 @@
+<h1 class="page-heading">{{ "Maimai2.CabinetControlPage.Title" | translate }}</h1>
+
+@if (cabinets.length === 0) {
+  <div class="alert alert-info">{{ "Maimai2.CabinetsPage.NoCabinets" | translate }}</div>
+} @else {
+  <div class="row mb-3">
+    <div class="col-md-5">
+      <select class="form-select" [(ngModel)]="selectedNick" (change)="onCabinetChange()">
+        @for (cab of cabinets; track cab.fullKeychip) {
+          <option [ngValue]="cab.nickName ?? cab.fullKeychip">{{ cab.nickName || cab.fullKeychip }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- LC 模式卡 -->
+    <div class="col-lg-4 mb-4">
+      <div class="card shadow h-100">
+        <div class="card-header"><h5 class="mb-0">{{ "Maimai2.CabinetControl.LCModeCard" | translate }}</h5></div>
+        <div class="card-body">
+          <div class="mb-2 text-muted small">{{ "Maimai2.CabinetControl.CurrentMode" | translate }}: {{ info?.isSpecialMode }}</div>
+          <div class="d-flex gap-2 flex-wrap">
+            @for (m of LC_MODES; track m.mode) {
+              <button class="btn" [class.btn-primary]="selectedMode === m.mode" [class.btn-outline-primary]="selectedMode !== m.mode"
+                      (click)="setMode(m.mode)">{{ m.labelKey | translate }}</button>
+            }
+          </div>
+          <button class="btn btn-success mt-3" [disabled]="!modeChanged" (click)="submitMode()">
+            {{ "Maimai2.CabinetControl.Submit" | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 传统重启卡 -->
+    <div class="col-lg-4 mb-4">
+      <div class="card shadow h-100">
+        <div class="card-header"><h5 class="mb-0">{{ "Maimai2.CabinetControl.RebootCard" | translate }}</h5></div>
+        <div class="card-body">
+          <p class="small text-muted">{{ "Maimai2.CabinetControl.RebootHint" | translate }}</p>
+          @if (rebooting) {
+            <button class="btn btn-warning" (click)="toggleReboot()">{{ "Maimai2.CabinetControl.CancelReboot" | translate }}</button>
+          } @else {
+            <button class="btn btn-danger" (click)="toggleReboot()">{{ "Maimai2.CabinetControl.SetReboot" | translate }}</button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- LC 功能卡 -->
+    <div class="col-lg-4 mb-4">
+      <div class="card shadow h-100">
+        <div class="card-header"><h5 class="mb-0">{{ "Maimai2.CabinetControl.LCSettingsCard" | translate }}</h5></div>
+        <div class="card-body">
+          <select class="form-select mb-2" [(ngModel)]="lcsetKey">
+            <option value="" disabled>{{ "Maimai2.CabinetControl.SelectKey" | translate }}</option>
+            @for (k of lcsetKeys; track k.key + k.setting) {
+              <option [ngValue]="k.key">{{ k.key }} → {{ k.setting }}</option>
+            }
+          </select>
+          <input class="form-control mb-2" [(ngModel)]="lcsetVal" placeholder="{{ 'Maimai2.CabinetControl.ValuePlaceholder' | translate }}">
+          <button class="btn btn-success" [disabled]="!lcsetKey" (click)="submitLcset()">
+            {{ "Maimai2.CabinetControl.Submit" | translate }}
+          </button>
+          @if (info?.settings?.length) {
+            <hr>
+            <h6>{{ "Maimai2.Cabinets.EnabledSettings" | translate }}</h6>
+            <ul class="list-unstyled small mb-0">
+              @for (s of info.settings; track s.settingName) {
+                <li><code>{{ s.settingName }}</code> = {{ s.settingValue }}</li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- 管理区：机台级别卡（P≥10） -->
+    @if (isAdmin) {
+      <div class="col-lg-6 mb-4">
+        <div class="card shadow h-100 border-warning">
+          <div class="card-header bg-warning-subtle"><h5 class="mb-0">⚙ {{ "Maimai2.CabinetControl.LevelCard" | translate }}</h5></div>
+          <div class="card-body">
+            <div class="mb-2 small text-muted">{{ "Maimai2.CabinetControl.CurrentLevel" | translate }}: {{ info?.level }}</div>
+            <select class="form-select mb-2" [(ngModel)]="selectedLevel">
+              @for (l of CABINET_LEVELS; track l.level) {
+                <option [ngValue]="l.level">{{ l.level }} — {{ l.name }} ({{ l.descKey | translate }})</option>
+              }
+            </select>
+            <div class="alert alert-warning py-2 small mb-2">{{ "Maimai2.CabinetControl.LevelWarning" | translate }}</div>
+            <button class="btn btn-success" (click)="submitLevel()">{{ "Maimai2.CabinetControl.Submit" | translate }}</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

@@ -1,4 +1,5 @@
 import { RouterModule, Routes } from '@angular/router';
+import { CabinetAdminGuard, CabinetManageGuard } from '../../auth/cabinet-guards.service';
 import { Maimai2ProfileComponent } from './maimai2-profile/maimai2-profile.component';
 import { Maimai2SettingComponent } from './maimai2-setting/maimai2-setting.component';
 import { Maimai2RatingComponent } from './maimai2-rating/maimai2-rating.component';
@@ -12,6 +13,10 @@ import { Maimai2FestaComponent } from './maimai2-festa/maimai2-festa.component';
 import { Maimai2ServerMissionsComponent } from './maimai2-server-missions/maimai2-server-missions.component';
 import { Maimai2PointExchangesComponent } from './maimai2-point-exchanges/maimai2-point-exchanges.component';
 import { Maimai2KopRankingComponent } from './maimai2-kop-ranking/maimai2-kop-ranking.component';
+import { Maimai2CabinetsComponent } from './maimai2-cabinets/maimai2-cabinets.component';
+import { Maimai2CabmodeComponent } from './maimai2-cabmode/maimai2-cabmode.component';
+import { Maimai2RemoteControlComponent } from './maimai2-remote-control/maimai2-remote-control.component';
+import { Maimai2LocksComponent } from './maimai2-locks/maimai2-locks.component';
 
 
 const routes: Routes = [
@@ -28,6 +33,14 @@ const routes: Routes = [
   { path: 'festa', component: Maimai2FestaComponent, data: { title: 'Festa' } },
   { path: 'songlist', component: Maimai2SonglistComponent, data: { title: 'Songlist' } },
   { path: 'rival', component: Maimai2RivalComponent, data: { title: 'Rival' } },
+  { path: 'cabinets', component: Maimai2CabinetsComponent, data: { title: 'Cabinets' },
+    canActivate: [CabinetManageGuard] },
+  { path: 'cabmode', component: Maimai2CabmodeComponent, data: { title: 'CabinetControl' },
+    canActivate: [CabinetManageGuard] },
+  { path: 'remotecontrol', component: Maimai2RemoteControlComponent, data: { title: 'RemoteControl' },
+    canActivate: [CabinetManageGuard] },
+  { path: 'locks', component: Maimai2LocksComponent, data: { title: 'Locks' },
+    canActivate: [CabinetAdminGuard] },
 ];
 
 export const Maimai2Routes = RouterModule.forChild(routes);
