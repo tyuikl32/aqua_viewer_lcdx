@@ -1,4 +1,5 @@
 import { RouterModule, Routes } from '@angular/router';
+import { CabinetAdminGuard, CabinetManageGuard } from '../../auth/cabinet-guards.service';
 import { Maimai2ProfileComponent } from './maimai2-profile/maimai2-profile.component';
 import { Maimai2SettingComponent } from './maimai2-setting/maimai2-setting.component';
 import { Maimai2RatingComponent } from './maimai2-rating/maimai2-rating.component';
@@ -32,10 +33,14 @@ const routes: Routes = [
   { path: 'festa', component: Maimai2FestaComponent, data: { title: 'Festa' } },
   { path: 'songlist', component: Maimai2SonglistComponent, data: { title: 'Songlist' } },
   { path: 'rival', component: Maimai2RivalComponent, data: { title: 'Rival' } },
-  { path: 'cabinets', component: Maimai2CabinetsComponent, data: { title: 'Cabinets' } },
-  { path: 'cabmode', component: Maimai2CabmodeComponent, data: { title: 'CabinetControl' } },
-  { path: 'remotecontrol', component: Maimai2RemoteControlComponent, data: { title: 'RemoteControl' } },
-  { path: 'locks', component: Maimai2LocksComponent, data: { title: 'Locks' } },
+  { path: 'cabinets', component: Maimai2CabinetsComponent, data: { title: 'Cabinets' },
+    canActivate: [CabinetManageGuard] },
+  { path: 'cabmode', component: Maimai2CabmodeComponent, data: { title: 'CabinetControl' },
+    canActivate: [CabinetManageGuard] },
+  { path: 'remotecontrol', component: Maimai2RemoteControlComponent, data: { title: 'RemoteControl' },
+    canActivate: [CabinetManageGuard] },
+  { path: 'locks', component: Maimai2LocksComponent, data: { title: 'Locks' },
+    canActivate: [CabinetAdminGuard] },
 ];
 
 export const Maimai2Routes = RouterModule.forChild(routes);
