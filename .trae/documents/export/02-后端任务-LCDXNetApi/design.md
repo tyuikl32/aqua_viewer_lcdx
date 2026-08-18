@@ -9,7 +9,7 @@
 | `Database/CllnetDbContext.cs` 改 | CabinetLevel 8 值；Cabinet.IsSpecialMode int；+UserRemoteLockRecord / LCDXMemberRecord / LCDXCabinetGrantRecord 三实体与 DbSet |
 | `Configures/RemotewareOptions.cs` 新 | §5.2 配置绑定 |
 | `Services/CabinetPolicy.cs` 新 | 全部白名单与子集常量：AllowedModes/AllowedLevels/RemoteCommands(17)/NormalRemoteCommands(2)/LcsetKeys(19)/NormalLcsetKeys(2) |
-| `Services/MemberAuthService.cs` +接口 新 | userName→QQNumber→permission(LCDXMembers)；授权集合(LCDXCabinetGrants Enabled)；hasManage 判定(EP-18：∃授权行∨P10)；可操控清单(EP-19：Admin 全量∨授权投影)；grant 增/恢复/吊销 |
+| `Services/MemberAuthService.cs` +接口 新 | userName→QQNumber→permission(LCDXMemberPermissions)；授权集合(LCDXCabinetGrants Enabled)；hasManage 判定(EP-18：∃授权行∨P10)；可操控清单(EP-19：Admin 全量∨授权投影)；grant 增/恢复/吊销 |
 | `Services/RemoteControlService.cs` +接口 新 | §5.4 调度 + §5.6 回执缓存 |
 | `Services/Hosted/RemoteReplySubscriberService.cs` 新 | §5.5 单线程 SUB |
 | `Services/RemoteAuditService.cs` +接口 新 | §3.3 落库（脱敏/方案 A 放行/detail 截断） |

@@ -30,7 +30,7 @@ export/
 ## 设计核心速览
 
 - **范围**：全部新后端能力并入 LCDXNetApi；QQBot / CLL.Net / BmDaemon 三项目零改动；前端 aqua_viewer_lcdx 新增 4 页
-- **数据模型**：cll.net 库新表 LCDXMembers（身份）/ LCDXCabinetGrants（1:N 授权，软吊销）/ UserRemoteLocks（操作审计，失败也落库）；零 bot 库依赖
+- **数据模型**：cll.net 库新表 LCDXMemberPermissions（身份）/ LCDXCabinetGrants（1:N 授权，软吊销）/ UserRemoteLocks（操作审计，失败也落库）；零 bot 库依赖
 - **鉴权三层**：L1 TokenAuth → L2 CabAuth（∃Enabled 授权行 **或** P≥10，Admin 为隐式超集）→ L3 Admin（P≥10）
 - **细分下放**：lcset 普通用户仅 `event`（chevent 不下放）；Remoteware 普通用户仅 game-reboot/game-switch；**安全边界在后端白名单**
 - **Endpoint 18 个**：EP-01（permission）/ EP-04..07（查询四卡）/ EP-08..11（写操作）/ EP-13+13R（Remoteware 调度与轮询）/ EP-12/14..17（Admin 查询与授权管理）/ **EP-18（hasManage 入口探测）/ EP-19（可操控机台清单）**——原 EP-02/03 已并入 EP-19 废弃
@@ -49,7 +49,7 @@ export/
 
 1. lcset 普通子集 = **仅 `event`**（chevent 不下放）
 2. EP-15..17 授权管理端点纳入本期：**确认**
-3. LCDXMembers 初始管理员：**3413607143、2320812015**（两名，P10）
+3. LCDXMemberPermissions 初始管理员：**3413607143、2320812015**（两名，P10）
 4. §5.8 单实例部署约束：**接受**；实现须遵循 ASP.NET Core DI 设计规范管理生命周期（主文档 §9.1）
 5. Remoteware 执行结果回写审计：**不回写**（回执 message 不落库）
 6. 截图 imageUrl 内嵌 HttpToken（仅 Admin 可见）：**接受**

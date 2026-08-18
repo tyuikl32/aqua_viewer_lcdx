@@ -3,6 +3,8 @@
 > 状态：**设计定案（待实施）**。v1 的全部代码修改已回滚，两仓库工作区已还原。
 > 本文档按 grill-me 对抗审查流程产出，已经五轮审查/审批迭代 + 第六轮实施前定案（open questions 全部确认），审查记录见 §11。
 > 设计已全部定案，可进入实施。
+>
+> **2026-08-18 实施期勘误（schema 冲突）**：成员权限表原名 `LCDXMembers` 与 CLL.Net 既有谱面团队表（`UserName` 主键，InitialCreate 迁移已建）同名冲突——手动 DDL 的 `CREATE TABLE IF NOT EXISTS` 会静默跳过导致列缺失。定案：更名为 **`LCDXMemberPermissions`**，三张新表全部改由 CLL.Net 仓库 EF 迁移 `AddCabinetManagementTables` 创建（schema 单一 owner）。本文档正文中的 `LCDXMemberPermissions` 均应按此理解（已同步替换）；部署步骤见 `LCDXNetApi/deploy/mai2-cabinet-deploy.md`。
 
 ---
 
@@ -43,15 +45,15 @@ LCDXUserV2Records (cll.net, 既有)         Cabinets (cll.net, 既有)
    QQNumber (PK) ──────────┐                  ┌───────── FullKeychip (PK)
       ▲                    │                  │ ▲
       │ 1:1 (可选行)        ▼                  ▼ │ N:1
-LCDXMembers (cll.net, 新)              LCDXCabinetGrants (cll.net, 新)
+LCDXMemberPermissions (cll.net, 新)              LCDXCabinetGrants (cll.net, 新)
 [QQNumber PK | Permission | …]        [Id PK | QQNumber | FullKeychip | Enabled | …]
    身份记录（谁的管理员）                  授权记录（谁可用哪台，一行=一条授权）
 ```
 
 三张新表全部在 cll.net 库（含 §3.3 UserRemoteLocks），LCDXNetApi 只连一个数据库。
 
-**LCDXMembers（身份记录）**：
-- 语义：`LCDXMembers` 中存在行 = 该 QQ 是"成员"；`Permission` 沿用数值语义（≥10 管理员）。**无行 = 普通用户（Permission=0）**——普通用户无需登记。
+**LCDXMemberPermissions（身份记录）**：
+- 语义：`LCDXMemberPermissions` 中存在行 = 该 QQ 是"成员"；`Permission` 沿用数值语义（≥10 管理员）。**无行 = 普通用户（Permission=0）**——普通用户无需登记。
 - 主键 `QQNumber`，逻辑上 1:1 指向 LCDXUserV2Records（不强制外键，与库内既有风格一致）。
 
 **LCDXCabinetGrants（授权记录，用户↔keychip 的对应）**：
@@ -62,7 +64,7 @@ LCDXMembers (cll.net, 新)              LCDXCabinetGrants (cll.net, 新)
 **DDL（部署时手动执行，与 §3.3 一并）**：
 
 ```sql
-CREATE TABLE IF NOT EXISTS `LCDXMembers` (
+CREATE TABLE IF NOT EXISTS `LCDXMemberPermissions` (
   `QQNumber` BIGINT NOT NULL,
   `Permission` INT NOT NULL DEFAULT 0,
   `AddedSince` DATETIME NOT NULL,
@@ -85,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `LCDXCabinetGrants` (
 
 **Bootstrap**：部署后需手工插入初始管理员（否则无人具备 Admin）——**已确认两名**（第六轮 Q3）：
 ```sql
-INSERT INTO LCDXMembers (QQNumber, Permission, AddedSince) VALUES
+INSERT INTO LCDXMemberPermissions (QQNumber, Permission, AddedSince) VALUES
   (3413607143, 10, NOW()),
   (2320812015, 10, NOW());
 ```
@@ -96,10 +98,10 @@ INSERT INTO LCDXMembers (QQNumber, Permission, AddedSince) VALUES
 | 层 | 名称 | 判定 | 用途 |
 |---|---|---|---|
 | L1 | TokenAuth | `Authorization` 头 + 路径 `{userName}` → `IRinnetAdminService.CheckTokenAsync`（既有服务，经 RinNET `/api/user/me` 校验归属） | 所有端点前置；失败 401 |
-| L2 | CabAuth | L1 + `userName→QQNumber`（LCDXUserV2Records）+ [`LCDXCabinetGrants` 存在 `(QQNumber, FullKeychip, Enabled=true)` **或** `LCDXMembers.Permission>=10`] | 普通用户功能 |
+| L2 | CabAuth | L1 + `userName→QQNumber`（LCDXUserV2Records）+ [`LCDXCabinetGrants` 存在 `(QQNumber, FullKeychip, Enabled=true)` **或** `LCDXMemberPermissions.Permission>=10`] | 普通用户功能 |
 
 > Admin 为 L2 的隐式超集（第五轮 grill #25 修正）：§4 矩阵管理员列全 ✅，若无授权行的管理员被 L2 拦截则矩阵不成立。L2 判定 = 有 Enabled 授权行 **或** Permission≥10。
-| L3 | Admin | L1 + `LCDXMembers.Permission >= 10` | 管理员功能 |
+| L3 | Admin | L1 + `LCDXMemberPermissions.Permission >= 10` | 管理员功能 |
 
 权限探测端点（`GET permission`，EP-01）一次性返回 `qqNumber + permission`，前端据此渲染角色功能区；入口探测端点（`GET manage-access`，EP-18）返回 `hasManage`（判定与 L2 同源：∃Enabled 授权行 ∨ Permission≥10），决定"机台管理"菜单组（页①②③）显隐。
 
@@ -177,7 +179,7 @@ CREATE TABLE IF NOT EXISTS `UserRemoteLocks` (
 | `Cabinet.IsSpecialMode` | bool | **改 int**（实际列为 int，需承载 0/4/10；全库无其他引用点） |
 | `Cabinet` 实体缺 `GameType` | — | 不补。LC 模式文案由前端按 0/4/10 映射 |
 | 新增 `UserRemoteLockRecord` + DbSet | — | 映射 §3.3 表 |
-| 新增 `LCDXMemberRecord` + DbSet `LCDXMembers` | — | §3.1 身份记录（QQNumber PK / Permission / AddedSince / Note） |
+| 新增 `LCDXMemberRecord` + DbSet `LCDXMemberPermissions` | — | §3.1 身份记录（QQNumber PK / Permission / AddedSince / Note） |
 | 新增 `LCDXCabinetGrantRecord` + DbSet `LCDXCabinetGrants` | — | §3.1 授权记录（唯一约束 QQNumber+FullKeychip / Enabled / GrantedAt / GrantedBy） |
 | ~~QQBotDbContext~~ | — | **删除该设计**（第四轮审批：不再依赖 bot 库） |
 
@@ -203,7 +205,7 @@ CREATE TABLE IF NOT EXISTS `UserRemoteLocks` (
 - ① cabreboot：bot 为 Sudo+P5 → Web 下放 CabAuth 普通用户
 - ② errrec：bot 有普通版 → Web 收紧 Admin
 - ③ lcset / rm：不再整体划分，按 §3.2.1 细分子集下放（lcset→仅 `event`；rm→game-reboot/game-switch）
-- ④ 权限与授权数据源全部迁至 cll.net 新表（LCDXMembers / LCDXCabinetGrants），bot 库零依赖
+- ④ 权限与授权数据源全部迁至 cll.net 新表（LCDXMemberPermissions / LCDXCabinetGrants），bot 库零依赖
 
 ## 5. Remoteware 子系统详细设计（ZMQ socket）
 
@@ -330,14 +332,14 @@ CREATE TABLE IF NOT EXISTS `UserRemoteLocks` (
 
 **EP-01 `GET lcdx/cabinet/permission/{userName}`**
 - 鉴权：L1
-- 数据源：`LCDXMembers`（无行 = permission 0）
+- 数据源：`LCDXMemberPermissions`（无行 = permission 0）
 - 响应 data：`{ qqNumber: long, permission: int }`
 - 错误：401
 - 副作用：无
 
 **EP-18 `GET lcdx/cabinet/manage-access/{userName}`**（入口探测：是否有任何机台管理权限，第五轮新增）
 - 鉴权：L1
-- 判定：与 §3.2 L2 同源——`LCDXCabinetGrants` 存在 `(QQNumber, Enabled=true)` 行 **或** `LCDXMembers.Permission>=10` → `hasManage=true`（Admin 为隐式超集，无授权行也为 true）
+- 判定：与 §3.2 L2 同源——`LCDXCabinetGrants` 存在 `(QQNumber, Enabled=true)` 行 **或** `LCDXMemberPermissions.Permission>=10` → `hasManage=true`（Admin 为隐式超集，无授权行也为 true）
 - 响应 data：`{ "hasManage": true, "permission": 0 }`
 - 错误：401
 - 副作用：无
@@ -526,7 +528,7 @@ CREATE TABLE IF NOT EXISTS `UserRemoteLocks` (
 | 新增件 | 职责 |
 |---|---|
 | `Database/CllnetDbContext.cs` 改动 | §3.4（枚举/IsSpecialMode/三新实体：UserRemoteLockRecord、LCDXMemberRecord、LCDXCabinetGrantRecord） |
-| `Services/MemberAuthService.cs`（+接口） | userName→QQNumber（LCDXUserV2Records）→permission（LCDXMembers）；授权 FullKeychip 集合（LCDXCabinetGrants, Enabled）；grant 增/吊销逻辑（EP-16/17 复用）。**替代原 BotAuthService（bot 库依赖已移除）** |
+| `Services/MemberAuthService.cs`（+接口） | userName→QQNumber（LCDXUserV2Records）→permission（LCDXMemberPermissions）；授权 FullKeychip 集合（LCDXCabinetGrants, Enabled）；grant 增/吊销逻辑（EP-16/17 复用）。**替代原 BotAuthService（bot 库依赖已移除）** |
 | `Services/RemoteControlService.cs` | §5.4 调度 + §5.6 回执缓存（ConcurrentDictionary 整体替换，懒清理） |
 | `Services/Hosted/RemoteReplySubscriberService.cs` | §5.5 NetMQ SUB（单线程独占 socket、心跳/重连、4 帧契约、不完整帧丢弃） |
 | `Configures/RemotewareOptions.cs` | §5.2 配置绑定（Options 模式，禁止硬编码） |
@@ -554,7 +556,7 @@ CREATE TABLE IF NOT EXISTS `UserRemoteLocks` (
 
 ## 10. 部署前置
 
-1. cll.net 库执行三张新表 DDL：§3.3 UserRemoteLocks + §3.1 LCDXMembers / LCDXCabinetGrants
+1. cll.net 库执行三张新表 DDL：§3.3 UserRemoteLocks + §3.1 LCDXMemberPermissions / LCDXCabinetGrants
 2. Bootstrap：插入首名管理员（§3.1 SQL）；可选迁移 bot CabManageRecords 个人授权（§3.1）
 3. LCDXNetApi 服务器放行出站：`{ServerUrl}:443`（HTTP 控制）与 `{ZmqHost}:{ZmqPort}`（ZMQ 回执）
 4. ~~bot 库只读账号~~ **已移除**（第四轮审批：零 bot 库依赖，单数据库连接）
@@ -644,7 +646,7 @@ CREATE TABLE IF NOT EXISTS `UserRemoteLocks` (
 | Message 转义 | `\n \t \' \\` 映射、尾部孤立 `\`、空 message→`~` |
 | `RemoteAuditService` | 密码脱敏（`user\|pass\|cmd` 三段 `***`）；Detail 2000 截断；审计异常不抛出（方案 A：记日志放行） |
 | `RemoteControlService` | 先登记后外呼顺序（mock handler 断言调用时字典已含条目）；HTTP 非 2xx → 条目移除 + failed 审计；回执整体替换（并发读写无撕裂）；TTL 过期 → timeout；过期迟到回执不复活；懒清理移除超期条目 |
-| `MemberAuthService` | 无 LCDXMembers 行 → permission 0；授权集合仅含 Enabled=true；hasManage 判定（∃授权行 ∨ P10——Admin 无授权行 → true）；grant 恢复语义（Enabled=false → 恢复并更新 GrantedAt/By）；(QQ,Keychip) 唯一冲突路径 |
+| `MemberAuthService` | 无 LCDXMemberPermissions 行 → permission 0；授权集合仅含 Enabled=true；hasManage 判定（∃授权行 ∨ P10——Admin 无授权行 → true）；grant 恢复语义（Enabled=false → 恢复并更新 GrantedAt/By）；(QQ,Keychip) 唯一冲突路径 |
 | Controller 鉴权矩阵 | 无 token→401；普通用户对 EP-11/12/14/15..17 与子集外 EP-10/13 → 94001 + 审计 failed（Detail=subset-denied）；Admin 全通过；EP-18/19：无授权普通用户 → hasManage=false/空数组，Admin（无授权行）→ hasManage=true/全量（含未设 NickName 机台） |
 
 **前端测试**（`ng test`，proportionate）：`BotPermissionService`（成功/失败/清理）、`ApiService.lcdxAuthHeaders` 注入、页②③角色过滤纯函数（指令列表/设置列表按 permission 过滤）。

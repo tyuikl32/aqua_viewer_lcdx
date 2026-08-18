@@ -6,8 +6,8 @@
 
 ## 需求（设计基线 §3/§5/§6/§9/§12）
 
-1. **数据模型（全部 cll.net 库，零 bot 库依赖）**：CabinetLevel 补全 8 值；Cabinet.IsSpecialMode bool→int；新表 UserRemoteLocks（8 字段操作记录，失败也落库，密码脱敏，方案 A 失败放行）；新表 LCDXMembers（身份记录：QQNumber PK + Permission，无行=普通用户 0）；新表 LCDXCabinetGrants（1:N 授权，QQNumber+FullKeychip 唯一，Enabled 软吊销，GrantedAt/GrantedBy）
-2. **鉴权三层**：L1 TokenAuth（既有 CheckTokenAsync）；L2 CabAuth = LCDXCabinetGrants(Enabled=true) **或** LCDXMembers.Permission>=10（Admin 为 L2 隐式超集，第五轮 #25）；L3 Admin = LCDXMembers.Permission>=10。**不新增 QQBotDbContext**
+1. **数据模型（全部 cll.net 库，零 bot 库依赖）**：CabinetLevel 补全 8 值；Cabinet.IsSpecialMode bool→int；新表 UserRemoteLocks（8 字段操作记录，失败也落库，密码脱敏，方案 A 失败放行）；新表 LCDXMemberPermissions（身份记录：QQNumber PK + Permission，无行=普通用户 0）；新表 LCDXCabinetGrants（1:N 授权，QQNumber+FullKeychip 唯一，Enabled 软吊销，GrantedAt/GrantedBy）
+2. **鉴权三层**：L1 TokenAuth（既有 CheckTokenAsync）；L2 CabAuth = LCDXCabinetGrants(Enabled=true) **或** LCDXMemberPermissions.Permission>=10（Admin 为 L2 隐式超集，第五轮 #25）；L3 Admin = LCDXMemberPermissions.Permission>=10。**不新增 QQBotDbContext**
 3. **细分下放（§3.2.1，第六轮 Q1 定案）**：lcset 普通用户仅 `event`（→MininumOpenEvent，`chevent` 不下放），Admin 19 项；Remoteware 普通用户仅 `game-reboot`/`game-switch`，Admin 17 条。子集判定在后端（CabinetPolicy），拒绝请求落审计 failed（Detail=subset-denied）
 4. **18 个 endpoint**（EP-01、EP-04..EP-17 + 13R + EP-18/EP-19）：含入口探测 EP-18（hasManage=∃授权行∨P10，前端菜单显隐）、可操控清单 EP-19（Admin=全量 / 普通=授权投影，原 EP-02/EP-03 并入废弃，编号不复用）、授权管理 EP-15（查）/EP-16（增）/EP-17（软吊销），审计 grant-add/grant-remove
 5. **Remoteware 子系统**：§5 详细设计（RemotewareOptions 配置化、先登记后外呼、单线程 socket、4 帧契约、懒清理 TTL、requestId=L1+知识凭证）

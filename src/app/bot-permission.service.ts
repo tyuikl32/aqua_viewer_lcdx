@@ -5,7 +5,7 @@ import {StatusCode} from './status-code';
 
 /**
  * LCDX 机台管理权限探测（设计 §8 支撑改动）：
- * EP-01 permission（LCDXMembers，经后端）+ EP-18 manage-access（hasManage 入口探测，第五轮）。
+ * EP-01 permission（LCDXMemberPermissions，经后端）+ EP-18 manage-access（hasManage 入口探测，第五轮）。
  * UserService.load 成功后触发 load()；clear() 时归零。
  */
 @Injectable({

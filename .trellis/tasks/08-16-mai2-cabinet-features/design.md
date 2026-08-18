@@ -17,7 +17,7 @@
 
 ## 关键契约映射（前端消费的 endpoint）
 
-- EP-01 permission → BotPermissionService（数据源 LCDXMembers，无 bot 库依赖；驱动子集过滤/管理区显隐）
+- EP-01 permission → BotPermissionService（数据源 LCDXMemberPermissions，无 bot 库依赖；驱动子集过滤/管理区显隐）
 - EP-18 manage-access → 入口探测：hasManage=∃Enabled授权行∨P10（与后端 L2 判定同源），决定菜单组①②③显隐（第五轮新增）
 - EP-19 controllable → 页①②③机台下拉**统一**数据源（普通=授权投影，Admin=全量；原 EP-02/EP-03 已并入废弃，无需前端角色切换）
 - EP-04 info / EP-05 players / EP-06 delivery / EP-07 dlprog → 页①四卡片

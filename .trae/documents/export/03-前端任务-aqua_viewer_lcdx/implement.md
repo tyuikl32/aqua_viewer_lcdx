@@ -2,7 +2,7 @@
 
 > 组织原则：**先大框架后细小功能**——每层结束 `ng build` 保持绿，层层递进；不按需求条目从上到下平铺。
 > 前置：后端任务（LCDXNetApi/08-17-mai2-cabinet-backend）联调就绪前，可先用契约开发 + mock。
-> 权限数据源：EP-01（permission，LCDXMembers，经后端）+ EP-18（hasManage 入口探测）；普通/管理能力差异见设计基线 §3.2.1（lcset 普通子集仅 event，第六轮 Q1 定案）。
+> 权限数据源：EP-01（permission，LCDXMemberPermissions，经后端）+ EP-18（hasManage 入口探测）；普通/管理能力差异见设计基线 §3.2.1（lcset 普通子集仅 event，第六轮 Q1 定案）。
 
 ## 层 1｜接线层 —— 交付物：权限流转 + 菜单门控生效
 
