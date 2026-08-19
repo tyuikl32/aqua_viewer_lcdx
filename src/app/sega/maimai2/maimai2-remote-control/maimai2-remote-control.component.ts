@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import { UserService } from '../../../user.service';
-import { StatusCode } from '../../../status-code';
+import { isOk } from '../../../model/ApiResponse';
 import { BotPermissionService } from '../../../bot-permission.service';
 import { CabinetSummary, REMOTE_COMMANDS, RemoteCommandResult } from '../model/CabinetModels';
 
@@ -47,6 +47,8 @@ export class Maimai2RemoteControlComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private messageService: MessageService,
     private botPermission: BotPermissionService,
+    private ngZone: NgZone,
+    private changeDetector: ChangeDetectorRef,
   ) {
   }
 
@@ -74,14 +76,14 @@ export class Maimai2RemoteControlComponent implements OnInit, OnDestroy {
 
   loadCabinets(): void {
     this.api.getLcdx(`lcdx/cabinet/controllable/${encodeURIComponent(this.userName())}`).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK && Array.isArray(resp.data)) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp) && Array.isArray(resp.data)) {
           this.cabinets = resp.data;
           if (this.cabinets.length > 0) {
             this.selectedNick = this.cabinets[0].nickName ?? this.cabinets[0].fullKeychip;
           }
         }
-      }
+      })
     });
   }
 
@@ -93,9 +95,9 @@ export class Maimai2RemoteControlComponent implements OnInit, OnDestroy {
     this.api.postLcdx('lcdx/cabinet/command',
       {userName: this.userName(), nickName: this.selectedNick, command: this.selectedCommand, message: this.message})
       .subscribe({
-        next: resp => {
+        next: resp => this.runInAngular(() => {
           this.sending = false;
-          if (resp?.status?.code === StatusCode.OK && resp.data?.requestId) {
+          if (isOk(resp) && resp.data?.requestId) {
             this.sessions.unshift({
               requestId: resp.data.requestId,
               command: this.selectedCommand,
@@ -108,10 +110,12 @@ export class Maimai2RemoteControlComponent implements OnInit, OnDestroy {
           } else {
             this.messageService.notice(resp?.status?.message ?? 'Failed');
           }
-        },
+        }),
         error: () => {
-          this.sending = false;
-          this.messageService.notice('Network error');
+          this.runInAngular(() => {
+            this.sending = false;
+            this.messageService.notice('Network error');
+          });
         }
       });
   }
@@ -140,7 +144,7 @@ export class Maimai2RemoteControlComponent implements OnInit, OnDestroy {
       const count = (this.pollCounts.get(entry.requestId) ?? 0) + 1;
       this.pollCounts.set(entry.requestId, count);
       this.api.getLcdx(`lcdx/cabinet/result/${encodeURIComponent(this.userName())}/${entry.requestId}`)
-        .subscribe((resp: { status?: { code?: number }; data?: RemoteCommandResult }) => {
+        .subscribe((resp: { status?: { code?: number }; data?: RemoteCommandResult }) => this.runInAngular(() => {
           const data = resp?.data;
           if (!data) {
             return; // 94041：保持 pending 直至上限
@@ -150,12 +154,19 @@ export class Maimai2RemoteControlComponent implements OnInit, OnDestroy {
             entry.message = data.message;
             entry.imageUrl = data.imageUrl;
           }
-        });
+        }));
       if (count >= Maimai2RemoteControlComponent.POLL_MAX) {
         // 2s×30 上限：置 timeout 停止轮询该条目
         entry.status = 'timeout';
       }
     }
+  }
+
+  private runInAngular(action: () => void): void {
+    this.ngZone.run(() => {
+      action();
+      this.changeDetector.detectChanges();
+    });
   }
 
   statusBadge(entry: SessionEntry): string {

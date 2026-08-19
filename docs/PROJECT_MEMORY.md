@@ -1,6 +1,6 @@
 # Project Memory
 
-Last verified: 2026-08-17
+Last verified: 2026-08-19
 
 This document records durable context for future work on `aqua_viewer_lcdx`. It is a snapshot of observed repository state, not a replacement for checking the code when a contract changes.
 
@@ -90,6 +90,7 @@ The user-facing sign-in and QQ-number registration flows call LCDXNetApi, but LC
 - The frontend intentionally has no EULA page or administrative EULA UI. It does not inspect EULA status, redirect for EULA, fetch EULA content, call an acceptance endpoint, or include an EULA version in the inherited RinNET sign-up request. LCDXNetApi handles the mismatch internally: its shared successful sign-in path reads the current RinNET EULA and idempotently records acceptance before returning the session. This covers QQ login, one-time login, and registration/password-reset login without exposing an `/lcdx/eula/**` frontend API.
 - The token interceptor proactively refreshes short-lived access tokens and retries a single failed `/api` or protected `/lcdx` request after refresh.
 - LCDX binding and AccessCode controllers validate the presented bearer token against RinNET and may call RinNET admin endpoints to mutate card ownership.
+- After `UserService.load()` refreshes `/api/user/me`, it must trigger `BotPermissionService.load(username)`; the four maimai DX cabinet pages and their menu/route guards depend on this LCDX permission bootstrap.
 
 The token interceptor attaches the stored token when a request URL starts with either `environment.apiServer` or `environment.lcdxApiServer`. This keeps protected LCDX requests authenticated when development uses separate absolute origins and when production uses the shared `/` base. A 401 from either backend enters the same single-refresh-and-retry path through RinNET's refresh endpoint.
 
@@ -166,6 +167,9 @@ Known facts worth rechecking during related tasks:
 - The root module eagerly imports game modules while the root router also lazy-loads maimai DX; preserve behavior unless performing a deliberate module-graph cleanup.
 - Some imports/routes/components remain declared but unreachable from the fork UI.
 - The PWA manifest name/icon branding is partly LCDX-specific and partly inherited (`turtle-*` icon files).
+- Cabinet API consumers use the shared `isOk()` response helper so a successful LCDX `92001` status remains readable if a proxy serializes the code as a string.
+- The maimai DX cabinet pages explicitly re-enter `NgZone` in LCDX response callbacks. In the deployed Angular 22 setup, cabinet data could be present in the Network response but remain visually absent until an unrelated language change triggered another change-detection pass.
+- Angular template event expressions are evaluated against the component context; using `Number($event)` in a binding caused a runtime `this.Number is not a function` failure in the cabinet authorization form. Numeric native inputs now use `[(ngModel)]`, and future form regressions should dispatch real DOM events in component tests.
 - The service-worker data group lists only `/api/**`, not `/lcdx/**`; its current cache settings effectively avoid persistent API caching, but any PWA policy change must consider both prefixes.
 - Angular 22 control-flow syntax (`@if`, `@for`, `@switch`) is established in synchronized templates. Preserve stable tracking expressions and keep NgModule declarations explicit.
 

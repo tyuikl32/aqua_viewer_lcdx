@@ -1,8 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import { UserService } from '../../../user.service';
-import { StatusCode } from '../../../status-code';
+import { isOk } from '../../../model/ApiResponse';
 import {
   CabinetInfo,
   CabinetPlayers,
@@ -43,6 +43,8 @@ export class Maimai2CabinetsComponent implements OnInit, OnDestroy {
     private api: ApiService,
     private userService: UserService,
     private messageService: MessageService,
+    private ngZone: NgZone,
+    private changeDetector: ChangeDetectorRef,
   ) {
   }
 
@@ -61,16 +63,16 @@ export class Maimai2CabinetsComponent implements OnInit, OnDestroy {
 
   loadCabinets(): void {
     this.api.getLcdx(`lcdx/cabinet/controllable/${encodeURIComponent(this.userName())}`).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK && Array.isArray(resp.data)) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp) && Array.isArray(resp.data)) {
           this.cabinets = resp.data;
           if (this.cabinets.length > 0 && !this.cabinets.some(c => c.nickName === this.selectedNick)) {
             this.selectedNick = this.cabinets[0].nickName ?? this.cabinets[0].fullKeychip;
             this.refreshAll();
           }
         }
-      },
-      error: () => this.messageService.notice('Failed to load cabinets')
+      }),
+      error: () => this.runInAngular(() => this.messageService.notice('Failed to load cabinets'))
     });
   }
 
@@ -90,22 +92,29 @@ export class Maimai2CabinetsComponent implements OnInit, OnDestroy {
 
   private loadInfo(): void {
     this.api.getLcdx(`lcdx/cabinet/info/${encodeURIComponent(this.userName())}/${encodeURIComponent(this.selectedNick)}`)
-      .subscribe(resp => this.info = resp?.status?.code === StatusCode.OK ? resp.data : null);
+      .subscribe(resp => this.runInAngular(() => this.info = isOk(resp) ? resp.data : null));
   }
 
   private loadPlayers(): void {
     this.api.getLcdx(`lcdx/cabinet/players/${encodeURIComponent(this.userName())}/${encodeURIComponent(this.selectedNick)}`)
-      .subscribe(resp => this.players = resp?.status?.code === StatusCode.OK ? resp.data : null);
+      .subscribe(resp => this.runInAngular(() => this.players = isOk(resp) ? resp.data : null));
   }
 
   private loadDelivery(): void {
     this.api.getLcdx(`lcdx/cabinet/delivery/${encodeURIComponent(this.userName())}/${encodeURIComponent(this.selectedNick)}`)
-      .subscribe(resp => this.delivery = resp?.status?.code === StatusCode.OK ? resp.data : null);
+      .subscribe(resp => this.runInAngular(() => this.delivery = isOk(resp) ? resp.data : null));
   }
 
   private loadDlprog(): void {
     this.api.getLcdx(`lcdx/cabinet/dlprog/${encodeURIComponent(this.userName())}/${encodeURIComponent(this.selectedNick)}`)
-      .subscribe(resp => this.dlprog = resp?.status?.code === StatusCode.OK ? resp.data : null);
+      .subscribe(resp => this.runInAngular(() => this.dlprog = isOk(resp) ? resp.data : null));
+  }
+
+  private runInAngular(action: () => void): void {
+    this.ngZone.run(() => {
+      action();
+      this.changeDetector.detectChanges();
+    });
   }
 
   progressBadgeClass(progressText: string): string {

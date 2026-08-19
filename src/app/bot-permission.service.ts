@@ -1,7 +1,7 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {ApiService} from './api.service';
-import {StatusCode} from './status-code';
+import {isOk} from './model/ApiResponse';
 
 /**
  * LCDX 机台管理权限探测（设计 §8 支撑改动）：
@@ -28,7 +28,7 @@ export class BotPermissionService {
   });
   public readonly state = this.stateSubject.asObservable();
 
-  constructor(private api: ApiService) {
+  constructor(private api: ApiService, private ngZone: NgZone) {
   }
 
   public get currentValue(): LcdxPermissionState {
@@ -46,25 +46,29 @@ export class BotPermissionService {
     }
     this.api.getLcdx(`lcdx/cabinet/permission/${encodeURIComponent(userName)}`).subscribe({
       next: resp => {
-        if (resp?.status?.code === StatusCode.OK && resp.data) {
-          this.stateSubject.next({
-            permission: resp.data.permission ?? 0,
-            hasManage: this.stateSubject.value.hasManage,
-            loaded: true
-          });
-        }
+        this.ngZone.run(() => {
+          if (isOk(resp) && resp.data) {
+            this.stateSubject.next({
+              permission: resp.data.permission ?? 0,
+              hasManage: this.stateSubject.value.hasManage,
+              loaded: true
+            });
+          }
+        });
       },
       error: () => { /* 保持默认态：permission 0 */ }
     });
     this.api.getLcdx(`lcdx/cabinet/manage-access/${encodeURIComponent(userName)}`).subscribe({
       next: resp => {
-        if (resp?.status?.code === StatusCode.OK && resp.data) {
-          this.stateSubject.next({
-            permission: this.stateSubject.value.permission,
-            hasManage: !!resp.data.hasManage,
-            loaded: true
-          });
-        }
+        this.ngZone.run(() => {
+          if (isOk(resp) && resp.data) {
+            this.stateSubject.next({
+              permission: this.stateSubject.value.permission,
+              hasManage: !!resp.data.hasManage,
+              loaded: true
+            });
+          }
+        });
       },
       error: () => { /* 保持默认态：hasManage false */ }
     });

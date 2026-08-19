@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import { UserService } from '../../../user.service';
-import { StatusCode } from '../../../status-code';
+import { isOk } from '../../../model/ApiResponse';
 import { BotPermissionService } from '../../../bot-permission.service';
 import {
   CABINET_LEVELS,
@@ -49,6 +49,8 @@ export class Maimai2CabmodeComponent implements OnInit {
     private userService: UserService,
     private messageService: MessageService,
     private botPermission: BotPermissionService,
+    private ngZone: NgZone,
+    private changeDetector: ChangeDetectorRef,
   ) {
   }
 
@@ -65,15 +67,15 @@ export class Maimai2CabmodeComponent implements OnInit {
 
   loadCabinets(): void {
     this.api.getLcdx(`lcdx/cabinet/controllable/${encodeURIComponent(this.userName())}`).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK && Array.isArray(resp.data)) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp) && Array.isArray(resp.data)) {
           this.cabinets = resp.data;
           if (this.cabinets.length > 0) {
             this.selectedNick = this.cabinets[0].nickName ?? this.cabinets[0].fullKeychip;
             this.loadInfo();
           }
         }
-      }
+      })
     });
   }
 
@@ -83,14 +85,14 @@ export class Maimai2CabmodeComponent implements OnInit {
 
   loadInfo(): void {
     this.api.getLcdx(`lcdx/cabinet/info/${encodeURIComponent(this.userName())}/${encodeURIComponent(this.selectedNick)}`)
-      .subscribe(resp => {
-        if (resp?.status?.code === StatusCode.OK) {
+      .subscribe(resp => this.runInAngular(() => {
+        if (isOk(resp)) {
           this.info = resp.data;
           this.selectedMode = resp.data.isSpecialMode;
           this.rebooting = resp.data.isRebooting;
           this.selectedLevel = resp.data.level;
         }
-      });
+      }));
   }
 
   get modeChanged(): boolean {
@@ -104,14 +106,14 @@ export class Maimai2CabmodeComponent implements OnInit {
   submitMode(): void {
     this.api.postLcdx('lcdx/cabinet/mode',
       {userName: this.userName(), nickName: this.selectedNick, mode: this.selectedMode}).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp)) {
           this.messageService.notice('OK');
           this.loadInfo();
         } else {
           this.messageService.notice(resp?.status?.message ?? 'Failed');
         }
-      }
+      })
     });
   }
 
@@ -123,44 +125,51 @@ export class Maimai2CabmodeComponent implements OnInit {
     }
     this.api.postLcdx('lcdx/cabinet/reboot',
       {userName: this.userName(), nickName: this.selectedNick, enable}).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp)) {
           this.messageService.notice(resp.data?.message ?? 'OK');
           this.loadInfo();
         } else {
           this.messageService.notice(resp?.status?.message ?? 'Failed');
         }
-      }
+      })
     });
   }
 
   submitLcset(): void {
     this.api.postLcdx('lcdx/cabinet/lcset',
       {userName: this.userName(), nickName: this.selectedNick, key: this.lcsetKey, val: this.lcsetVal}).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp)) {
           this.messageService.notice('OK');
           this.lcsetVal = '';
           this.loadInfo();
         } else {
           this.messageService.notice(resp?.status?.message ?? 'Failed');
         }
-      }
+      })
     });
   }
 
   submitLevel(): void {
     this.api.postLcdx('lcdx/cabinet/level',
       {userName: this.userName(), nickName: this.selectedNick, level: this.selectedLevel}).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp)) {
           this.levelResult = resp.data;
           this.messageService.notice('OK');
           this.loadInfo();
         } else {
           this.messageService.notice(resp?.status?.message ?? 'Failed');
         }
-      }
+      })
+    });
+  }
+
+  private runInAngular(action: () => void): void {
+    this.ngZone.run(() => {
+      action();
+      this.changeDetector.detectChanges();
     });
   }
 }

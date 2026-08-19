@@ -37,6 +37,19 @@ describe('BotPermissionService', () => {
     expect(state.loaded).toBeTrue();
   });
 
+  it('accepts the string form of the successful LCDX status code', () => {
+    spyOn(api, 'getLcdx').and.callFake((path: string) => {
+      if (path.includes('permission/')) {
+        return of({status: {code: String(StatusCode.OK), message: 'OK'}, data: {permission: 10}});
+      }
+      return of({status: {code: String(StatusCode.OK), message: 'OK'}, data: {hasManage: true}});
+    });
+
+    service.load('LCDXUser');
+
+    expect(service.currentValue).toEqual({permission: 10, hasManage: true, loaded: true});
+  });
+
   it('keeps defaults when both probes fail', () => {
     spyOn(api, 'getLcdx').and.returnValue(throwError(() => new Error('network down')));
     expect(() => service.load('LCDXUser')).not.toThrow();

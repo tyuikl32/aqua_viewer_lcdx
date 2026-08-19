@@ -11,8 +11,7 @@
         <div class="card-body">
           <div class="row g-2 mb-3">
             <div class="col-md-2">
-              <input class="form-control" type="number" [ngModel]="filterQQ"
-                     (ngModelChange)="filterQQ = $event ? Number($event) : null"
+              <input class="form-control" type="number" [(ngModel)]="filterQQ"
                      placeholder="{{ 'Maimai2.LocksPage.FilterQQ' | translate }}">
             </div>
             <div class="col-md-2">
@@ -82,7 +81,7 @@
           <div class="row g-2 mb-3 align-items-end">
             <div class="col-md-4">
               <label class="form-label">{{ "Maimai2.LocksPage.TargetQQ" | translate }}</label>
-              <input class="form-control" type="number" [ngModel]="grantQQ" (ngModelChange)="grantQQ = $event ? Number($event) : null">
+              <input class="form-control" type="number" [(ngModel)]="grantQQ">
             </div>
             <div class="col-md-4">
               <label class="form-label">{{ "Maimai2.Cabinets.SelectCabinet" | translate }}</label>

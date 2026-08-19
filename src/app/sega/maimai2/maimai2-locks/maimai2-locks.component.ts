@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import { UserService } from '../../../user.service';
-import { StatusCode } from '../../../status-code';
+import { isOk } from '../../../model/ApiResponse';
 import { BotPermissionService } from '../../../bot-permission.service';
 import { CabinetSummary, GrantItem, GrantList, RemoteLockItem, RemoteLockList } from '../model/CabinetModels';
 
@@ -46,6 +46,8 @@ export class Maimai2LocksComponent implements OnInit {
     private userService: UserService,
     private messageService: MessageService,
     private botPermission: BotPermissionService,
+    private ngZone: NgZone,
+    private changeDetector: ChangeDetectorRef,
   ) {
   }
 
@@ -84,13 +86,13 @@ export class Maimai2LocksComponent implements OnInit {
       params += `&until=${encodeURIComponent(this.filterUntil)}`;
     }
     this.api.getLcdx(`lcdx/cabinet/locks/${encodeURIComponent(this.userName())}?${params}`).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp)) {
           const data = resp.data as RemoteLockList;
           this.locks = data?.items ?? [];
           this.total = data?.total ?? 0;
         }
-      }
+      })
     });
   }
 
@@ -112,22 +114,22 @@ export class Maimai2LocksComponent implements OnInit {
 
   loadGrants(): void {
     this.api.getLcdx(`lcdx/cabinet/grants/${encodeURIComponent(this.userName())}`).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp)) {
           const data = resp.data as GrantList;
           this.grants = data?.items ?? [];
         }
-      }
+      })
     });
   }
 
   loadCabinets(): void {
     this.api.getLcdx(`lcdx/cabinet/controllable/${encodeURIComponent(this.userName())}`).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK && Array.isArray(resp.data)) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp) && Array.isArray(resp.data)) {
           this.cabinets = resp.data;
         }
-      }
+      })
     });
   }
 
@@ -137,8 +139,8 @@ export class Maimai2LocksComponent implements OnInit {
     }
     this.api.postLcdx('lcdx/cabinet/grants',
       {userName: this.userName(), targetQQNumber: this.grantQQ, nickName: this.grantNick}).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp)) {
           this.messageService.notice('OK');
           this.grantQQ = null;
           this.grantNick = '';
@@ -146,7 +148,7 @@ export class Maimai2LocksComponent implements OnInit {
         } else {
           this.messageService.notice(resp?.status?.message ?? 'Failed');
         }
-      }
+      })
     });
   }
 
@@ -156,14 +158,21 @@ export class Maimai2LocksComponent implements OnInit {
     }
     this.api.deleteLcdx('lcdx/cabinet/grants',
       {userName: this.userName(), targetQQNumber: item.qqNumber, nickName: item.fullKeychip}).subscribe({
-      next: resp => {
-        if (resp?.status?.code === StatusCode.OK) {
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp)) {
           this.messageService.notice('OK');
           this.loadGrants();
         } else {
           this.messageService.notice(resp?.status?.message ?? 'Failed');
         }
-      }
+      })
+    });
+  }
+
+  private runInAngular(action: () => void): void {
+    this.ngZone.run(() => {
+      action();
+      this.changeDetector.detectChanges();
     });
   }
 }

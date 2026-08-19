@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {StatusCode} from './status-code';
 import {MessageService} from './message.service';
 import {ApiService} from './api.service';
 import {AccountService} from './auth/account.service';
 import {BotPermissionService} from './bot-permission.service';
+import {isOk} from './model/ApiResponse';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -43,8 +43,7 @@ export class UserService {
         .subscribe(
           resp => {
             if (resp?.status) {
-              const statusCode: StatusCode = resp.status.code;
-              if (statusCode === StatusCode.OK && resp.data) {
+              if (isOk(resp) && resp.data) {
                 this.currentUser = resp.data;
                 this.currentUser.cards.forEach(card => {
                   if (card.default){
@@ -52,6 +51,9 @@ export class UserService {
                   }
                 });
                 localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+                // Cabinet pages and menu guards depend on the LCDX permission
+                // probes being started after the authenticated user is known.
+                this.botPermission.load(this.currentUser.username);
               } else {
                 this.messageService.notice(resp.status.message);
               }
