@@ -11,6 +11,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {StatusCode} from '../../../status-code';
 import {Time} from '@angular/common';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
     selector: 'app-maimai2-setting',
@@ -27,6 +28,9 @@ export class Maimai2SettingComponent implements OnInit {
   bindCardForm: FormGroup;
 
   currentAccessCode = '';
+  mergeRequested = false;
+  mergeRequestLoading = false;
+  mergeCardId = '';
   aimeId: number;
   apiServer: string;
   divMaxLength: number;
@@ -38,6 +42,7 @@ export class Maimai2SettingComponent implements OnInit {
     private http: HttpClient,
     protected userService: UserService,
     private messageService: MessageService,
+    private translate: TranslateService,
   ) {
     this.userNameForm = this.fb.group({
       username: [''],
@@ -67,6 +72,7 @@ export class Maimai2SettingComponent implements OnInit {
 
   ngOnInit(): void {
     this.aimeId = this.userService.currentUser.defaultCard.extId;
+    this.mergeCardId = String(this.userService.currentUser.defaultCard.luid ?? '');
     this.apiServer = environment.apiServer;
     this.bindCardForm.disable();
     this.bindCardForm.setValue({accessCode : '请稍后'});
@@ -92,6 +98,54 @@ export class Maimai2SettingComponent implements OnInit {
         }else{
           this.bindCardForm.enable();
         }
+      }
+    );
+
+    this.loadMergeRequestStatus();
+  }
+
+  private loadMergeRequestStatus() {
+    if (!this.mergeCardId) {
+      return;
+    }
+
+    const userName = encodeURIComponent(this.userService.currentUser.username);
+    const cardId = encodeURIComponent(this.mergeCardId);
+    this.api.getLcdx(`lcdx/mergeRegistry/${userName}/${cardId}`).subscribe(
+      data => {
+        if (data?.status?.code === StatusCode.OK) {
+          this.mergeRequested = data.data?.isOnRequest === true;
+        }
+      },
+      error => this.messageService.notice(error)
+    );
+  }
+
+  requestMergeFromDefaultServer() {
+    if (this.mergeRequestLoading || this.mergeRequested || !this.mergeCardId) {
+      return;
+    }
+
+    if (!confirm(this.translate.instant('Maimai2.Setting.MergeRequestConfirm'))) {
+      return;
+    }
+
+    this.mergeRequestLoading = true;
+    const userName = encodeURIComponent(this.userService.currentUser.username);
+    const cardId = encodeURIComponent(this.mergeCardId);
+    this.api.postLcdx(`lcdx/mergeRegistry/request/${userName}/${cardId}`).subscribe(
+      data => {
+        this.mergeRequestLoading = false;
+        if (data?.status?.code === StatusCode.OK) {
+          this.mergeRequested = true;
+          this.messageService.notice(data.status.message);
+        } else {
+          this.messageService.notice(data?.status?.message ?? '设置引继请求失败');
+        }
+      },
+      error => {
+        this.mergeRequestLoading = false;
+        this.messageService.notice(error);
       }
     );
   }
