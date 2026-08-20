@@ -94,3 +94,34 @@
 ### Status
 
 [OK] **Completed**
+
+
+## Session 3: CiRCLE PLUS 机台模式调整
+
+**Date**: 2026-08-20
+**Task**: CiRCLE PLUS 机台模式调整
+**Branch**: `master`
+
+### Summary
+
+机台控制前端仅显示模式4和5，两个选项均显示CiRCLE PLUS
+
+### Main Changes
+
+- LC_MODES 从0/4/10调整为4/5
+- 中英文 Mode5 文案新增为 CiRCLE PLUS，移除旧 Mode0/Mode10 文案
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `26b6acc` | (see git log) |
+
+### Testing
+
+- [OK] npm run build-prod 通过
+- [OK] git diff --check 通过
+
+### Status
+
+[OK] **Completed**
