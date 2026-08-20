@@ -1,13 +1,37 @@
 <div class="container-xxl px-3 py-4 py-md-5">
   <div class="row align-items-center justify-content-center g-4 py-md-4">
-    <div class="col-12 col-md-auto text-center">
-      <img src="assets/laochan.svg" width="144" height="144" alt="NET" class="img-fluid">
+    <div class="col-12 col-md-8 col-lg-9">
+      <div class="row align-items-center justify-content-center g-4">
+        <div class="col-12 col-md-auto text-center">
+          <img src="assets/laochan.svg" width="144" height="144" alt="NET" class="img-fluid">
+        </div>
+        <div class="col-12 col-md text-center text-md-start">
+          <h1 class="display-3 fw-semibold mb-2">NET</h1>
+          <p class="lead text-body-secondary mb-4">{{'HomePage.LcdxDescription' | translate}}</p>
+          <a class="btn btn-primary px-4" routerLink="/sign-in">{{'HomePage.SignIn' | translate}}</a>
+        </div>
+      </div>
     </div>
-    <div class="col-12 col-md-7 col-lg-6 text-center text-md-start">
-      <h1 class="display-3 fw-semibold mb-2">NET</h1>
-      <p class="lead text-body-secondary mb-4">{{'HomePage.LcdxDescription' | translate}}</p>
-      <a class="btn btn-primary px-4" routerLink="/sign-in">{{'HomePage.SignIn' | translate}}</a>
-    </div>
+    <aside class="col-12 col-md-4 col-lg-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <ng-icon name="bootstrap-people"></ng-icon>
+            <h2 class="h6 fw-semibold mb-0">{{'HomePage.GlobalPlayers' | translate}}</h2>
+          </div>
+          @if (globalPlayers === null) {
+            <div class="placeholder-glow" aria-hidden="true">
+              <span class="placeholder col-5 fs-2"></span>
+            </div>
+          } @else {
+            <div class="display-5 fw-semibold lh-1">{{globalPlayers}}</div>
+          }
+          <div class="small text-body-secondary mt-2">
+            {{'HomePage.GlobalPlayersWindow' | translate:{minutes: globalPlayersWindow} }}
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
 
   <hr class="my-4 my-md-5">

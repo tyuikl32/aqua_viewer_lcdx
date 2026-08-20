@@ -136,7 +136,9 @@
     "LimitedSupport": "Limited Support",
     "LimitedSupportDesc": "No related content available on the portal.",
     "Dashboard": "Dashboard",
-    "SignIn": "Sign in"
+    "SignIn": "Sign in",
+    "GlobalPlayers": "Players online across the server",
+    "GlobalPlayersWindow": "Active players in the last {{minutes}} minutes"
   },
   "SignInPage": {
     "Title": "Sign in to your account",
