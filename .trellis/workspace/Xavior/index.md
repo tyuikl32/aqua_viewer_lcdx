@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 1
-- **Last Active**: 2026-08-18
+- **Total Sessions**: 2
+- **Last Active**: 2026-08-20
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~63 | Active |
+| `journal-1.md` | ~96 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 2 | 2026-08-20 | 主页右栏全服游玩人数 | `c4ae972` | `master` |
 | 1 | 2026-08-18 | 机台管理实施完成 + 逐功能提交纪律落地 | `ec2e420`, `447af2b`, `0c06efd` | `master` |
 <!-- @@@/auto:session-history -->
 

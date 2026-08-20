@@ -61,3 +61,36 @@
 
 - 部署后端 + cll.net 三表 DDL/Bootstrap 后联调验收 5 项
 - 联调通过后 archive 两任务
+
+
+## Session 2: 主页右栏全服游玩人数
+
+**Date**: 2026-08-20
+**Task**: 主页右栏全服游玩人数
+**Branch**: `master`
+
+### Summary
+
+主页右侧栏新增全服游玩人数卡片，匿名聚合接口近15分钟去重玩家数，30秒自动刷新，含中英文文案与图标注册
+
+### Main Changes
+
+- home 组件新增 globalPlayers 状态与 30s 轮询，销毁时清理定时器
+- 主页模板新增 aside 卡片，加载中显示占位符
+- zh/en i18n 新增 GlobalPlayers 词条
+- app.module 注册 bootstrap-people 图标
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c4ae972` | (see git log) |
+
+### Testing
+
+- [OK] npm run build-prod 通过
+- [OK] git diff --check 通过
+
+### Status
+
+[OK] **Completed**
