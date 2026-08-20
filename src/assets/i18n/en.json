@@ -697,9 +697,8 @@
       "Progress": "Progress",
       "StartTime": "Start",
       "NoDownloads": "No downloads",
-      "Mode0": "CN (2025)",
       "Mode4": "CiRCLE PLUS",
-      "Mode10": "Splash PLUS"
+      "Mode5": "CiRCLE PLUS"
     },
     "CabinetControlPage": {
       "Title": "Cabinet Control"
