@@ -95,7 +95,9 @@
     "Photos": "相册",
     "UnbindGameAccount": "解除绑定",
     "UnbindGameAccountTip": "确定要解除当前游戏档案与此账号的绑定吗？解除后仍可查看公告，并可随时重新绑定。",
-    "ConfirmUnbind": "确认解除绑定"
+    "ConfirmUnbind": "确认解除绑定",
+    "GlobalPlayers": "全服游玩人数",
+    "GlobalPlayersWindow": "近 {{minutes}} 分钟内活跃玩家"
   },
   "NetCodeBindPage": {
     "Title": "绑定游戏档案",
@@ -139,9 +141,7 @@
     "LimitedSupport": "有限支持",
     "LimitedSupportDesc": "在网站上没有相关内容",
     "Dashboard": "仪表板",
-    "SignIn": "登录",
-    "GlobalPlayers": "全服游玩人数",
-    "GlobalPlayersWindow": "近 {{minutes}} 分钟内活跃玩家"
+    "SignIn": "登录"
   },
   "SignInPage": {
     "Title": "登录",

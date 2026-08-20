@@ -92,7 +92,9 @@
     "Photos": "Photos",
     "UnbindGameAccount": "Unbind",
     "UnbindGameAccountTip": "Unbind the current game profile from this account? You can still view announcements and bind again later.",
-    "ConfirmUnbind": "Confirm unbind"
+    "ConfirmUnbind": "Confirm unbind",
+    "GlobalPlayers": "Players online across the server",
+    "GlobalPlayersWindow": "Active players in the last {{minutes}} minutes"
   },
   "NetCodeBindPage": {
     "Title": "Bind game profile",
@@ -136,9 +138,7 @@
     "LimitedSupport": "Limited Support",
     "LimitedSupportDesc": "No related content available on the portal.",
     "Dashboard": "Dashboard",
-    "SignIn": "Sign in",
-    "GlobalPlayers": "Players online across the server",
-    "GlobalPlayersWindow": "Active players in the last {{minutes}} minutes"
+    "SignIn": "Sign in"
   },
   "SignInPage": {
     "Title": "Sign in to your account",

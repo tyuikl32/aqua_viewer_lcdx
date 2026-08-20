@@ -220,5 +220,23 @@
         </button>
       </div>
     </div>
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <ng-icon name="bootstrap-people"></ng-icon>
+          <h3 class="h6 fw-semibold mb-0">{{'DashboardPage.GlobalPlayers' | translate}}</h3>
+        </div>
+        @if (globalPlayers === null) {
+          <div class="placeholder-glow" aria-hidden="true">
+            <span class="placeholder col-5 fs-2"></span>
+          </div>
+        } @else {
+          <div class="display-5 fw-semibold lh-1">{{globalPlayers}}</div>
+        }
+        <div class="small text-body-secondary mt-2">
+          {{'DashboardPage.GlobalPlayersWindow' | translate:{minutes: globalPlayersWindow} }}
+        </div>
+      </div>
+    </div>
   </div>
 </div>

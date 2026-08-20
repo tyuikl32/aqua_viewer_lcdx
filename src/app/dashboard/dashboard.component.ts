@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
+import {Component, OnDestroy, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {PreloadService} from '../database/preload.service';
 import {environment} from '../../environments/environment';
 import {ApiService} from '../api.service';
@@ -12,6 +12,7 @@ import { HttpParams } from '@angular/common/http';
 import {TranslateService} from '@ngx-translate/core';
 import {Luid} from '../cards/cards.component';
 import {UserService} from '../user.service';
+import {isOk} from '../model/ApiResponse';
 
 @Component({
     selector: 'app-dashboard',
@@ -20,7 +21,7 @@ import {UserService} from '../user.service';
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   host = environment.maiAssetsHost;
   totalPreloadTaskCount = 0;
   downloadingPreloadTaskCount = 0;
@@ -41,6 +42,9 @@ export class DashboardComponent implements OnInit {
   noCard = false;
   unbindingCard = false;
   protected mai2Profile;
+  globalPlayers: number | null = null;
+  globalPlayersWindow = 15;
+  private globalPlayersRefreshTimer?: ReturnType<typeof setInterval>;
 
   constructor(
     private preload: PreloadService,
@@ -83,6 +87,23 @@ export class DashboardComponent implements OnInit {
     });
 
     this.getProfiles();
+    this.refreshGlobalPlayers();
+    this.globalPlayersRefreshTimer = setInterval(() => this.refreshGlobalPlayers(), 30_000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.globalPlayersRefreshTimer) {
+      clearInterval(this.globalPlayersRefreshTimer);
+    }
+  }
+
+  private refreshGlobalPlayers(): void {
+    this.api.getLcdx('lcdx/cabinet/global-players').subscribe(resp => {
+      if (isOk(resp) && resp.data) {
+        this.globalPlayers = resp.data.players;
+        this.globalPlayersWindow = resp.data.windowMinutes;
+      }
+    });
   }
 
   getProfiles(){
