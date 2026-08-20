@@ -118,10 +118,12 @@ export interface GrantList {
   items: GrantItem[];
 }
 
-/** LC 模式文案映射（实体无 GameType，前端映射 4/5，设计 §8 展示规则） */
+/** LC 模式文案映射（实体无 GameType，前端映射 0/4/5/10，设计 §8 展示规则） */
 export const LC_MODES: { mode: number; labelKey: string }[] = [
+  {mode: 0, labelKey: 'Maimai2.Cabinets.Mode0'},
   {mode: 4, labelKey: 'Maimai2.Cabinets.Mode4'},
   {mode: 5, labelKey: 'Maimai2.Cabinets.Mode5'},
+  {mode: 10, labelKey: 'Maimai2.Cabinets.Mode10'},
 ];
 
 /** 机台级别 8 档（Recover..Special；级别越低配信越少警告） */

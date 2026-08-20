@@ -700,8 +700,10 @@
       "Progress": "进度",
       "StartTime": "开始时间",
       "NoDownloads": "当前无下载任务",
+      "Mode0": "国服 (2025)",
       "Mode4": "CiRCLE PLUS",
-      "Mode5": "CiRCLE PLUS"
+      "Mode5": "CiRCLE PLUS",
+      "Mode10": "Splash PLUS"
     },
     "CabinetControlPage": {
       "Title": "机台控制"
