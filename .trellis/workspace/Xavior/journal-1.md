@@ -125,3 +125,24 @@
 ### Status
 
 [OK] **Completed**
+
+
+## Session 4: restore cabinet modes 0/4/10 and add mode 5
+
+**Date**: 2026-08-20
+**Task**: restore cabinet modes 0/4/10 and add mode 5
+**Branch**: `master`
+
+### Summary
+
+Restored LC_MODES to 0/4/5/10 with zh/en Mode0/Mode10 translations; fixed earlier regression that dropped modes 0 and 10.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `28c9905` | (see git log) |
+
+### Status
+
+[OK] **Completed**
