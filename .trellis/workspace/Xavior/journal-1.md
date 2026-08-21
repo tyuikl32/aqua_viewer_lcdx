@@ -146,3 +146,29 @@ Restored LC_MODES to 0/4/5/10 with zh/en Mode0/Mode10 translations; fixed earlie
 ### Status
 
 [OK] **Completed**
+
+
+## Session 5: localize login success toast + codify i18n rule
+
+**Date**: 2026-08-22
+**Task**: replace English "login success" passthrough with i18n; record rule in spec
+**Branch**: `master`
+
+### Summary
+
+Login flows (password, TOTP, one-time link) showed the raw English backend message `resp.status.message` ("login success"). Switched all three success branches to `TranslateService` with new key `SignInPage.LoginSuccessMessage` (zh: "登录成功" / en: "Sign in successful"). Codified the rule in `.trellis/spec/frontend/quality-guidelines.md` under "User-facing messages must be localized": toasts must never render raw `status.message`; new keys go into zh.json and en.json in the same change; ~40 legacy passthrough call sites documented as tracked debt.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `daddd7c` | fix: localize login success toast via i18n |
+
+### Testing
+
+- [OK] zh.json / en.json parse as valid JSON
+- [OK] `npx tsc --noEmit -p tsconfig.app.json` clean
+
+### Status
+
+[OK] **Completed**
