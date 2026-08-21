@@ -74,14 +74,16 @@ describe('CabinetManageGuard', () => {
     expect(guard.canActivate({} as any, {} as any)).toBeTrue();
   });
 
-  it('admin guard blocks permission<10 even with hasManage=true (locks page, P>=10)', () => {
-    perm(5, true, true);
+  it('admin guard blocks permission<4 even with hasManage=true (locks page, P>=4)', () => {
+    perm(3, true, true);
     const result = adminGuard.canActivate({} as any, {} as any);
     expect((result as any).toString()).toBe('/dashboard');
     expect(messageService.notice).toHaveBeenCalled();
   });
 
-  it('admin guard allows permission>=10', () => {
+  it('admin guard allows permission>=4 (locks page, P>=4)', () => {
+    perm(4, true, true);
+    expect(adminGuard.canActivate({} as any, {} as any)).toBeTrue();
     perm(10, true, true);
     expect(adminGuard.canActivate({} as any, {} as any)).toBeTrue();
   });

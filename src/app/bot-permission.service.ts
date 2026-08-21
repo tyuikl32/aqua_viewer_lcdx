@@ -13,6 +13,22 @@ import {isOk} from './model/ApiResponse';
 })
 export class BotPermissionService {
 
+  /**
+   * Permission 等级体系（LCDXMemberPermissions.Permission，写死约定，前后端一致；
+   * 与后端 LCDXNetApi/Services/PermissionLevels.cs 对齐）：
+   *   0     无任何权限
+   *   1-3   预留，目前无权限
+   *   4-6   可用"机台管理授权"（EP-16 新增授权 / EP-17 吊销自己授出的行）；不显示大于自身权限的功能
+   *   7-9   可用"Admin 授权"（EP-20 授权等级仅能 ≤ 自身；EP-20/20D 不可操作 Permission=10 的成员）；其余机台操作可用；主要为预留
+   *   10    超级管理员，所有操作都可以
+   * 规则：只能授权别人 ≤ 自己的等级；Permission<7 无 Admin 授权功能（EP-20/20L/20D）
+   */
+  public static readonly PERMISSION_NONE = 0;
+  /** ≥4：机台管理授权（locks 页入口） */
+  public static readonly MANAGE_GRANTS = 4;
+  /** ≥7：Admin 授权 */
+  public static readonly MANAGE_PERMISSIONS = 7;
+  /** =10：超级管理员 */
   public static readonly ADMIN_PERMISSION = 10;
 
   /** 普通用户 Remoteware 指令子集（§3.2.1；Admin 17 条全量由页面配置） */
@@ -23,6 +39,7 @@ export class BotPermissionService {
 
   private stateSubject = new BehaviorSubject<LcdxPermissionState>({
     permission: 0,
+    qqNumber: null,
     hasManage: false,
     loaded: false
   });
@@ -50,6 +67,7 @@ export class BotPermissionService {
           if (isOk(resp) && resp.data) {
             this.stateSubject.next({
               permission: resp.data.permission ?? 0,
+              qqNumber: resp.data.qqNumber ?? null,
               hasManage: this.stateSubject.value.hasManage,
               loaded: true
             });
@@ -64,6 +82,7 @@ export class BotPermissionService {
           if (isOk(resp) && resp.data) {
             this.stateSubject.next({
               permission: this.stateSubject.value.permission,
+              qqNumber: this.stateSubject.value.qqNumber,
               hasManage: !!resp.data.hasManage,
               loaded: true
             });
@@ -76,7 +95,7 @@ export class BotPermissionService {
 
   /** 登出/清理：归零 */
   public clear(): void {
-    this.stateSubject.next({permission: 0, hasManage: false, loaded: false});
+    this.stateSubject.next({permission: 0, qqNumber: null, hasManage: false, loaded: false});
   }
 
   // ---------- 角色过滤纯函数（页②③下拉用；安全边界在后端 CabinetPolicy，此处仅 UX） ----------
@@ -100,6 +119,8 @@ export class BotPermissionService {
 
 export interface LcdxPermissionState {
   permission: number;
+  /** EP-01 响应携带的成员 QQ（LCDXMemberPermissions.QQNumber）；探测未完成/失败为 null */
+  qqNumber: number | null;
   hasManage: boolean;
   loaded: boolean;
 }

@@ -33,6 +33,7 @@ describe('BotPermissionService', () => {
 
     const state = service.currentValue;
     expect(state.permission).toBe(10);
+    expect(state.qqNumber).toBe(10001);
     expect(state.hasManage).toBeTrue();
     expect(state.loaded).toBeTrue();
   });
@@ -47,7 +48,7 @@ describe('BotPermissionService', () => {
 
     service.load('LCDXUser');
 
-    expect(service.currentValue).toEqual({permission: 10, hasManage: true, loaded: true});
+    expect(service.currentValue).toEqual({permission: 10, qqNumber: null, hasManage: true, loaded: true});
   });
 
   it('keeps defaults when both probes fail', () => {

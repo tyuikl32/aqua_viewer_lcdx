@@ -73,7 +73,7 @@
       </div>
     </div>
 
-    <!-- 卡B 授权管理 -->
+    <!-- 卡B 机台管理授权 -->
     <div class="col-12 mb-4">
       <div class="card shadow">
         <div class="card-header"><h5 class="mb-0">{{ "Maimai2.LocksPage.GrantsCard" | translate }}</h5></div>
@@ -99,6 +99,13 @@
             </div>
           </div>
 
+          <div class="row g-2 mb-3">
+            <div class="col-md-4">
+              <input class="form-control" type="number" [(ngModel)]="grantSearchQQ"
+                     placeholder="{{ 'Maimai2.LocksPage.SearchQQ' | translate }}">
+            </div>
+          </div>
+
           <div class="table-responsive">
             <table class="table table-sm table-hover align-middle">
               <thead>
@@ -112,10 +119,10 @@
               </tr>
               </thead>
               <tbody>
-              @for (g of grants; track g.qqNumber + g.fullKeychip + g.grantedAt) {
+              @for (g of filteredGrants; track g.qqNumber + g.fullKeychip + g.grantedAt) {
                 <tr [class.table-secondary]="!g.enabled">
                   <td>{{ g.qqNumber }}</td>
-                  <td class="text-nowrap">{{ g.fullKeychip }}</td>
+                  <td class="text-nowrap">{{ g.nickName || g.fullKeychip }}</td>
                   <td>
                     @if (g.enabled) {<span class="badge text-bg-success">{{ "Maimai2.LocksPage.Enabled" | translate }}</span>}
                     @else {<span class="badge text-bg-secondary">{{ "Maimai2.LocksPage.Disabled" | translate }}</span>}
@@ -123,7 +130,7 @@
                   <td>{{ g.grantedAt | date: 'yyyy-MM-dd HH:mm' }}</td>
                   <td>{{ g.grantedBy ?? '-' }}</td>
                   <td>
-                    @if (g.enabled) {
+                    @if (g.enabled && (permission === ADMIN_PERMISSION || (g.grantedBy != null && g.grantedBy === currentQQ))) {
                       <button class="btn btn-sm btn-outline-danger" (click)="removeGrant(g)">
                         {{ "Maimai2.LocksPage.Revoke" | translate }}
                       </button>
@@ -137,5 +144,71 @@
         </div>
       </div>
     </div>
+
+    <!-- 卡C Admin 授权（P≥7） -->
+    @if (permission >= MANAGE_PERMISSIONS) {
+      <div class="col-12 mb-4">
+        <div class="card shadow">
+          <div class="card-header"><h5 class="mb-0">{{ "Maimai2.LocksPage.PermCard" | translate }}</h5></div>
+          <div class="card-body">
+            <div class="row g-2 mb-3 align-items-end">
+              <div class="col-md-3">
+                <label class="form-label">{{ "Maimai2.LocksPage.PermTargetQQ" | translate }}</label>
+                <input class="form-control" type="number" [(ngModel)]="permQQ">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">{{ "Maimai2.LocksPage.PermLevel" | translate }}</label>
+                <select class="form-select" [(ngModel)]="permLevel">
+                  @for (lv of permLevelOptions; track lv) {
+                    <option [ngValue]="lv">{{ lv }}</option>
+                  }
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">{{ "Maimai2.LocksPage.PermNote" | translate }}</label>
+                <input class="form-control" [(ngModel)]="permNote"
+                       placeholder="{{ 'Maimai2.LocksPage.PermNotePlaceholder' | translate }}">
+              </div>
+              <div class="col-md-3">
+                <button class="btn btn-success w-100" [disabled]="permQQ == null || permLevel == null" (click)="setPermission()">
+                  {{ "Maimai2.LocksPage.SetPermission" | translate }}
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-sm table-hover align-middle">
+                <thead>
+                <tr>
+                  <th>QQ</th>
+                  <th>{{ "Maimai2.LocksPage.ColPermLevel" | translate }}</th>
+                  <th>{{ "Maimai2.LocksPage.ColNote" | translate }}</th>
+                  <th>{{ "Maimai2.LocksPage.ColAddedSince" | translate }}</th>
+                  <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @for (m of members; track m.qqNumber) {
+                  <tr>
+                    <td>{{ m.qqNumber }}</td>
+                    <td>{{ m.permission }}</td>
+                    <td>{{ m.note ?? '-' }}</td>
+                    <td>{{ m.addedSince | date: 'yyyy-MM-dd HH:mm' }}</td>
+                    <td>
+                      @if (m.permission < permission) {
+                        <button class="btn btn-sm btn-outline-danger" (click)="removePermission(m)">
+                          {{ "Maimai2.LocksPage.RemovePermission" | translate }}
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
   </div>
 }

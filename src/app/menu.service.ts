@@ -99,8 +99,8 @@ export class MenuService {
             name: 'Locks',
             url: 'mai2/locks',
             displayCondition: DisplayCondition.AfterLogin,
-            // 操作记录与授权管理：P≥10
-            requiredBotPermission: 10,
+            // 操作记录与授权：P≥4（机台管理授权；Admin 授权卡 P≥7 由页面内部再分档）
+            requiredBotPermission: 4,
           },
           {
             id: 6,
@@ -160,7 +160,7 @@ export class Menu {
   name: string;
   url: string;
   displayCondition: DisplayCondition;
-  /** LCDX 机台管理门控：0=EP-18 hasManage；>=10=permission 下限；undefined=无门控 */
+  /** LCDX 机台管理门控：0=EP-18 hasManage；>0=permission 下限（locks 页为 4=MANAGE_GRANTS）；undefined=无门控 */
   requiredBotPermission?: number;
 }
 

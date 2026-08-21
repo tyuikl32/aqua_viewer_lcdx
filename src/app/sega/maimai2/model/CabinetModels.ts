@@ -108,6 +108,8 @@ export interface RemoteLockList {
 export interface GrantItem {
   qqNumber: number;
   fullKeychip: string;
+  /** 机台别名（EP-15 后端 join Cabinets 解析）；机台行缺失时为 null */
+  nickName: string | null;
   enabled: boolean;
   grantedAt: string;
   grantedBy: number | null;
@@ -116,6 +118,19 @@ export interface GrantItem {
 export interface GrantList {
   total: number;
   items: GrantItem[];
+}
+
+/** Admin 授权成员行（EP-20L） */
+export interface MemberPermissionItem {
+  qqNumber: number;
+  permission: number;
+  note: string | null;
+  addedSince: string;
+}
+
+export interface MemberPermissionList {
+  total: number;
+  items: MemberPermissionItem[];
 }
 
 /** LC 模式文案映射（实体无 GameType，前端映射 0/4/5/10，设计 §8 展示规则） */

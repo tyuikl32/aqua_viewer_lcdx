@@ -44,7 +44,7 @@ export class CabinetManageGuard implements CanActivate {
   }
 }
 
-/** 页④ 操作记录与授权（P≥10） */
+/** 页④ 操作记录与授权（P≥4：机台管理授权；Admin 授权卡 P≥7 由页面内部再分档） */
 @Injectable({
   providedIn: 'root'
 })
@@ -58,7 +58,7 @@ export class CabinetAdminGuard extends CabinetManageGuard {
     if (!perm.loaded) {
       return true;
     }
-    if (perm.permission < BotPermissionService.ADMIN_PERMISSION) {
+    if (perm.permission < BotPermissionService.MANAGE_GRANTS) {
       this.noticeDenied();
       return this.router.parseUrl('/dashboard');
     }
