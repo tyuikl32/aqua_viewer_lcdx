@@ -74,7 +74,9 @@ export class SignInComponent {
       next: async resp => {
         const statusCode: StatusCode = resp?.status?.code;
         if (statusCode === StatusCode.OK && resp.data) {
-          this.messageService.notice(resp.status.message);
+          this.translate.get('SignInPage.LoginSuccessMessage').subscribe(message => {
+            this.messageService.notice(message);
+          });
           if (this.router.url.startsWith('/sign-in')) {
             await this.router.navigate(['/dashboard']);
           }
@@ -108,7 +110,9 @@ export class SignInComponent {
       next: async resp => {
         const statusCode: StatusCode = resp?.status?.code;
         if (statusCode === StatusCode.OK && resp.data) {
-          this.messageService.notice(resp.status.message);
+          this.translate.get('SignInPage.LoginSuccessMessage').subscribe(message => {
+            this.messageService.notice(message);
+          });
           if (this.router.url.startsWith('/sign-in')) {
             await this.router.navigate(['/dashboard']);
           }

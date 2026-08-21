@@ -37,6 +37,21 @@ This allows re-stubbing per test case without spy bookkeeping.
 
 - Guard classes: `providedIn: 'root'`, synchronous `canActivate(): boolean | UrlTree` unless async work is genuinely required (sync exemplar: `cabinet-guards.service.ts`; justified-async case: `auth-guard.service.ts`).
 
+### User-facing messages must be localized (no raw `status.message` passthrough)
+
+- Backend `status.message` is **English** (`"Login success"`, etc.). Displaying it directly to the user is a defect: `this.messageService.notice(resp.status.message)` produces English toasts on the Chinese-facing site.
+- Rule: any success/failure toast shown after a user action **must** resolve through `TranslateService` with a key in `src/assets/i18n/zh.json` **and** `en.json` (add both keys in the same change).
+- Exemplar (introduced 2026-08-22, login success localization):
+
+```typescript
+this.translate.get('SignInPage.LoginSuccessMessage').subscribe(message => {
+  this.messageService.notice(message);
+});
+```
+
+- Existing localized keys to reuse: `SignInPage.LoginSuccessMessage` / `LoginFailedMessage` / `TotpInvalidMessage` / `TotpLockedMessage`.
+- Known debt (do not extend it): ~40 call sites still pass `resp.status.message` straight to `messageService.notice` (dashboard, cards, keychip, announcements, profile, maimai2-setting, …). New code must not add to this list; migrating existing sites is tracked separately.
+
 ---
 
 ## Testing Requirements
@@ -54,7 +69,7 @@ npx ng test --include "src/app/auth/*.spec.ts" --watch=false --browsers=ChromeHe
 ## Code Review Checklist
 
 - **IDE auto-revert hazard**: this workspace's IDE occasionally restores old buffer contents over just-edited files (hit ~10× during cabinet work). After each edit batch, re-verify the critical file state before building; if a change vanished, re-apply it via a one-shot script instead of repeating single edits.
-- New user-facing strings: prefer i18n keys unless the surrounding feature is deliberately single-language.
+- New user-facing strings: prefer i18n keys unless the surrounding feature is deliberately single-language. Never render raw `resp.status.message` in a toast — see "User-facing messages must be localized" above.
 - Route-guard changes: confirm guard tier (`hasManage` vs `ADMIN_PERMISSION >= 10`) matches the page's permission tier in design §3.2.
 
 ### Angular template expressions and numeric inputs

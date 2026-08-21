@@ -150,6 +150,7 @@
     "SignUpTip": "Don't have an account?",
     "SignUp": "Sign up",
     "Or": "Or",
+    "LoginSuccessMessage": "Sign in successful",
     "LoginFailedMessage": "Invalid QQ number or password. Please try again.",
     "QQNumberInvalid": "Enter a valid QQ number using 5 to 12 digits.",
     "BotQuickLoginTip": "For faster access, use the Bot quick-login command and open the one-time sign-in link it returns.",

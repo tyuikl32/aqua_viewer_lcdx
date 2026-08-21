@@ -34,7 +34,9 @@ export class OnetimeSignInComponent {
             if (resp?.status) {
               const statusCode: StatusCode = resp.status.code;
               if (statusCode === StatusCode.OK && resp.data) {
-                this.messageService.notice(resp.status.message);
+                this.translate.get('SignInPage.LoginSuccessMessage').subscribe((res: string) => {
+                  this.messageService.notice(res);
+                });
                 if (this.router.url.startsWith('/onetime-sign-in')) {
                   this.router.navigate(['/dashboard']);
                 }

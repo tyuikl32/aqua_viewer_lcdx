@@ -153,6 +153,7 @@
     "SignUpTip": "没有账号？",
     "SignUp": "注册",
     "Or": "或者",
+    "LoginSuccessMessage": "登录成功",
     "LoginFailedMessage": "QQ号或密码错误。",
     "QQNumberInvalid": "请输入 5 至 12 位数字组成的有效 QQ 号。",
     "BotQuickLoginTip": "建议使用 Bot 的快捷登录指令，并打开返回的一次性登录链接。",
