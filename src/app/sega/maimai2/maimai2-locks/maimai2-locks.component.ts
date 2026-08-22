@@ -64,6 +64,10 @@ export class Maimai2LocksComponent implements OnInit {
   editingNoteQQ: number | null = null;
   editingNoteValue = '';
 
+  /** 成员表排序：键 + 方向（默认 QQ 升序，服务端默认序） */
+  memberSortKey: 'qqNumber' | 'permission' | 'note' | 'addedSince' = 'qqNumber';
+  memberSortAsc = true;
+
   constructor(
     private api: ApiService,
     private userService: UserService,
@@ -104,6 +108,35 @@ export class Maimai2LocksComponent implements OnInit {
   permLevelLabel(level: number): string {
     return this.translate.instant('Maimai2.LocksPage.PermLevelOptionFormat',
       {level, band: this.roleBandLabel(level)});
+  }
+
+  /** 表头点击排序：同列切换方向，换列重置为升序 */
+  setMemberSort(key: 'qqNumber' | 'permission' | 'note' | 'addedSince'): void {
+    if (this.memberSortKey === key) {
+      this.memberSortAsc = !this.memberSortAsc;
+    } else {
+      this.memberSortKey = key;
+      this.memberSortAsc = true;
+    }
+  }
+
+  /** 成员表渲染数据：显示层按 ≤ 自身等级过滤（后端 EP-20L 已过滤，双保险）+ 当前排序 */
+  get visibleMembers(): MemberPermissionItem[] {
+    const dir = this.memberSortAsc ? 1 : -1;
+    return this.members
+      .filter(m => m.permission <= this.permission)
+      .sort((a, b) => {
+        switch (this.memberSortKey) {
+          case 'permission':
+            return (a.permission - b.permission) * dir;
+          case 'note':
+            return (a.note ?? '').localeCompare(b.note ?? '') * dir;
+          case 'addedSince':
+            return (a.addedSince ?? '').localeCompare(b.addedSince ?? '') * dir;
+          default:
+            return (a.qqNumber - b.qqNumber) * dir;
+        }
+      });
   }
 
   // ==================== 卡A：EP-14 ====================

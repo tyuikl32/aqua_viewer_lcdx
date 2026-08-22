@@ -194,15 +194,15 @@
               <table class="table table-sm table-hover align-middle">
                 <thead>
                 <tr>
-                  <th>QQ</th>
-                  <th>{{ "Maimai2.LocksPage.ColPermLevel" | translate }}</th>
-                  <th>{{ "Maimai2.LocksPage.ColNote" | translate }}</th>
-                  <th>{{ "Maimai2.LocksPage.ColAddedSince" | translate }}</th>
+                  <th><span style="cursor: pointer" (click)="setMemberSort('qqNumber')">QQ {{ memberSortKey === 'qqNumber' ? (memberSortAsc ? '▲' : '▼') : '' }}</span></th>
+                  <th><span style="cursor: pointer" (click)="setMemberSort('permission')">{{ "Maimai2.LocksPage.ColPermLevel" | translate }} {{ memberSortKey === 'permission' ? (memberSortAsc ? '▲' : '▼') : '' }}</span></th>
+                  <th><span style="cursor: pointer" (click)="setMemberSort('note')">{{ "Maimai2.LocksPage.ColNote" | translate }} {{ memberSortKey === 'note' ? (memberSortAsc ? '▲' : '▼') : '' }}</span></th>
+                  <th><span style="cursor: pointer" (click)="setMemberSort('addedSince')">{{ "Maimai2.LocksPage.ColAddedSince" | translate }} {{ memberSortKey === 'addedSince' ? (memberSortAsc ? '▲' : '▼') : '' }}</span></th>
                   <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                @for (m of members; track m.qqNumber) {
+                @for (m of visibleMembers; track m.qqNumber) {
                   <tr>
                         <td>{{ m.qqNumber }}</td>
                         <td><span class="badge text-bg-secondary">{{ permLevelLabel(m.permission) }}</span></td>
