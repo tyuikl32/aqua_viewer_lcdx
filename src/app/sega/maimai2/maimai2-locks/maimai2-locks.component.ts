@@ -291,6 +291,10 @@ export class Maimai2LocksComponent implements OnInit {
     if (this.permQQ == null || this.permLevel == null) {
       return;
     }
+    if (this.permLevel === BotPermissionService.ADMIN_PERMISSION && !this.permNote.trim()) {
+      this.messageService.notice(this.translate.instant('Maimai2.LocksPage.PermNoteRequiredError'));
+      return;
+    }
     this.api.postLcdx('lcdx/cabinet/permissions',
       {userName: this.userName(), targetQQNumber: this.permQQ, permission: this.permLevel, note: this.permNote || null})
       .subscribe({
@@ -331,8 +335,12 @@ export class Maimai2LocksComponent implements OnInit {
     this.editingNoteValue = member.note ?? '';
   }
 
-  /** 提交备注：复用 EP-20 upsert，permission 传原值（仅改 Note；后端 AddedSince 不动） */
+  /** 提交备注：复用 EP-20 upsert，permission 传原值（仅改 Note；后端 AddedSince 不动）。P10 备注必填（空备注后端会删条目） */
   submitNoteEdit(member: MemberPermissionItem): void {
+    if (member.permission === BotPermissionService.ADMIN_PERMISSION && !this.editingNoteValue.trim()) {
+      this.messageService.notice(this.translate.instant('Maimai2.LocksPage.PermNoteRequiredError'));
+      return;
+    }
     this.api.postLcdx('lcdx/cabinet/permissions',
       {userName: this.userName(), targetQQNumber: member.qqNumber, permission: member.permission, note: this.editingNoteValue || null})
       .subscribe({

@@ -179,12 +179,14 @@
                 </select>
               </div>
               <div class="col-md-3">
-                <label class="form-label">{{ "Maimai2.LocksPage.PermNote" | translate }}</label>
+                <label class="form-label">{{ (permLevel === ADMIN_PERMISSION ? "Maimai2.LocksPage.PermNoteRequiredLabel" : "Maimai2.LocksPage.PermNote") | translate }}</label>
                 <input class="form-control" [(ngModel)]="permNote"
-                       placeholder="{{ 'Maimai2.LocksPage.PermNotePlaceholder' | translate }}">
+                       placeholder="{{ (permLevel === ADMIN_PERMISSION ? 'Maimai2.LocksPage.PermNoteRequiredPlaceholder' : 'Maimai2.LocksPage.PermNotePlaceholder') | translate }}">
               </div>
               <div class="col-md-3">
-                <button class="btn btn-success w-100" [disabled]="permQQ == null || permLevel == null" (click)="setPermission()">
+                <button class="btn btn-success w-100"
+                        [disabled]="permQQ == null || permLevel == null || (permLevel === ADMIN_PERMISSION && !permNote.trim())"
+                        (click)="setPermission()">
                   {{ "Maimai2.LocksPage.SetPermission" | translate }}
                 </button>
               </div>
@@ -210,8 +212,8 @@
                           @if (editingNoteQQ === m.qqNumber) {
                             <input class="form-control form-control-sm" [(ngModel)]="editingNoteValue"
                                    (keyup.enter)="submitNoteEdit(m)"
-                                   placeholder="{{ 'Maimai2.LocksPage.PermNotePlaceholder' | translate }}">
-                          } @else if (m.permission < permission) {
+                                   placeholder="{{ (m.permission === ADMIN_PERMISSION ? 'Maimai2.LocksPage.PermNoteRequiredPlaceholder' : 'Maimai2.LocksPage.PermNotePlaceholder') | translate }}">
+                          } @else if (m.permission <= permission) {
                             <span class="link-secondary" role="button" (click)="startNoteEdit(m)"
                                   title="{{ 'Maimai2.LocksPage.EditNoteHint' | translate }}">{{ m.note ?? '-' }}</span>
                           } @else {
