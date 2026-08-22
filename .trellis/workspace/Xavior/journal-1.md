@@ -228,3 +228,22 @@ Locks page redesign matching backend 8300d19+1623b48: permission tier system (0/
 ### Status
 
 [OK] **Completed**
+
+
+## Session 6: Trellis task audit and closure
+
+**Date**: 2026-08-22
+**Task**: Trellis task audit and closure
+**Branch**: `master`
+
+### Summary
+
+Audited all 7 active trellis tasks (validate + deliverable/state cross-check). Committed 08-22 audit task tree dirs (0ca051d) with seed-line cleanup; verified i18n key sync 863/863 and tsc green; ticked evidenced acceptance criteria; archived completed tasks: full-project-audit tree (3 children + parent), merge-cancel, 00-bootstrap-guidelines. Kept 08-16-mai2-cabinet-features in_progress per PRD (pending backend integration test); its jsonl still warns 48KB design doc > 32KB injection cap.
+
+### Git Commits
+
+(No commits - planning session)
+
+### Status
+
+[OK] **Completed**
