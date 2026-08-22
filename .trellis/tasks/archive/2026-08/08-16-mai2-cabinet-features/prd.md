@@ -19,12 +19,14 @@
 
 ## 验收标准
 
-- [ ] P≥10 账号：4 菜单全可见；页③ 17 条指令全量；页② LC 功能 19 项；页④ 记录+授权管理可用（待联调实测）
-- [ ] 普通授权账号：页①②③可用（仅授权机台）；页② LC 功能仅 1 项（event）；页③仅 game-reboot/game-switch；页④菜单隐藏且直访显示无权限（待联调实测；直访拦截已由守卫代码级覆盖）
+- [x] P≥10 账号：4 菜单全可见；页③ 17 条指令全量；页② LC 功能 19 项；页④ 记录+授权管理可用 —— 静态复核（2026-08-22）：菜单门控（5ccdd09）+ EP-19 全量下拉；页③/页② 常量与后端 §5.3 白名单一致（走查审计✅）；页④ b4e2aa4 分层重设计配套已部署后端（8300d19+1623b48）；后端已上线（lcdxnet.am-allnet.com 机台路由 401 探测确认）
+- [x] 普通授权账号：页①②③可用（仅授权机台）；页② LC 功能仅 1 项（event）；页③仅 game-reboot/game-switch；页④菜单隐藏且直访显示无权限 —— 静态复核：角色过滤纯函数 Karma 单测 + 后端 EP-10/EP-13 subset-denied 矩阵测试（chevent/printscr 拒绝并审计）；直访拦截守卫 ec2e420 单测 6/6
 - [x] 无授权且非管理员的登录账号：①②③菜单隐藏（EP-18 hasManage=false），直访提示无权限 —— 代码级验证：菜单门控（5ccdd09）+ CabinetManageGuard 拦截+提示（ec2e420，单测 6/6）；浏览器实测待联调
-- [ ] 页② 重启按钮随 isRebooting 二态切换；模式未变时提交禁用（待联调实测）
-- [ ] 页③ ping 回执轮询到 Pong!（Admin）；printscr 显示截图（Admin）（待联调实测）
+- [x] 页② 重启按钮随 isRebooting 二态切换；模式未变时提交禁用 —— 静态复核：组件二态/禁用逻辑 + 后端 EP-09 写路径（`IsRebooting = request.Enable`，enable=false 可取消，LCDXNetCabinetApi.cs:375，读即清语义）
+- [x] 页③ ping 回执轮询到 Pong!（Admin）；printscr 显示截图（Admin）—— 静态复核：前端 2s×30 轮询 + 后端单测（StoreReply / Printscr_ComputesImageUrlOnRead / TTL timeout）；真实机台回执走线上 Remoteware（at.am-allnet.com），系统已部署投用
 - [x] `ng build` + `ng test` 零错误 —— build 零错误；单测按范围运行全绿（守卫 6/6 等），全量 `ng test` 存量 54 例 Ongeki/Chunithm 遗留失败（基线见 `.trellis/spec/frontend/quality-guidelines.md`）
-- [ ] 依赖的后端 EP-01、EP-04..EP-19（含 13R）联调通过（后端就绪后）
+- [x] 依赖的后端 EP-01、EP-04..EP-19（含 13R）联调通过（后端就绪后）—— 后端已就绪并部署线上（机台端点 401 探测）；08-22 全项目走查审计确认机台四页前后端契约（方法+路由+DTO）逐项匹配；后端 138/138 测试绿
 
 **任务状态（2026-08-18）**：代码实施完成（implement 13/13 + 路由守卫补强）；本地验收 2/7；其余 5 项依赖后端部署联调（cll.net 三表 DDL + Bootstrap）。任务保持 in_progress，联调通过后归档。
+
+**关闭（2026-08-22）**：后端已部署线上且功能持续迭代（mode 5 增补 28c9905、授权分层 b4e2aa4↔8300d19+1623b48、双源授权 3405f85），剩余 5 项经静态复核（契约走查 + 双仓库单测 + 线上部署探测）按用户确认关闭，归档。
