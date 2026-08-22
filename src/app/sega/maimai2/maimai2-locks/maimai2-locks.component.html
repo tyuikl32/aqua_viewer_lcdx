@@ -99,6 +99,8 @@
             </div>
           </div>
 
+          <p class="text-muted small mb-3">{{ "Maimai2.LocksPage.GrantAutoTierHint" | translate }}</p>
+
           <div class="row g-2 mb-3">
             <div class="col-md-4">
               <input class="form-control" type="number" [(ngModel)]="grantSearchQQ"
@@ -139,7 +141,7 @@
                   <td>{{ g.grantedAt | date: 'yyyy-MM-dd HH:mm' }}</td>
                   <td>{{ g.grantedBy ?? '-' }}</td>
                   <td>
-                    @if (g.enabled && (permission === ADMIN_PERMISSION || (g.grantedBy != null && g.grantedBy === currentQQ))) {
+                    @if (g.enabled && permission >= MANAGE_GRANTS) {
                       <button class="btn btn-sm btn-outline-danger" (click)="removeGrant(g)">
                         {{ "Maimai2.LocksPage.Revoke" | translate }}
                       </button>
@@ -172,7 +174,7 @@
                 <label class="form-label">{{ "Maimai2.LocksPage.PermLevel" | translate }}</label>
                 <select class="form-select" [(ngModel)]="permLevel">
                   @for (lv of permLevelOptions; track lv) {
-                    <option [ngValue]="lv">{{ lv }}</option>
+                    <option [ngValue]="lv">{{ permLevelLabel(lv) }}</option>
                   }
                 </select>
               </div>
@@ -202,9 +204,9 @@
                 <tbody>
                 @for (m of members; track m.qqNumber) {
                   <tr>
-                    <td>{{ m.qqNumber }}</td>
-                    <td>{{ m.permission }}</td>
-                    <td>{{ m.note ?? '-' }}</td>
+                        <td>{{ m.qqNumber }}</td>
+                        <td><span class="badge text-bg-secondary">{{ permLevelLabel(m.permission) }}</span></td>
+                        <td>{{ m.note ?? '-' }}</td>
                     <td>{{ m.addedSince | date: 'yyyy-MM-dd HH:mm' }}</td>
                     <td>
                       @if (m.permission < permission) {

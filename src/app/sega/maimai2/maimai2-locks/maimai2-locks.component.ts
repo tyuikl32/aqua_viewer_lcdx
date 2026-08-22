@@ -9,7 +9,8 @@ import { CabinetSummary, GrantItem, GrantList, MemberPermissionItem, MemberPermi
 
 /**
  * 页④ 操作记录与授权（设计 §8，P≥4）：
- * 卡A 操作记录（EP-14 过滤+分页）；卡B 机台管理授权（EP-15 清单 / EP-16 新增 / EP-17 吊销二次确认，吊销限自己授出的行或 P=10）；
+ * 卡A 操作记录（EP-14 过滤+分页）；卡B 机台管理授权（EP-15 辖区清单 / EP-16 新增（自动档位：4-6 授→P3，7+ 授→P4）/
+ * EP-17 吊销二次确认（v2 辖区制，4-6 可撤辖区内 P≤3 的行，同级保护由后端强制））；
  * 卡C Admin 授权（EP-20 设置 / EP-20L 清单 / EP-20D 删除，P≥7）。
  */
 @Component({
@@ -22,6 +23,7 @@ export class Maimai2LocksComponent implements OnInit {
 
   /** 模板用阈值常量（与 BotPermissionService / 后端 PermissionLevels 对齐） */
   readonly ADMIN_PERMISSION = BotPermissionService.ADMIN_PERMISSION;
+  readonly MANAGE_GRANTS = BotPermissionService.MANAGE_GRANTS;
   readonly MANAGE_PERMISSIONS = BotPermissionService.MANAGE_PERMISSIONS;
 
   permission = 0;
@@ -87,6 +89,16 @@ export class Maimai2LocksComponent implements OnInit {
 
   userName(): string {
     return this.userService.currentUser?.username ?? '';
+  }
+
+  /** 档位名标签（i18n：Maimai2.LocksPage.Role*）：0 普通 / 1-3 二级负责人 / 4-6 机台负责人 / 7-9 管理员 / 10 超级管理员 */
+  roleBandLabel(permission: number): string {
+    return this.translate.instant(`Maimai2.LocksPage.Role${BotPermissionService.roleBand(permission)}`);
+  }
+
+  /** 等级下拉选项文案：`3 · 二级负责人` */
+  permLevelLabel(level: number): string {
+    return `${level} · ${this.roleBandLabel(level)}`;
   }
 
   // ==================== 卡A：EP-14 ====================

@@ -15,26 +15,32 @@ export class BotPermissionService {
 
   /**
    * Permission 等级体系（LCDXMemberPermissions.Permission，写死约定，前后端一致；
-   * 与后端 LCDXNetApi/Services/PermissionLevels.cs 对齐）：
-   *   0     无任何权限
-   *   1-3   预留，目前无权限
-   *   4-6   可用"机台管理授权"（EP-16 新增授权 / EP-17 吊销自己授出的行）；不显示大于自身权限的功能
-   *   7-9   可用"Admin 授权"（EP-20 授权等级仅能 ≤ 自身；EP-20/20D 不可操作 Permission=10 的成员）；其余机台操作可用；主要为预留
-   *   10    超级管理员，所有操作都可以
-   * 规则：只能授权别人 ≤ 自己的等级；Permission<7 无 Admin 授权功能（EP-20/20L/20D）
+   * 与后端 LCDXNetApi/Services/PermissionLevels.cs 对齐）。2026-08-23 v2 定案
+   * （设计：LCDXNetApi/.trellis/tasks/archive/2026-08/08-22-permission-tiers-v2/design.md）：
+   *   0     普通用户（注册/登录自动落行；持授权行 = 休眠，需 ≥1 激活）
+   *   1-3   二级负责人（机台负责人二次分发，EP-16 授权自动升至 P3；不能继续分发）
+   *   4-6   机台负责人（7+/10 授机台自动升至 P4；P5/P6 手动；可授/撤自己辖区内目标 P≤3 的二级授权）
+   *   7-9   管理员（Admin 授权 ≤ 自身、不可操作更高成员；EP-16/17 任意机台、目标 ≤ 自身）
+   *   10    超级管理员，所有操作都可以（无视机台权限）
+   * 规则：只能授权别人 ≤ 自己的等级；EP-16 自动档位只升不降（4-6 授→P3，7-10 授→P4，不产生 5/6）；
+   * B1：LCset 完整键 P≥4；远程指令完整仅 P=10；档内细分为远端预留，阈值只在 0/1/4/7/10
    */
   public static readonly PERMISSION_NONE = 0;
-  /** ≥4：机台管理授权（locks 页入口） */
+  /** ≥1：激活门槛（A2；授权行生效的最低等级） */
+  public static readonly PERMISSION_ACTIVATED = 1;
+  /** 二级负责人档位（4-6 授予的自动目标） */
+  public static readonly PERMISSION_SECONDARY = 3;
+  /** ≥4：机台负责人下限 / 机台管理授权（locks 页入口）/ LCset 完整键（B1） */
   public static readonly MANAGE_GRANTS = 4;
   /** ≥7：Admin 授权 */
   public static readonly MANAGE_PERMISSIONS = 7;
   /** =10：超级管理员 */
   public static readonly ADMIN_PERMISSION = 10;
 
-  /** 普通用户 Remoteware 指令子集（§3.2.1；Admin 17 条全量由页面配置） */
+  /** 普通用户 Remoteware 指令子集（§3.2.1；完整 17 条仅 P=10，B1） */
   public static readonly NORMAL_REMOTE_COMMANDS = ['game-reboot', 'game-switch'];
 
-  /** 普通用户 lcset 子集（第六轮 Q1 定案：仅 event，chevent 不下放） */
+  /** 普通用户 lcset 子集（第六轮 Q1 定案：仅 event，chevent 不下放；P≥4 完整 19 键，B1） */
   public static readonly NORMAL_LCSET_KEYS = ['event'];
 
   private stateSubject = new BehaviorSubject<LcdxPermissionState>({
@@ -108,12 +114,29 @@ export class BotPermissionService {
     return commands.filter(c => BotPermissionService.NORMAL_REMOTE_COMMANDS.includes(c.command));
   }
 
-  /** lcset 下拉按角色过滤：普通用户仅 event，Admin 全量 19 项 */
+  /** lcset 下拉按角色过滤：P≤3 仅 event，P≥4 完整 19 项（v2 B1，与后端 CabinetPolicy 一致） */
   public static filterLcsetKeys<T extends { key: string }>(permission: number, keys: T[]): T[] {
-    if (permission >= BotPermissionService.ADMIN_PERMISSION) {
+    if (permission >= BotPermissionService.MANAGE_GRANTS) {
       return keys;
     }
     return keys.filter(k => BotPermissionService.NORMAL_LCSET_KEYS.includes(k.key));
+  }
+
+  /** 档位名（UX 标签用；功能阈值在常量，安全边界在后端）：0 普通 / 1-3 二级负责人 / 4-6 机台负责人 / 7-9 管理员 / 10 超级管理员 */
+  public static roleBand(permission: number): 'Normal' | 'Secondary' | 'Manager' | 'Admin' | 'SuperAdmin' {
+    if (permission >= BotPermissionService.ADMIN_PERMISSION) {
+      return 'SuperAdmin';
+    }
+    if (permission >= BotPermissionService.MANAGE_PERMISSIONS) {
+      return 'Admin';
+    }
+    if (permission >= BotPermissionService.MANAGE_GRANTS) {
+      return 'Manager';
+    }
+    if (permission >= BotPermissionService.PERMISSION_ACTIVATED) {
+      return 'Secondary';
+    }
+    return 'Normal';
   }
 }
 
