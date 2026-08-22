@@ -48,6 +48,9 @@ export class Maimai2LocksComponent implements OnInit {
   grantQQ: number | null = null;
   grantNick = '';
   grantSearchQQ: number | null = null;
+  grantPage = 1;
+  grantPageSize = 20;
+  readonly grantPageSizeOptions = [10, 20, 100];
 
   // ---- 卡C Admin 授权（P≥7） ----
   members: MemberPermissionItem[] = [];
@@ -138,6 +141,10 @@ export class Maimai2LocksComponent implements OnInit {
         if (isOk(resp)) {
           const data = resp.data as GrantList;
           this.grants = data?.items ?? [];
+          // 刷新后当前页越界（如吊销导致列表变短）时回到第 1 页
+          if ((this.grantPage - 1) * this.grantPageSize >= this.filteredGrants.length) {
+            this.grantPage = 1;
+          }
         }
       })
     });
@@ -160,6 +167,19 @@ export class Maimai2LocksComponent implements OnInit {
     }
     const prefix = String(this.grantSearchQQ);
     return this.grants.filter(g => String(g.qqNumber).startsWith(prefix));
+  }
+
+  /** 卡B 客户端分页：过滤结果本地切片 */
+  get pagedGrants(): GrantItem[] {
+    return this.filteredGrants.slice((this.grantPage - 1) * this.grantPageSize, this.grantPage * this.grantPageSize);
+  }
+
+  grantPageChanged(newPage: number): void {
+    this.grantPage = newPage;
+  }
+
+  grantPageSizeChanged(): void {
+    this.grantPage = 1;
   }
 
   addGrant(): void {

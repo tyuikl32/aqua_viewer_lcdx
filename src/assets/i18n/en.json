@@ -773,6 +773,7 @@
       "SelectGrantCabinet": "Select cabinet",
       "AddGrant": "Add Grant",
       "SearchQQ": "Search QQ (prefix match)",
+      "PageSize": "Per page",
       "ColStatus": "Status",
       "ColGrantedAt": "Granted At",
       "ColGrantedBy": "Granted By",

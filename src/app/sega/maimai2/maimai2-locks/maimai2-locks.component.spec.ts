@@ -22,6 +22,17 @@ describe('Maimai2LocksComponent', () => {
   // 属性态用闭包 getter 提供可变默认值（quality-guidelines 服务 stub 模式）
   let permState = {permission: 10, qqNumber: 10001, hasManage: true, loaded: true};
 
+  // 生成卡B 授权行（qqBase + i 保证 qq/track 唯一）
+  const makeGrants = (count: number, qqBase: number) =>
+    Array.from({length: count}, (_, i) => ({
+      qqNumber: qqBase + i,
+      fullKeychip: `A63E-${String(i).padStart(12, '0')}`,
+      nickName: null,
+      enabled: true,
+      grantedAt: '2026-08-19T00:00:00',
+      grantedBy: 10001,
+    }));
+
   beforeEach(async () => {
     permState = {permission: 10, qqNumber: 10001, hasManage: true, loaded: true};
     await TestBed.configureTestingModule({
@@ -127,12 +138,113 @@ describe('Maimai2LocksComponent', () => {
     expect(grantsTbody.querySelectorAll('tr').length).toBe(2);
   });
 
+  it('slices pagedGrants client-side (25 grants, pageSize 20 → page 1 has 20, page 2 has 5)', () => {
+    const component = fixture.componentInstance;
+    component.grants = makeGrants(25, 123000000);
+    component.grantPage = 1;
+    fixture.detectChanges();
+
+    expect(component.pagedGrants.length).toBe(20);
+    expect(component.pagedGrants[0].qqNumber).toBe(123000000);
+    expect(component.pagedGrants[19].qqNumber).toBe(123000019);
+
+    component.grantPageChanged(2);
+    fixture.detectChanges();
+
+    expect(component.pagedGrants.length).toBe(5);
+    expect(component.pagedGrants[0].qqNumber).toBe(123000020);
+    expect(component.pagedGrants[4].qqNumber).toBe(123000024);
+  });
+
+  it('resets grantPage to 1 when the page size select changes', async () => {
+    const component = fixture.componentInstance;
+    component.grants = makeGrants(25, 123000000);
+    component.grantPage = 2;
+    fixture.detectChanges();
+    expect(component.pagedGrants.length).toBe(5);
+
+    // 卡B 每页条数下拉：selects[0]=卡A操作类型 [1]=卡B机台 [2]=卡B每页条数 [3]=卡C等级
+    const pageSizeSelect = fixture.nativeElement.querySelectorAll('select')[2] as HTMLSelectElement;
+    pageSizeSelect.value = pageSizeSelect.options[0].value; // 10
+    pageSizeSelect.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.grantPageSize).toBe(10);
+    expect(component.grantPage).toBe(1);
+    expect(component.pagedGrants.length).toBe(10);
+  });
+
+  it('combines the QQ prefix filter with pagination (page resets to 1 on filter change)', async () => {
+    const component = fixture.componentInstance;
+    component.grants = [...makeGrants(20, 123000000), ...makeGrants(5, 987000000)];
+    component.grantPage = 2;
+    fixture.detectChanges();
+    const grantsTbody = fixture.nativeElement.querySelectorAll('tbody')[1];
+    expect(grantsTbody.querySelectorAll('tr').length).toBe(5); // 第 2 页为 987… 前缀行
+
+    const inputs = fixture.nativeElement.querySelectorAll('input[type="number"]') as NodeListOf<HTMLInputElement>;
+    inputs[2].value = '123';
+    inputs[2].dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.grantSearchQQ).toBe(123);
+    expect(component.grantPage).toBe(1);
+    expect(component.filteredGrants.length).toBe(20);
+    expect(grantsTbody.querySelectorAll('tr').length).toBe(20);
+
+    // 单页（20 条 / 每页 20）时卡B 分页控件隐藏（autoHide）
+    const cardBControls = fixture.nativeElement.querySelectorAll('pagination-controls')[1] as HTMLElement;
+    expect(cardBControls.querySelector('ul')).toBeNull();
+  });
+
+  it('resets grantPage via loadGrants clamp when the refreshed list shrinks below the page start', () => {
+    const component = fixture.componentInstance;
+    component.grants = makeGrants(25, 123000000);
+    component.grantPage = 2;
+    fixture.detectChanges();
+
+    component.loadGrants(); // api stub 返回空清单 → 当前页越界
+    fixture.detectChanges();
+
+    expect(component.grants.length).toBe(0);
+    expect(component.grantPage).toBe(1);
+    expect(component.pagedGrants.length).toBe(0);
+  });
+
+  it('renders card B pagination controls and switches pages from the links', async () => {
+    const component = fixture.componentInstance;
+    component.grants = makeGrants(25, 123000000);
+    fixture.detectChanges();
+    const grantsTbody = fixture.nativeElement.querySelectorAll('tbody')[1];
+    expect(grantsTbody.querySelectorAll('tr').length).toBe(20);
+
+    // 卡B 的 pagination-controls 为页面上第二个（卡A 一个、卡B 一个）
+    const controls = fixture.nativeElement.querySelectorAll('pagination-controls')[1];
+    expect(controls).toBeTruthy();
+    const pageTwoLink = Array.from(controls.querySelectorAll('li a'))
+      .find((a: HTMLAnchorElement) => /2$/.test(a.textContent?.trim() ?? '')) as HTMLAnchorElement;
+    expect(pageTwoLink).toBeTruthy();
+
+    pageTwoLink.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.grantPage).toBe(2);
+    expect(grantsTbody.querySelectorAll('tr').length).toBe(5);
+  });
+
   it('shows the Admin permission card (P>=7) with level options 0..own permission only', async () => {
     const component = fixture.componentInstance;
     expect(component.permission).toBe(10);
 
     const selects = fixture.nativeElement.querySelectorAll('select') as NodeListOf<HTMLSelectElement>;
-    const permSelect = selects[2];
+    // 卡B 新增每页条数下拉后，等级下拉顺移到第 4 个
+    const permSelect = selects[3];
     expect(permSelect).toBeTruthy();
     // 选项 0..10 共 11 项（只能授权别人 ≤ 自己）
     expect(permSelect.options.length).toBe(11);

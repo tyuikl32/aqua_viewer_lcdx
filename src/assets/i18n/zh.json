@@ -773,6 +773,7 @@
       "SelectGrantCabinet": "选择机台",
       "AddGrant": "新增授权",
       "SearchQQ": "搜索 QQ（前缀匹配）",
+      "PageSize": "每页条数",
       "ColStatus": "状态",
       "ColGrantedAt": "授权时间",
       "ColGrantedBy": "操作人",

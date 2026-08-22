@@ -37,6 +37,21 @@ This allows re-stubbing per test case without spy bookkeeping.
 
 - Guard classes: `providedIn: 'root'`, synchronous `canActivate(): boolean | UrlTree` unless async work is genuinely required (sync exemplar: `cabinet-guards.service.ts`; justified-async case: `auth-guard.service.ts`).
 
+### ngx-pagination: `<pagination-controls>` must be paired with a `paginate` pipe (matching `id`)
+
+- In ngx-pagination 6.x, `pagination-controls` has **no** `totalItems` input. It renders page links only from the `PaginationInstance` that a `paginate` pipe registers in the shared `PaginationService` under a matching `id`.
+- A bare `<pagination-controls>` with no paired pipe computes `pages = []`; with `autoHide` it renders **nothing** — silently non-functional, no compile error.
+- Correct pairing (client-side slicing, exemplar: `maimai2-locks` 卡B grants table):
+
+```html
+@for (g of pagedGrants | paginate: {id: 'grants', itemsPerPage: grantPageSize, currentPage: grantPage, totalItems: filteredGrants.length}; ...) { ... }
+<pagination-controls id="grants" (pageChange)="grantPageChanged($event)" [maxSize]="5" [autoHide]="true"></pagination-controls>
+```
+
+- For server-side paging (EP-14 style), pipe the server-returned slice with `totalItems` set to the server-reported total; when `totalItems !== slice.length` the pipe passes the collection through unchanged while still registering the controls' state.
+- Known latent offender: `maimai2-locks` 卡A audit table — bare controls, needs the same pairing (follow-up task).
+- `[rotate]` is not a real input of `pagination-controls` (harmless no-op; do not copy into new code).
+
 ### User-facing messages must be localized (no raw `status.message` passthrough)
 
 - Backend `status.message` is **English** (`"Login success"`, etc.). Displaying it directly to the user is a defect: `this.messageService.notice(resp.status.message)` produces English toasts on the Chinese-facing site.

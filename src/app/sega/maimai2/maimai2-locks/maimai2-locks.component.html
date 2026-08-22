@@ -102,7 +102,16 @@
           <div class="row g-2 mb-3">
             <div class="col-md-4">
               <input class="form-control" type="number" [(ngModel)]="grantSearchQQ"
+                     (ngModelChange)="grantPage = 1"
                      placeholder="{{ 'Maimai2.LocksPage.SearchQQ' | translate }}">
+            </div>
+            <div class="col-md-4">
+              <select class="form-select" [(ngModel)]="grantPageSize" (ngModelChange)="grantPageSizeChanged()"
+                      aria-label="{{ 'Maimai2.LocksPage.PageSize' | translate }}">
+                @for (s of grantPageSizeOptions; track s) {
+                  <option [ngValue]="s">{{ s }}</option>
+                }
+              </select>
             </div>
           </div>
 
@@ -119,7 +128,7 @@
               </tr>
               </thead>
               <tbody>
-              @for (g of filteredGrants; track g.qqNumber + g.fullKeychip + g.grantedAt) {
+                @for (g of pagedGrants | paginate: {id: 'grants', itemsPerPage: grantPageSize, currentPage: grantPage, totalItems: filteredGrants.length}; track g.qqNumber + g.fullKeychip + g.grantedAt) {
                 <tr [class.table-secondary]="!g.enabled">
                   <td>{{ g.qqNumber }}</td>
                   <td class="text-nowrap">{{ g.nickName || g.fullKeychip }}</td>
@@ -141,6 +150,9 @@
               </tbody>
             </table>
           </div>
+
+          <pagination-controls id="grants" (pageChange)="grantPageChanged($event)"
+                               [maxSize]="5" [autoHide]="true" [rotate]="true"></pagination-controls>
         </div>
       </div>
     </div>
