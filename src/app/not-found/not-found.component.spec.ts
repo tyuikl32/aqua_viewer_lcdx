@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Location } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { NotFoundComponent } from './not-found.component';
 
@@ -8,7 +10,9 @@ describe('NotFoundComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [NotFoundComponent]
+      declarations: [NotFoundComponent],
+      imports: [TranslateModule.forRoot()],
+      providers: [Location]
     });
     fixture = TestBed.createComponent(NotFoundComponent);
     component = fixture.componentInstance;

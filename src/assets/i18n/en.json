@@ -1022,6 +1022,15 @@
       "githubLoginProcessing": "Validating your GitHub login information, please wait...",
       "loading": "Loading...",
       "OneClickRegisterGithub": "Register With Github"
+    },
+    "NotFound": {
+      "Title": "Page Not Found",
+      "Eyebrow": "Track 404 · Signal Lost",
+      "Line1": "Page not found",
+      "Line2": "Check the link, or head back to the home page",
+      "EnglishLine": "ERROR 404 · REQUESTED RESOURCE NOT FOUND",
+      "Home": "Back to Home",
+      "Back": "Go Back"
     }
   }
 }
