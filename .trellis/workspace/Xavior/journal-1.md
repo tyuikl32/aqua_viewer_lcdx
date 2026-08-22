@@ -287,3 +287,24 @@ Client-side pagination for /mai2/locks Card B (机台管理授权): page-size se
 ### Status
 
 [OK] **Completed**
+
+
+## Session 9: Three UI bugfixes: switch, column shift, merge cancel toast
+
+**Date**: 2026-08-22
+**Task**: Three UI bugfixes: switch, column shift, merge cancel toast
+**Branch**: `master`
+
+### Summary
+
+Fixed /mai2/cabinets auto-refresh switch misalignment (col-md-auto and form-check were merged on one element; BS5 float/negative-margin layout breaks in a grid column — now a proper form-check container inside the column), /mai2/remotecontrol columns sinking after command select (row align-items-end -> align-items-start so the arg-hint no longer pushes other columns down), and /mai2/setting cancel-merge raw 404 error toast (error callback now shows localized MergeCancelFailed). Both layout fixes verified via static bootstrap-5.2.3 repro page (before/after screenshots). Root cause of the 404: deployed backend predates 08-22 commits (EP-20 permissions also 404) — cancel endpoint e9efa48 and lastSuccessDate API both exist in repo and await redeploy; last-success date display already implemented (hidden while DB value is default 0001-01-01). tsc clean, setting spec 1/1.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b2fb9dc` | (see git log) |
+
+### Status
+
+[OK] **Completed**
