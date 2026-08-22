@@ -1021,15 +1021,15 @@
       "githubLoginProcessing": "正在验证您的GitHub登录信息，请稍候...",
       "loading": "加载中...",
       "OneClickRegisterGithub": "使用GitHub注册"
-    },
-    "NotFound": {
-      "Title": "页面未找到",
-      "Eyebrow": "Track 404 · Signal Lost",
-      "Line1": "未找到目标页面",
-      "Line2": "检查一下链接，或者回到首页",
-      "EnglishLine": "ERROR 404 · REQUESTED RESOURCE NOT FOUND",
-      "Home": "返回首页",
-      "Back": "返回上一页"
     }
+  },
+  "NotFound": {
+    "Title": "页面未找到",
+    "Eyebrow": "Track 404 · Signal Lost",
+    "Line1": "未找到目标页面",
+    "Line2": "检查一下链接，或者回到首页",
+    "EnglishLine": "ERROR 404 · REQUESTED RESOURCE NOT FOUND",
+    "Home": "返回首页",
+    "Back": "返回上一页"
   }
 }
