@@ -96,9 +96,10 @@ export class Maimai2LocksComponent implements OnInit {
     return this.translate.instant(`Maimai2.LocksPage.Role${BotPermissionService.roleBand(permission)}`);
   }
 
-  /** 等级下拉选项文案：`3 · 二级负责人` */
+  /** 等级下拉选项文案：`0（无任何权限）` / `3（二级用户）` / `4（机台管理员）`（格式走 i18n，中英括号差异） */
   permLevelLabel(level: number): string {
-    return `${level} · ${this.roleBandLabel(level)}`;
+    return this.translate.instant('Maimai2.LocksPage.PermLevelOptionFormat',
+      {level, band: this.roleBandLabel(level)});
   }
 
   // ==================== 卡A：EP-14 ====================
