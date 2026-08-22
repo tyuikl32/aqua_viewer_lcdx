@@ -266,3 +266,24 @@ Closed 08-16-mai2-cabinet-features by static audit per user confirmation: backen
 ### Status
 
 [OK] **Completed**
+
+
+## Session 8: Locks page grants card pagination
+
+**Date**: 2026-08-22
+**Task**: Locks page grants card pagination
+**Branch**: `master`
+
+### Summary
+
+Client-side pagination for /mai2/locks Card B (机台管理授权): page-size select 10/20/100 (default 20), pagination-controls paired with paginate pipe id=grants, QQ-prefix filter and size changes reset to page 1, loadGrants clamps out-of-bounds pages. 5 new Karma tests (8/8 green), tsc clean, i18n 864/864 sync. Codified ngx-pagination 6.x pitfall in spec: bare pagination-controls without a registered paginate instance renders nothing — Card A audit table has this latent bug (follow-up needed). Implemented via trellis-implement/check sub-agent dispatch.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `307b42f` | (see git log) |
+
+### Status
+
+[OK] **Completed**
