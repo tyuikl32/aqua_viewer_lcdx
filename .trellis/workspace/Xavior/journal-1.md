@@ -308,3 +308,24 @@ Fixed /mai2/cabinets auto-refresh switch misalignment (col-md-auto and form-chec
 ### Status
 
 [OK] **Completed**
+
+
+## Session 10: Fix locks audit card pagination controls
+
+**Date**: 2026-08-22
+**Task**: Fix locks audit card pagination controls
+**Branch**: `master`
+
+### Summary
+
+Card A (操作记录) pagination-controls shipped bare with no paired paginate instance, so under ngx-pagination 6.x it silently rendered nothing — users could never page the audit table. Applied the id+pipe pairing proven on Card B, in server mode: @for pipes the EP-14 slice with {id:'locks', itemsPerPage: pageSize, currentPage: page, totalItems: total} so the pipe passes the slice through while registering control state; controls got id=locks. Removed the non-existent [rotate] input from both cards and updated the spec rule (offender note -> fixed record). New Karma test verifies server-mode rendering (total=100/size=20 -> 5 pages, anchors 'page 2'..'page 5', click -> page=3). tsc clean, 9/9 green. Debug note: anchor text carries a screen-reader 'page ' prefix, so locators must match suffix not equality.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4380d32` | (see git log) |
+
+### Status
+
+[OK] **Completed**
