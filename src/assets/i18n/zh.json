@@ -962,7 +962,7 @@
       "Unbind": "解除绑定",
       "MergeRequest": "国服数据引继",
       "MergeRequestTitle": "下次登录从国服引继",
-      "MergeRequestSubTitle": "登录国服时将当前账号数据合并过去。",
+      "MergeRequestSubTitle": "下次登录 LCDX 时，将从对应的国服账号同步数据并合并到当前账号。",
       "MergeRequestButton": "设置引继",
       "MergeRequested": "已设置",
       "MergeRequestLoading": "提交中…",

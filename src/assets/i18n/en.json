@@ -962,7 +962,7 @@
       "Unbind": "Unbind",
       "MergeRequest": "CN Data Merge",
       "MergeRequestTitle": "Merge from CN server on next login",
-      "MergeRequestSubTitle": "Your current account data will be merged when you next log in to the CN server.",
+      "MergeRequestSubTitle": "On your next LCDX login, data from the linked CN-server account will be synced and merged into this account.",
       "MergeRequestButton": "Set Merge",
       "MergeRequested": "Configured",
       "MergeRequestLoading": "Submitting…",
