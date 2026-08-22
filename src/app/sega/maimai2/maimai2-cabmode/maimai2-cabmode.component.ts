@@ -14,8 +14,10 @@ import {
 } from '../model/CabinetModels';
 
 /**
- * 页② 机台控制（设计 §8）：普通区（EP-08 模式四框 / EP-09 重启二态 / EP-10 LC 功能卡——普通仅 event、Admin 19 项）
- * + 管理区 P≥10（EP-11 级别 8 档）。
+ * 页② 机台控制（设计 §8；v2 D13 分档）：
+ * LC 模式卡 + 传统重启卡：激活用户（P≥1 持授权行）均可用；
+ * LC 功能卡（EP-10）：仅 P≥4（完整 19 项，P≤3 整卡隐藏）；
+ * 管理区机台级别卡（EP-11）：P≥4 显示——P4-6 仅 2..5 档，P≥7 全档 -1..7。
  */
 @Component({
   selector: 'app-maimai2-cabmode',
@@ -27,6 +29,9 @@ export class Maimai2CabmodeComponent implements OnInit {
 
   protected readonly LC_MODES = LC_MODES;
   protected readonly CABINET_LEVELS = CABINET_LEVELS;
+  /** 模板用阈值常量（与 BotPermissionService / 后端 PermissionLevels 对齐） */
+  readonly MANAGE_GRANTS = BotPermissionService.MANAGE_GRANTS;
+  readonly MANAGE_PERMISSIONS = BotPermissionService.MANAGE_PERMISSIONS;
 
   cabinets: CabinetSummary[] = [];
   selectedNick = '';
@@ -35,7 +40,7 @@ export class Maimai2CabmodeComponent implements OnInit {
 
   selectedMode = -1;
   rebooting = false;
-  isAdmin = false;
+  permission = 0;
 
   lcsetKeys: { key: string; setting: string }[] = [];
   lcsetKey = '';
@@ -55,10 +60,17 @@ export class Maimai2CabmodeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isAdmin = this.botPermission.isAdmin;
-    // 角色过滤纯函数：普通仅 event（第六轮 Q1），Admin 全量 19 项
-    this.lcsetKeys = BotPermissionService.filterLcsetKeys(this.botPermission.currentValue.permission, LCSET_KEYS);
+    this.permission = this.botPermission.currentValue.permission;
+    // v2 D13：LCset 仅 P≥4（完整 19 项）；P≤3 返回空（整卡隐藏）
+    this.lcsetKeys = BotPermissionService.filterLcsetKeys(this.permission, LCSET_KEYS);
     this.loadCabinets();
+  }
+
+  /** 级别下拉选项（v2 D13）：P4-6 仅 2..5；P≥7 全档 -1..7 */
+  get cabinetLevelOptions(): typeof CABINET_LEVELS {
+    return this.permission >= this.MANAGE_PERMISSIONS
+      ? CABINET_LEVELS
+      : CABINET_LEVELS.filter(l => l.level >= 2 && l.level <= 5);
   }
 
   userName(): string {

@@ -40,8 +40,7 @@ export class BotPermissionService {
   /** 普通用户 Remoteware 指令子集（§3.2.1；完整 17 条仅 P=10，B1） */
   public static readonly NORMAL_REMOTE_COMMANDS = ['game-reboot', 'game-switch'];
 
-  /** 普通用户 lcset 子集（第六轮 Q1 定案：仅 event，chevent 不下放；P≥4 完整 19 键，B1） */
-  public static readonly NORMAL_LCSET_KEYS = ['event'];
+  // v2 D13（2026-08-23）：LCset 整体仅 P≥4 可用（原 P≤3 的 event 普通子集取消），无 NORMAL_LCSET_KEYS
 
   private stateSubject = new BehaviorSubject<LcdxPermissionState>({
     permission: 0,
@@ -114,12 +113,9 @@ export class BotPermissionService {
     return commands.filter(c => BotPermissionService.NORMAL_REMOTE_COMMANDS.includes(c.command));
   }
 
-  /** lcset 下拉按角色过滤：P≤3 仅 event，P≥4 完整 19 项（v2 B1，与后端 CabinetPolicy 一致） */
+  /** lcset 下拉按角色过滤：P≥4 完整 19 项，P≤3 为空（v2 D13，与后端 CabinetPolicy 一致） */
   public static filterLcsetKeys<T extends { key: string }>(permission: number, keys: T[]): T[] {
-    if (permission >= BotPermissionService.MANAGE_GRANTS) {
-      return keys;
-    }
-    return keys.filter(k => BotPermissionService.NORMAL_LCSET_KEYS.includes(k.key));
+    return permission >= BotPermissionService.MANAGE_GRANTS ? keys : [];
   }
 
   /** 档位名（UX 标签用；功能阈值在常量，安全边界在后端）：0 普通 / 1-3 二级负责人 / 4-6 机台负责人 / 7-9 管理员 / 10 超级管理员 */

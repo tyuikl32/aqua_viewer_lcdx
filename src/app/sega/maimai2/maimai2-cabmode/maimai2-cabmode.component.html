@@ -48,8 +48,9 @@
       </div>
     </div>
 
-    <!-- LC 功能卡 -->
-    <div class="col-lg-4 mb-4">
+    <!-- LC 功能卡（v2 D13：仅 P≥4） -->
+    @if (permission >= MANAGE_GRANTS) {
+      <div class="col-lg-4 mb-4">
       <div class="card shadow h-100">
         <div class="card-header"><h5 class="mb-0">{{ "Maimai2.CabinetControl.LCSettingsCard" | translate }}</h5></div>
         <div class="card-body">
@@ -73,18 +74,19 @@
             </ul>
           }
         </div>
+        </div>
       </div>
-    </div>
+    }
 
-    <!-- 管理区：机台级别卡（P≥10） -->
-    @if (isAdmin) {
+    <!-- 管理区：机台级别卡（v2 D13：P≥4 显示；P4-6 仅 2..5，P≥7 全档） -->
+    @if (permission >= MANAGE_GRANTS) {
       <div class="col-lg-6 mb-4">
         <div class="card shadow h-100 border-warning">
           <div class="card-header bg-warning-subtle"><h5 class="mb-0">⚙ {{ "Maimai2.CabinetControl.LevelCard" | translate }}</h5></div>
           <div class="card-body">
             <div class="mb-2 small text-muted">{{ "Maimai2.CabinetControl.CurrentLevel" | translate }}: {{ info?.level }}</div>
             <select class="form-select mb-2" [(ngModel)]="selectedLevel">
-              @for (l of CABINET_LEVELS; track l.level) {
+              @for (l of cabinetLevelOptions; track l.level) {
                 <option [ngValue]="l.level">{{ l.level }} — {{ l.name }} ({{ l.descKey | translate }})</option>
               }
             </select>
