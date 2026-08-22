@@ -329,3 +329,22 @@ Card A (操作记录) pagination-controls shipped bare with no paired paginate i
 ### Status
 
 [OK] **Completed**
+
+
+## Session 11: Align merge date labels
+
+**Date**: 2026-08-22
+**Task**: Align merge date labels
+**Branch**: `master`
+
+### Summary
+
+zh MergeLastSuccessDate 上次成功的日期 -> 上次成功引继的日期 (9 chars, matches 上次请求引继的日期) so the two date lines on /mai2/setting align; value-only change, key sets verified 864/864.
+
+### Git Commits
+
+(No commits - planning session)
+
+### Status
+
+[OK] **Completed**
