@@ -93,12 +93,24 @@
       <h5 class="card-title">{{ 'Maimai2.Setting.MergeRequestTitle' | translate }}</h5>
       <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
         <div class="text-muted small">{{ 'Maimai2.Setting.MergeRequestSubTitle' | translate }}</div>
-        <button type="button" class="btn btn-primary flex-shrink-0"
-                [disabled]="mergeRequestLoading || mergeRequested || !mergeCardId"
-                (click)="requestMergeFromDefaultServer()">
-          {{ mergeRequestLoading ? ('Maimai2.Setting.MergeRequestLoading' | translate) : (mergeRequested ? ('Maimai2.Setting.MergeRequested' | translate) : ('Maimai2.Setting.MergeRequestButton' | translate)) }}
+        <button type="button" class="btn flex-shrink-0"
+                [class.btn-primary]="!mergeRequested"
+                [class.btn-danger]="mergeRequested"
+                [disabled]="mergeRequestLoading || !mergeCardId"
+                (click)="mergeRequested ? cancelMergeRequest() : requestMergeFromDefaultServer()">
+          {{ mergeRequestLoading ? ('Maimai2.Setting.MergeRequestLoading' | translate) : (mergeRequested ? ('Maimai2.Setting.MergeCancelButton' | translate) : ('Maimai2.Setting.MergeRequestButton' | translate)) }}
         </button>
       </div>
+      @if (mergeLastRequestDate || mergeLastSuccessDate) {
+        <div class="text-muted small mt-2">
+          @if (mergeLastRequestDate) {
+            <div>{{ 'Maimai2.Setting.MergeLastRequestDate' | translate }}: {{ mergeLastRequestDate }}</div>
+          }
+          @if (mergeLastSuccessDate) {
+            <div>{{ 'Maimai2.Setting.MergeLastSuccessDate' | translate }}: {{ mergeLastSuccessDate }}</div>
+          }
+        </div>
+      }
     </div>
   </div>
 }

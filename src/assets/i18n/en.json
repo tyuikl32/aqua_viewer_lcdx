@@ -51,6 +51,9 @@
       "CabinetControl": "Cabinet Control",
       "RemoteControl": "Remote Control",
       "Locks": "Logs & Grants",
+      "Circle": "Circle",
+      "Festa": "Festa",
+      "ServerMissions": "Server Missions",
       "OnlineBattle": "Online Battle"
     },
     "Messages": {
@@ -405,7 +408,7 @@
     },
     "RecentPage": {
       "Title": "Play Record",
-      "UnknownArtist ": "Unknown artist",
+      "UnknownArtist": "Unknown artist",
       "Details": "Details",
       "Ranking": "Ranking"
     },
@@ -916,6 +919,12 @@
       "DissolveCircleSuccess": "Circle dissolved.",
       "DissolveCircleFailed": "Failed to dissolve circle"
     },
+    "FestaPage": {
+      "Title": "Festa"
+    },
+    "ServerMissions": {
+      "Title": "Server Missions"
+    },
     "Setting": {
       "Title": "Setting",
       "UserName": "User Name",
@@ -940,11 +949,17 @@
       "Unbind": "Unbind",
       "MergeRequest": "CN Data Merge",
       "MergeRequestTitle": "Merge from CN server on next login",
-      "MergeRequestSubTitle": "Your current account data will be merged when you next log in to the CN server. This cannot be cancelled from the website.",
+      "MergeRequestSubTitle": "Your current account data will be merged when you next log in to the CN server.",
       "MergeRequestButton": "Set Merge",
       "MergeRequested": "Configured",
       "MergeRequestLoading": "Submitting…",
-      "MergeRequestConfirm": "Merge the current account data from the CN server on your next login? This cannot be cancelled from the website.",
+      "MergeRequestConfirm": "Merge the current account data from the CN server on your next login?",
+      "MergeCancelButton": "Cancel Merge",
+      "MergeCancelConfirm": "Cancel the configured CN data merge request?",
+      "MergeCancelSuccess": "Merge request cancelled.",
+      "MergeCancelFailed": "Failed to cancel merge request",
+      "MergeLastRequestDate": "Last merge request date",
+      "MergeLastSuccessDate": "Last merge success date",
       "ExportData": "Export Data",
       "ExportDataTitle": "This function allows you to export data for use during migration.",
       "ExportDataSubTitle": "*Please do not share the exported files with others",

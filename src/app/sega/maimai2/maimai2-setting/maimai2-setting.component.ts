@@ -31,6 +31,8 @@ export class Maimai2SettingComponent implements OnInit {
   mergeRequested = false;
   mergeRequestLoading = false;
   mergeCardId = '';
+  mergeLastRequestDate: string | null = null;
+  mergeLastSuccessDate: string | null = null;
   aimeId: number;
   apiServer: string;
   divMaxLength: number;
@@ -115,10 +117,24 @@ export class Maimai2SettingComponent implements OnInit {
       data => {
         if (data?.status?.code === StatusCode.OK) {
           this.mergeRequested = data.data?.isOnRequest === true;
+          this.mergeLastRequestDate = this.normalizeMergeDate(data.data?.lastRequestDate);
+          this.mergeLastSuccessDate = this.normalizeMergeDate(data.data?.lastSuccessDate);
         }
       },
       error => this.messageService.notice(error)
     );
+  }
+
+  private normalizeMergeDate(value: any): string | null {
+    if (!value) {
+      return null;
+    }
+    const date = new Date(value);
+    // 后端无记录时返回 DateTime 默认值 0001-01-01，视为无记录
+    if (isNaN(date.getTime()) || date.getFullYear() < 2000) {
+      return null;
+    }
+    return date.toLocaleString();
   }
 
   requestMergeFromDefaultServer() {
@@ -141,6 +157,35 @@ export class Maimai2SettingComponent implements OnInit {
           this.messageService.notice(data.status.message);
         } else {
           this.messageService.notice(data?.status?.message ?? '设置引继请求失败');
+        }
+      },
+      error => {
+        this.mergeRequestLoading = false;
+        this.messageService.notice(error);
+      }
+    );
+  }
+
+  cancelMergeRequest() {
+    if (this.mergeRequestLoading || !this.mergeRequested || !this.mergeCardId) {
+      return;
+    }
+
+    if (!confirm(this.translate.instant('Maimai2.Setting.MergeCancelConfirm'))) {
+      return;
+    }
+
+    this.mergeRequestLoading = true;
+    const userName = encodeURIComponent(this.userService.currentUser.username);
+    const cardId = encodeURIComponent(this.mergeCardId);
+    this.api.postLcdx(`lcdx/mergeRegistry/cancel/${userName}/${cardId}`).subscribe(
+      data => {
+        this.mergeRequestLoading = false;
+        if (data?.status?.code === StatusCode.OK) {
+          this.mergeRequested = false;
+          this.messageService.notice(this.translate.instant('Maimai2.Setting.MergeCancelSuccess'));
+        } else {
+          this.messageService.notice(this.translate.instant('Maimai2.Setting.MergeCancelFailed'));
         }
       },
       error => {
