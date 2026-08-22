@@ -1,0 +1,30 @@
+{
+  "id": "full-project-audit",
+  "name": "full-project-audit",
+  "title": "Full project audit: features, registration, i18n",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "Xavior",
+  "assignee": "Xavior",
+  "createdAt": "2026-08-22",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "08-22-feature-walkthrough",
+    "08-22-register-investigation",
+    "08-22-i18n-audit"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
