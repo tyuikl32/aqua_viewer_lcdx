@@ -67,8 +67,28 @@
             </table>
           </div>
 
-          <pagination-controls id="locks" (pageChange)="pageChanged($event)"
-                               [maxSize]="5" [autoHide]="true"></pagination-controls>
+          <pagination-template #locksPager="paginationApi" class="user-select-none d-flex justify-content-center mt-2" id="locks" maxSize="7"
+                               style="cursor: default"
+                               (pageChange)="pageChanged($event)" (pageBoundsCorrection)="pageChanged($event)">
+            <ul class="pagination pagination-sm justify-content-center mb-2">
+              <li class="page-item" [class.disabled]="locksPager.isFirstPage()">
+                <a class="page-link" (click)="locksPager.previous()">&nbsp;<&nbsp;</a>
+              </li>
+              @for (page of locksPager.pages; track page) {
+                <li [class.active]="locksPager.getCurrent() === page.value" class="page-item">
+                  @if (locksPager.getCurrent() == page.value) {
+                    <a class="page-link">{{ page.label }}</a>
+                  }
+                  @if (locksPager.getCurrent() != page.value) {
+                    <a (click)="locksPager.setCurrent(page.value)" class="page-link">{{ page.label }}</a>
+                  }
+                </li>
+              }
+              <li class="page-item" [class.disabled]="locksPager.isLastPage()">
+                <a class="page-link" (click)="locksPager.next()">&nbsp;>&nbsp;</a>
+              </li>
+            </ul>
+          </pagination-template>
         </div>
       </div>
     </div>
@@ -153,8 +173,28 @@
             </table>
           </div>
 
-          <pagination-controls id="grants" (pageChange)="grantPageChanged($event)"
-                               [maxSize]="5" [autoHide]="true"></pagination-controls>
+          <pagination-template #grantsPager="paginationApi" class="user-select-none d-flex justify-content-center mt-2" id="grants" maxSize="7"
+                               style="cursor: default"
+                               (pageChange)="grantPageChanged($event)" (pageBoundsCorrection)="grantPageChanged($event)">
+            <ul class="pagination pagination-sm justify-content-center mb-2">
+              <li class="page-item" [class.disabled]="grantsPager.isFirstPage()">
+                <a class="page-link" (click)="grantsPager.previous()">&nbsp;<&nbsp;</a>
+              </li>
+              @for (page of grantsPager.pages; track page) {
+                <li [class.active]="grantsPager.getCurrent() === page.value" class="page-item">
+                  @if (grantsPager.getCurrent() == page.value) {
+                    <a class="page-link">{{ page.label }}</a>
+                  }
+                  @if (grantsPager.getCurrent() != page.value) {
+                    <a (click)="grantsPager.setCurrent(page.value)" class="page-link">{{ page.label }}</a>
+                  }
+                </li>
+              }
+              <li class="page-item" [class.disabled]="grantsPager.isLastPage()">
+                <a class="page-link" (click)="grantsPager.next()">&nbsp;>&nbsp;</a>
+              </li>
+            </ul>
+          </pagination-template>
         </div>
       </div>
     </div>
@@ -204,7 +244,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                @for (m of visibleMembers; track m.qqNumber) {
+                @for (m of pagedMembers | paginate: {id: 'members', itemsPerPage: memberPageSize, currentPage: memberPage, totalItems: visibleMembers.length}; track m.qqNumber) {
                   <tr>
                         <td>{{ m.qqNumber }}</td>
                         <td><span class="badge text-bg-secondary">{{ permLevelLabel(m.permission) }}</span></td>
@@ -237,6 +277,29 @@
                 }
                 </tbody>
               </table>
+
+              <pagination-template #membersPager="paginationApi" class="user-select-none d-flex justify-content-center mt-2" id="members" maxSize="7"
+                                   style="cursor: default"
+                                   (pageChange)="memberPageChanged($event)" (pageBoundsCorrection)="memberPageChanged($event)">
+                <ul class="pagination pagination-sm justify-content-center mb-2">
+                  <li class="page-item" [class.disabled]="membersPager.isFirstPage()">
+                    <a class="page-link" (click)="membersPager.previous()">&nbsp;<&nbsp;</a>
+                  </li>
+                  @for (page of membersPager.pages; track page) {
+                    <li [class.active]="membersPager.getCurrent() === page.value" class="page-item">
+                      @if (membersPager.getCurrent() == page.value) {
+                        <a class="page-link">{{ page.label }}</a>
+                      }
+                      @if (membersPager.getCurrent() != page.value) {
+                        <a (click)="membersPager.setCurrent(page.value)" class="page-link">{{ page.label }}</a>
+                      }
+                    </li>
+                  }
+                  <li class="page-item" [class.disabled]="membersPager.isLastPage()">
+                    <a class="page-link" (click)="membersPager.next()">&nbsp;>&nbsp;</a>
+                  </li>
+                </ul>
+              </pagination-template>
             </div>
           </div>
         </div>

@@ -68,6 +68,10 @@ export class Maimai2LocksComponent implements OnInit {
   memberSortKey: 'qqNumber' | 'permission' | 'note' | 'addedSince' = 'qqNumber';
   memberSortAsc = true;
 
+  /** 卡C 客户端分页 */
+  memberPage = 1;
+  readonly memberPageSize = 20;
+
   constructor(
     private api: ApiService,
     private userService: UserService,
@@ -137,6 +141,15 @@ export class Maimai2LocksComponent implements OnInit {
             return (a.qqNumber - b.qqNumber) * dir;
         }
       });
+  }
+
+  /** 卡C 当前页切片 */
+  get pagedMembers(): MemberPermissionItem[] {
+    return this.visibleMembers.slice((this.memberPage - 1) * this.memberPageSize, this.memberPage * this.memberPageSize);
+  }
+
+  memberPageChanged(newPage: number): void {
+    this.memberPage = newPage;
   }
 
   // ==================== 卡A：EP-14 ====================
@@ -282,6 +295,7 @@ export class Maimai2LocksComponent implements OnInit {
         if (isOk(resp)) {
           const data = resp.data as MemberPermissionList;
           this.members = data?.items ?? [];
+          this.memberPage = 1; // 刷新回到第 1 页
         }
       })
     });
