@@ -33,6 +33,18 @@ describe('Maimai2LocksComponent', () => {
       grantedBy: 10001,
     }));
 
+  // 生成卡A 操作记录行（服务端分页：locks 为当前页切片，total 为服务端总数）
+  const makeLocks = (count: number) =>
+    Array.from({length: count}, (_, i) => ({
+      time: `2026-08-19T00:${String(i % 60).padStart(2, '0')}:00`,
+      qqNumber: 10000 + i,
+      action: 'lcset',
+      fullKeychip: 'A63E-01000000000',
+      params: null,
+      result: 'success',
+      detail: null,
+    }));
+
   beforeEach(async () => {
     permState = {permission: 10, qqNumber: 10001, hasManage: true, loaded: true};
     await TestBed.configureTestingModule({
@@ -236,6 +248,36 @@ describe('Maimai2LocksComponent', () => {
 
     expect(component.grantPage).toBe(2);
     expect(grantsTbody.querySelectorAll('tr').length).toBe(5);
+  });
+
+  it('renders card A pagination controls from server total and switches pages from the links', async () => {
+    const component = fixture.componentInstance;
+    // 服务端分页：当前页切片 20 条，服务端总数 100 → 控件应显示 5 页
+    component.locks = makeLocks(20);
+    component.total = 100;
+    component.page = 1;
+    fixture.detectChanges();
+    const auditTbody = fixture.nativeElement.querySelectorAll('tbody')[0];
+    expect(auditTbody.querySelectorAll('tr').length).toBe(20); // 管道 server 模式透传切片
+
+    // 卡A 的 pagination-controls 为页面上第一个
+    const controls = fixture.nativeElement.querySelectorAll('pagination-controls')[0];
+    expect(controls).toBeTruthy();
+    const ul = controls.querySelector('ul');
+    expect(ul).withContext('paired paginate instance must render page links').toBeTruthy();
+    // 锚文本带屏幕阅读器前缀（"page 2"）；当前页(1)渲染为 span 非 a → 锚为 2..5 共 4 个
+    const anchors = Array.from(controls.querySelectorAll('li a')) as HTMLAnchorElement[];
+    const anchorPages = anchors.map(a => a.textContent?.trim() ?? '').filter(t => /^page \d+$/.test(t));
+    expect(anchorPages).toEqual(['page 2', 'page 3', 'page 4', 'page 5']);
+
+    const pageThreeLink = anchors.find(a => (a.textContent?.trim() ?? '').endsWith('3')) as HTMLAnchorElement;
+    pageThreeLink.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    // pageChanged(3)：页码更新并触发重查（stub 返回空清单）
+    expect(component.page).toBe(3);
   });
 
   it('shows the Admin permission card (P>=7) with level options 0..own permission only', async () => {

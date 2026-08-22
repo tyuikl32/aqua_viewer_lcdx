@@ -48,9 +48,8 @@ This allows re-stubbing per test case without spy bookkeeping.
 <pagination-controls id="grants" (pageChange)="grantPageChanged($event)" [maxSize]="5" [autoHide]="true"></pagination-controls>
 ```
 
-- For server-side paging (EP-14 style), pipe the server-returned slice with `totalItems` set to the server-reported total; when `totalItems !== slice.length` the pipe passes the collection through unchanged while still registering the controls' state.
-- Known latent offender: `maimai2-locks` 卡A audit table — bare controls, needs the same pairing (follow-up task).
-- `[rotate]` is not a real input of `pagination-controls` (harmless no-op; do not copy into new code).
+- For server-side paging (EP-14 style), pipe the server-returned slice with `totalItems` set to the server-reported total; when `totalItems !== slice.length` the pipe passes the collection through unchanged while still registering the controls' state (exemplar: `maimai2-locks` 卡A audit table, fixed 2026-08-22 after shipping bare and rendering nothing).
+- `[rotate]` is not a real input of `pagination-controls` (harmless no-op; removed from both locks cards — do not reintroduce).
 
 ### User-facing messages must be localized (no raw `status.message` passthrough)
 

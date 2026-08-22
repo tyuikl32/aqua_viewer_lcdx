@@ -50,7 +50,7 @@
               </tr>
               </thead>
               <tbody>
-              @for (lock of locks; track lock.time + lock.qqNumber + lock.action) {
+              @for (lock of locks | paginate: {id: 'locks', itemsPerPage: pageSize, currentPage: page, totalItems: total}; track lock.time + lock.qqNumber + lock.action) {
                 <tr>
                   <td class="text-nowrap">{{ lock.time | date: 'yyyy-MM-dd HH:mm:ss' }}</td>
                   <td>{{ lock.qqNumber }}</td>
@@ -67,8 +67,8 @@
             </table>
           </div>
 
-          <pagination-controls (pageChange)="pageChanged($event)"
-                               [maxSize]="5" [autoHide]="true" [rotate]="true"></pagination-controls>
+          <pagination-controls id="locks" (pageChange)="pageChanged($event)"
+                               [maxSize]="5" [autoHide]="true"></pagination-controls>
         </div>
       </div>
     </div>
@@ -152,7 +152,7 @@
           </div>
 
           <pagination-controls id="grants" (pageChange)="grantPageChanged($event)"
-                               [maxSize]="5" [autoHide]="true" [rotate]="true"></pagination-controls>
+                               [maxSize]="5" [autoHide]="true"></pagination-controls>
         </div>
       </div>
     </div>
