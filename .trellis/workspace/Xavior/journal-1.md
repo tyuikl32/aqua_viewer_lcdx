@@ -247,3 +247,22 @@ Audited all 7 active trellis tasks (validate + deliverable/state cross-check). C
 ### Status
 
 [OK] **Completed**
+
+
+## Session 7: Static audit closure of mai2 cabinet frontend
+
+**Date**: 2026-08-22
+**Task**: Static audit closure of mai2 cabinet frontend
+**Branch**: `master`
+
+### Summary
+
+Closed 08-16-mai2-cabinet-features by static audit per user confirmation: backend confirmed deployed to prod (lcdx cabinet routes 401 on unauthenticated probe — earlier 404 was wrong path without {userName}); remaining 5 acceptance items ticked with evidence annotations (contract walkthrough audit x32 green, subset Karma tests + backend subset-denied matrix tests, EP-09 write path, Remoteware printscr/TTL unit tests, 138/138 backend tests). Feature live and iterated since (mode-5 28c9905, locks tiers b4e2aa4, dual-source grants 3405f85). Task archived; no active tasks remain in either repo.
+
+### Git Commits
+
+(No commits - planning session)
+
+### Status
+
+[OK] **Completed**
