@@ -16,9 +16,11 @@
     <div class="col-md-auto">
       <button class="btn btn-primary" (click)="refreshAll()">{{ "Maimai2.CabinetsPage.Refresh" | translate }}</button>
     </div>
-    <div class="col-md-auto form-check form-switch ms-2">
-      <input class="form-check-input" type="checkbox" id="autoRefresh" [checked]="autoRefresh" (change)="toggleAutoRefresh()">
-      <label class="form-check-label" for="autoRefresh">{{ "Maimai2.CabinetsPage.AutoRefresh" | translate }}</label>
+    <div class="col-md-auto">
+      <div class="form-check form-switch ms-2">
+        <input class="form-check-input" type="checkbox" id="autoRefresh" [checked]="autoRefresh" (change)="toggleAutoRefresh()">
+        <label class="form-check-label" for="autoRefresh">{{ "Maimai2.CabinetsPage.AutoRefresh" | translate }}</label>
+      </div>
     </div>
   </div>
 
