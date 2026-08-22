@@ -126,7 +126,6 @@
 
 [OK] **Completed**
 
-
 ## Session 4: restore cabinet modes 0/4/10 and add mode 5
 
 **Date**: 2026-08-20
@@ -146,7 +145,6 @@ Restored LC_MODES to 0/4/5/10 with zh/en Mode0/Mode10 translations; fixed earlie
 ### Status
 
 [OK] **Completed**
-
 
 ## Session 5: localize login success toast + codify i18n rule
 
@@ -172,3 +170,40 @@ Login flows (password, TOTP, one-time link) showed the raw English backend messa
 ### Status
 
 [OK] **Completed**
+
+## Session 6: full project audit (features / registration / i18n)
+
+**Date**: 2026-08-22
+**Task**: 08-22-full-project-audit（父任务 + 三子任务）
+**Branch**: `master`
+
+### Summary
+
+全面静态审计：功能走查 32 项（✅15/❌6/⚠️11，核心链路契约完整）；注册 403 根因定位并恢复（主站 JWT+EULA 升级后 RinnetAdminService admin token 流程缺 EULA 接受，登录链路有注册链路无——已用 admin 账号接受 EULA v1 恢复生产，代码根治待做）；mergeRegistry 卡号转换经数据库交叉验证确认算法正确非 bug（×83+4579 与历史数据一致，挂起）；i18n 修复 7 处 zh/en key 不同步至 842/842 完全同步，存量透传 40 处 + 硬编码约 62 处分类入清单。
+
+### Main Changes
+
+- `src/assets/i18n/en.json`：补 Sidebar.Circle/Festa/ServerMissions、FestaPage.Title、ServerMissions.Title；修 Ongeki RecentPage `"UnknownArtist "` 尾随空格坏 key
+- `src/assets/i18n/zh.json`：补 CirclePage.DirectJoin（预留 key）
+- 审计报告 ×4 落盘：`.trellis/tasks/08-22-full-project-audit/research/summary.md` + 三子任务 research/
+
+### Key Findings
+
+- P1×3：`lcdx/getBindAccessCode/{accessCode}` 匿名无鉴权（LCDXNetUserApi.cs:80）；公告编辑跳 `/announcements/edit` 路由不存在（announcements.component.ts:137）；注册链路 Rinnet 孤儿账号可永久卡死 + 验证码错误状态码 94011/34001 不匹配 + OuterPassword 明文存储（LoginRegisterService.cs）
+- P2×8：7 组件无路由不可达（含 Keychip 管理页）、公告 lang 参数被后端忽略、绑卡用 cards[0] 非 defaultCard、无 AddAuthentication 全靠手工检查、CORS 不含 localhost:4200 等（详见 summary.md）
+- 注册 403 复发风险：主站再更新 EULA 版本时注册将再次 403，需在 RinnetAdminService.EnsureAdminSessionAsync 补 EULA 接受
+
+### Testing
+
+- [OK] `npx tsc --noEmit -p tsconfig.app.json` 通过
+- [OK] zh/en JSON 解析有效，flat key 集合 842/842 完全一致
+- [OK] 运行时验证：注册 403 → 接受 EULA → 恢复（用户确认已修好）
+
+### Status
+
+[OK] **Completed**（i18n 修复待提交；走查/注册子任务审计完毕）
+
+### Next Steps
+
+- 提交 i18n key 同步修复（2 文件）
+- 建议后续任务：bind 端点补鉴权 / 公告编辑路由 / rinnet-admin-eula 根治 / i18n 透传清理批次1
