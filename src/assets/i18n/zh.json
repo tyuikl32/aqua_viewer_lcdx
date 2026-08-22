@@ -960,7 +960,7 @@
       "MergeCancelSuccess": "引继请求已取消。",
       "MergeCancelFailed": "取消引继失败",
       "MergeLastRequestDate": "上次请求引继的日期",
-      "MergeLastSuccessDate": "上次成功的日期",
+      "MergeLastSuccessDate": "上次成功引继的日期",
       "ExportData": "导出数据",
       "ExportDataTitle": "通过这个功能可以导出数据，以便迁移时使用",
       "ExportDataSubTitle": "*请不要将导出的文件分享给他人",
