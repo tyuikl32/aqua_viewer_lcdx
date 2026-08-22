@@ -60,6 +60,10 @@ export class Maimai2LocksComponent implements OnInit {
   permLevel: number | null = null;
   permNote = '';
 
+  /** 行内备注编辑：当前编辑行的 QQ（一次一行），null = 非编辑态 */
+  editingNoteQQ: number | null = null;
+  editingNoteValue = '';
+
   constructor(
     private api: ApiService,
     private userService: UserService,
@@ -286,6 +290,30 @@ export class Maimai2LocksComponent implements OnInit {
         }
       })
     });
+  }
+
+  /** 行内备注编辑：进入编辑态（仅可操作行：m.permission < 自身，与删除按钮一致） */
+  startNoteEdit(member: MemberPermissionItem): void {
+    this.editingNoteQQ = member.qqNumber;
+    this.editingNoteValue = member.note ?? '';
+  }
+
+  /** 提交备注：复用 EP-20 upsert，permission 传原值（仅改 Note；后端 AddedSince 不动） */
+  submitNoteEdit(member: MemberPermissionItem): void {
+    this.api.postLcdx('lcdx/cabinet/permissions',
+      {userName: this.userName(), targetQQNumber: member.qqNumber, permission: member.permission, note: this.editingNoteValue || null})
+      .subscribe({
+        next: resp => this.runInAngular(() => {
+          if (isOk(resp)) {
+            this.messageService.notice(this.translate.instant('Maimai2.LocksPage.OperationSuccess'));
+            this.editingNoteQQ = null;
+            this.editingNoteValue = '';
+            this.loadMembers();
+          } else {
+            this.messageService.notice(this.translate.instant('Maimai2.LocksPage.OperationFailed'));
+          }
+        })
+      });
   }
 
   private runInAngular(action: () => void): void {

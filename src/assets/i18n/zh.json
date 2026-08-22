@@ -795,6 +795,8 @@
       "PermNotePlaceholder": "备注，可不填",
       "SetPermission": "设置权限",
       "RemovePermission": "删除",
+      "SubmitNote": "提交",
+      "EditNoteHint": "点击修改备注",
       "ColPermLevel": "等级",
       "ColNote": "备注",
       "ColAddedSince": "添加时间",

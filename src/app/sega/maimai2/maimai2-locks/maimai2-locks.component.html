@@ -206,12 +206,28 @@
                   <tr>
                         <td>{{ m.qqNumber }}</td>
                         <td><span class="badge text-bg-secondary">{{ permLevelLabel(m.permission) }}</span></td>
-                        <td>{{ m.note ?? '-' }}</td>
-                    <td>{{ m.addedSince | date: 'yyyy-MM-dd HH:mm' }}</td>
-                    <td>
+                        <td>
+                          @if (editingNoteQQ === m.qqNumber) {
+                            <input class="form-control form-control-sm" [(ngModel)]="editingNoteValue"
+                                   (keyup.enter)="submitNoteEdit(m)"
+                                   placeholder="{{ 'Maimai2.LocksPage.PermNotePlaceholder' | translate }}">
+                          } @else if (m.permission < permission) {
+                            <span class="link-secondary" role="button" (click)="startNoteEdit(m)"
+                                  title="{{ 'Maimai2.LocksPage.EditNoteHint' | translate }}">{{ m.note ?? '-' }}</span>
+                          } @else {
+                            {{ m.note ?? '-' }}
+                          }
+                        </td>
+                        <td>{{ m.addedSince | date: 'yyyy-MM-dd HH:mm' }}</td>
+                        <td>
                       @if (m.permission < permission) {
                         <button class="btn btn-sm btn-outline-danger" (click)="removePermission(m)">
                           {{ "Maimai2.LocksPage.RemovePermission" | translate }}
+                        </button>
+                      }
+                      @if (editingNoteQQ === m.qqNumber) {
+                        <button class="btn btn-sm btn-outline-primary ms-1" (click)="submitNoteEdit(m)">
+                          {{ "Maimai2.LocksPage.SubmitNote" | translate }}
                         </button>
                       }
                     </td>

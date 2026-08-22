@@ -795,6 +795,8 @@
       "PermNotePlaceholder": "Optional note",
       "SetPermission": "Set Permission",
       "RemovePermission": "Delete",
+      "SubmitNote": "Submit",
+      "EditNoteHint": "Click to edit note",
       "ColPermLevel": "Level",
       "ColNote": "Note",
       "ColAddedSince": "Added Since",
