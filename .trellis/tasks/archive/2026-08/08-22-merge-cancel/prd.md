@@ -23,6 +23,6 @@
 ## Acceptance Criteria
 
 - [ ] 后端 `dotnet build` 通过（如本机有 SDK；否则至少接口/实现/控制器语法自洽）
-- [ ] 前端 `npx tsc --noEmit -p tsconfig.app.json` 通过
-- [ ] zh/en key 同步（flat key 集合一致）
+- [x] 前端 `npx tsc --noEmit -p tsconfig.app.json` 通过
+- [x] zh/en key 同步（flat key 集合一致）
 - [ ] 未设置→点设置→显示已设置+可取消→取消后按钮恢复「设置引继」的状态流转在代码层面自洽
