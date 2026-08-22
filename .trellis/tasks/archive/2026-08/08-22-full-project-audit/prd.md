@@ -20,11 +20,11 @@
 
 ## Cross-child Acceptance Criteria
 
-- [ ] 三个子任务各自产出落盘到 `{TASK_DIR}/research/` 或最终汇总报告
-- [ ] 汇总报告（三部分表格 + P0/P1/P2 分级问题清单）交付给用户
-- [ ] i18n trivial 修复通过 `npx tsc --noEmit -p tsconfig.app.json` + JSON 解析验证
-- [ ] 提交遵循 Phase 3.4 批量提交计划（需用户确认后执行）
-- [ ] journal 记录本次 session
+- [x] 三个子任务各自产出落盘到 `{TASK_DIR}/research/` 或最终汇总报告
+- [x] 汇总报告（三部分表格 + P0/P1/P2 分级问题清单）交付给用户
+- [x] i18n trivial 修复通过 `npx tsc --noEmit -p tsconfig.app.json` + JSON 解析验证
+- [x] 提交遵循 Phase 3.4 批量提交计划（需用户确认后执行）
+- [x] journal 记录本次 session
 
 ## Notes
 
