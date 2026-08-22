@@ -18,7 +18,7 @@
 
 ## Acceptance Criteria
 
-- [ ] 注册链路图（前端表单 → API → 后端 Service → 数据库/主站）
-- [ ] 发现的问题逐条列出：层 / 文件:行号 / 现象 / 严重级别
-- [ ] 明确回答「注册问题是否已修复」：结合 git log 证据
-- [ ] 结果写入 `{TASK_DIR}/research/register.md`
+- [x] 注册链路图（前端表单 → API → 后端 Service → 数据库/主站）
+- [x] 发现的问题逐条列出：层 / 文件:行号 / 现象 / 严重级别
+- [x] 明确回答「注册问题是否已修复」：结合 git log 证据
+- [x] 结果写入 `{TASK_DIR}/research/register.md`
