@@ -19,8 +19,8 @@
 
 ## Acceptance Criteria
 
-- [ ] zh/en key 100% 同步（flat key 集合一致），尾随空格 key 修正
-- [ ] 修复涉及的组件引用核对（key 确实被使用）
-- [ ] 透传清单按页面分组 + 优先级标注
-- [ ] `npx tsc --noEmit -p tsconfig.app.json` 通过；zh.json/en.json JSON 解析通过
-- [ ] 结果写入 `{TASK_DIR}/research/i18n-audit.md`
+- [x] zh/en key 100% 同步（flat key 集合一致），尾随空格 key 修正
+- [x] 修复涉及的组件引用核对（key 确实被使用）
+- [x] 透传清单按页面分组 + 优先级标注
+- [x] `npx tsc --noEmit -p tsconfig.app.json` 通过；zh.json/en.json JSON 解析通过
+- [x] 结果写入 `{TASK_DIR}/research/i18n-audit.md`
