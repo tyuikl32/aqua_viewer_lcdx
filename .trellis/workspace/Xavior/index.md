@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 4
-- **Last Active**: 2026-08-20
+- **Total Sessions**: 5
+- **Last Active**: 2026-08-22
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~148 | Active |
+| `journal-1.md` | ~230 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 5 | 2026-08-22 | Locks page permission tiers frontend | `b4e2aa4` | `master` |
 | 4 | 2026-08-20 | restore cabinet modes 0/4/10 and add mode 5 | `28c9905` | `master` |
 | 3 | 2026-08-20 | CiRCLE PLUS 机台模式调整 | `26b6acc` | `master` |
 | 2 | 2026-08-20 | 主页右栏全服游玩人数 | `c4ae972` | `master` |

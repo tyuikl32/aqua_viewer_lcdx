@@ -207,3 +207,24 @@ Login flows (password, TOTP, one-time link) showed the raw English backend messa
 
 - 提交 i18n key 同步修复（2 文件）
 - 建议后续任务：bind 端点补鉴权 / 公告编辑路由 / rinnet-admin-eula 根治 / i18n 透传清理批次1
+
+
+## Session 5: Locks page permission tiers frontend
+
+**Date**: 2026-08-22
+**Task**: Locks page permission tiers frontend
+**Branch**: `master`
+
+### Summary
+
+Locks page redesign matching backend 8300d19+1623b48: permission tier system (0/4/7/10 constants with tier-table comment in bot-permission.service.ts mirroring backend PermissionLevels.cs); page access widened to P>=4 across menu/guard/component; Card B renamed 机台管理授权 with nickname column, QQ prefix search, revoke button gated to P10-or-grantor; new Card C Admin 授权 (P>=7): level select capped at own level, member list with delete limited to lower-permission rows, confirm dialogs; qqNumber stored from EP-01 response. build-prod green, locks/guards specs 18/18. i18n staged partially to exclude other tasks' keys (Circle/Festa/DirectJoin etc. left in worktree). Pending: live tier-flow acceptance after deploy.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b4e2aa4` | (see git log) |
+
+### Status
+
+[OK] **Completed**
