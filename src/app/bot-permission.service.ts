@@ -113,7 +113,7 @@ export class BotPermissionService {
     return commands.filter(c => BotPermissionService.NORMAL_REMOTE_COMMANDS.includes(c.command));
   }
 
-  /** lcset 下拉按角色过滤：P≥4 完整 19 项，P≤3 为空（v2 D13，与后端 CabinetPolicy 一致） */
+  /** lcset 下拉按角色过滤：P≥4 完整 9 项，P≤3 为空（v2 D13，与后端 CabinetPolicy 一致） */
   public static filterLcsetKeys<T extends { key: string }>(permission: number, keys: T[]): T[] {
     return permission >= BotPermissionService.MANAGE_GRANTS ? keys : [];
   }
