@@ -60,10 +60,17 @@
               <option [ngValue]="k.key">{{ k.key }} → {{ k.setting }}</option>
             }
           </select>
-          <input class="form-control mb-2" [(ngModel)]="lcsetVal" placeholder="{{ 'Maimai2.CabinetControl.ValuePlaceholder' | translate }}">
-          <button class="btn btn-success" [disabled]="!lcsetKey" (click)="submitLcset()">
-            {{ "Maimai2.CabinetControl.Submit" | translate }}
-          </button>
+          <input class="form-control mb-2" [(ngModel)]="lcsetVal"
+                 [placeholder]="currentLcsetNote ?? ('Maimai2.CabinetControl.ValuePlaceholder' | translate)"
+                 [readonly]="!!currentLcsetNote">
+          <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-success" [disabled]="!lcsetKey || !!currentLcsetNote" (click)="submitLcset()">
+              {{ "Maimai2.CabinetControl.Submit" | translate }}
+            </button>
+            <button class="btn btn-outline-secondary" [disabled]="!lcsetKey || currentLcsetDefault === undefined" (click)="restoreDefault()">
+              {{ "Maimai2.CabinetControl.RestoreDefault" | translate }}
+            </button>
+          </div>
           @if (info?.settings?.length) {
             <hr>
             <h6>{{ "Maimai2.Cabinets.EnabledSettings" | translate }}</h6>

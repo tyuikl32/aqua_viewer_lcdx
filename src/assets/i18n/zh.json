@@ -720,6 +720,7 @@
       "LCSettingsCard": "LC 功能设置",
       "SelectKey": "选择设置项",
       "ValuePlaceholder": "设置值",
+      "RestoreDefault": "恢复默认值",
       "Submit": "提交",
       "LevelCard": "机台级别",
       "CurrentLevel": "当前级别",

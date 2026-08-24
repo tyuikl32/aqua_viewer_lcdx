@@ -16,7 +16,7 @@ import {
 /**
  * 页② 机台控制（设计 §8；v2 D13 分档）：
  * LC 模式卡 + 传统重启卡：激活用户（P≥1 持授权行）均可用；
- * LC 功能卡（EP-10）：仅 P≥4（完整 19 项，P≤3 整卡隐藏）；
+ * LC 功能卡（EP-10）：仅 P≥4（完整 9 项，P≤3 整卡隐藏）；
  * 管理区机台级别卡（EP-11）：P≥4 显示——P4-6 仅 2..5 档，P≥7 全档 -1..7。
  */
 @Component({
@@ -42,7 +42,7 @@ export class Maimai2CabmodeComponent implements OnInit {
   rebooting = false;
   permission = 0;
 
-  lcsetKeys: { key: string; setting: string }[] = [];
+  lcsetKeys: { key: string; setting: string; default?: string; note?: string }[] = [];
   lcsetKey = '';
   lcsetVal = '';
 
@@ -61,7 +61,7 @@ export class Maimai2CabmodeComponent implements OnInit {
 
   ngOnInit(): void {
     this.permission = this.botPermission.currentValue.permission;
-    // v2 D13：LCset 仅 P≥4（完整 19 项）；P≤3 返回空（整卡隐藏）
+    // v2 D13：LCset 仅 P≥4（完整 9 项）；P≤3 返回空（整卡隐藏）
     this.lcsetKeys = BotPermissionService.filterLcsetKeys(this.permission, LCSET_KEYS);
     this.loadCabinets();
   }
@@ -161,6 +161,24 @@ export class Maimai2CabmodeComponent implements OnInit {
         }
       })
     });
+  }
+
+  /** 当前选中的 lcset key 是否存在恢复默认值 */
+  get currentLcsetDefault(): string | undefined {
+    return this.lcsetKeys.find(k => k.key === this.lcsetKey)?.default;
+  }
+
+  /** 当前选中的 lcset key 是否携带只读提示（如 cc 的格式(0,1)） */
+  get currentLcsetNote(): string | undefined {
+    return this.lcsetKeys.find(k => k.key === this.lcsetKey)?.note;
+  }
+
+  /** 恢复默认值：将输入框填为当前 key 的 default（无 default 的 key 按钮已禁用） */
+  restoreDefault(): void {
+    const d = this.currentLcsetDefault;
+    if (d !== undefined) {
+      this.lcsetVal = d;
+    }
   }
 
   submitLevel(): void {

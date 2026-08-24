@@ -154,27 +154,18 @@ export const CABINET_LEVELS: { level: number; name: string; descKey: string }[] 
   {level: 7, name: 'Special', descKey: 'Maimai2.CabinetControl.LevelSpecial'},
 ];
 
-/** lcset 全量 19 项（Admin；与后端 CabinetPolicy.LcsetKeys 一致，普通子集由 BotPermissionService 过滤） */
-export const LCSET_KEYS: { key: string; setting: string }[] = [
-  {key: '3456', setting: 'QuickRetry'},
-  {key: '跳过闭店', setting: 'ForceBypassCloseShop'},
-  {key: 'bd', setting: 'ForceBypassCloseShop'},
-  {key: 'event', setting: 'MininumOpenEvent'},
-  {key: 'chevent', setting: 'MininumOpenEventChn'},
-  {key: 'ui', setting: 'UIStyle'},
-  {key: '3456cn', setting: 'QuickRetryCommon'},
-  {key: 'hide', setting: 'HideTrueVersionInfo'},
+/** lcset 9 项（Admin；与后端 CabinetPolicy.LcsetKeys 一致，普通子集由 BotPermissionService 过滤）
+ *  default："恢复默认值"按钮填充值；note：只读提示（如 cc 格式(0,1)） */
+export const LCSET_KEYS: { key: string; setting: string; default?: string; note?: string }[] = [
+  {key: '跳过闭店', setting: 'ForceBypassCloseShop', default: '0'},
+  {key: 'bd', setting: 'ForceBypassCloseShop', default: '0'},
+  {key: 'event', setting: 'MininumOpenEvent', default: '25091800'},
   {key: 'cam', setting: 'ReImplCam'},
-  {key: 'igam', setting: 'IgnoreAMError'},
-  {key: 'cc', setting: 'CustomCameraConfig'},
-  {key: 'freekl', setting: 'KaleidxFree'},
-  {key: 'freekld', setting: 'KaleidxFreeDuration'},
-  {key: 'skipdlc', setting: 'SkipDeliveryCheck'},
-  {key: '缓和1', setting: 'KaleidxLcPhase'},
-  {key: '缓和2', setting: 'KaleidxLcPhaseEx'},
-  {key: 'kldhope', setting: 'KaleidxHopeKeyEnable'},
-  {key: 'disfesta', setting: 'DisableFestaMode'},
-  {key: 'ffesta', setting: 'ForceFestaMode'},
+  {key: 'igam', setting: 'IgnoreAMError', default: '0'},
+  {key: 'cc', setting: 'CustomCameraConfig', note: '格式(0,1)'},
+  {key: 'skipdlc', setting: 'SkipDeliveryCheck', default: '1'},
+  {key: 'disfesta', setting: 'DisableFestaMode', default: '1'},
+  {key: 'ffesta', setting: 'ForceFestaMode', default: '0'},
 ];
 
 /** Remoteware 指令 17 条（Admin；普通子集 2 条由 BotPermissionService 过滤） */
