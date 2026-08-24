@@ -348,3 +348,24 @@ zh MergeLastSuccessDate 上次成功的日期 -> 上次成功引继的日期 (9 
 ### Status
 
 [OK] **Completed**
+
+
+## Session 12: cabmode restore-default + cabinets daily column + audit spec repairs
+
+**Date**: 2026-08-24
+**Task**: cabmode restore-default + cabinets daily column + audit spec repairs
+**Branch**: `master`
+
+### Summary
+
+2026-08-24：(1) cabmode LC 设置卡 19->9 项 + 恢复默认值按钮（数字默认填入、cam 无默认禁用、cc 只读备注 格式(0,1) 且提交禁用防空值写库）（ea017a3）；(2) cabinets 人数卡新增今日列（4 列布局）（ee82e7f）；(3) 审计修复：not-found spec 用了 ngx-translate v18 已删的 TranslateModule 致 ng test 全套编译失败，改 TranslatePipe+provideTranslateService；filterLcsetKeys spec 陈旧断言（第六轮 event 子集）对齐 v2 D13 P<=3 全空（43c15cd）。ng build 零 error；ng test 自有范围用例全绿（整体 56 失败均为既有 TestBed 缺 provider，与本批改动无关）。任务已归档 08-24-lcset-restore-default / 08-24-cabinets-daily-window / 08-24-spec-repairs / 08-24-404-redesign（补档）。后端配套见 LCDXNetApi 仓。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `43c15cd` | (see git log) |
+
+### Status
+
+[OK] **Completed**
