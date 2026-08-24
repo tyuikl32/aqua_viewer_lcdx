@@ -44,6 +44,7 @@ export interface PlayingUser {
 export interface CabinetPlayers {
   nickName: string | null;
   locationName: string | null;
+  today: PlayerWindow;
   halfHour: PlayerWindow;
   oneHour: PlayerWindow;
   twoHour: PlayerWindow;

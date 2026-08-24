@@ -66,15 +66,19 @@
         <div class="card-body">
           @if (players; as p) {
             <div class="row text-center mb-3">
-              <div class="col-4">
+              <div class="col-3">
+                <div class="fs-4">{{ p.today.players }}</div>
+                <div class="text-muted small">{{ "Maimai2.Cabinets.Today" | translate }} ({{ p.today.plays }})</div>
+              </div>
+              <div class="col-3">
                 <div class="fs-4">{{ p.halfHour.players }}</div>
                 <div class="text-muted small">{{ "Maimai2.Cabinets.HalfHour" | translate }} ({{ p.halfHour.plays }})</div>
               </div>
-              <div class="col-4">
+              <div class="col-3">
                 <div class="fs-4">{{ p.oneHour.players }}</div>
                 <div class="text-muted small">{{ "Maimai2.Cabinets.OneHour" | translate }} ({{ p.oneHour.plays }})</div>
               </div>
-              <div class="col-4">
+              <div class="col-3">
                 <div class="fs-4">{{ p.twoHour.players }}</div>
                 <div class="text-muted small">{{ "Maimai2.Cabinets.TwoHour" | translate }} ({{ p.twoHour.plays }})</div>
               </div>
