@@ -92,15 +92,15 @@ describe('BotPermissionService', () => {
   });
 
   const allKeys = [
-    {key: 'event'}, {key: 'chevent'}, {key: 'bd'}, {key: 'hide'},
+    {key: 'event'}, {key: 'bd'}, {key: 'cam'}, {key: 'cc'},
   ];
 
-  it('filterLcsetKeys: normal user gets only event (sixth-round Q1)', () => {
+  it('filterLcsetKeys: P≤3 gets nothing (v2 D13, lcset requires P≥4)', () => {
     const filtered = BotPermissionService.filterLcsetKeys(0, allKeys);
-    expect(filtered.map(k => k.key)).toEqual(['event']);
+    expect(filtered).toEqual([]);
   });
 
-  it('filterLcsetKeys: admin gets all keys', () => {
+  it('filterLcsetKeys: P≥4 gets all keys', () => {
     expect(BotPermissionService.filterLcsetKeys(10, allKeys).length).toBe(allKeys.length);
   });
 });

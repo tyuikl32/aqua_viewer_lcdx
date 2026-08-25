@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 6
-- **Last Active**: 2026-08-22
+- **Total Sessions**: 12
+- **Last Active**: 2026-08-24
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~249 | Active |
+| `journal-1.md` | ~371 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,12 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 12 | 2026-08-24 | cabmode restore-default + cabinets daily column + audit spec repairs | `43c15cd` | `master` |
+| 11 | 2026-08-22 | Align merge date labels | - | `master` |
+| 10 | 2026-08-22 | Fix locks audit card pagination controls | `4380d32` | `master` |
+| 9 | 2026-08-22 | Three UI bugfixes: switch, column shift, merge cancel toast | `b2fb9dc` | `master` |
+| 8 | 2026-08-22 | Locks page grants card pagination | `307b42f` | `master` |
+| 7 | 2026-08-22 | Static audit closure of mai2 cabinet frontend | - | `master` |
 | 6 | 2026-08-22 | Trellis task audit and closure | - | `master` |
 | 5 | 2026-08-22 | Locks page permission tiers frontend | `b4e2aa4` | `master` |
 | 4 | 2026-08-20 | restore cabinet modes 0/4/10 and add mode 5 | `28c9905` | `master` |

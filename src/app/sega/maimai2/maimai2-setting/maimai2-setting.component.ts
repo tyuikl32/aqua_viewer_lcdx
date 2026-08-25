@@ -190,7 +190,7 @@ export class Maimai2SettingComponent implements OnInit {
       },
       error => {
         this.mergeRequestLoading = false;
-        this.messageService.notice(error);
+        this.messageService.notice(this.translate.instant('Maimai2.Setting.MergeCancelFailed'));
       }
     );
   }

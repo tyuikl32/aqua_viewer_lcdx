@@ -1,92 +1,69 @@
-.logo {
-  width: 25%;
+/* 404 页面主内容区 */
+.nf-container {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
 }
 
-.cannot-drag {
-  -webkit-user-drag: none;
+@media (min-width: 768px) {
+  .nf-container { padding: 2rem 1rem 3rem; }
+}.nf-card {
+  max-width: 36rem;
+  margin: 0 auto;
 }
 
-.not-found {
-  width: 100%;
-  height: 80vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  -webkit-user-drag: none;
+@media (max-width: 991.98px) {
+  .nf-card { border: 0 !important; box-shadow: none !important; }
 }
 
-.not-found-img {
+/* 等宽日志块 */
+.nf-log {
+  padding: .75rem;
+  border-radius: .375rem;
+  background: var(--bs-secondary-bg);
+  font-family: var(--bs-font-monospace);
+  font-size: .875em;
+  line-height: 1.9;
+  text-align: left;
+  color: var(--bs-secondary-color);
+}
+
+.nf-log .ok  { color: var(--bs-success); }
+.nf-log .err { color: var(--bs-danger); font-weight: 700; }
+.nf-log .cur {
+  display: inline-block;
+  width: .55em;
+  height: 1em;
+  vertical-align: -.15em;
+  background: var(--bs-success);
+  animation: blink 1s steps(2) infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+/* 404 大字 + 黄条 */
+.nf-404-wrap {
+  position: relative;
+  display: inline-block;
+  margin: .25rem 0 .9rem;
+}
+
+.nf-404-wrap::after {
+  content: "";
   position: absolute;
+  left: 6%; right: 6%; bottom: -.35rem;
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--bs-yellow);
 }
 
-.not-found-turtle {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  width: 18rem;
+.nf-eyebrow {
+  font-size: .8rem;
+  letter-spacing: .35em;
+  text-indent: .35em;
+  color: var(--bs-secondary-color);
+  text-transform: uppercase;
 }
 
-.turtle {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  width: 18rem;
-  height: 18rem;
-  /*background: url('src/assets/not-found-turtle.png') no-repeat center center / 100%;*/
-}
-
-.not-found-turtle {
-  position: absolute;
-  z-index: 99;
-  max-height: 100%;
-  max-width: 100%;
-  top: 0;
-  transform: translate(-50%, 0);
-  left: 50%;
-  height: 100%;
-}
-
-.ongekiHead {
-  width: 92%;
-  position: absolute;
-  /*top: 4.5%;*/
-  top: 3.5%;
-  left: -24%;
-  z-index: 9999;
-}
-
-.logo-img_fault {
-  background-blend-mode: screen;
-}
-
-.logo-img_fault::after {
-  transform: translateX(-2%);
-  background-color: #f00;
-}
-
-.logo-img_fault::before{
-  transform: translateX(2%);
-  background-color: #00f;
-}
-
-@media only screen and (max-width: 575px) {
-  .logo {
-    width: 50%;
-  }
-  .not-found-img {
-    width: 100%;
-  }
-  .not-found-turtle {
-    max-width: 80%;
-    max-height: 80%;
-    left: 45.2%;
-  }
-  .ongekiHead {
-    width: 72%;
-    position: absolute;
-    top: 2.5%;
-    left: -13%;
-    z-index: 9999;
-  }
-}
+.nf-desc { font-size: .975rem; }
+.nf-sub  { font-size: .75rem; letter-spacing: .18rem; }

@@ -247,3 +247,125 @@ Audited all 7 active trellis tasks (validate + deliverable/state cross-check). C
 ### Status
 
 [OK] **Completed**
+
+
+## Session 7: Static audit closure of mai2 cabinet frontend
+
+**Date**: 2026-08-22
+**Task**: Static audit closure of mai2 cabinet frontend
+**Branch**: `master`
+
+### Summary
+
+Closed 08-16-mai2-cabinet-features by static audit per user confirmation: backend confirmed deployed to prod (lcdx cabinet routes 401 on unauthenticated probe — earlier 404 was wrong path without {userName}); remaining 5 acceptance items ticked with evidence annotations (contract walkthrough audit x32 green, subset Karma tests + backend subset-denied matrix tests, EP-09 write path, Remoteware printscr/TTL unit tests, 138/138 backend tests). Feature live and iterated since (mode-5 28c9905, locks tiers b4e2aa4, dual-source grants 3405f85). Task archived; no active tasks remain in either repo.
+
+### Git Commits
+
+(No commits - planning session)
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 8: Locks page grants card pagination
+
+**Date**: 2026-08-22
+**Task**: Locks page grants card pagination
+**Branch**: `master`
+
+### Summary
+
+Client-side pagination for /mai2/locks Card B (机台管理授权): page-size select 10/20/100 (default 20), pagination-controls paired with paginate pipe id=grants, QQ-prefix filter and size changes reset to page 1, loadGrants clamps out-of-bounds pages. 5 new Karma tests (8/8 green), tsc clean, i18n 864/864 sync. Codified ngx-pagination 6.x pitfall in spec: bare pagination-controls without a registered paginate instance renders nothing — Card A audit table has this latent bug (follow-up needed). Implemented via trellis-implement/check sub-agent dispatch.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `307b42f` | (see git log) |
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 9: Three UI bugfixes: switch, column shift, merge cancel toast
+
+**Date**: 2026-08-22
+**Task**: Three UI bugfixes: switch, column shift, merge cancel toast
+**Branch**: `master`
+
+### Summary
+
+Fixed /mai2/cabinets auto-refresh switch misalignment (col-md-auto and form-check were merged on one element; BS5 float/negative-margin layout breaks in a grid column — now a proper form-check container inside the column), /mai2/remotecontrol columns sinking after command select (row align-items-end -> align-items-start so the arg-hint no longer pushes other columns down), and /mai2/setting cancel-merge raw 404 error toast (error callback now shows localized MergeCancelFailed). Both layout fixes verified via static bootstrap-5.2.3 repro page (before/after screenshots). Root cause of the 404: deployed backend predates 08-22 commits (EP-20 permissions also 404) — cancel endpoint e9efa48 and lastSuccessDate API both exist in repo and await redeploy; last-success date display already implemented (hidden while DB value is default 0001-01-01). tsc clean, setting spec 1/1.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b2fb9dc` | (see git log) |
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 10: Fix locks audit card pagination controls
+
+**Date**: 2026-08-22
+**Task**: Fix locks audit card pagination controls
+**Branch**: `master`
+
+### Summary
+
+Card A (操作记录) pagination-controls shipped bare with no paired paginate instance, so under ngx-pagination 6.x it silently rendered nothing — users could never page the audit table. Applied the id+pipe pairing proven on Card B, in server mode: @for pipes the EP-14 slice with {id:'locks', itemsPerPage: pageSize, currentPage: page, totalItems: total} so the pipe passes the slice through while registering control state; controls got id=locks. Removed the non-existent [rotate] input from both cards and updated the spec rule (offender note -> fixed record). New Karma test verifies server-mode rendering (total=100/size=20 -> 5 pages, anchors 'page 2'..'page 5', click -> page=3). tsc clean, 9/9 green. Debug note: anchor text carries a screen-reader 'page ' prefix, so locators must match suffix not equality.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4380d32` | (see git log) |
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 11: Align merge date labels
+
+**Date**: 2026-08-22
+**Task**: Align merge date labels
+**Branch**: `master`
+
+### Summary
+
+zh MergeLastSuccessDate 上次成功的日期 -> 上次成功引继的日期 (9 chars, matches 上次请求引继的日期) so the two date lines on /mai2/setting align; value-only change, key sets verified 864/864.
+
+### Git Commits
+
+(No commits - planning session)
+
+### Status
+
+[OK] **Completed**
+
+
+## Session 12: cabmode restore-default + cabinets daily column + audit spec repairs
+
+**Date**: 2026-08-24
+**Task**: cabmode restore-default + cabinets daily column + audit spec repairs
+**Branch**: `master`
+
+### Summary
+
+2026-08-24：(1) cabmode LC 设置卡 19->9 项 + 恢复默认值按钮（数字默认填入、cam 无默认禁用、cc 只读备注 格式(0,1) 且提交禁用防空值写库）（ea017a3）；(2) cabinets 人数卡新增今日列（4 列布局）（ee82e7f）；(3) 审计修复：not-found spec 用了 ngx-translate v18 已删的 TranslateModule 致 ng test 全套编译失败，改 TranslatePipe+provideTranslateService；filterLcsetKeys spec 陈旧断言（第六轮 event 子集）对齐 v2 D13 P<=3 全空（43c15cd）。ng build 零 error；ng test 自有范围用例全绿（整体 56 失败均为既有 TestBed 缺 provider，与本批改动无关）。任务已归档 08-24-lcset-restore-default / 08-24-cabinets-daily-window / 08-24-spec-repairs / 08-24-404-redesign（补档）。后端配套见 LCDXNetApi 仓。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `43c15cd` | (see git log) |
+
+### Status
+
+[OK] **Completed**
