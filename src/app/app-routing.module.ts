@@ -1,6 +1,8 @@
 import {NgModule} from '@angular/core';
 import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 import {AnnouncementsComponent} from './announcements/announcements.component';
+import {EditComponent} from './announcements/edit/edit.component';
+import {AdminGuardService} from './auth/admin-guard.service';
 import {AuthGuardService} from './auth/auth-guard.service';
 import {LoginGuardService} from './auth/login-guard.service';
 import {BannedComponent} from './banned/banned.component';
@@ -16,6 +18,12 @@ export const routes: Routes = [
   {path: '', component: HomeComponent, data: {title: 'Home', disableSidebar: true}},
   {path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuardService], data: {title: 'Dashboard'}},
   {path: 'announcements', component: AnnouncementsComponent, canActivate: [AuthGuardService], data: {title: 'Announcements'}},
+  {
+    path: 'announcements/edit',
+    component: EditComponent,
+    canActivate: [AuthGuardService, AdminGuardService],
+    data: {title: 'EditAnnouncement'}
+  },
   {
     path: 'mai2',
     loadChildren: () => import('./sega/maimai2/maimai2.module').then(mod => mod.Maimai2Module),
