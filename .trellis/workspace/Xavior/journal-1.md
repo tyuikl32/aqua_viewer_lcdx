@@ -369,3 +369,49 @@ zh MergeLastSuccessDate 上次成功的日期 -> 上次成功引继的日期 (9 
 ### Status
 
 [OK] **Completed**
+
+
+## Session 13: Announcement edit route + full i18n cleanup
+
+**Date**: 2026-08-29
+**Task**: 08-29-fe-route-i18n-cleanup（父 + 三子任务）
+**Branch**: `master`
+
+### Summary
+
+补上缺失的 `/announcements/edit` 路由（AdminGuard 门禁），并把全站用户可见提示收敛到 i18n：实测 265 处违规（远超 08-22 审计估算的 100 处），分布在 40+ 文件，已全部清理，zh/en key 982/982 同步。
+
+### Main Changes
+
+- `app-routing.module.ts`：新增 `announcements/edit` 路由，挂 `AuthGuardService + AdminGuardService`，与列表页 `isAdmin()`（roles.id===5）门禁一致
+- `message.service.ts`：注入 `TranslateService`，新增 `noticeTranslated(key, color?, params?)` 与 `noticeError(color?)`——调用点无需各自注入 TranslateService 即可本地化，这是 265 处改造能落地的关键
+- 123 处 HTTP 错误对象透传 → `noticeError()`（`Common.OperationFailed`）
+- 31 处 `status.message` 透传 + 106 处硬编码（英/中）→ `noticeTranslated(key)`；带插值文案用 ngx-translate 参数（`{{id}}`/`{{text}}`/`{{name}}`）
+- 5 处模板 `placeholder` → `{{'Key' | translate}}`
+- zh/en 同步新增 92 个 key，新建命名空间 13 个（AdminPage / OAuthPage / ImporterPage / Ongeki.RivalListPage 等）
+- `keychip.component.ts` 作为样板先行改造，其私有 `noticeTranslated` 改为转发到 MessageService
+- 后端配套见 LCDXNetApi 仓 c45c160 / a58ef1e
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `269b030` | feat(announcements): add missing /announcements/edit route |
+| `d2fbc86` | refactor(i18n): localize every user-facing message (265 sites) |
+
+### Testing
+
+- [OK] 自有扫描脚本复核 `TOTAL VIOLATIONS: 0 across 0 files`
+- [OK] `npx tsc --noEmit -p tsconfig.app.json` 通过
+- [OK] `ng build --configuration=production` 通过（2 个存量警告：bundle 超预算、qrcode CommonJS）
+- [OK] zh.json / en.json 982/982 flat key 集合完全一致，无空白 key
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- **发布需前后端同步**：后端 `getBindAccessCode` 路由签名已变，前端与后端必须同版本上线，否则设置页绑卡查询 404
+- 残留风险：已登录用户仍可查询他人卡号绑定关系（从匿名可查降级为登录可查），彻底修复需仓储层所有权校验
+- 少量 `OperationFailed` 兜底文案语义偏通用，后续可按页面替换为专属 key
