@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import { UserService } from '../../../user.service';
@@ -37,6 +38,7 @@ export class Maimai2RemoteControlComponent implements OnInit, OnDestroy {
 
   sessions: SessionEntry[] = [];
   private pollTimer: any = null;
+  private permissionSubscription: Subscription | null = null;
 
   private static readonly POLL_INTERVAL_MS = 2_000;
   private static readonly POLL_MAX = 30;
@@ -53,12 +55,19 @@ export class Maimai2RemoteControlComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // 指令下拉按角色过滤：普通 2 条 / Admin 17 条（安全边界在后端，此处仅 UX）
-    this.commands = BotPermissionService.filterCommands(this.botPermission.currentValue.permission, REMOTE_COMMANDS);
+    // Permission probes start after the user profile loads. Subscribe so a
+    // delayed admin response can expand the command list after first render.
+    this.permissionSubscription = this.botPermission.state.subscribe(state => {
+      this.commands = BotPermissionService.filterCommands(state.permission, REMOTE_COMMANDS);
+      if (this.selectedCommand && !this.commands.some(command => command.command === this.selectedCommand)) {
+        this.selectedCommand = '';
+      }
+    });
     this.loadCabinets();
   }
 
   ngOnDestroy(): void {
+    this.permissionSubscription?.unsubscribe();
     this.stopPolling();
   }
 
