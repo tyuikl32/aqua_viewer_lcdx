@@ -36,7 +36,7 @@ export class Maimai2ProfileComponent implements OnInit {
       data => {
         this.profile = data;
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
   }
   getFormattedNumberByDigit(input: number, digit: number): string {

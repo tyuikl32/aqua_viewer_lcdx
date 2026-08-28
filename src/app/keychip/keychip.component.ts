@@ -103,15 +103,15 @@ export class KeychipComponent implements OnInit, OnDestroy {
           if (statusCode === StatusCode.OK && resp.data) {
             this.keychips = resp.data.map(this.mapKeychip);
           } else {
-            this.messageService.notice(resp.status.message);
+            this.noticeTranslated('KeychipPage.LoadFailed');
           }
         } else {
-          this.messageService.notice('Load keychips failed.');
+          this.noticeTranslated('KeychipPage.LoadFailed');
         }
         this.keychipLoaded = true;
       },
       error => {
-        this.messageService.notice(error);
+        this.noticeTranslated('KeychipPage.LoadFailed');
       }
     );
   }
@@ -124,15 +124,15 @@ export class KeychipComponent implements OnInit, OnDestroy {
           if (statusCode === StatusCode.OK && resp.data) {
             this.trustKeychips = resp.data.map(d => this.mapKeychip(d.keychip));
           } else {
-            this.messageService.notice(resp.status.message);
+            this.noticeTranslated('KeychipPage.LoadFailed');
           }
         } else {
-          this.messageService.notice('Load keychips failed.');
+          this.noticeTranslated('KeychipPage.LoadFailed');
         }
         this.trustKeychipLoaded = true;
       },
       error => {
-        this.messageService.notice(error);
+        this.noticeTranslated('KeychipPage.LoadFailed');
       }
     );
   }
@@ -145,15 +145,15 @@ export class KeychipComponent implements OnInit, OnDestroy {
           this.keychips.push(this.mapKeychip(resp.data));
         }
         else {
-          this.messageService.notice(resp.status.message);
+          this.noticeTranslated('KeychipPage.GenerateFailed');
         }
       }
       else{
-        this.messageService.notice('Gen keychip failed.');
+        this.noticeTranslated('KeychipPage.GenerateFailed');
       }
     },
     error => {
-      this.messageService.notice(error);
+      this.noticeTranslated('KeychipPage.GenerateFailed');
     });
   }
 
@@ -172,15 +172,15 @@ export class KeychipComponent implements OnInit, OnDestroy {
           this.trustKeychipForm.reset();
         }
         else {
-          this.messageService.notice(resp.status.message);
+          this.noticeTranslated('KeychipPage.TrustFailed');
         }
       }
       else{
-        this.messageService.notice('Trust keychip failed.');
+        this.noticeTranslated('KeychipPage.TrustFailed');
       }
     },
     error => {
-      this.messageService.notice(error);
+      this.noticeTranslated('KeychipPage.TrustFailed');
     });
     modal.dismiss();
   }
@@ -197,18 +197,18 @@ export class KeychipComponent implements OnInit, OnDestroy {
         const statusCode: StatusCode = resp.status.code;
         if (statusCode === StatusCode.OK) {
           keychip.placeName = placeName;
-          this.messageService.notice('Modify place name success.', 'success');
+          this.noticeTranslated('KeychipPage.RenameSuccess', 'success');
         }
         else {
-          this.messageService.notice(resp.status.message);
+          this.noticeTranslated('KeychipPage.RenameFailed');
         }
       }
       else{
-        this.messageService.notice('Modify place name failed.', 'danger');
+        this.noticeTranslated('KeychipPage.RenameFailed', 'danger');
       }
     },
     error => {
-      this.messageService.notice(error);
+      this.noticeTranslated('KeychipPage.RenameFailed');
     });
     modal.dismiss();
   }
@@ -223,15 +223,15 @@ export class KeychipComponent implements OnInit, OnDestroy {
           this.keychips.splice(index, 1);
         }
         else {
-          this.messageService.notice(resp.status.message);
+          this.noticeTranslated('KeychipPage.RemoveFailed');
         }
       }
       else{
-        this.messageService.notice('Remove keychip failed.');
+        this.noticeTranslated('KeychipPage.RemoveFailed');
       }
     },
     error => {
-      this.messageService.notice(error);
+      this.noticeTranslated('KeychipPage.RemoveFailed');
     });
     modal.dismiss();
   }
@@ -247,15 +247,15 @@ export class KeychipComponent implements OnInit, OnDestroy {
           this.trustKeychips.splice(index, 1);
         }
         else {
-          this.messageService.notice(resp.status.message);
+          this.noticeTranslated('KeychipPage.UntrustFailed');
         }
       }
       else{
-        this.messageService.notice('Untrust keychip failed.');
+        this.noticeTranslated('KeychipPage.UntrustFailed');
       }
     },
     error => {
-      this.messageService.notice(error);
+      this.noticeTranslated('KeychipPage.UntrustFailed');
     });
     modal.dismiss();
   }
@@ -473,8 +473,8 @@ export class KeychipComponent implements OnInit, OnDestroy {
     return typeof value === 'object' && value !== null;
   }
 
-  private noticeTranslated(key: string, color: 'danger' | 'success') {
-    this.messageService.notice(this.translate.instant(key), color);
+  private noticeTranslated(key: string, color?: 'danger' | 'success') {
+    this.messageService.noticeTranslated(key, color);
   }
 
   mapKeychip(keychip){
@@ -484,10 +484,10 @@ export class KeychipComponent implements OnInit, OnDestroy {
 
   copyKeychip(keychip: Keychip){
     if(this.clipboard.copy(keychip.keychipId.fullValue)){
-      this.messageService.notice('Value has been copied.', 'success')
+      this.noticeTranslated('KeychipPage.CopySuccess', 'success');
     }
     else{
-      this.messageService.notice('Copying failed.', 'danger')
+      this.noticeTranslated('KeychipPage.CopyFailed', 'danger');
     }
 
   }

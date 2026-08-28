@@ -146,7 +146,7 @@ export class PreloadService {
       error => {
         this.load();
         this.checkingUpdate.next('error');
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
   }
 

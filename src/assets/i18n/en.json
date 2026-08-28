@@ -6,7 +6,9 @@
     "Colon": ": ",
     "OK": "OK",
     "Cancel": "Cancel",
-    "FailedToLoad": "Failed to load"
+    "FailedToLoad": "Failed to load",
+    "OperationFailed": "Operation failed, please try again later",
+    "NoCabinetPermission": "No permission for cabinet management"
   },
   "App": {
     "Footer": {
@@ -97,7 +99,8 @@
     "UnbindGameAccountTip": "Unbind the current game profile from this account? You can still view announcements and bind again later.",
     "ConfirmUnbind": "Confirm unbind",
     "GlobalPlayers": "Players online across the server",
-    "GlobalPlayersWindow": "Active players in the last {{minutes}} minutes"
+    "GlobalPlayersWindow": "Active players in the last {{minutes}} minutes",
+    "OperationFailed": "Operation failed"
   },
   "NetCodeBindPage": {
     "Title": "Bind game profile",
@@ -107,7 +110,8 @@
     "Instruction1": "The binding code is available on the arcade cabinet.",
     "Instruction2": "After reading your data with a QR code or Aime on the Entry screen, select the Access Code button.",
     "Instruction3": "Your NetCode is shown in the view that opens.",
-    "ContinueWithoutBinding": "Continue without binding"
+    "ContinueWithoutBinding": "Continue without binding",
+    "OperationFailed": "Operation failed"
   },
   "AnnouncementsPage": {
     "Title": "Announcements",
@@ -124,7 +128,14 @@
     "Other": "Other",
     "Draft": "Draft",
     "Expired": "Expired",
-    "Pinned": "Pinned"
+    "Pinned": "Pinned",
+    "OperationFailed": "Operation failed",
+    "Edit": {
+      "SaveFailed": "Failed to save the announcement",
+      "LoadFailed": "Failed to load the announcement",
+      "TitlePlaceholder": "Title",
+      "ContentPlaceholder": "Content"
+    }
   },
   "HomePage": {
     "Title": "Home",
@@ -218,7 +229,8 @@
       "UsernameAvailable": "Username is available.",
       "UsernameAlreadyTaken": "Username already taken.",
       "CodeIncorrect": "Verification code incorrect."
-    }
+    },
+    "OperationFailed": "Operation failed"
   },
   "ResetPasswordPage": {
     "Title": "Reset your password",
@@ -294,7 +306,10 @@
     "TotpDisableTip": "Enter a current code, or one of your recovery codes, to turn off two-factor authentication.",
     "TotpEnabledMessage": "Two-factor authentication enabled.",
     "TotpDisabledMessage": "Two-factor authentication disabled.",
-    "TotpInvalidMessage": "Incorrect code. Please try again."
+    "TotpInvalidMessage": "Incorrect code. Please try again.",
+    "LinkFailed": "Link failed",
+    "UnlinkFailed": "Unlink failed",
+    "OperationFailed": "Operation failed"
   },
   "CardsPage": {
     "Title": "Cards",
@@ -320,7 +335,13 @@
     "SetDefaultSuccessMessage": "Set default card successfully.",
     "AddAliasErrorMessage": "Card already registered. Only unregistered cards can be added as an alias.",
     "ChangeAccessCodeErrorMessage": "Card already registered. Please use an unregistered card.",
-    "ChangeAccessCodeSuccessMessage": "Change access code successfully."
+    "ChangeAccessCodeSuccessMessage": "Change access code successfully.",
+    "SetDefaultFailed": "Failed to set default card",
+    "RemoveAliasFailed": "Failed to remove alias",
+    "BindFailed": "Failed to bind card",
+    "AddAliasFailed": "Failed to add alias",
+    "ChangeAccessCodeFailed": "Failed to change access code",
+    "UnbindFailed": "Failed to unbind card"
   },
   "KeychipPage": {
     "Title": "Keychip",
@@ -339,6 +360,15 @@
     "Owner": "Owner",
     "Untrust": "Revoke Trust",
     "UntrustMessage": "Do you wish to revoke trust in this keychip?",
+    "LoadFailed": "Failed to load keychips",
+    "GenerateFailed": "Failed to generate keychip",
+    "TrustFailed": "Failed to trust keychip",
+    "RenameSuccess": "Place name updated",
+    "RenameFailed": "Failed to update place name",
+    "RemoveFailed": "Failed to remove keychip",
+    "UntrustFailed": "Failed to revoke trust",
+    "CopySuccess": "Value has been copied",
+    "CopyFailed": "Copying failed",
     "LeadDesc": "In the <code>segatools.ini</code> file, add or modify the following section, replacing the content after 'id' as needed with your keychip ID.",
     "Warning1": "Your card will only be usable on the keychips listed below and those whitelisted on RinNET, to prevent unauthorized access.",
     "Warning2": "Should an attacker gain access to both your keychip ID and your card number, they could manipulate your game data at will. Should you discover a breach, modify them promptly and contact an administrator if loss has occurred.",
@@ -369,7 +399,8 @@
       "RestoreConfirm": "Click again to restore both versions",
       "RestoreSuccess": "Automatic game versions restored.",
       "RestoreFailed": "Failed to restore automatic game versions."
-    }
+    },
+    "KeychipIdPlaceholder": "Keychip ID"
   },
   "ImportPage": {
     "Title": "Import",
@@ -389,7 +420,8 @@
       "Tip1": "Top 3 highest scores from different music track",
       "Tip2": "Top 3 highest scores for each attribute, excluding the above tracks.",
       "BattlePoint": "Battle Point",
-      "BestBattleScore": "Best Battle Score"
+      "BestBattleScore": "Best Battle Score",
+      "ReadFailed": "Can't read battle data. Please save again in-game"
     },
     "RatingPage": {
       "Title": "Rating",
@@ -404,7 +436,8 @@
       "New": "Current Version",
       "Best": "Previous Versions",
       "Recent": "Recent",
-      "Platinum": "Platinum Star Rating"
+      "Platinum": "Platinum Star Rating",
+      "ReadFailed": "Can't read battle data. Please save again in-game"
     },
     "RecentPage": {
       "Title": "Play Record",
@@ -514,6 +547,24 @@
       "Title": "User Ranking",
       "Rating": "Rating",
       "Activity": "Activity"
+    },
+    "CardGalleryPage": {
+      "OperationWarning": "Operation failed",
+      "KaikaSuccess": "Kaika success",
+      "PurchaseSuccess": "Successful, go to check your card list"
+    },
+    "CardPage": {
+      "OperationFailed": "Operation failed"
+    },
+    "RivalListPage": {
+      "LoadFailed": "Failed to get rival list",
+      "DeleteSuccess": "(id:{{id}}) delete successfully",
+      "DeleteFailed": "Failed to remove rival",
+      "AddSuccess": "Added rival (id:{{id}}) successfully",
+      "CannotAddSelf": "You can't add yourself as a rival",
+      "AlreadyAdded": "Rival already added",
+      "NotFound": "Rival not found",
+      "AddFailed": "Failed to add rival"
     }
   },
   "ChuniV2": {
@@ -594,7 +645,8 @@
       "FavoriteCount": "{{count}} selected",
       "FavoriteManage": "Manage",
       "MessageSuccess": "Successfully changed.",
-      "MessageFailed": "Failed to change item."
+      "MessageFailed": "Failed to change item.",
+      "ChangeSuccess": "Successfully changed"
     },
     "MusicListPage": {
       "Title": "Music List",
@@ -637,7 +689,8 @@
       "New": "New",
       "Best": "Best",
       "Recent": "Recent",
-      "DataVersionWarning": "Due to a mismatch between the game and server data versions, the internal levels or rating calculations may be incorrect."
+      "DataVersionWarning": "Due to a mismatch between the game and server data versions, the internal levels or rating calculations may be incorrect.",
+      "NoData": "No data"
     },
     "RecentPage": {
       "Title": "Play Record",
@@ -666,6 +719,21 @@
       "ModifyRomVersionFailed": "Failed to Modify Rom Version",
       "ModifyDataVersionFailed": "Failed to Modify Data Version",
       "DownloadingProfile": "Downloading Profile"
+    },
+    "RivalListPage": {
+      "LoadFailed": "Failed to get friend list",
+      "OperationFailed": "Operation failed",
+      "AddSuccess": "(id:{{id}}) addition successful",
+      "AddFailed": "Failed to add rival",
+      "DeleteSuccess": "(id:{{id}}) delete successfully",
+      "DeleteFailed": "Failed to remove rival",
+      "FavoriteLimitReached": "(id:{{id}}) You can't add more than 3 favorites",
+      "ToggleFavoriteSuccess": "(id:{{id}}) favorite toggled"
+    },
+    "SettingPage": {
+      "ChangeSuccess": "Successfully changed",
+      "DownloadComplete": "Download complete",
+      "UsernamePlaceholder": "Username"
     }
   },
   "Maimai2": {
@@ -677,7 +745,8 @@
       "InfoCard": "Cabinet Status",
       "PlayersCard": "Players",
       "DeliveryCard": "Delivery",
-      "DlprogCard": "Download Progress"
+      "DlprogCard": "Download Progress",
+      "LoadFailed": "Failed to load cabinets"
     },
     "Cabinets": {
       "SelectCabinet": "Select cabinet",
@@ -734,10 +803,14 @@
       "LevelHot": "Hot",
       "LevelBurn": "Burn",
       "LevelDevelop": "Develop",
-      "LevelSpecial": "Special"
+      "LevelSpecial": "Special",
+      "Success": "OK",
+      "Failed": "Failed"
     },
     "RemoteControlPage": {
-      "Title": "Remote Control"
+      "Title": "Remote Control",
+      "Failed": "Failed",
+      "NetworkError": "Network error"
     },
     "RemoteControl": {
       "Command": "Command",
@@ -824,7 +897,8 @@
       "Title": "Best 50 Rating",
       "B35": "BEST35 ",
       "B15": "BEST15  ",
-      "ElevateRecommend": "Elevate Recommend"
+      "ElevateRecommend": "Elevate Recommend",
+      "Empty": "Warning: rating is empty!"
     },
     "RecentPage": {
       "Title": "Play Record",
@@ -834,7 +908,8 @@
     },
     "PhotosPage": {
       "Title": "Game Gallery",
-      "NotOwned": "You have not upload any game photo."
+      "NotOwned": "You have not upload any game photo.",
+      "NotOpened": "The function isn't yet opened"
     },
     "DxpassPage": {
       "Title": "Deluxe Pass Info",
@@ -978,7 +1053,18 @@
       "ExportData": "Export Data",
       "ExportDataTitle": "This function allows you to export data for use during migration.",
       "ExportDataSubTitle": "*Please do not share the exported files with others",
-      "ExportDataSubButton": "Export"
+      "ExportDataSubButton": "Export",
+      "MergeRequestSuccess": "Merge request submitted",
+      "MergeRequestFailed": "Failed to request merge",
+      "UsernameChanged": "Successfully changed",
+      "RedeemActivated": "Successfully activated {{name}}",
+      "RedeemFailed": "Activation failed",
+      "UploadPortraitDisabled": "Per the Personal Information Protection Law of the People's Republic of China, this function is disabled",
+      "AccessCodeUpdated": "Access code updated",
+      "AccessCodeUpdateFailed": "Failed to update access code",
+      "UploadPortraitFailed": "Failed to change user portrait",
+      "UploadPortraitSuccess": "User portrait changed",
+      "UploadPortraitTooLarge": "Upload file size is too large"
     },
     "SongList": {
       "Title": "Song List",
@@ -1002,9 +1088,21 @@
       "Rating": "Rating",
       "PlayCount": "Play Count",
       "RivalId": "Rival Id",
-      "LastPlay": "Last Play:"
+      "LastPlay": "Last Play:",
+      "LoadFailed": "Cannot get rival list",
+      "DeleteSuccess": "(id:{{id}}) delete successfully",
+      "DeleteFailed": "Failed to remove rival",
+      "AddSuccess": "Add rival success",
+      "AddFailed": "Failed to add rival"
+    },
+    "DxPassPage": {
+      "Success": "Success"
+    },
+    "SongListPage": {
+      "LoadFailed": "Failed to load data",
+      "Copied": "Copied {{text}}",
+      "CopyFailed": "Copy failed, please select the text manually"
     }
-
   },
   "ContributorsPage": {
     "Title": "Contributors",
@@ -1034,5 +1132,29 @@
     "EnglishLine": "ERROR 404 · REQUESTED RESOURCE NOT FOUND",
     "Home": "Back to Home",
     "Back": "Go Back"
+  },
+  "AdminPage": {
+    "OperationFailed": "Operation failed",
+    "CompleteUserInfoRequired": "Please complete the user information",
+    "ValidExtIdRequired": "Please enter a valid ExtId",
+    "KeychipIdRequired": "Please enter the Keychip ID",
+    "ExtIdPlaceholder": "ExtId"
+  },
+  "OAuthPage": {
+    "GetResponseFailed": "Failed to get OAuth2 response data",
+    "SignInFailed": "OAuth2 sign-in error",
+    "InvalidState": "Invalid state parameter",
+    "OperationFailed": "Operation failed"
+  },
+  "ImporterPage": {
+    "Success": "OK",
+    "WrongGameId": "Wrong game ID, please check you have selected the correct file",
+    "Uploading": "Uploading..."
+  },
+  "OnetimeSignInPage": {
+    "OperationFailed": "Operation failed"
+  },
+  "PasswordResetPage": {
+    "OperationFailed": "Operation failed"
   }
 }

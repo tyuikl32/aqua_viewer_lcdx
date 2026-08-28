@@ -49,7 +49,7 @@ export class Maimai2RivalComponent {
         this.loading = false;
       },
       error => {
-        this.messageService.notice(`Cannot get rival list: ${error}`);
+        this.messageService.noticeTranslated('Maimai2.RivalPage.LoadFailed');
       }
     );
   }
@@ -64,10 +64,10 @@ export class Maimai2RivalComponent {
     this.api.delete('api/game/maimai2/rival', param).subscribe(
       () => {
         const newList = this.rivalList.filter(item => item.rivalId !== displayRivalId);
-        this.messageService.notice(`(id:${displayRivalId}) delete successfully.`);
+        this.messageService.noticeTranslated('Maimai2.RivalPage.DeleteSuccess', null, {id: displayRivalId});
         this.rivalList = newList;
       },
-      error => this.messageService.notice(`remove rival failed: ${error}`)
+      error => this.messageService.noticeTranslated('Maimai2.RivalPage.DeleteFailed')
     );
   }
 
@@ -82,12 +82,12 @@ export class Maimai2RivalComponent {
       data => {
         this.addingFriend = false;
         if (data) {
-          this.messageService.notice(`Add rival success!`);
+          this.messageService.noticeTranslated('Maimai2.RivalPage.AddSuccess');
           this.loadRival();
         }
       },
       error => {
-        this.messageService.notice(`add rival failed: ${error}`);
+        this.messageService.noticeTranslated('Maimai2.RivalPage.AddFailed');
         this.addingFriend = false;
       }
     );

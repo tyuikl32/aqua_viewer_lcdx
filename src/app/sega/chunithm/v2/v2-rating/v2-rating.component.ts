@@ -60,11 +60,11 @@ export class V2RatingComponent implements OnInit {
       if (data) {
         this.topRating = data.old;
         if (this.topRating.length === 0) {
-          this.messageService.notice('No Data');
+          this.messageService.noticeTranslated('ChuniV2.RatingPage.NoData');
         }
         this.newRating = data.new;
         if (this.newRating.length === 0) {
-          this.messageService.notice('No Data');
+          this.messageService.noticeTranslated('ChuniV2.RatingPage.NoData');
         }
 
         this.topRating.forEach(item => this.topTotal += item.rating);
@@ -80,7 +80,7 @@ export class V2RatingComponent implements OnInit {
       if (best) {
         this.topRating = best;
         if (this.topRating.length === 0) {
-          this.messageService.notice('No Data');
+          this.messageService.noticeTranslated('ChuniV2.RatingPage.NoData');
         }
         this.topRating.forEach(item => this.topTotal += item.rating);
       }
@@ -90,7 +90,7 @@ export class V2RatingComponent implements OnInit {
       if (recent) {
         this.recentRating = recent;
         if (this.recentRating.length === 0) {
-          this.messageService.notice('No Data');
+          this.messageService.noticeTranslated('ChuniV2.RatingPage.NoData');
         }
         this.recentRating.forEach(item => this.recentTotal += item.rating);
       }
@@ -112,7 +112,7 @@ export class V2RatingComponent implements OnInit {
         offcanvasRef.componentInstance.music = music;
       },
       error: (err: Error) => {
-        this.messageService.notice(err.message, 'danger');
+        this.messageService.noticeError('danger');
       }
     });
   }

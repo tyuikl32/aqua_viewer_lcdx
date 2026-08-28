@@ -76,7 +76,7 @@ export class OngekiSettingComponent implements OnInit {
       data => {
         this.profile = data;
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
   }
 
@@ -97,7 +97,7 @@ export class OngekiSettingComponent implements OnInit {
       document.body.appendChild(a);
       document.body.removeChild(a);
       window.URL.revokeObjectURL(objectUrl);
-    }, error => this.messageService.notice(error));
+    }, error => this.messageService.noticeError());
   }
 
   versionValidator(): ValidatorFn {
@@ -153,7 +153,7 @@ export class OngekiSettingComponent implements OnInit {
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
   }
 
@@ -176,7 +176,7 @@ export class OngekiSettingComponent implements OnInit {
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
   }
 
@@ -199,7 +199,7 @@ export class OngekiSettingComponent implements OnInit {
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
   }
 

@@ -115,14 +115,14 @@ export class PasswordResetComponent  implements OnDestroy {
                 });
               }
               else{
-                this.messageService.notice(resp.status.message);
+                this.messageService.noticeTranslated('PasswordResetPage.OperationFailed');
               }
             }
           }
           ,
           error: (error) => {
             if (error) {
-              this.messageService.notice(error);
+              this.messageService.noticeError();
             }
             this.getVerifyCodeForm.enable();
             console.warn('get reset password code fail', error);
@@ -155,7 +155,7 @@ export class PasswordResetComponent  implements OnDestroy {
                 });
               }
               else{
-                this.messageService.notice(resp.status.message);
+                this.messageService.noticeTranslated('PasswordResetPage.OperationFailed');
               }
               this.resetPasswordForm.enable();
             }
@@ -163,7 +163,7 @@ export class PasswordResetComponent  implements OnDestroy {
           ,
           error: (error) => {
             if (error) {
-              this.messageService.notice(error);
+              this.messageService.noticeError();
             }
             this.getVerifyCodeForm.enable();
             this.resetPasswordForm.enable();

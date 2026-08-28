@@ -65,7 +65,7 @@ export class Maimai2DxpassComponent implements OnInit{
         (data: any) => {
           return data.content;
         },
-        (error: string) => this.messageService.notice(error)
+        (error: string) => this.messageService.noticeError()
       )
     );
     this.dxpasses.subscribe(data => {
@@ -76,7 +76,7 @@ export class Maimai2DxpassComponent implements OnInit{
       data => {
         this.defaultCardType = data.data;
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
   }
 
@@ -86,10 +86,10 @@ export class Maimai2DxpassComponent implements OnInit{
       data => {
         this.defaultCardType = data.data;
         if (data.status.code == 92001){
-          this.messageService.notice('Success');
+          this.messageService.noticeTranslated('Maimai2.DxPassPage.Success');
         }
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
   }
 

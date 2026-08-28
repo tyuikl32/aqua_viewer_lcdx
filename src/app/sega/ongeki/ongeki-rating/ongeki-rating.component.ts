@@ -54,7 +54,7 @@ export class OngekiRatingComponent implements OnInit {
     const param = new HttpParams();
     this.api.get('api/game/ongeki/profile', param).subscribe(
       data => this.profile = data,
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
     this.loadNewRating();
   }
@@ -113,7 +113,7 @@ export class OngekiRatingComponent implements OnInit {
         }
       }
     } catch (error) {
-      this.messageService.notice(error);
+      this.messageService.noticeError();
       console.log(error);
     }
   }
@@ -138,7 +138,7 @@ export class OngekiRatingComponent implements OnInit {
     const param = new HttpParams().set('key', key);
     const data = await firstValueFrom(this.api.get('api/game/ongeki/general', param));
     if (data.propertyValue.indexOf(',') < 0) {
-      this.messageService.notice('Can\'t read battle data. Please save again in-game');
+      this.messageService.noticeTranslated('Ongeki.RatingPage.ReadFailed');
     } else {
       const records = data.propertyValue.split(',');
       for (const record of records) {

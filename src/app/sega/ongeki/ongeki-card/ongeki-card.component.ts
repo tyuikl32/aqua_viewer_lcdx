@@ -97,12 +97,12 @@ export class OngekiCardComponent implements OnInit {
             this.cardIDs = this.cardIDs.concat([deck.cardId1, deck.cardId2, deck.cardId3]);
           }
         } else {
-          this.messageService.notice(resp.status.message);
+          this.messageService.noticeTranslated('Ongeki.CardPage.OperationFailed');
           return;
         }
       }
     } catch (error) {
-      this.messageService.notice(error);
+      this.messageService.noticeError();
       return;
     }
     await this.getCardInfo();
@@ -117,7 +117,7 @@ export class OngekiCardComponent implements OnInit {
         this.skinValid[skin.deckId - 1] = skin.isValid;
       }
     } catch (error) {
-      this.messageService.notice(error);
+      this.messageService.noticeError();
       return;
     }
     await this.getCardInfo();
@@ -145,7 +145,7 @@ export class OngekiCardComponent implements OnInit {
       }
       this.updateCurrentDeck();
     } catch (error) {
-      this.messageService.notice(error);
+      this.messageService.noticeError();
     }
   }
 
@@ -194,13 +194,13 @@ export class OngekiCardComponent implements OnInit {
             this.cardIDs[deckIndex * 3 + 2] = deck.cardId3;
             await this.getCardInfo();
           } else {
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('Ongeki.CardPage.OperationFailed');
             return;
           }
         }
       },
       error: err => {
-        this.messageService.notice(err);
+        this.messageService.noticeError();
       }
     });
   }
@@ -235,7 +235,7 @@ export class OngekiCardComponent implements OnInit {
         await this.getCardInfo();
       },
       error: err => {
-        this.messageService.notice(err);
+        this.messageService.noticeError();
       }
     });
   }

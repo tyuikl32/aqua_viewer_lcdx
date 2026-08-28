@@ -91,15 +91,15 @@ export class EditComponent implements OnInit, AfterViewInit   {
         if (resp?.status) {
           const statusCode: StatusCode = resp.status.code;
           if (statusCode === StatusCode.OK) {
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('AnnouncementsPage.Edit.SaveFailed');
           }
           else{
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('AnnouncementsPage.Edit.SaveFailed');
           }
         }
       },
         error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
     });
   }
 
@@ -112,13 +112,13 @@ export class EditComponent implements OnInit, AfterViewInit   {
             this.announcement = Announcement.fromJSON(resp.data);
           }
           else{
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('AnnouncementsPage.Edit.LoadFailed');
           }
           this.loading = false;
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.loading = false;
       });
   }

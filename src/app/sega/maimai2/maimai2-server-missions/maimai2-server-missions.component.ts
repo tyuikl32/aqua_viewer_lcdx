@@ -123,7 +123,7 @@ export class Maimai2ServerMissionsComponent implements OnInit {
       }
       ,
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadUserPointsInfo() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -144,7 +144,7 @@ export class Maimai2ServerMissionsComponent implements OnInit {
       }
       ,
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadUserServerMissionInfo() failed, error = ${error}`);
         return of({ data: [], error: true });
       }

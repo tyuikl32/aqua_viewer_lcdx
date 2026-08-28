@@ -91,7 +91,7 @@ export class Maimai2PointExchangesComponent implements OnInit {
       }
       ,
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadUserPointsInfo() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -120,7 +120,7 @@ export class Maimai2PointExchangesComponent implements OnInit {
       }
       ,
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadExchangeItemDataList() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -143,7 +143,7 @@ export class Maimai2PointExchangesComponent implements OnInit {
       }
       ,
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadUserExchangeItemInfo() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -364,7 +364,7 @@ export class Maimai2PointExchangesComponent implements OnInit {
       }
       ,
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadUserExchangeItemInfo() failed, error = ${error}`);
         return of({ data: [], error: true });
       }

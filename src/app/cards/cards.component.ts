@@ -81,15 +81,15 @@ export class CardsComponent implements OnInit {
           });
         }
         else {
-          this.messageService.notice(resp.status.message);
+          this.messageService.noticeTranslated('CardsPage.SetDefaultFailed');
         }
       }
       else{
-        this.messageService.notice('Set default card failed.');
+        this.messageService.noticeTranslated('CardsPage.SetDefaultFailed');
       }
     },
     error => {
-      this.messageService.notice(error);
+      this.messageService.noticeError();
     });
   }
 
@@ -104,15 +104,15 @@ export class CardsComponent implements OnInit {
             this.loadCards();
           }
           else {
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('CardsPage.RemoveAliasFailed');
           }
         }
         else{
-          this.messageService.notice('Remove alias failed.');
+          this.messageService.noticeTranslated('CardsPage.RemoveAliasFailed');
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
     modal.dismiss();
   }
@@ -155,15 +155,15 @@ export class CardsComponent implements OnInit {
             });
           }
           else {
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('CardsPage.BindFailed');
           }
         }
         else{
-          this.messageService.notice('Bind card failed.');
+          this.messageService.noticeTranslated('CardsPage.BindFailed');
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
     modal.dismiss();
   }
@@ -188,15 +188,15 @@ export class CardsComponent implements OnInit {
             });
           }
           else {
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('CardsPage.AddAliasFailed');
           }
         }
         else{
-          this.messageService.notice('Add alias failed.');
+          this.messageService.noticeTranslated('CardsPage.AddAliasFailed');
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
     modal.dismiss();
   }
@@ -224,15 +224,15 @@ export class CardsComponent implements OnInit {
             });
           }
           else {
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('CardsPage.ChangeAccessCodeFailed');
           }
         }
         else{
-          this.messageService.notice('Change access code failed.');
+          this.messageService.noticeTranslated('CardsPage.ChangeAccessCodeFailed');
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
     modal.dismiss();
   }
@@ -248,15 +248,15 @@ export class CardsComponent implements OnInit {
             this.loadCards();
           }
           else {
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('CardsPage.UnbindFailed');
           }
         }
         else{
-          this.messageService.notice('Unbind card failed.');
+          this.messageService.noticeTranslated('CardsPage.UnbindFailed');
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
     modal.dismiss();
   }

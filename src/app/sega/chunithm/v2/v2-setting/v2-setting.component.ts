@@ -47,7 +47,7 @@ export class V2SettingComponent implements OnInit {
       data => {
         this.profile = data;
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
   }
 
@@ -57,9 +57,9 @@ export class V2SettingComponent implements OnInit {
       this.api.put('api/game/chuni/v2/profile/username', {aimeId: this.aimeId, userName}).subscribe(
         x => {
           this.profile = x;
-          this.messageService.notice('Successfully changed');
+          this.messageService.noticeTranslated('ChuniV2.SettingPage.ChangeSuccess');
           this.modalService.dismissAll();
-        }, error => this.messageService.notice(error)
+        }, error => this.messageService.noticeError()
       );
     }
   }
@@ -69,17 +69,17 @@ export class V2SettingComponent implements OnInit {
       this.api.put('api/game/chuni/v2/profile/dataversion', {aimeId: this.aimeId, dataVersion: data.version}).subscribe(
         x => {
           this.profile = x;
-          this.messageService.notice('Successfully changed');
+          this.messageService.noticeTranslated('ChuniV2.SettingPage.ChangeSuccess');
           this.modalService.dismissAll();
-        }, error => this.messageService.notice(error)
+        }, error => this.messageService.noticeError()
       );
     } else if (data.version && data.type === 2) {
       this.api.put('api/game/chuni/v2/profile/romversion', {aimeId: this.aimeId, romVersion: data.version}).subscribe(
         x => {
           this.profile = x;
-          this.messageService.notice('Successfully changed');
+          this.messageService.noticeTranslated('ChuniV2.SettingPage.ChangeSuccess');
           this.modalService.dismissAll();
-        }, error => this.messageService.notice(error)
+        }, error => this.messageService.noticeError()
       );
     }
   }
@@ -114,7 +114,7 @@ export class V2SettingComponent implements OnInit {
       document.body.appendChild(a);
       document.body.removeChild(a);
       window.URL.revokeObjectURL(objUrl);
-      this.messageService.notice('Chunithm Download Over');
-    }, error => this.messageService.notice(error));
+      this.messageService.noticeTranslated('ChuniV2.SettingPage.DownloadComplete');
+    }, error => this.messageService.noticeError());
   }
 }

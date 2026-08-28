@@ -31,7 +31,7 @@ export class OauthCallbackComponent {
 
     const storedState = localStorage.getItem('oauth_state');
     if(state && state !== storedState) {
-      this.messageService.notice('Invalid state parameter');
+      this.messageService.noticeTranslated('OAuthPage.InvalidState');
       if(this.accountService.currentAccountValue){
         this.router.navigate(['/profile']);
       }
@@ -54,12 +54,12 @@ export class OauthCallbackComponent {
           const statusCode: StatusCode = resp.status.code;
           if (statusCode === StatusCode.OK && resp.data) {
             localStorage.removeItem('oauth_state');
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('OAuthPage.OperationFailed');
             this.router.navigate(['/']);
           }
           else if (statusCode === StatusCode.OAUTH_USER_NOT_REGISTERED) {
             if(!this.accountService.currentAccountValue){
-              this.messageService.notice(resp.status.message);
+              this.messageService.noticeTranslated('OAuthPage.OperationFailed');
               const token = resp.data.token;
               const name = resp.data.name;
               const username = resp.data.userName;
@@ -77,14 +77,14 @@ export class OauthCallbackComponent {
           }
           else {
             localStorage.removeItem('oauth_state');
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('OAuthPage.OperationFailed');
             this.router.navigate(['/']).then(r => true);
           }
         }
       },
       error: (errorBackend) => {
         localStorage.removeItem('oauth_state');
-        this.messageService.notice(errorBackend);
+        this.messageService.noticeTranslated('OAuthPage.OperationFailed');
         this.router.navigate(['/']).then(r => true);
       }
     });

@@ -110,17 +110,17 @@ export class ProfileComponent implements OnInit{
             this.notifyTotpCodeError(resp);
           }
           else {
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('ProfilePage.LinkFailed');
             this.hideLinkModal();
           }
         }
         else{
-          this.messageService.notice('Link failed.');
+          this.messageService.noticeTranslated('ProfilePage.LinkFailed');
           this.hideLinkModal();
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.hideLinkModal();
       });
   }
@@ -140,15 +140,15 @@ export class ProfileComponent implements OnInit{
             this.userService.load();
           }
           else {
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('ProfilePage.UnlinkFailed');
           }
         }
         else{
-          this.messageService.notice('Unlink failed.');
+          this.messageService.noticeTranslated('ProfilePage.UnlinkFailed');
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
   }
 
@@ -205,11 +205,11 @@ export class ProfileComponent implements OnInit{
           this.loadPasskeys();
         }
         else {
-          this.messageService.notice(resp?.status?.message);
+          this.messageService.noticeTranslated('ProfilePage.OperationFailed');
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
   }
 
@@ -248,7 +248,7 @@ export class ProfileComponent implements OnInit{
           return;
         }
         if (resp?.status?.code !== StatusCode.OK || !resp.data) {
-          this.messageService.notice(resp?.status?.message);
+          this.messageService.noticeTranslated('ProfilePage.OperationFailed');
           passwordModal?.close();
           return;
         }
@@ -268,7 +268,7 @@ export class ProfileComponent implements OnInit{
       },
       error => {
         this.totpBusy = false;
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
   }
 
@@ -291,7 +291,7 @@ export class ProfileComponent implements OnInit{
       },
       error => {
         this.totpBusy = false;
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
   }
 
@@ -309,7 +309,7 @@ export class ProfileComponent implements OnInit{
       },
       error => {
         this.totpBusy = false;
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
   }
 
@@ -368,7 +368,7 @@ export class ProfileComponent implements OnInit{
       },
       error => {
         this.totpBusy = false;
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       });
   }
 
@@ -380,7 +380,7 @@ export class ProfileComponent implements OnInit{
     if (key) {
       this.translate.get(key).subscribe((res: string) => this.messageService.notice(res, 'danger'));
     } else {
-      this.messageService.notice(resp?.status?.message);
+      this.messageService.noticeTranslated('ProfilePage.OperationFailed');
     }
   }
 }

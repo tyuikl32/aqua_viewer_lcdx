@@ -120,10 +120,10 @@ export class Maimai2CabmodeComponent implements OnInit {
       {userName: this.userName(), nickName: this.selectedNick, mode: this.selectedMode}).subscribe({
       next: resp => this.runInAngular(() => {
         if (isOk(resp)) {
-          this.messageService.notice('OK');
+          this.messageService.noticeTranslated('Maimai2.CabinetControl.Success');
           this.loadInfo();
         } else {
-          this.messageService.notice(resp?.status?.message ?? 'Failed');
+          this.messageService.noticeTranslated('Maimai2.CabinetControl.Failed');
         }
       })
     });
@@ -139,10 +139,10 @@ export class Maimai2CabmodeComponent implements OnInit {
       {userName: this.userName(), nickName: this.selectedNick, enable}).subscribe({
       next: resp => this.runInAngular(() => {
         if (isOk(resp)) {
-          this.messageService.notice(resp.data?.message ?? 'OK');
+          this.messageService.noticeTranslated('Maimai2.CabinetControl.Success');
           this.loadInfo();
         } else {
-          this.messageService.notice(resp?.status?.message ?? 'Failed');
+          this.messageService.noticeTranslated('Maimai2.CabinetControl.Failed');
         }
       })
     });
@@ -153,11 +153,11 @@ export class Maimai2CabmodeComponent implements OnInit {
       {userName: this.userName(), nickName: this.selectedNick, key: this.lcsetKey, val: this.lcsetVal}).subscribe({
       next: resp => this.runInAngular(() => {
         if (isOk(resp)) {
-          this.messageService.notice('OK');
+          this.messageService.noticeTranslated('Maimai2.CabinetControl.Success');
           this.lcsetVal = '';
           this.loadInfo();
         } else {
-          this.messageService.notice(resp?.status?.message ?? 'Failed');
+          this.messageService.noticeTranslated('Maimai2.CabinetControl.Failed');
         }
       })
     });
@@ -187,10 +187,10 @@ export class Maimai2CabmodeComponent implements OnInit {
       next: resp => this.runInAngular(() => {
         if (isOk(resp)) {
           this.levelResult = resp.data;
-          this.messageService.notice('OK');
+          this.messageService.noticeTranslated('Maimai2.CabinetControl.Success');
           this.loadInfo();
         } else {
-          this.messageService.notice(resp?.status?.message ?? 'Failed');
+          this.messageService.noticeTranslated('Maimai2.CabinetControl.Failed');
         }
       })
     });

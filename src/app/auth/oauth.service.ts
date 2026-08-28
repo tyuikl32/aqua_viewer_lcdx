@@ -31,12 +31,12 @@ export class OAuthService {
         }
         else{
           console.error('Failed to get OAuth2 response data');
-          this.messageService.notice('Failed to get OAuth2 response data');
+          this.messageService.noticeTranslated('OAuthPage.GetResponseFailed');
         }
       },
       error: (error) => {
         console.error('OAuth Sign In Error:', error);
-        this.messageService.notice('OAuth2 Sign In Error');
+        this.messageService.noticeTranslated('OAuthPage.SignInFailed');
       }
     });
   }

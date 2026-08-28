@@ -180,7 +180,7 @@ export class OngekiCardGalleryComponent implements OnInit {
     });
     if (this.isSafari) {
       this.translateService.get('Ongeki.CardGallery.SafariWarning').subscribe(x => {
-        this.messageService.notice(x, 'warning');
+        this.messageService.noticeTranslated('Ongeki.CardGalleryPage.OperationWarning', 'warning');
       });
     }
   }
@@ -477,7 +477,7 @@ export class OngekiCardGalleryComponent implements OnInit {
           this.reversedHoloSheetStyles = this.holoSheetStyles.reverse();
           return cards;
         },
-        error => this.messageService.notice(error)
+        error => this.messageService.noticeError()
       )
     );
   }
@@ -487,10 +487,10 @@ export class OngekiCardGalleryComponent implements OnInit {
     const param = new HttpParams().set('aimeId', aimeId);
     this.api.post('api/game/ongeki/card/' + cardId + '/' + type, param).subscribe(
       data => {
-        this.messageService.notice('Kaika success');
+        this.messageService.noticeTranslated('Ongeki.CardGalleryPage.KaikaSuccess');
         this.load(this.currentPage);
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
   }
 
@@ -501,11 +501,11 @@ export class OngekiCardGalleryComponent implements OnInit {
       cardId
     }).subscribe(
       data => {
-        this.messageService.notice('Successful, go to check your card list');
+        this.messageService.noticeTranslated('Ongeki.CardGalleryPage.PurchaseSuccess');
         this.cardIds = [cardId].concat(this.cardIds);
         this.load(this.currentPage);
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
   }
 

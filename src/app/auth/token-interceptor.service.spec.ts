@@ -22,7 +22,7 @@ describe('TokenInterceptorService', () => {
     const next = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
     next.handle.and.returnValue(of(new HttpResponse({status: 200})));
 
-    service.intercept(new HttpRequest('GET', `${environment.lcdxApiServer}lcdx/getBindAccessCode/12345678901234567890`), next).subscribe();
+    service.intercept(new HttpRequest('GET', `${environment.lcdxApiServer}lcdx/getBindAccessCode/LCDX000001/12345678901234567890`), next).subscribe();
 
     const forwarded = next.handle.calls.mostRecent().args[0] as HttpRequest<unknown>;
     expect(forwarded.headers.get('Authorization')).toBe('Bearer access-token');

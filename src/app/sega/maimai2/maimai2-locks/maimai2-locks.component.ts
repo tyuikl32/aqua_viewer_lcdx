@@ -253,12 +253,12 @@ export class Maimai2LocksComponent implements OnInit {
       {userName: this.userName(), targetQQNumber: this.grantQQ, nickName: this.grantNick}).subscribe({
       next: resp => this.runInAngular(() => {
         if (isOk(resp)) {
-          this.messageService.notice('OK');
+          this.messageService.noticeTranslated('Maimai2.LocksPage.OperationSuccess');
           this.grantQQ = null;
           this.grantNick = '';
           this.loadGrants();
         } else {
-          this.messageService.notice(resp?.status?.message ?? 'Failed');
+          this.messageService.noticeTranslated('Maimai2.LocksPage.OperationFailed');
         }
       })
     });
@@ -273,10 +273,10 @@ export class Maimai2LocksComponent implements OnInit {
       {userName: this.userName(), targetQQNumber: item.qqNumber, nickName: item.fullKeychip}).subscribe({
       next: resp => this.runInAngular(() => {
         if (isOk(resp)) {
-          this.messageService.notice('OK');
+          this.messageService.noticeTranslated('Maimai2.LocksPage.OperationSuccess');
           this.loadGrants();
         } else {
-          this.messageService.notice(resp?.status?.message ?? 'Failed');
+          this.messageService.noticeTranslated('Maimai2.LocksPage.OperationFailed');
         }
       })
     });

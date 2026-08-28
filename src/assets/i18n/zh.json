@@ -6,7 +6,9 @@
     "Colon": "：",
     "OK": "确定",
     "Cancel": "取消",
-    "FailedToLoad": "加载失败"
+    "FailedToLoad": "加载失败",
+    "OperationFailed": "操作失败，请稍后重试",
+    "NoCabinetPermission": "没有机台管理权限"
   },
   "App": {
     "Footer": {
@@ -97,7 +99,8 @@
     "UnbindGameAccountTip": "确定要解除当前游戏档案与此账号的绑定吗？解除后仍可查看公告，并可随时重新绑定。",
     "ConfirmUnbind": "确认解除绑定",
     "GlobalPlayers": "全服游玩人数",
-    "GlobalPlayersWindow": "近 {{minutes}} 分钟内活跃玩家"
+    "GlobalPlayersWindow": "近 {{minutes}} 分钟内活跃玩家",
+    "OperationFailed": "操作失败"
   },
   "NetCodeBindPage": {
     "Title": "绑定游戏档案",
@@ -107,7 +110,8 @@
     "Instruction1": "绑定码需通过机台查看。",
     "Instruction2": "在游戏 Entry 界面通过二维码或 Aime 读取游戏数据后，点击“访问码”按钮。",
     "Instruction3": "在打开的视图中查看你的 Net 绑定码。",
-    "ContinueWithoutBinding": "在没有绑定下的情况继续"
+    "ContinueWithoutBinding": "在没有绑定下的情况继续",
+    "OperationFailed": "绑定失败"
   },
   "AnnouncementsPage": {
     "Title": "公告",
@@ -124,7 +128,14 @@
     "Other": "其它",
     "Draft": "草稿",
     "Expired": "过期",
-    "Pinned": "置顶"
+    "Pinned": "置顶",
+    "OperationFailed": "操作失败",
+    "Edit": {
+      "SaveFailed": "公告保存失败",
+      "LoadFailed": "公告加载失败",
+      "TitlePlaceholder": "标题",
+      "ContentPlaceholder": "正文"
+    }
   },
   "HomePage": {
     "Title": "主页",
@@ -218,7 +229,8 @@
       "UsernameAvailable": "用户名没有被使用。",
       "UsernameAlreadyTaken": "用户名已被使用。",
       "CodeIncorrect": "验证码错误。"
-    }
+    },
+    "OperationFailed": "操作失败"
   },
   "ResetPasswordPage": {
     "Title": "重设密码",
@@ -294,7 +306,10 @@
     "TotpDisableTip": "请输入当前验证码或一个恢复码，以关闭两步验证。",
     "TotpEnabledMessage": "两步验证已启用。",
     "TotpDisabledMessage": "两步验证已关闭。",
-    "TotpInvalidMessage": "验证码错误，请重试。"
+    "TotpInvalidMessage": "验证码错误，请重试。",
+    "LinkFailed": "绑定失败",
+    "UnlinkFailed": "解绑失败",
+    "OperationFailed": "操作失败"
   },
   "CardsPage": {
     "Title": "卡包",
@@ -320,7 +335,13 @@
     "SetDefaultSuccessMessage": "已设为默认卡片。",
     "AddAliasErrorMessage": "卡片已被注册，只能添加未注册的卡号作为别名。",
     "ChangeAccessCodeErrorMessage": "卡片已被注册，你只能变更到没有注册过的卡号。",
-    "ChangeAccessCodeSuccessMessage": "变更卡号成功。"
+    "ChangeAccessCodeSuccessMessage": "变更卡号成功。",
+    "SetDefaultFailed": "设置默认卡失败",
+    "RemoveAliasFailed": "删除别名失败",
+    "BindFailed": "绑定卡片失败",
+    "AddAliasFailed": "添加别名失败",
+    "ChangeAccessCodeFailed": "修改访问码失败",
+    "UnbindFailed": "解绑卡片失败"
   },
   "KeychipPage": {
     "Title": "机台",
@@ -339,6 +360,15 @@
     "Owner": "所有者",
     "Untrust": "取消信任",
     "UntrustMessage": "不再信任这个机台吗？",
+    "LoadFailed": "加载机台失败",
+    "GenerateFailed": "创建机台失败",
+    "TrustFailed": "添加信任失败",
+    "RenameSuccess": "备注修改成功",
+    "RenameFailed": "备注修改失败",
+    "RemoveFailed": "删除机台失败",
+    "UntrustFailed": "取消信任失败",
+    "CopySuccess": "已复制到剪贴板",
+    "CopyFailed": "复制失败",
     "LeadDesc": "在<code>segatools.ini</code>中添加或修改如下部分，id后的内容请按需替换为你的机台序列号。",
     "Warning1": "你的卡片将只能在以下列表及RinNET白名单内的机台使用，以防止未经授权的访问。",
     "Warning2": "如果攻击者同时掌握下列任意机台序列号与你的卡号，将可以随意处置你的游戏数据，如果发现二者遭到泄漏请及时修改它们，如果已经造成一定损失请及时联系管理员挽回。",
@@ -369,7 +399,8 @@
       "RestoreConfirm": "再次点击以同时恢复两个版本",
       "RestoreSuccess": "已恢复自动游戏版本。",
       "RestoreFailed": "恢复自动游戏版本失败。"
-    }
+    },
+    "KeychipIdPlaceholder": "机台序列号"
   },
   "ImportPage": {
     "Title": "导入",
@@ -389,7 +420,8 @@
       "Tip1": "战斗得分最高的3曲",
       "Tip2": "除上述3曲外，每种属性各自战斗得分最高的3曲",
       "BattlePoint": "战斗点数",
-      "BestBattleScore": "最佳得分"
+      "BestBattleScore": "最佳得分",
+      "ReadFailed": "无法读取战斗数据，请在游戏内重新保存"
     },
     "RatingPage": {
       "Title": "评级",
@@ -404,7 +436,8 @@
       "New": "当前版本",
       "Best": "以往版本",
       "Recent": "最近",
-      "Platinum": "白金"
+      "Platinum": "白金",
+      "ReadFailed": "无法读取战斗数据，请在游戏内重新保存"
     },
     "RecentPage": {
       "Title": "游玩记录",
@@ -514,6 +547,24 @@
       "Title": "玩家排行",
       "Rating": "评级",
       "Activity": "活跃度"
+    },
+    "CardGalleryPage": {
+      "OperationWarning": "操作失败",
+      "KaikaSuccess": "解卡成功",
+      "PurchaseSuccess": "操作成功，请前往卡片列表查看"
+    },
+    "CardPage": {
+      "OperationFailed": "操作失败"
+    },
+    "RivalListPage": {
+      "LoadFailed": "获取好友列表失败",
+      "DeleteSuccess": "(id:{{id}}) 已删除",
+      "DeleteFailed": "删除好友失败",
+      "AddSuccess": "添加好友 (id:{{id}}) 成功",
+      "CannotAddSelf": "不能添加自己为好友",
+      "AlreadyAdded": "该好友已添加",
+      "NotFound": "未找到该好友",
+      "AddFailed": "添加好友失败"
     }
   },
   "ChuniV2": {
@@ -594,7 +645,8 @@
       "FavoriteCount": "已选择 {{count}} 个",
       "FavoriteManage": "管理",
       "MessageSuccess": "更换成功",
-      "MessageFailed": "更换失败"
+      "MessageFailed": "更换失败",
+      "ChangeSuccess": "修改成功"
     },
     "MusicListPage": {
       "Title": "乐曲列表",
@@ -637,7 +689,8 @@
       "New": "当前版本",
       "Best": "最佳成绩",
       "Recent": "最近高分",
-      "DataVersionWarning": "由于游戏与服务器数据版本不一致，谱面定数或评级计算可能有误"
+      "DataVersionWarning": "由于游戏与服务器数据版本不一致，谱面定数或评级计算可能有误",
+      "NoData": "暂无数据"
     },
     "RecentPage": {
       "Title": "游玩记录",
@@ -666,6 +719,21 @@
       "ModifyRomVersionFailed": "修改游戏版本失败",
       "ModifyDataVersionFailed": "修改数据版本失败",
       "DownloadingProfile": "正在下载玩家存档"
+    },
+    "RivalListPage": {
+      "LoadFailed": "获取好友列表失败",
+      "OperationFailed": "操作失败",
+      "AddSuccess": "(id:{{id}}) 添加成功",
+      "AddFailed": "添加好友失败",
+      "DeleteSuccess": "(id:{{id}}) 已删除",
+      "DeleteFailed": "删除好友失败",
+      "FavoriteLimitReached": "(id:{{id}}) 最多只能收藏 3 位",
+      "ToggleFavoriteSuccess": "(id:{{id}}) 收藏状态已更新"
+    },
+    "SettingPage": {
+      "ChangeSuccess": "修改成功",
+      "DownloadComplete": "下载完成",
+      "UsernamePlaceholder": "用户名"
     }
   },
   "Maimai2": {
@@ -677,7 +745,8 @@
       "InfoCard": "机台状态",
       "PlayersCard": "上机人数",
       "DeliveryCard": "配信状态",
-      "DlprogCard": "下载进度"
+      "DlprogCard": "下载进度",
+      "LoadFailed": "加载机台列表失败"
     },
     "Cabinets": {
       "SelectCabinet": "选择机台",
@@ -734,10 +803,14 @@
       "LevelHot": "高配信",
       "LevelBurn": "全量",
       "LevelDevelop": "开发",
-      "LevelSpecial": "特殊"
+      "LevelSpecial": "特殊",
+      "Success": "操作成功",
+      "Failed": "操作失败"
     },
     "RemoteControlPage": {
-      "Title": "远程控制"
+      "Title": "远程控制",
+      "Failed": "操作失败",
+      "NetworkError": "网络错误"
     },
     "RemoteControl": {
       "Command": "指令",
@@ -824,7 +897,8 @@
       "Title": "评级",
       "B35": "BEST35 旧曲 ",
       "B15": "BEST15 新曲 ",
-      "ElevateRecommend": "推分建议"
+      "ElevateRecommend": "推分建议",
+      "Empty": "警告：Rating 数据为空！"
     },
     "RecentPage": {
       "Title": "游玩记录",
@@ -834,7 +908,8 @@
     },
     "PhotosPage": {
       "Title": "相册",
-      "NotOwned": "你暂未在游戏中上传任何照片。"
+      "NotOwned": "你暂未在游戏中上传任何照片。",
+      "NotOpened": "该功能尚未开放"
     },
     "DxpassPage": {
       "Title": "DX通行证",
@@ -978,7 +1053,18 @@
       "ExportData": "导出数据",
       "ExportDataTitle": "通过这个功能可以导出数据，以便迁移时使用",
       "ExportDataSubTitle": "*请不要将导出的文件分享给他人",
-      "ExportDataSubButton": "导出"
+      "ExportDataSubButton": "导出",
+      "MergeRequestSuccess": "已提交引继请求",
+      "MergeRequestFailed": "设置引继请求失败",
+      "UsernameChanged": "修改成功",
+      "RedeemActivated": "已激活 {{name}}",
+      "RedeemFailed": "激活失败",
+      "UploadPortraitDisabled": "根据《中华人民共和国个人信息保护法》，该功能已关闭",
+      "AccessCodeUpdated": "访问码已更新",
+      "AccessCodeUpdateFailed": "访问码更新失败",
+      "UploadPortraitFailed": "修改头像失败",
+      "UploadPortraitSuccess": "修改头像成功",
+      "UploadPortraitTooLarge": "上传文件过大"
     },
     "SongList": {
       "Title": "歌曲列表",
@@ -1002,7 +1088,20 @@
       "Rating": "评级",
       "PlayCount": "游玩次数",
       "RivalId": "对手ID",
-      "LastPlay": "最后游玩："
+      "LastPlay": "最后游玩：",
+      "LoadFailed": "获取好友列表失败",
+      "DeleteSuccess": "(id:{{id}}) 已删除",
+      "DeleteFailed": "删除好友失败",
+      "AddSuccess": "添加好友成功",
+      "AddFailed": "添加好友失败"
+    },
+    "DxPassPage": {
+      "Success": "操作成功"
+    },
+    "SongListPage": {
+      "LoadFailed": "数据加载失败",
+      "Copied": "已复制 {{text}}",
+      "CopyFailed": "复制失败，请手动选择文字"
     }
   },
   "ContributorsPage": {
@@ -1033,5 +1132,29 @@
     "EnglishLine": "ERROR 404 · REQUESTED RESOURCE NOT FOUND",
     "Home": "返回首页",
     "Back": "返回上一页"
+  },
+  "AdminPage": {
+    "OperationFailed": "操作失败",
+    "CompleteUserInfoRequired": "请填写完整的用户信息",
+    "ValidExtIdRequired": "请输入正确的 ExtId",
+    "KeychipIdRequired": "请输入 Keychip ID",
+    "ExtIdPlaceholder": "ExtId"
+  },
+  "OAuthPage": {
+    "GetResponseFailed": "获取 OAuth2 返回数据失败",
+    "SignInFailed": "OAuth2 登录失败",
+    "InvalidState": "state 参数无效",
+    "OperationFailed": "操作失败"
+  },
+  "ImporterPage": {
+    "Success": "导入成功",
+    "WrongGameId": "游戏 ID 不正确，请确认选择了正确的文件",
+    "Uploading": "正在上传……"
+  },
+  "OnetimeSignInPage": {
+    "OperationFailed": "一次性登录失败"
+  },
+  "PasswordResetPage": {
+    "OperationFailed": "操作失败"
   }
 }

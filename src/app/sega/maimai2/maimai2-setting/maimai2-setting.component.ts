@@ -84,14 +84,15 @@ export class Maimai2SettingComponent implements OnInit {
         this.profile = data;
         this.userNameForm.setValue({username: data.userName});
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
 
     this.api.get('api/game/maimai2/config/userPhoto/divMaxLength').subscribe(divMaxLength => {
       this.divMaxLength = divMaxLength;
     });
 
-    this.api.getLcdx('lcdx/getBindAccessCode/' + this.userService.currentUser.cards[0].luid).subscribe(
+    const bindUserName = encodeURIComponent(this.userService.currentUser.username);
+    this.api.getLcdx('lcdx/getBindAccessCode/' + bindUserName + '/' + this.userService.currentUser.cards[0].luid).subscribe(
       data => {
         this.currentAccessCode = data.data;
         this.bindCardForm.setValue({accessCode : data.data});
@@ -121,7 +122,7 @@ export class Maimai2SettingComponent implements OnInit {
           this.mergeLastSuccessDate = this.normalizeMergeDate(data.data?.lastSuccessDate);
         }
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
   }
 
@@ -154,14 +155,14 @@ export class Maimai2SettingComponent implements OnInit {
         this.mergeRequestLoading = false;
         if (data?.status?.code === StatusCode.OK) {
           this.mergeRequested = true;
-          this.messageService.notice(data.status.message);
+          this.messageService.noticeTranslated('Maimai2.Setting.MergeRequestSuccess');
         } else {
-          this.messageService.notice(data?.status?.message ?? '设置引继请求失败');
+          this.messageService.noticeTranslated('Maimai2.Setting.MergeRequestFailed');
         }
       },
       error => {
         this.mergeRequestLoading = false;
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       }
     );
   }
@@ -204,8 +205,8 @@ export class Maimai2SettingComponent implements OnInit {
       this.api.post('api/game/maimai2/profile/username', {aimeId: this.aimeId, userName: this.userNameInput.value}).subscribe(
         x => {
           this.profile = x;
-          this.messageService.notice('Successfully changed');
-        }, error => this.messageService.notice(error)
+          this.messageService.noticeTranslated('Maimai2.Setting.UsernameChanged');
+        }, error => this.messageService.noticeError()
       );
     }
 
@@ -217,18 +218,18 @@ export class Maimai2SettingComponent implements OnInit {
       this.api.get('api/game/maimai2/redeem', param).subscribe(
         x => {
           if (x.status.code === 92001) {
-            this.messageService.notice('Successfully activated ' + x.data);
+            this.messageService.noticeTranslated('Maimai2.Setting.RedeemActivated', null, {name: x.data});
           } else {
-            this.messageService.notice(x.data);
+            this.messageService.noticeTranslated('Maimai2.Setting.RedeemFailed');
           }
-        }, error => this.messageService.notice(error)
+        }, error => this.messageService.noticeError()
       );
     }
 
   }
 
   openUploadUserPortraitDialog() {
-    this.messageService.notice('根据《中华人民共和国个人信息保护法》，该功能已关闭', 'warning');
+    this.messageService.noticeTranslated('Maimai2.Setting.UploadPortraitDisabled', 'warning');
     /// const modalRef = this.modalService.open(Maimai2UploadUserPortraitDialog, {scrollable: true, centered: true});
     /// modalRef.componentInstance.aimeId = String(this.userService.currentUser.defaultCard.extId);
     /// modalRef.componentInstance.divMaxLength = this.divMaxLength;
@@ -256,12 +257,12 @@ export class Maimai2SettingComponent implements OnInit {
       this.api.postLcdx('lcdx/removeAccessCode/' + this.userService.currentUser.username, body).subscribe(
         x => {
           if (x.status.code === 92001) {
-            this.messageService.notice(x.status.message);
+            this.messageService.noticeTranslated('Maimai2.Setting.AccessCodeUpdated');
             location.reload();
           } else {
-            this.messageService.notice(x.data);
+            this.messageService.noticeTranslated('Maimai2.Setting.AccessCodeUpdateFailed');
           }
-        }, error => this.messageService.notice(error)
+        }, error => this.messageService.noticeError()
       );
     }
     if (this.bindCardForm.touched && this.bindCardForm.valid) {
@@ -269,12 +270,12 @@ export class Maimai2SettingComponent implements OnInit {
       this.api.postLcdx('lcdx/addAccessCode/' + this.userService.currentUser.username, body).subscribe(
         x => {
           if (x.status.code === 92001) {
-            this.messageService.notice(x.status.message);
+            this.messageService.noticeTranslated('Maimai2.Setting.AccessCodeUpdated');
             location.reload();
           } else {
-            this.messageService.notice(x.data);
+            this.messageService.noticeTranslated('Maimai2.Setting.AccessCodeUpdateFailed');
           }
-        }, error => this.messageService.notice(error)
+        }, error => this.messageService.noticeError()
       );
     }
   }

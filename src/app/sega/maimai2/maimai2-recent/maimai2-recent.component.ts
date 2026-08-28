@@ -81,7 +81,7 @@ export class Maimai2RecentComponent implements OnInit {
           });
           return data.content;
         },
-        error => this.messageService.notice(error)
+        error => this.messageService.noticeError()
       )
     );
   }

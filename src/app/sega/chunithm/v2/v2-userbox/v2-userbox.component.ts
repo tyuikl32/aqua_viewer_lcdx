@@ -162,7 +162,7 @@ export class V2UserBoxComponent implements OnInit {
         this.profile = data;
         this.initCustomable();
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
   }
 
@@ -203,7 +203,7 @@ export class V2UserBoxComponent implements OnInit {
           this.symbolChatInfo = value;
         }
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
   }
 
@@ -293,7 +293,7 @@ export class V2UserBoxComponent implements OnInit {
     for (const entry of this.favoriteKinds) {
       this.api.get('api/game/chuni/v2/favorite-collection/' + entry.kind, param).subscribe(
         (data: { itemKind: number, itemId: number }[]) => this.favorites[entry.kind] = (data ?? []).map(f => f.itemId),
-        error => this.messageService.notice(error)
+        error => this.messageService.noticeError()
       );
     }
     this.favoritesLoaded = true;
@@ -314,7 +314,7 @@ export class V2UserBoxComponent implements OnInit {
 
   handleFavoriteSaved(kind: number, itemIds: number[]) {
     this.favorites[kind] = itemIds;
-    this.messageService.notice('Successfully changed');
+    this.messageService.noticeTranslated('ChuniV2.UserBoxPage.ChangeSuccess');
   }
 
   favoriteImage(kind: number, itemId: number): string {
@@ -343,10 +343,10 @@ export class V2UserBoxComponent implements OnInit {
       const {category, accId} = this.currentAvatarAcc;
       this.api.put('api/game/chuni/v2/profile/avatar', {aimeId: this.aimeId, category, accId: itemId}).subscribe(
         (result) => {
-          this.messageService.notice('Successfully changed');
+          this.messageService.noticeTranslated('ChuniV2.UserBoxPage.ChangeSuccess');
           this.refreshProfile();
           this.modalService.dismissAll();
-        }, error => this.messageService.notice(error)
+        }, error => this.messageService.noticeError()
       );
     } else {
       switch (itemKind) {
@@ -385,10 +385,10 @@ export class V2UserBoxComponent implements OnInit {
       }
 
       this.api.put(apiURL, requestBody).subscribe(() => {
-        this.messageService.notice('Successfully changed');
+        this.messageService.noticeTranslated('ChuniV2.UserBoxPage.ChangeSuccess');
         this.refreshProfile();
         this.modalService.dismissAll();
-      }, error => this.messageService.notice(error));
+      }, error => this.messageService.noticeError());
     }
   }
 

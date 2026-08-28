@@ -100,7 +100,7 @@ export class V2RecentComponent implements OnInit {
           });
           return data.content;
         },
-        error => this.messageService.notice(error)
+        error => this.messageService.noticeError()
       )
     );
   }

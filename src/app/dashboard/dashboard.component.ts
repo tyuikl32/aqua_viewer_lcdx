@@ -131,14 +131,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.noCard = true;
           }
           else{
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('DashboardPage.OperationFailed');
             this.profilesError = true;
           }
         }
         this.loadingProfiles = false;
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.loadingProfiles = false;
         this.profilesError = true;
       });
@@ -179,13 +179,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.announcement = Announcement.fromJSON(resp.data);
           }
           else{
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('DashboardPage.OperationFailed');
           }
         }
         this.finishAnnouncementRequest();
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.finishAnnouncementRequest();
       });
 
@@ -198,13 +198,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.announcement2 = Announcement.fromJSON(resp.data);
           }
           else{
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('DashboardPage.OperationFailed');
           }
         }
         this.finishAnnouncementRequest();
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.finishAnnouncementRequest();
       });
   }
@@ -220,7 +220,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.api.post('api/user/unbindCard', {accessCode: this.currentCardAccessCode}).subscribe({
       next: resp => {
         this.unbindingCard = false;
-        this.messageService.notice(resp?.status?.message);
+        this.messageService.noticeTranslated('DashboardPage.OperationFailed');
         if (resp?.status?.code === StatusCode.OK) {
           modal.close();
           void this.userService.load(true).catch(() => null);
@@ -229,7 +229,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       error: error => {
         this.unbindingCard = false;
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       }
     });
   }

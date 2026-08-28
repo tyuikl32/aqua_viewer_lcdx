@@ -321,7 +321,7 @@
                 <button class="btn btn-outline-danger" (click)="unbindCard(item.user.username, opAc.value)">解绑</button>
               </div>
               <div class="input-group input-group-sm mb-2">
-                <input type="text" class="form-control" placeholder="ExtId" #opExt>
+                <input type="text" class="form-control" placeholder="{{'AdminPage.ExtIdPlaceholder' | translate}}" #opExt>
                 <button class="btn btn-outline-primary" (click)="bindCardViaExtId(item.user.username, opExt.value)">通过ExtId绑定</button>
               </div>
               <div class="input-group input-group-sm mb-2">

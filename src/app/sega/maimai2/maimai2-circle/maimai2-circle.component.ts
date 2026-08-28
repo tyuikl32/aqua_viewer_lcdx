@@ -80,7 +80,7 @@ export class Maimai2CircleComponent implements OnInit {
         console.log(`loadPublicUserCircleList() loaded successfully, page = ${page}`);
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadPublicUserCircleList() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -97,7 +97,7 @@ export class Maimai2CircleComponent implements OnInit {
         console.log(`loadRequestJoinCircleList() loaded successfully, page = ${page}`);
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadRequestJoinCircleList() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -114,7 +114,7 @@ export class Maimai2CircleComponent implements OnInit {
         console.log(`loadCircleMemberUserList() loaded successfully, page = ${page}`);
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadCircleMemberUserList() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -135,7 +135,7 @@ export class Maimai2CircleComponent implements OnInit {
         }
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadUserCircleInfo() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -201,7 +201,7 @@ export class Maimai2CircleComponent implements OnInit {
         }
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`joinCircle() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -227,7 +227,7 @@ export class Maimai2CircleComponent implements OnInit {
         }
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`kickUser() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -247,7 +247,7 @@ export class Maimai2CircleComponent implements OnInit {
         }
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`approveUser() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -266,7 +266,7 @@ export class Maimai2CircleComponent implements OnInit {
         }
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`rejectUser() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -285,7 +285,7 @@ export class Maimai2CircleComponent implements OnInit {
         }
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`updateCircle() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -324,7 +324,7 @@ export class Maimai2CircleComponent implements OnInit {
         }
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`createCircle() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -350,7 +350,7 @@ export class Maimai2CircleComponent implements OnInit {
         }
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`exitCircle() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -376,7 +376,7 @@ export class Maimai2CircleComponent implements OnInit {
         }
       },
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`dissolveCircle() failed, error = ${error}`);
         return of({ data: [], error: true });
       }

@@ -108,13 +108,13 @@ export class Maimai2RemoteControlComponent implements OnInit, OnDestroy {
             this.pollCounts.set(resp.data.requestId, 0);
             this.startPolling();
           } else {
-            this.messageService.notice(resp?.status?.message ?? 'Failed');
+            this.messageService.noticeTranslated('Maimai2.RemoteControlPage.Failed');
           }
         }),
         error: () => {
           this.runInAngular(() => {
             this.sending = false;
-            this.messageService.notice('Network error');
+            this.messageService.noticeTranslated('Maimai2.RemoteControlPage.NetworkError');
           });
         }
       });

@@ -49,14 +49,14 @@ export class ImporterComponent implements OnInit {
       console.log(j);
       if (j.gameId === type) {
         this.http.post(this.apiServer + path, j).subscribe(
-          data => this.messageService.notice('OK'),
-          error => this.messageService.notice(error)
+          data => this.messageService.noticeTranslated('ImporterPage.Success'),
+          error => this.messageService.noticeError()
         );
       } else {
-        this.messageService.notice('Wrong Game ID, please check you have select the correct file.');
+        this.messageService.noticeTranslated('ImporterPage.WrongGameId');
       }
     };
     fileReader.readAsText(file);
-    this.messageService.notice('Uploading...');
+    this.messageService.noticeTranslated('ImporterPage.Uploading');
   }
 }

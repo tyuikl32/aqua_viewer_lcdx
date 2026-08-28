@@ -1,0 +1,30 @@
+{
+  "id": "fe-route-i18n-cleanup",
+  "name": "fe-route-i18n-cleanup",
+  "title": "Announcement edit route fix and full i18n cleanup",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "Xavior",
+  "assignee": "Xavior",
+  "createdAt": "2026-08-29",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "08-29-announcement-edit-route",
+    "08-29-i18n-passthrough",
+    "08-29-i18n-hardcode"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

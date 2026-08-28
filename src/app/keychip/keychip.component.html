@@ -331,7 +331,7 @@
   <div class="modal-body">
     <form (ngSubmit)="onTrustKeychipSubmit(modal)" [formGroup]="trustKeychipForm">
       <div class="d-grid">
-        <input type="text" class="form-control mb-3" formControlName="keychipId" placeholder="KeychipId">
+        <input type="text" class="form-control mb-3" formControlName="keychipId" placeholder="{{'KeychipPage.KeychipIdPlaceholder' | translate}}">
         <button type="submit" class="btn btn-primary btn-sm">{{'Common.OK' | translate}}</button>
       </div>
     </form>

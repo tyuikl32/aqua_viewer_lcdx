@@ -88,13 +88,13 @@ export class AnnouncementsComponent implements OnInit {
             });
           }
           else{
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('AnnouncementsPage.OperationFailed');
           }
           this.loading = false;
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.loading = false;
       });
   }
@@ -113,13 +113,13 @@ export class AnnouncementsComponent implements OnInit {
             modalRef.componentInstance.announcement = announcement;
           }
           else{
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('AnnouncementsPage.OperationFailed');
           }
           this.loading = false;
         }
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.loading = false;
       });
   }
@@ -145,12 +145,12 @@ export class AnnouncementsComponent implements OnInit {
         if (resp?.status?.code === StatusCode.OK) {
           this.loadAnnouncements(this.currentPage);
         } else {
-          this.messageService.notice(resp?.status?.message);
+          this.messageService.noticeTranslated('AnnouncementsPage.OperationFailed');
         }
         modal.close();
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         modal.close();
       });
   }

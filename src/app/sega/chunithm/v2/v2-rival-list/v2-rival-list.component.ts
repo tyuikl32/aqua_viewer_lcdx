@@ -53,7 +53,7 @@ export class V2RivalListComponent {
         this.refreshFrom(data);
       },
       error => {
-        this.messageService.notice(`get friend list failed: ${error}`);
+        this.messageService.noticeTranslated('ChuniV2.RivalListPage.LoadFailed');
       }
     );
 
@@ -65,7 +65,7 @@ export class V2RivalListComponent {
             this.chusanProfile = resp.data.chusan;
           }
           else {
-            this.messageService.notice(resp.status.message);
+            this.messageService.noticeTranslated('ChuniV2.RivalListPage.OperationFailed');
           }
           this.loadingProfile = false;
         }
@@ -83,11 +83,11 @@ export class V2RivalListComponent {
     this.api.post(V2RivalAPI.Friend, param).subscribe(
       data => {
         if (data) {
-          this.messageService.notice(`(id:${this.inputAddRivalUserId}) addition successfully`)
+          this.messageService.noticeTranslated('ChuniV2.RivalListPage.AddSuccess', null, {id: this.inputAddRivalUserId})
           this.ngOnInit();
         }
       },
-      error => this.messageService.notice(`add rival failed: ${error}`)
+      error => this.messageService.noticeTranslated('ChuniV2.RivalListPage.AddFailed')
     );
   }
 
@@ -96,10 +96,10 @@ export class V2RivalListComponent {
     this.api.delete(V2RivalAPI.Friend, param).subscribe(
       () => {
         const newList = this.friendList.filter(item => item.rivalId !== rivalUserId);
-        this.messageService.notice(`(id:${rivalUserId}) delete successfully.`);
+        this.messageService.noticeTranslated('ChuniV2.RivalListPage.DeleteSuccess', null, {id: rivalUserId});
         this.refreshFrom(newList);
       },
-      error => this.messageService.notice(`remove rival failed: ${error}`)
+      error => this.messageService.noticeTranslated('ChuniV2.RivalListPage.DeleteFailed')
     );
   }
 
@@ -108,12 +108,12 @@ export class V2RivalListComponent {
     const param = new HttpParams().set('friendId', (Number).parseInt(rivalUserId)).set('aimeId', this.aimeId);
     this.friendList.forEach(item => item.isFavorite ? isFavoriteConst  += 1 : null);
     if (!isFavorite && isFavoriteConst >= 3) {
-      this.messageService.notice(`(id:${rivalUserId}) You can't add more than 3 favorites.`, 'danger');
+      this.messageService.noticeTranslated('ChuniV2.RivalListPage.FavoriteLimitReached', 'danger', {id: rivalUserId});
       this.ngOnInit();
     } else {
       this.api.get(V2RivalAPI.ToggleFavorite, param).subscribe(
         (data) => {
-          this.messageService.notice(`(id:${rivalUserId}) toggle Favorite Over!`);
+          this.messageService.noticeTranslated('ChuniV2.RivalListPage.ToggleFavoriteSuccess', null, {id: rivalUserId});
           this.ngOnInit();
         }
       );

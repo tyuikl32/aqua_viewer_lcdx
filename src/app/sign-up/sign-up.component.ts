@@ -99,11 +99,11 @@ export class SignUpComponent implements OnDestroy {
             this.messageService.notice(message, 'warning');
           });
         } else {
-          this.messageService.notice(resp?.status?.message);
+          this.messageService.noticeTranslated('SignUpPage.OperationFailed');
         }
       },
       error: error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.warn('Send verify code fail.', error);
       }
     });
@@ -132,7 +132,7 @@ export class SignUpComponent implements OnDestroy {
       next: async resp => {
         const statusCode: StatusCode = resp?.status?.code;
         if (statusCode === StatusCode.OK && resp.data) {
-          this.messageService.notice(resp.status.message);
+          this.messageService.noticeTranslated('SignUpPage.OperationFailed');
           if (this.router.url.startsWith('/sign-up')) {
             await this.router.navigate(['/dashboard']);
           }
@@ -144,12 +144,12 @@ export class SignUpComponent implements OnDestroy {
             this.messageService.notice(message, 'danger');
           });
         } else {
-          this.messageService.notice(resp?.status?.message);
+          this.messageService.noticeTranslated('SignUpPage.OperationFailed');
         }
         this.signUpForm.enable();
       },
       error: error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.signUpForm.enable();
         console.warn('Sign up failed.', error);
       }

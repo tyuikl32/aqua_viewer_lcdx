@@ -142,7 +142,7 @@ export class V2CharacterComponent implements OnInit {
           this.loading = false;
           return characters;
         },
-        error => this.messageService.notice(error)
+        error => this.messageService.noticeError()
       )
     );
   }
@@ -247,7 +247,7 @@ export class V2CharacterComponent implements OnInit {
       level: currentLevel + 1
     }).subscribe(data => {
       this.pageChanged(this.currentPage);
-    }, error => this.messageService.notice(error));
+    }, error => this.messageService.noticeError());
   }
 
   handleErrorImg(e) {
@@ -328,7 +328,7 @@ export class V2CharacterComponent implements OnInit {
           this.equippedCharaId = result.characterId;
           this.modalService.dismissAll();
         },
-        error: error => this.messageService.notice(error, 'warning')
+        error: error => this.messageService.noticeError('warning')
     });
   }
 
@@ -342,6 +342,6 @@ export class V2CharacterComponent implements OnInit {
     }).subscribe(data => {
       this.characterIds = [characterId].concat(this.characterIds);
       this.load(this.currentPage);
-    }, error => this.messageService.notice(error));
+    }, error => this.messageService.noticeError());
   }
 }

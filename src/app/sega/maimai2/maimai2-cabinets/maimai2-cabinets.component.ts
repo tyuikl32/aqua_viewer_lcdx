@@ -72,7 +72,7 @@ export class Maimai2CabinetsComponent implements OnInit, OnDestroy {
           }
         }
       }),
-      error: () => this.runInAngular(() => this.messageService.notice('Failed to load cabinets'))
+      error: () => this.runInAngular(() => this.messageService.noticeTranslated('Maimai2.CabinetsPage.LoadFailed'))
     });
   }
 

@@ -77,7 +77,7 @@ export class Maimai2FestaComponent implements OnInit {
       }
       ,
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadUserCircleInfo() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -100,7 +100,7 @@ export class Maimai2FestaComponent implements OnInit {
       }
       ,
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadSameSideCircleRankInfo() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -123,7 +123,7 @@ export class Maimai2FestaComponent implements OnInit {
       }
       ,
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadSameSideCircleRankInfo() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -158,7 +158,7 @@ export class Maimai2FestaComponent implements OnInit {
       }
       ,
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadGameFestaInfo() failed, error = ${error}`);
         return of({ data: [], error: true });
       }
@@ -175,7 +175,7 @@ export class Maimai2FestaComponent implements OnInit {
         }
         ,
         (error: string) => {
-          this.messageService.notice(error);
+          this.messageService.noticeError();
           console.error(`loadUserFestaInfo() failed, error = ${error}`);
           resolve(null);
           return of({ data: [], error: true });
@@ -199,7 +199,7 @@ export class Maimai2FestaComponent implements OnInit {
       }
       ,
       (error: string) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         console.error(`loadUserFestaInfo() failed, error = ${error}`);
         return of({ data: [], error: true });
       }

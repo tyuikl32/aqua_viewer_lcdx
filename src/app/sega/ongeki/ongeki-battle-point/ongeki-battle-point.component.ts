@@ -47,7 +47,7 @@ export class OngekiBattlePointComponent implements OnInit {
     const param = new HttpParams().set('aimeId', this.aimeId);
     this.api.get('api/game/ongeki/profile', param).subscribe(
       data => this.profile = data,
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
     this.load();
   }
@@ -57,7 +57,7 @@ export class OngekiBattlePointComponent implements OnInit {
     this.api.get('api/game/ongeki/general', param).subscribe(
       (data: PropertyEntry) => {
         if (data.propertyValue.indexOf(',') < 0) {
-          this.messageService.notice('Can\'t read battle data. Please save again in-game');
+          this.messageService.noticeTranslated('Ongeki.BattlePointPage.ReadFailed');
         } else {
           const records = data.propertyValue.split(',');
           records.forEach(record => {

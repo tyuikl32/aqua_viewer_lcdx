@@ -105,7 +105,7 @@ export class Maimai2SonglistComponent implements OnInit {
     try {
       this.songList = await this.dbService.getAll<Maimai2Music>('maimai2Music').toPromise();
     } catch (error) {
-      this.messageService.notice('数据加载失败: ' + error);
+      this.messageService.noticeTranslated('Maimai2.SongListPage.LoadFailed');
     }
   }
 
@@ -280,10 +280,10 @@ export class Maimai2SonglistComponent implements OnInit {
 
   private copyToClipboard(text: string): void {
     navigator.clipboard.writeText(text).then(() => {
-      this.messageService.notice(`已复制 ${text}`);
+      this.messageService.noticeTranslated('Maimai2.SongListPage.Copied', null, {text});
     }).catch(err => {
       console.error('复制失败:', err);
-      this.messageService.notice('复制失败，请手动选择文字');
+      this.messageService.noticeTranslated('Maimai2.SongListPage.CopyFailed');
     });
   }
 

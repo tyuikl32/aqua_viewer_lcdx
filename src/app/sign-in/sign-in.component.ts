@@ -87,12 +87,12 @@ export class SignInComponent {
             this.messageService.notice(message, 'danger');
           });
         } else {
-          this.messageService.notice(resp?.status?.message);
+          this.messageService.noticeTranslated('SignInPage.LoginFailedMessage');
         }
         this.signInForm.enable();
       },
       error: error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.signInForm.enable();
         console.warn('login fail', error);
       }
@@ -130,13 +130,13 @@ export class SignInComponent {
           });
         } else {
           this.totpToken = null;
-          this.messageService.notice(resp?.status?.message);
+          this.messageService.noticeTranslated('SignInPage.LoginFailedMessage');
         }
         this.totpForm.enable();
         this.totpForm.reset();
       },
       error: error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.totpForm.enable();
       }
     });

@@ -69,7 +69,7 @@ export class V2SymbolChatSettingComponent implements OnInit {
           }
           this.messageService.notice(await lastValueFrom(this.translateService.get('ChuniV2.UserBoxPage.MessageFailed')), 'warning');
         },
-        error: e => this.messageService.notice(e, 'warning')
+        error: e => this.messageService.noticeError('warning')
       }
     );
   }

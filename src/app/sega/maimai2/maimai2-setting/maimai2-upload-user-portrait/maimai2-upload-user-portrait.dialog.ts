@@ -94,7 +94,7 @@ export class Maimai2UploadUserPortraitDialog implements OnInit {
       });
 
       if (error) {
-        this.messageService.notice(`Change user portrait failed: ${error}`);
+        this.messageService.noticeTranslated('Maimai2.Setting.UploadPortraitFailed');
         return;
       }
 
@@ -105,7 +105,7 @@ export class Maimai2UploadUserPortraitDialog implements OnInit {
       divNumber++;
     }
 
-    this.messageService.notice(`Change user portrait successfully.`);
+    this.messageService.noticeTranslated('Maimai2.Setting.UploadPortraitSuccess');
     this.modalService.dismissAll();
   }
 
@@ -132,7 +132,7 @@ export class Maimai2UploadUserPortraitDialog implements OnInit {
     ) {
       return;
     } else {
-      this.messageService.notice(`Upload file size is too large.`);
+      this.messageService.noticeTranslated('Maimai2.Setting.UploadPortraitTooLarge');
     }
   }
   onCancel() {

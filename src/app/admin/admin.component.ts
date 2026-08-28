@@ -84,12 +84,12 @@ export class AdminComponent implements OnInit {
           this.totalElements = resp.data.totalElements;
         }
         else{
-          this.messageService.notice(resp.status.message, 'warning');
+          this.messageService.noticeTranslated('AdminPage.OperationFailed', 'warning');
         }
         this.loading = false;
       },
       error: err => {
-        this.messageService.notice(err.message, 'warning');
+        this.messageService.noticeError('warning');
         this.loading = false;
       }
     });
@@ -111,13 +111,13 @@ export class AdminComponent implements OnInit {
     this.api.post(`api/admin/users/loginas/${username}`, {}).subscribe({
       next: resp => {
         if (resp?.status?.code !== StatusCode.OK || !resp.data) {
-          this.messageService.notice(resp?.status?.message);
+          this.messageService.noticeTranslated('AdminPage.OperationFailed');
           return;
         }
         this.startImpersonation(username, resp.data, impersonateModal);
       },
       error: err => {
-        this.messageService.notice(err.message ?? err, 'warning');
+        this.messageService.noticeError('warning');
         console.warn('login as fail', err);
       }
     });
@@ -255,19 +255,19 @@ export class AdminComponent implements OnInit {
       : `解除 ${item.user.username} 的面板封禁？游戏封禁值不会自动恢复。`;
     if (!confirm(warning)) return;
     this.api.post(`api/admin/accounts/${item.user.username}/${banned ? 'ban' : 'unban'}`, {}).subscribe({
-      next: resp => { this.messageService.notice(resp?.status?.message); this.refresh(); },
-      error: err => this.messageService.notice(err, 'warning')
+      next: resp => { this.messageService.noticeTranslated('AdminPage.OperationFailed'); this.refresh(); },
+      error: err => this.messageService.noticeError('warning')
     });
   }
 
   setGameBan(username: string, game: string, extId: number, status: string) {
     this.api.put(`api/admin/accounts/${username}/games/${game}/${extId}/ban-state`, {status: Number(status)}).subscribe({
       next: resp => {
-        this.messageService.notice(resp?.status?.message);
+        this.messageService.noticeTranslated('AdminPage.OperationFailed');
         this.refresh();
         if (resp?.status?.code === StatusCode.OK && this.selectedProfile?.username === username) this.openSupport(username);
       },
-      error: err => this.messageService.notice(err, 'warning')
+      error: err => this.messageService.noticeError('warning')
     });
   }
 
@@ -276,17 +276,17 @@ export class AdminComponent implements OnInit {
     if (confirmation !== String(extId)) return;
     this.api.delete(`api/admin/accounts/${username}/games/${game}/${extId}`, {confirmExtId: String(extId)} as any).subscribe({
       next: resp => {
-        this.messageService.notice(resp?.status?.message);
+        this.messageService.noticeTranslated('AdminPage.OperationFailed');
         this.refresh();
         if (resp?.status?.code === StatusCode.OK && this.selectedProfile?.username === username) this.openSupport(username);
       },
-      error: err => this.messageService.notice(err, 'warning')
+      error: err => this.messageService.noticeError('warning')
     });
   }
 
   revokeSessions(username: string) {
     if (!confirm(`撤销 ${username} 的全部 refresh 会话？现有 access token 最多约 5 分钟后失效。`)) return;
-    this.api.post(`api/admin/accounts/${username}/sessions/revoke`, {}).subscribe(resp => this.messageService.notice(resp?.status?.message));
+    this.api.post(`api/admin/accounts/${username}/sessions/revoke`, {}).subscribe(resp => this.messageService.noticeTranslated('AdminPage.OperationFailed'));
   }
 
   deletePasskey(username: string, id: number) {
@@ -323,21 +323,21 @@ export class AdminComponent implements OnInit {
 
   createUser(userName: string, name: string, email: string, password: string) {
     if (!userName || !name || !email || !password) {
-      this.messageService.notice('请填写完整的用户信息', 'warning');
+      this.messageService.noticeTranslated('AdminPage.CompleteUserInfoRequired', 'warning');
       return;
     }
     this.creatingUser = true;
     this.api.post('api/admin/createUser', {userName, name, email, password}).subscribe({
       next: resp => {
         this.creatingUser = false;
-        this.messageService.notice(resp?.status?.message);
+        this.messageService.noticeTranslated('AdminPage.OperationFailed');
         if (resp?.status?.code === StatusCode.OK) {
           this.refresh();
         }
       },
       error: err => {
         this.creatingUser = false;
-        this.messageService.notice(err.message, 'warning');
+        this.messageService.noticeError('warning');
       }
     });
   }
@@ -349,7 +349,7 @@ export class AdminComponent implements OnInit {
   bindCardViaExtId(userName: string, extId: string) {
     const parsed = Number(extId);
     if (!extId || isNaN(parsed)) {
-      this.messageService.notice('请输入正确的 ExtId', 'warning');
+      this.messageService.noticeTranslated('AdminPage.ValidExtIdRequired', 'warning');
       return;
     }
     this.cardOp('api/admin/bindCardViaExtId', {userName, extId: parsed});
@@ -370,22 +370,22 @@ export class AdminComponent implements OnInit {
     }
     this.api.delete(`api/admin/users/${username}/totp`).subscribe({
       next: resp => {
-        this.messageService.notice(resp?.status?.message);
+        this.messageService.noticeTranslated('AdminPage.OperationFailed');
         if (this.selectedProfile) {
           this.selectedProfile.totpEnabled = false;
         }
       },
-      error: err => this.messageService.notice(err.message, 'warning')
+      error: err => this.messageService.noticeError('warning')
     });
   }
 
   private cardOp(path: string, body: any) {
     this.api.post(path, body).subscribe({
       next: resp => {
-        this.messageService.notice(resp?.status?.message);
+        this.messageService.noticeTranslated('AdminPage.OperationFailed');
         this.refresh();
       },
-      error: err => this.messageService.notice(err.message, 'warning')
+      error: err => this.messageService.noticeError('warning')
     });
   }
 
@@ -402,7 +402,7 @@ export class AdminComponent implements OnInit {
           this.kcTotalElements = resp.data.totalElements;
         }
       },
-      error: err => this.messageService.notice(err.message, 'warning')
+      error: err => this.messageService.noticeError('warning')
     });
   }
 
@@ -416,7 +416,7 @@ export class AdminComponent implements OnInit {
 
   addKeychip(keychipId: string, placeName: string) {
     if (!keychipId) {
-      this.messageService.notice('请输入 Keychip ID', 'warning');
+      this.messageService.noticeTranslated('AdminPage.KeychipIdRequired', 'warning');
       return;
     }
     const body: any = {keychipId};
@@ -425,10 +425,10 @@ export class AdminComponent implements OnInit {
     }
     this.api.post('api/admin/keychip', body).subscribe({
       next: resp => {
-        this.messageService.notice(resp?.status?.message);
+        this.messageService.noticeTranslated('AdminPage.OperationFailed');
         this.loadKeychips(this.kcCurrentPage - 1);
       },
-      error: err => this.messageService.notice(err.message, 'warning')
+      error: err => this.messageService.noticeError('warning')
     });
   }
 
@@ -438,14 +438,14 @@ export class AdminComponent implements OnInit {
     }
     this.api.delete(`api/admin/keychip/${id}`).subscribe({
       next: () => this.loadKeychips(this.kcCurrentPage - 1),
-      error: err => this.messageService.notice(err.message, 'warning')
+      error: err => this.messageService.noticeError('warning')
     });
   }
 
   toggleWhiteList(keychipId: string) {
     this.api.post('api/admin/keychip/toggleWhiteList', {keychipId}).subscribe({
       next: () => this.loadKeychips(this.kcCurrentPage - 1),
-      error: err => this.messageService.notice(err.message, 'warning')
+      error: err => this.messageService.noticeError('warning')
     });
   }
 }

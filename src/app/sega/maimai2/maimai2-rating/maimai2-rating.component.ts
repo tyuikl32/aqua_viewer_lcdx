@@ -132,12 +132,12 @@ export class Maimai2RatingComponent implements OnInit {
           list.push(item);
         }
         if (list.length === 0) {
-          this.messageService.notice('Warning: Rating is empty!');
+          this.messageService.noticeTranslated('Maimai2.RatingPage.Empty');
         }
         callback(list);
       },
       error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         callback([]);
       }
     );

@@ -44,7 +44,7 @@ export class OngekiProfileComponent implements OnInit {
           x => this.profile.trophy = x
         );
       },
-      error => this.messageService.notice(error)
+      error => this.messageService.noticeError()
     );
   }
 

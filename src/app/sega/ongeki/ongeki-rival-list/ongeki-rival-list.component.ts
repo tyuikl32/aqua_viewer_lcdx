@@ -41,7 +41,7 @@ export class OngekiRivalListComponent implements OnInit {
     this.api.get('api/game/ongeki/rival').subscribe(
       this.refreshFrom.bind(this),
       error => {
-        this.messageService.notice(`get rival list failed : ${error}`);
+        this.messageService.noticeTranslated('Ongeki.RivalListPage.LoadFailed');
         this.loadingRival = false;
       }
     );
@@ -52,7 +52,7 @@ export class OngekiRivalListComponent implements OnInit {
         this.loadingProfile = false;
       },
       (error) => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.loadingProfile = false;
       }
     );
@@ -69,10 +69,10 @@ export class OngekiRivalListComponent implements OnInit {
     this.api.delete(`api/game/ongeki/rival`, param).subscribe(
       () => {
         const newList = this.rivalList.filter(item => item.rivalUserId !== rivalUserId);
-        this.messageService.notice(`(id:${rivalUserId}) delete successfully.`);
+        this.messageService.noticeTranslated('Ongeki.RivalListPage.DeleteSuccess', null, {id: rivalUserId});
         this.refreshFrom(newList);
       },
-      error => this.messageService.notice(`remove rival failed : ${error}`)
+      error => this.messageService.noticeTranslated('Ongeki.RivalListPage.DeleteFailed')
     );
   }
 
@@ -85,23 +85,23 @@ export class OngekiRivalListComponent implements OnInit {
           if (statusCode === StatusCode.OK && data.data) {
             this.rivalList.push(data.data);
             this.refreshFrom(this.rivalList);
-            this.messageService.notice(`Add rival (id:${data.data.rivalUserId}) successfully.`);
+            this.messageService.noticeTranslated('Ongeki.RivalListPage.AddSuccess', null, {id: data.data.rivalUserId});
           }
           else if (statusCode === StatusCode.RIVAL_SELF){
-            this.messageService.notice(`Can't add your self as an rival`, 'danger');
+            this.messageService.noticeTranslated('Ongeki.RivalListPage.CannotAddSelf', 'danger');
           }
           else if (statusCode === StatusCode.RIVAL_ALREADY_ADDED){
-            this.messageService.notice(`Rival already added`, 'danger');
+            this.messageService.noticeTranslated('Ongeki.RivalListPage.AlreadyAdded', 'danger');
           }
           else if (statusCode === StatusCode.RIVAL_NOTFOUND){
-            this.messageService.notice(`Rival not found`, 'danger');
+            this.messageService.noticeTranslated('Ongeki.RivalListPage.NotFound', 'danger');
           }
           else{
-            this.messageService.notice(data.status.message, 'danger');
+            this.messageService.noticeTranslated('Ongeki.RivalListPage.AddFailed', 'danger');
           }
         }
       },
-      error => this.messageService.notice(`add rival failed : ${error}`)
+      error => this.messageService.noticeTranslated('Ongeki.RivalListPage.AddFailed')
     );
   }
 

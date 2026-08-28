@@ -87,7 +87,7 @@ export class V2UserBoxSettingDialog implements OnInit{
       },
       error => {
         this.saving = false;
-        this.messageService.notice(error);
+        this.messageService.noticeError();
       }
     );
   }
@@ -117,7 +117,7 @@ export class V2UserBoxSettingDialog implements OnInit{
             this.loadFromStore(item => data.some(d => d.itemId === item.id));
           }
         },
-        error => this.messageService.notice(error)
+        error => this.messageService.noticeError()
       );
     }
     else{

@@ -48,13 +48,13 @@ export class OnetimeSignInComponent {
                 this.router.navigate(['/']);
               }
               else{
-                this.messageService.notice(resp.status.message);
+                this.messageService.noticeTranslated('OnetimeSignInPage.OperationFailed');
                 this.router.navigate(['/']);
               }
             }
           },
           error: (error) => {
-            this.messageService.notice(error);
+            this.messageService.noticeError();
             this.router.navigate(['/']);
           }
         }

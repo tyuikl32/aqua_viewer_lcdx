@@ -104,10 +104,10 @@ export class OngekiRecentComponent implements OnInit {
           this.loading = false;
           return data.content;
         },
-        error => this.messageService.notice(error)
+        error => this.messageService.noticeError()
       ),
       catchError(err => {
-        this.messageService.notice(err);
+        this.messageService.noticeError();
         throw err;
       })
     );

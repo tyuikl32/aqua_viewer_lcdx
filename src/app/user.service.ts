@@ -55,13 +55,13 @@ export class UserService {
                 // probes being started after the authenticated user is known.
                 this.botPermission.load(this.currentUser.username);
               } else {
-                this.messageService.notice(resp.status.message);
+                this.messageService.noticeTranslated('Common.OperationFailed');
               }
             }
             resolve(resp);
           },
           error => {
-            this.messageService.notice(error);
+            this.messageService.noticeError();
             reject(error);
           }
         )

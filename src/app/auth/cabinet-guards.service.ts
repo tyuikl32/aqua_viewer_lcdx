@@ -40,7 +40,7 @@ export class CabinetManageGuard implements CanActivate {
   }
 
   protected noticeDenied(): void {
-    this.messageService.notice('No permission for cabinet management');
+    this.messageService.noticeTranslated('Common.NoCabinetPermission');
   }
 }
 

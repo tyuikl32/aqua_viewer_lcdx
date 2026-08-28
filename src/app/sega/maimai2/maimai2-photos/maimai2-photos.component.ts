@@ -66,14 +66,14 @@ export class Maimai2PhotosComponent implements OnInit {
           (data: any) => {
             return data.content;
           },
-          (error: string) => this.messageService.notice(error)
+          (error: string) => this.messageService.noticeError()
         )
       );
       this.photos.subscribe(data => {
         this.hasData = data.length > 0;
       });
     }else{
-      this.messageService.notice('The function isn\'t yet opened');
+      this.messageService.noticeTranslated('Maimai2.PhotosPage.NotOpened');
     }
   }
 }

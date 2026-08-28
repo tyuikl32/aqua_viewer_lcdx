@@ -65,12 +65,12 @@ export class NetcodeBindComponent implements OnInit {
     this.api.getLcdx('lcdx/bind/' + this.userService.currentUser.username + '/' + this.netCodeInput.value).subscribe(
       resp => {
         this.loaded = true;
-        this.messageService.notice(resp.status.message);
+        this.messageService.noticeTranslated('NetCodeBindPage.OperationFailed');
         if (resp.status.code === 92001){
           this.routeBack();
         }
       }, error => {
-        this.messageService.notice(error);
+        this.messageService.noticeError();
         this.loaded = true;
       }
     );
