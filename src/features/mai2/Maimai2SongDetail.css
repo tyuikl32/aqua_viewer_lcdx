@@ -106,3 +106,11 @@
 [data-color-scheme='dark'] .maimai2-song-detail .card-body {
   background: rgba(33, 37, 41, 0.8);
 }
+
+/* Bootstrap's opaque light/dark fallbacks flatten the themed card and leave an
+   unintended white or black band beneath every score. Let the card surface
+   show through in both modern themes instead. */
+[data-theme='liquefy'] .maimai2-song-detail .card-body,
+[data-theme='animal-island'] .maimai2-song-detail .card-body {
+  background: transparent;
+}

@@ -1,6 +1,8 @@
 @layer properties, liquefy-ui, theme, base, legacy-bootstrap, components, utilities;
 
 @import "@liquefy-ui/react/tailwind.css";
+@import "animal-island-ui/style";
+@import "animal-island-ui/es/components/Cursor/cursor.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 /* RinNET owns semantics; themes implement them and Bootstrap consumes them. */
@@ -9,6 +11,7 @@
 @import "./theme/tailwind-adapter.css";
 @import "./theme/legacy.css";
 @import "./theme/liquefy.css";
+@import "./theme/animal-island.css";
 @import "./theme/bootstrap-adapter.css";
 @layer base {
   * {
@@ -211,6 +214,13 @@ table {
 
 .ongeki-song-score-ranking {
   width: 35vw !important;
+}
+
+/* The legacy Ongeki contract keeps a wider desktop drawer.  Modern song
+ * details follow the Maimai 400px surface in Liquefy and Animal Friends. */
+[data-theme='liquefy'] .song-detail-surface,
+[data-theme='animal-island'] .song-detail-surface {
+  width: 400px !important;
 }
 
 @media only screen and (max-width: 766px) {
@@ -504,6 +514,9 @@ input[type="checkbox"]:checked + .checkbox-label {
   backdrop-filter: blur(25px) brightness(100%) saturate(160%);
   background: rgba(var(--bs-tertiary-bg-rgb), 0.9) !important;
   height: 3.6rem;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 999;
 }
 

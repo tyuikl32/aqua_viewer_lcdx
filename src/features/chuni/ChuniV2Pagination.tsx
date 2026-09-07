@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { Pagination } from '@/components/shared/Pagination';
+import { useTheme } from '@/lib/theme';
 
 type PageEntry = { label: string; value: number | null };
 
@@ -54,12 +56,24 @@ export function ChuniV2Pagination({
   totalItems: number;
   onPageChange: (page: number) => void;
 }) {
+  const { family } = useTheme();
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const normalizedCurrent = Math.min(Math.max(current, 1), totalPages);
   const pages = useMemo(
     () => pageEntries(normalizedCurrent, totalPages),
     [normalizedCurrent, totalPages],
   );
+
+  if (family === 'animal-island') {
+    return (
+      <Pagination
+        current={normalizedCurrent}
+        pageSize={pageSize}
+        totalItems={totalItems}
+        onPageChange={onPageChange}
+      />
+    );
+  }
 
   return (
     <div key={normalizedCurrent} className="user-select-none d-inline-block pagination-view-transition" data-pagination-page={normalizedCurrent} style={{ cursor: 'default' }}>

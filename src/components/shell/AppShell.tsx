@@ -4,6 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { List, Person, Translate } from 'react-bootstrap-icons';
 import { LiquidDrawer, LiquidIconButton } from '@liquefy-ui/react';
 import {
+  Button as AnimalButton,
+  Drawer as AnimalDrawer,
+  Footer as AnimalFooter,
+} from 'animal-island-ui';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -158,6 +163,7 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
 function UserPopover() {
   const { t } = useTranslation();
+  const { family } = useTheme();
   const user = useStore(userStore);
   const isActive = useIsActive();
   const location = useLocation();
@@ -172,9 +178,18 @@ function UserPopover() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="btn btn-icon d-flex align-items-center" type="button">
-          <Person size="1.4rem" />
-        </button>
+        {family === 'animal-island' ? (
+          <AnimalButton
+            className="animal-island-user-trigger"
+            type="primary"
+            aria-label={t('App.UserPopup.Profile')}
+            icon={<Person size="1.35rem" />}
+          />
+        ) : (
+          <button className="btn btn-icon d-flex align-items-center" type="button">
+            <Person size="1.4rem" />
+          </button>
+        )}
       </PopoverTrigger>
       <PopoverContent align="end" side="bottom" sideOffset={0} className="shell-user-popover">
         <div className="vstack user-popover">
@@ -210,7 +225,15 @@ function Footer() {
   const { family } = useTheme();
 
   return (
-    <footer className={'footer container-xxl' + (family === 'liquefy' ? '' : ' mb-2')}>
+    <footer
+      className={
+        'footer container-xxl' +
+        (family === 'liquefy' || family === 'animal-island' ? '' : ' mb-2')
+      }
+    >
+      {family === 'animal-island' && (
+        <AnimalFooter className="animal-island-footer-decoration" type="tree" />
+      )}
       <hr className="m-0 pt-2" />
       <div className="d-flex justify-content-between flex-wrap px-2 px-lg-3 py-3 column-gap-3">
         <div className="row fw-bold my-2">
@@ -256,6 +279,17 @@ function Footer() {
           <div className="col-auto">
             <Link to="/contributors">{t('App.Footer.Contributors')}</Link>
           </div>
+          {family === 'animal-island' && (
+            <div className="col-auto">
+              <a
+                href="https://github.com/guokaigdg/animal-island-ui"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Animal Island UI · CC BY-NC 4.0
+              </a>
+            </div>
+          )}
           <div className="col-auto">{t('App.Footer.Copyright')}</div>
         </div>
       </div>
@@ -270,6 +304,8 @@ export function AppShell() {
   const matches = useMatches() as Array<{ handle?: RouteHandle }>;
   const { t } = useTranslation();
   const theme = useTheme();
+  const isLiquefy = String(theme.family) === 'liquefy';
+  const isAnimalIsland = theme.family === 'animal-island';
 
   const deepest = [...matches].reverse().find((m) => m.handle)?.handle ?? {};
   const accessLayout = deepest.accessLayout === true;
@@ -277,19 +313,39 @@ export function AppShell() {
 
   const isRouterHome = location.pathname === '/';
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [animalDrawerMounted, setAnimalDrawerMounted] = useState(false);
+  const [animalDrawerClosing, setAnimalDrawerClosing] = useState(false);
 
   useEffect(() => setSheetOpen(false), [location.pathname]);
 
+  useEffect(() => {
+    if (!isAnimalIsland) {
+      setAnimalDrawerMounted(false);
+      setAnimalDrawerClosing(false);
+      return;
+    }
+    if (sheetOpen) {
+      setAnimalDrawerMounted(true);
+      setAnimalDrawerClosing(false);
+      return;
+    }
+    if (!animalDrawerMounted) return;
+    setAnimalDrawerClosing(true);
+    const timer = window.setTimeout(() => {
+      setAnimalDrawerMounted(false);
+      setAnimalDrawerClosing(false);
+    }, 360);
+    return () => window.clearTimeout(timer);
+  }, [animalDrawerMounted, isAnimalIsland, sheetOpen]);
+
   const togglerHidden = isRouterHome && account ? 'v-hidden' : '';
   const togglerNotLogin = disableSidebar && !account ? 'v-not-login' : '';
-  const isLiquefy = String(theme.family) === 'liquefy';
-
   return (
     <div className="app-container">
       <BootEffects />
       <div className="flex-grow-1">
         {!accessLayout && (
-          <nav className="app-navbar navbar navbar-expand-lg position-fixed shadow w-100">
+          <nav className="app-navbar navbar navbar-expand-lg position-fixed shadow">
             <div className="container-xxl">
               {isLiquefy ? (
                 <LiquidIconButton
@@ -300,6 +356,14 @@ export function AppShell() {
                 >
                   <List size="1.4rem" />
                 </LiquidIconButton>
+              ) : isAnimalIsland ? (
+                <AnimalButton
+                  className={`app-navbar-menu-trigger animal-island-navbar-trigger d-lg-none ${togglerHidden} ${togglerNotLogin}`}
+                  type="text"
+                  aria-label={t('App.Sidebar.Navigation')}
+                  icon={<List size="1.4rem" />}
+                  onClick={() => setSheetOpen(true)}
+                />
               ) : (
                 <button
                   className={`navbar-toggler btn btn-icon d-lg-none ${togglerHidden} ${togglerNotLogin}`}
@@ -356,6 +420,23 @@ export function AppShell() {
                 >
                   <SidebarNav onNavigate={() => setSheetOpen(false)} />
                 </LiquidDrawer>
+              ) : isAnimalIsland ? (
+                animalDrawerMounted ? (
+                  <AnimalDrawer
+                    className={`shell-mobile-animal-drawer${animalDrawerClosing ? ' is-closing' : ''}`}
+                    open
+                    onClose={() => setSheetOpen(false)}
+                    placement="left"
+                    width="min(350px, 88vw)"
+                    pushBackground={false}
+                    title={t('App.Sidebar.Navigation')}
+                    maskStyle={{
+                      animation: `${animalDrawerClosing ? 'animal-island-drawer-mask-out' : 'animal-island-drawer-mask-in'} 0.36s cubic-bezier(0.2, 0, 0.2, 1) both`,
+                    }}
+                  >
+                    <SidebarNav onNavigate={() => setSheetOpen(false)} />
+                  </AnimalDrawer>
+                ) : null
               ) : (
                 <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                   <SheetContent
@@ -376,10 +457,19 @@ export function AppShell() {
               ))}
             <main
               className={'order-1 ms-0' + (accessLayout ? '' : ' ms-lg-3 me-lg-2')}
-              style={{ marginTop: accessLayout ? '0' : isLiquefy ? '5.45rem' : '4.6rem', gridArea: 'main' }}
+              style={{
+                marginTop: accessLayout
+                  ? '0'
+                  : isLiquefy
+                    ? '5.45rem'
+                    : isAnimalIsland
+                      ? '5.15rem'
+                      : '4.6rem',
+                gridArea: 'main',
+              }}
             >
               <div
-                key={location.key}
+                key={location.pathname}
                 className="route-view-transition"
                 data-route-view={location.pathname}
               >

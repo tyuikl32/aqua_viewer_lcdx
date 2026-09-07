@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { LiquidButton, LiquidDialog, LiquefyProvider } from '@liquefy-ui/react';
+import { Button as AnimalButton, Modal as AnimalModal } from 'animal-island-ui';
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/lib/theme';
@@ -83,6 +84,31 @@ function ConfirmDialogRoot({
           </div>
         </LiquidDialog>
       </LiquefyProvider>
+    );
+  }
+
+  if (theme.family === 'animal-island') {
+    return (
+      <AnimalModal
+        open
+        onClose={() => finish(false)}
+        title={opts.title ?? '确认'}
+        width="min(460px, calc(100vw - 2rem))"
+        typewriter={false}
+        className="animal-island-confirm-dialog"
+        footer={
+          <div className="flex justify-end gap-3">
+            <AnimalButton type="default" onClick={() => finish(false)}>
+              {opts.noText ?? '取消'}
+            </AnimalButton>
+            <AnimalButton type="primary" onClick={() => finish(true)}>
+              {opts.yesText ?? '确定'}
+            </AnimalButton>
+          </div>
+        }
+      >
+        <p>{opts.message}</p>
+      </AnimalModal>
     );
   }
 

@@ -1,5 +1,6 @@
 import { useId, useLayoutEffect, type ReactNode } from 'react';
 import { LiquidDialog } from '@liquefy-ui/react';
+import { Modal as AnimalModal } from 'animal-island-ui';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
@@ -60,6 +61,29 @@ export function BModal({
       >
         <div className={scrollable ? 'overflow-y-auto' : undefined}>{children}</div>
       </LiquidDialog>
+    );
+  }
+
+  if (family === 'animal-island') {
+    return (
+      <AnimalModal
+        open={open}
+        onClose={onClose}
+        title={resolvedTitle}
+        width={wide ? 'min(820px, calc(100vw - 2rem))' : 'min(520px, calc(100vw - 2rem))'}
+        footer={null}
+        typewriter={false}
+        className={
+          'animal-island-modal' +
+          (wide ? ' animal-island-modal--wide' : '') +
+          (scrollable ? ' animal-island-modal--scrollable' : '') +
+          (className ? ` ${className}` : '')
+        }
+      >
+        <div className={scrollable ? 'animal-island-modal__scroll overflow-y-auto' : undefined}>
+          {children}
+        </div>
+      </AnimalModal>
     );
   }
 

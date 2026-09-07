@@ -8,3 +8,9 @@
   touch-action: manipulation;
   z-index: 1;
 }
+
+/* Announcement content is already carried by the rounded modal surface. A
+   second opaque cap makes the title look like a heavy rectangular banner. */
+[data-theme='animal-island'] .announcement-detail-dialog [class*='animal-header-'] {
+  background: transparent !important;
+}

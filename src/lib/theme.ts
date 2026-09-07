@@ -71,6 +71,9 @@ function updateMetaTag(name: string, content: string) {
 function applyDocumentTheme(next: ThemeSnapshot) {
   document.documentElement.dataset.theme = next.family;
   document.documentElement.dataset.colorScheme = next.resolvedColorTheme;
+  // Animal Island UI ships the themed hand cursor as a global utility class.
+  // Keep it on the document root so portal-rendered menus and dialogs inherit it too.
+  document.documentElement.classList.toggle('animal-cursor--force', next.family === 'animal-island');
   // Compatibility output only. RinNET, Tailwind and themes consume data-color-scheme.
   document.documentElement.dataset.bsTheme = next.resolvedColorTheme;
 

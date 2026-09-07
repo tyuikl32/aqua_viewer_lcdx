@@ -7,6 +7,7 @@ import { notice } from '@/lib/message';
 import { getCurrentUser } from '@/lib/user';
 import { assetsHost, enableImages } from '@/lib/utils';
 import { padDigits } from '@/lib/format';
+import '@/styles/song-detail.css';
 import type { ChuniV2Song, ChuniV2SongRankingRow, ChuniV2SongRecord } from './song-models';
 import './ChuniV2SongScoreRanking.css';
 
@@ -185,7 +186,7 @@ export function ChuniV2SongScoreRanking({
       <SheetContent
         side="right"
         showCloseButton={false}
-        className="chuni-v2-song-score-ranking-panel chuni-v2-song-score-ranking-sheet w-[400px] max-w-full p-0 outline-none sm:max-w-[400px]"
+        className="song-detail-surface chuni-v2-song-score-ranking-panel chuni-v2-song-score-ranking-sheet w-[400px] max-w-full p-0 outline-none sm:max-w-[400px]"
         onOpenAutoFocus={(event) => event.preventDefault()}
         overlayClassName="chuni-v2-song-score-ranking-overlay"
       >
@@ -197,25 +198,37 @@ export function ChuniV2SongScoreRanking({
             <button type="button" className="btn-close" aria-label="Close" />
           </SheetClose>
         </div>
+        <SheetClose asChild>
+          <button type="button" className="btn-close song-detail-modern-close" aria-label="Close" />
+        </SheetClose>
         <div
           className="offcanvas-body"
           style={{ maxHeight: '90vh', overflowY: 'scroll' }}
         >
-          <div className="card">
-            <div className="card-body">
-              {enableImages && (
-                <img
-                  className="card-img mb-3 music-img sm"
-                  src={`${assetsHost}assets/chuni/jacket/CHU_UI_Jacket_${padDigits(music.musicId, 4)}.webp`}
-                  alt=""
-                />
-              )}
-              <div className="position-relative">
-                <h5 className="card-title mb-1 fw-bold">「{music.name}」</h5>
-                <span className="card-subtitle music-artistName" style={{ fontSize: 12 }}>
-                  {music.artistName}
-                </span>
-                <hr />
+          <div className="card song-detail-card">
+            <div className="card-body song-detail-card-body">
+              <div
+                className="music-info-container song-detail-hero position-relative"
+                style={
+                  {
+                    '--jacket-img': `url(${assetsHost}assets/chuni/jacket/CHU_UI_Jacket_${padDigits(music.musicId, 4)}.webp)`,
+                  } as React.CSSProperties
+                }
+              >
+                {enableImages && (
+                  <img
+                    className="card-img mb-3 music-img sm"
+                    src={`${assetsHost}assets/chuni/jacket/CHU_UI_Jacket_${padDigits(music.musicId, 4)}.webp`}
+                    alt=""
+                  />
+                )}
+                <div className="position-relative song-detail-hero-copy">
+                  <h5 className="card-title mb-1 fw-bold">「{music.name}」</h5>
+                  <span className="card-subtitle music-artistName" style={{ fontSize: 12 }}>
+                    {music.artistName}
+                  </span>
+                  <hr className="mb-0" />
+                </div>
               </div>
             {recordsReady && (
               <section>

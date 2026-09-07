@@ -9,6 +9,11 @@ export const THEME_FAMILIES = [
     labelKey: 'App.Footer.Liquefy',
     statusBar: { light: '#eefbff', dark: '#101c28' },
   },
+  {
+    id: 'animal-island',
+    labelKey: 'App.Footer.AnimalIsland',
+    statusBar: { light: '#f8f8f0', dark: '#26251f' },
+  },
 ] as const;
 
 export type ThemeFamily = (typeof THEME_FAMILIES)[number]['id'];

@@ -1,0 +1,1377 @@
+/*
+ * Animal Island UI theme for RinNET.
+ * Design language and native components: https://github.com/guokaigdg/animal-island-ui
+ * Animal Island UI is licensed under CC BY-NC 4.0.
+ */
+:root[data-theme='animal-island'] {
+  color-scheme: light;
+
+  --ui-font-family: Nunito, 'Noto Sans SC', -apple-system, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
+
+  --ui-background: #f8f8f0;
+  --ui-background-rgb: 248, 248, 240;
+  --ui-foreground: #725d42;
+  --ui-foreground-rgb: 114, 93, 66;
+  --ui-secondary-foreground: #8a7b66;
+  --ui-secondary-foreground-rgb: 138, 123, 102;
+  --ui-muted-foreground: #756751;
+  --ui-muted-foreground-rgb: 117, 103, 81;
+  --ui-emphasis: #794f27;
+  --ui-emphasis-rgb: 121, 79, 39;
+  --ui-card: #f7f3df;
+  --ui-card-foreground: #725d42;
+  --ui-card-cap: #f0e8d8;
+  --ui-popover: #fffbe7;
+  --ui-popover-foreground: #725d42;
+  --ui-secondary-surface: #f0e8d8;
+  --ui-secondary-surface-rgb: 240, 232, 216;
+  --ui-muted-surface: #f3efdf;
+  --ui-muted-surface-rgb: 243, 239, 223;
+  --ui-accent-surface: #e6f9f6;
+  --ui-accent-foreground: #725d42;
+
+  --ui-primary: #19c8b9;
+  --ui-primary-rgb: 25, 200, 185;
+  --ui-primary-foreground: #493b29;
+  --ui-primary-text: #087f74;
+  --ui-primary-subtle: #d8f5ef;
+  --ui-primary-border: #82d5bb;
+  --ui-primary-hover: #3dd4c6;
+  --ui-primary-hover-border: #19c8b9;
+  --ui-primary-active: #11a89b;
+
+  --ui-secondary: #9a835a;
+  --ui-secondary-rgb: 154, 131, 90;
+  --ui-secondary-text: #66502f;
+  --ui-secondary-subtle: #f0e8d8;
+  --ui-secondary-border: #d4c4a8;
+  --ui-success: #6fba2c;
+  --ui-success-rgb: 111, 186, 44;
+  --ui-success-text: #3d6819;
+  --ui-success-subtle: #e5f4d5;
+  --ui-success-border: #a9d77f;
+  --ui-info: #19c8b9;
+  --ui-info-rgb: 25, 200, 185;
+  --ui-info-text: #087f74;
+  --ui-info-subtle: #e6f9f6;
+  --ui-info-border: #82d5bb;
+  --ui-warning: #f5c31c;
+  --ui-warning-rgb: 245, 195, 28;
+  --ui-warning-text: #725814;
+  --ui-warning-subtle: #fff6d5;
+  --ui-warning-border: #f7cd67;
+  --ui-destructive: #e05a5a;
+  --ui-destructive-rgb: 224, 90, 90;
+  --ui-destructive-foreground: #fff;
+  --ui-destructive-text: #9f3030;
+  --ui-destructive-subtle: #fde4e4;
+  --ui-destructive-border: #f39a9a;
+  --ui-orange: #e59266;
+  --ui-orange-subtle: #fff0e8;
+  --ui-light: #fffbe7;
+  --ui-dark: #725d42;
+
+  --ui-link: #087f74;
+  --ui-link-rgb: 8, 127, 116;
+  --ui-link-hover: #0b685f;
+  --ui-link-hover-rgb: 11, 104, 95;
+  --ui-code: #a85565;
+  --ui-highlight-foreground: #725d42;
+  --ui-highlight-background: #fff0a8;
+
+  --ui-border-width: 2px;
+  --ui-border: #d4c4a8;
+  --ui-border-translucent: rgb(121 79 39 / 22%);
+  --ui-input-border: #c4b89e;
+  --ui-radius-sm: 12px;
+  --ui-radius-md: 18px;
+  --ui-radius-lg: 20px;
+  --ui-radius-xl: 24px;
+  --ui-shadow: 0 3px 10px rgb(61 52 40 / 10%);
+  --ui-shadow-sm: 0 2px 4px rgb(61 52 40 / 8%);
+  --ui-shadow-lg: 0 8px 24px rgb(61 52 40 / 14%);
+  --ui-shadow-inset: inset 0 2px 4px rgb(114 93 66 / 15%);
+  --ui-focus-ring: #956c00;
+  --ui-valid: #5a9e1e;
+  --ui-invalid: #c94444;
+  --ui-progress: #19c8b9;
+  --ui-overlay: rgb(72 61 43 / 42%);
+
+  --ui-control-background: #fffbe7;
+  --ui-control-foreground: #725d42;
+  --ui-control-border: #c4b89e;
+  --ui-control-hover-background: #e6f9f6;
+  --ui-control-hover-foreground: #087f74;
+  --ui-control-hover-border: #19c8b9;
+  --ui-control-active-background: #d8f5ef;
+  --ui-control-active-foreground: #725d42;
+  --ui-control-active-border: #11a89b;
+  --ui-primary-control-background: #f8f8f0;
+  --ui-primary-control-border: #f8f8f0;
+  --ui-primary-control-hover-background: #fffbe7;
+  --ui-primary-control-hover-border: #fffbe7;
+  --ui-primary-control-active-background: #f0e8d8;
+  --ui-primary-control-active-border: #f0e8d8;
+  --ui-destructive-control-background: #e05a5a;
+  --ui-destructive-control-border: #e05a5a;
+  --ui-destructive-control-hover-background: #eb6c6c;
+  --ui-destructive-control-hover-border: #eb6c6c;
+  --ui-destructive-control-active-background: #c94444;
+  --ui-destructive-control-active-border: #c94444;
+  --ui-warning-control-foreground: #725d42;
+  --ui-outline-control-background: #fffbe7;
+  --ui-outline-control-hover-foreground: #087f74;
+  --ui-outline-control-hover-mix: 100%;
+  --ui-link-control-background: transparent;
+  --ui-link-control-border: transparent;
+  --ui-link-control-hover-background: #e6f9f6;
+
+  --ui-table-foreground: #725d42;
+  --ui-table-background: #f7f3df;
+  --ui-table-border: #d4c4a8;
+  --ui-table-striped-background: rgb(240 232 216 / 62%);
+  --ui-table-hover-background: #e6f9f6;
+  --ui-table-hover-foreground: #725d42;
+
+  --ui-theme-menu-min-width: 12rem;
+  --ui-theme-menu-padding: 0.65rem;
+  --ui-theme-menu-background: #fffbe7;
+  --ui-theme-menu-border: #d4c4a8;
+  --ui-theme-menu-radius: 18px;
+  --ui-theme-menu-shadow: 0 8px 24px rgb(61 52 40 / 14%);
+  --ui-theme-menu-label: #8a7b66;
+  --ui-theme-menu-label-padding-block: 0.35rem;
+  --ui-theme-menu-label-padding-inline: 0.65rem;
+  --ui-theme-menu-label-font-size: 0.75rem;
+  --ui-theme-menu-label-font-weight: 700;
+  --ui-theme-menu-item-min-height: 2.35rem;
+  --ui-theme-menu-item-margin: 0.2rem 0;
+  --ui-theme-menu-item-padding: 0.45rem 0.7rem;
+  --ui-theme-menu-item-radius: 12px;
+  --ui-theme-menu-item-hover: #e6f9f6;
+  --ui-theme-menu-item-active: #19c8b9;
+  --ui-theme-menu-item-active-foreground: #493b29;
+  --ui-theme-menu-item-active-border: #11a89b;
+  --ui-theme-menu-item-active-shadow: inset 0 -2px 0 rgb(17 168 155 / 35%);
+  --ui-theme-menu-item-active-font-weight: 700;
+
+  /* Keep native Animal Island components on the same palette as the app shell. */
+  --animal-primary-color: #19c8b9;
+  --animal-primary-color-hover: #3dd4c6;
+  --animal-primary-color-active: #11a89b;
+  --animal-primary-color-bg: #e6f9f6;
+  --animal-text-color: #794f27;
+  --animal-text-color-secondary: #8a7b66;
+  --animal-text-color-muted: #725d42;
+  --animal-text-color-disabled: #c4b89e;
+  --animal-border-color: #9f927d;
+  --animal-border-color-hover: #a89878;
+  --animal-border-color-light: #c4b89e;
+  --animal-bg-color: #f8f8f0;
+  --animal-bg-color-secondary: #f0e8d8;
+  --animal-bg-color-disabled: #f0ece2;
+  --animal-mask-bg: rgb(72 61 43 / 42%);
+}
+
+:root[data-theme='animal-island'][data-color-scheme='dark'] {
+  color-scheme: dark;
+
+  --ui-background: #26251f;
+  --ui-background-rgb: 38, 37, 31;
+  --ui-foreground: #eadfc9;
+  --ui-foreground-rgb: 234, 223, 201;
+  --ui-secondary-foreground: #cdbfa4;
+  --ui-secondary-foreground-rgb: 205, 191, 164;
+  --ui-muted-foreground: #c6b797;
+  --ui-muted-foreground-rgb: 198, 183, 151;
+  --ui-emphasis: #fff3d7;
+  --ui-emphasis-rgb: 255, 243, 215;
+  --ui-card: #342f25;
+  --ui-card-foreground: #eadfc9;
+  --ui-card-cap: #40392c;
+  --ui-popover: #3a3428;
+  --ui-popover-foreground: #f1e5cd;
+  --ui-secondary-surface: #40392c;
+  --ui-secondary-surface-rgb: 64, 57, 44;
+  --ui-muted-surface: #332f27;
+  --ui-muted-surface-rgb: 51, 47, 39;
+  --ui-accent-surface: #194d47;
+  --ui-accent-foreground: #f1e5cd;
+
+  --ui-primary: #62d8c9;
+  --ui-primary-rgb: 98, 216, 201;
+  --ui-primary-foreground: #2c2a22;
+  --ui-primary-text: #88e4d8;
+  --ui-primary-subtle: #194d47;
+  --ui-primary-border: #28776d;
+  --ui-primary-hover: #7ce4d7;
+  --ui-primary-hover-border: #62d8c9;
+  --ui-primary-active: #3fc6b6;
+  --ui-secondary: #b8a176;
+  --ui-secondary-rgb: 184, 161, 118;
+  --ui-secondary-text: #dfcda8;
+  --ui-secondary-subtle: #443b2d;
+  --ui-secondary-border: #6f6149;
+  --ui-success: #92cf5b;
+  --ui-success-rgb: 146, 207, 91;
+  --ui-success-text: #b8e78f;
+  --ui-success-subtle: #29451f;
+  --ui-success-border: #4e7730;
+  --ui-info: #62d8c9;
+  --ui-info-rgb: 98, 216, 201;
+  --ui-info-text: #9be9df;
+  --ui-info-subtle: #194d47;
+  --ui-info-border: #28776d;
+  --ui-warning: #f5ca4b;
+  --ui-warning-rgb: 245, 202, 75;
+  --ui-warning-text: #ffe197;
+  --ui-warning-subtle: #51441f;
+  --ui-warning-border: #8b7430;
+  --ui-destructive: #ed7777;
+  --ui-destructive-rgb: 237, 119, 119;
+  --ui-destructive-foreground: #2c211f;
+  --ui-destructive-text: #f2a0a0;
+  --ui-destructive-subtle: #512d2d;
+  --ui-destructive-border: #8d4848;
+  --ui-orange: #eba278;
+  --ui-orange-subtle: #4e3528;
+  --ui-light: #eadfc9;
+  --ui-dark: #26251f;
+
+  --ui-link: #88e4d8;
+  --ui-link-rgb: 136, 228, 216;
+  --ui-link-hover: #b4f2ea;
+  --ui-link-hover-rgb: 180, 242, 234;
+  --ui-code: #f0a8b5;
+  --ui-highlight-foreground: #2c2a22;
+  --ui-highlight-background: #f5ca4b;
+  --ui-border: #665a45;
+  --ui-border-translucent: rgb(255 240 210 / 18%);
+  --ui-input-border: #7d6e52;
+  --ui-shadow: 0 3px 10px rgb(0 0 0 / 30%);
+  --ui-shadow-sm: 0 2px 4px rgb(0 0 0 / 24%);
+  --ui-shadow-lg: 0 8px 24px rgb(0 0 0 / 38%);
+  --ui-shadow-inset: inset 0 2px 4px rgb(0 0 0 / 30%);
+  --ui-focus-ring: #ffd65a;
+  --ui-valid: #92cf5b;
+  --ui-invalid: #ed7777;
+  --ui-overlay: rgb(10 10 8 / 68%);
+
+  --ui-control-background: #3a3428;
+  --ui-control-foreground: #eadfc9;
+  --ui-control-border: #75674f;
+  --ui-control-hover-background: #194d47;
+  --ui-control-hover-foreground: #f1e5cd;
+  --ui-control-hover-border: #62d8c9;
+  --ui-control-active-background: #245f58;
+  --ui-control-active-foreground: #fff3d7;
+  --ui-control-active-border: #62d8c9;
+  --ui-primary-control-background: #4b4334;
+  --ui-primary-control-border: #675a44;
+  --ui-primary-control-hover-background: #574d3b;
+  --ui-primary-control-hover-border: #7d6e52;
+  --ui-primary-control-active-background: #3f382c;
+  --ui-primary-control-active-border: #675a44;
+  --ui-destructive-control-background: #c85555;
+  --ui-destructive-control-border: #c85555;
+  --ui-destructive-control-hover-background: #dc6868;
+  --ui-destructive-control-hover-border: #dc6868;
+  --ui-destructive-control-active-background: #a94444;
+  --ui-destructive-control-active-border: #a94444;
+  --ui-warning-control-foreground: #2c2a22;
+  --ui-outline-control-background: #3a3428;
+  --ui-outline-control-hover-foreground: #88e4d8;
+  --ui-link-control-hover-background: #194d47;
+
+  --ui-table-foreground: #eadfc9;
+  --ui-table-background: #342f25;
+  --ui-table-border: #665a45;
+  --ui-table-striped-background: rgb(75 67 52 / 58%);
+  --ui-table-hover-background: #194d47;
+  --ui-table-hover-foreground: #fff3d7;
+
+  --ui-theme-menu-background: #3a3428;
+  --ui-theme-menu-border: #665a45;
+  --ui-theme-menu-shadow: 0 8px 24px rgb(0 0 0 / 40%);
+  --ui-theme-menu-label: #cdbfa4;
+  --ui-theme-menu-item-hover: #194d47;
+  --ui-theme-menu-item-active: #62d8c9;
+  --ui-theme-menu-item-active-foreground: #2c2a22;
+  --ui-theme-menu-item-active-border: #88e4d8;
+
+  --animal-primary-color: #62d8c9;
+  --animal-primary-color-hover: #7ce4d7;
+  --animal-primary-color-active: #3fc6b6;
+  --animal-primary-color-bg: #194d47;
+  --animal-text-color: #eadfc9;
+  --animal-text-color-secondary: #cdbfa4;
+  --animal-text-color-muted: #c6b797;
+  --animal-text-color-disabled: #8f8269;
+  --animal-border-color: #75674f;
+  --animal-border-color-hover: #62d8c9;
+  --animal-border-color-light: #665a45;
+  --animal-bg-color: #342f25;
+  --animal-bg-color-secondary: #40392c;
+  --animal-bg-color-disabled: #332f27;
+  --animal-mask-bg: rgb(10 10 8 / 68%);
+}
+
+[data-theme='animal-island'] body {
+  background-color: var(--ui-background);
+  background-image:
+    radial-gradient(ellipse at 8% 8%, rgb(var(--ui-primary-rgb) / 16%) 0 7rem, transparent 19rem),
+    radial-gradient(ellipse at 92% 22%, rgb(var(--ui-warning-rgb) / 13%) 0 8rem, transparent 22rem),
+    radial-gradient(ellipse at 74% 84%, rgb(var(--ui-success-rgb) / 10%) 0 6rem, transparent 19rem),
+    repeating-linear-gradient(135deg, transparent 0 54px, rgb(var(--ui-primary-rgb) / 3%) 55px 56px),
+    radial-gradient(circle, rgb(154 131 90 / 12%) 1.25px, transparent 1.35px);
+  background-position: 0 0, 0 0, 0 0;
+  background-size: auto, auto, auto, auto, 28px 28px;
+  background-attachment: fixed;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+[data-theme='animal-island'] ::selection {
+  color: #493b29;
+  background: #9be8dd;
+}
+
+[data-theme='animal-island'] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme='animal-island'] ::-webkit-scrollbar-track {
+  background: var(--ui-secondary-surface);
+  border-radius: 50px;
+}
+
+[data-theme='animal-island'] ::-webkit-scrollbar-thumb {
+  background: var(--ui-secondary);
+  border: 2px solid var(--ui-secondary-surface);
+  border-radius: 50px;
+}
+
+[data-theme='animal-island'] h1,
+[data-theme='animal-island'] h2,
+[data-theme='animal-island'] h3,
+[data-theme='animal-island'] h4,
+[data-theme='animal-island'] h5,
+[data-theme='animal-island'] h6,
+[data-theme='animal-island'] strong,
+[data-theme='animal-island'] .fw-bold,
+[data-theme='animal-island'] .fw-semibold {
+  color: var(--ui-emphasis);
+  font-weight: 700 !important;
+  letter-spacing: 0.02em;
+}
+
+[data-theme='animal-island'] .page-heading {
+  display: table;
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding: 0.55rem 2.6rem 0.55rem 1.25rem;
+  color: #493b29;
+  background: #82d5bb;
+  clip-path: polygon(0 0, 88% 0, 100% 50%, 88% 100%, 0 100%, 6% 50%);
+  font-size: clamp(1.75rem, 4vw, 2.45rem);
+  font-weight: 900 !important;
+  line-height: 1.1;
+  transform: perspective(800px) rotateY(2deg);
+  filter: drop-shadow(-4px 5px 0 rgb(154 131 90 / 22%));
+}
+
+[data-theme='animal-island'] .page-heading::after {
+  display: none;
+}
+
+/* Buttons: rounded, warm, and tactile. Only primary/danger receive the thick stack. */
+[data-theme='animal-island'] .btn,
+[data-theme='animal-island'] [data-slot='button'] {
+  min-height: 40px;
+  padding-inline: 1.2rem;
+  color: var(--ui-control-foreground);
+  background: var(--ui-control-background);
+  border: 2px solid var(--ui-control-border);
+  border-radius: 50px !important;
+  box-shadow: var(--ui-shadow-sm);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='animal-island'] .btn:hover:not(:disabled):not(.disabled),
+[data-theme='animal-island'] [data-slot='button']:hover:not(:disabled) {
+  color: var(--ui-control-hover-foreground);
+  background: var(--ui-control-hover-background);
+  border-color: var(--ui-control-hover-border);
+  box-shadow: var(--ui-shadow);
+  transform: translateY(-1px);
+}
+
+[data-theme='animal-island'] .btn:active:not(:disabled):not(.disabled),
+[data-theme='animal-island'] [data-slot='button']:active:not(:disabled) {
+  color: var(--ui-control-active-foreground);
+  background: var(--ui-control-active-background);
+  border-color: var(--ui-control-active-border);
+  box-shadow: var(--ui-shadow-sm);
+  transform: translateY(1px);
+}
+
+[data-theme='animal-island'] .btn:focus-visible,
+[data-theme='animal-island'] [data-slot='button']:focus-visible {
+  outline: 2px solid var(--animal-primary-color) !important;
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+[data-theme='animal-island'] .btn-primary,
+[data-theme='animal-island'] [data-slot='button'][data-variant='default'] {
+  color: var(--ui-primary-foreground) !important;
+  background: var(--ui-primary-control-background) !important;
+  border-color: var(--ui-primary-control-border) !important;
+  box-shadow: 0 5px 0 #bdaea0 !important;
+}
+
+[data-theme='animal-island'] .btn-primary:hover:not(:disabled):not(.disabled),
+[data-theme='animal-island'] [data-slot='button'][data-variant='default']:hover:not(:disabled) {
+  background: var(--ui-primary-control-hover-background) !important;
+  border-color: var(--ui-primary-control-hover-border) !important;
+  box-shadow: 0 6px 0 #bdaea0 !important;
+}
+
+[data-theme='animal-island'] .btn-primary:active:not(:disabled):not(.disabled),
+[data-theme='animal-island'] [data-slot='button'][data-variant='default']:active:not(:disabled) {
+  background: var(--ui-primary-control-active-background) !important;
+  border-color: var(--ui-primary-control-active-border) !important;
+  box-shadow: 0 1px 0 #bdaea0 !important;
+  transform: translateY(2px);
+}
+
+[data-theme='animal-island'] .btn-danger,
+[data-theme='animal-island'] [data-slot='button'][data-variant='destructive'] {
+  color: var(--ui-destructive-foreground) !important;
+  background: var(--ui-destructive-control-background) !important;
+  border-color: var(--ui-destructive-control-border) !important;
+  box-shadow: 0 5px 0 #a94444 !important;
+}
+
+[data-theme='animal-island'] .btn-danger:hover:not(:disabled):not(.disabled),
+[data-theme='animal-island'] [data-slot='button'][data-variant='destructive']:hover:not(:disabled) {
+  background: var(--ui-destructive-control-hover-background) !important;
+  border-color: var(--ui-destructive-control-hover-border) !important;
+  box-shadow: 0 6px 0 #a94444 !important;
+}
+
+[data-theme='animal-island'] .btn-outline-primary {
+  color: var(--ui-primary-text) !important;
+  background: var(--ui-primary-subtle) !important;
+  border-color: var(--ui-primary) !important;
+}
+
+[data-theme='animal-island'] .btn-outline-primary:hover:not(:disabled) {
+  color: var(--ui-primary-foreground) !important;
+  background: var(--ui-primary) !important;
+  border-color: var(--ui-primary-active) !important;
+}
+
+[data-theme='animal-island'] .btn-outline-danger {
+  color: var(--ui-destructive-text) !important;
+  background: var(--ui-destructive-subtle) !important;
+  border-color: var(--ui-destructive) !important;
+}
+
+[data-theme='animal-island'] .btn-outline-danger:hover:not(:disabled) {
+  color: var(--ui-destructive-foreground) !important;
+  background: var(--ui-destructive) !important;
+  border-color: var(--ui-destructive) !important;
+}
+
+[data-theme='animal-island'] .btn-outline-warning {
+  color: var(--ui-warning-text) !important;
+  background: var(--ui-warning-subtle) !important;
+  border-color: var(--ui-warning) !important;
+}
+
+[data-theme='animal-island'] .btn-outline-warning:hover:not(:disabled) {
+  color: var(--ui-warning-control-foreground) !important;
+  background: var(--ui-warning) !important;
+  border-color: var(--ui-warning) !important;
+}
+
+[data-theme='animal-island'] .btn-success {
+  color: #253816 !important;
+  background: var(--ui-success) !important;
+  border-color: var(--ui-success) !important;
+  box-shadow: 0 5px 0 var(--ui-success-text) !important;
+}
+
+[data-theme='animal-island'] .btn-outline-secondary {
+  color: var(--ui-secondary-text) !important;
+  background: var(--ui-secondary-subtle) !important;
+  border-color: var(--ui-secondary) !important;
+}
+
+[data-theme='animal-island'] .btn-link,
+[data-theme='animal-island'] [data-slot='button'][data-variant='link'] {
+  min-height: auto;
+  color: var(--ui-link) !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+[data-theme='animal-island'] .btn-sm {
+  min-height: 32px;
+  padding-inline: 1rem;
+  border-radius: 12px !important;
+}
+
+[data-theme='animal-island'] .btn-lg {
+  min-height: 48px;
+  padding-inline: 2rem;
+  border-radius: 24px !important;
+}
+
+[data-theme='animal-island'] .btn-icon {
+  min-width: 42px;
+  padding: 0;
+}
+
+[data-theme='animal-island'] .animal-island-button--icon {
+  width: 40px;
+  min-width: 40px;
+  padding-inline: 0 !important;
+}
+
+/* Cards and content wells use parchment, dot texture, and generous organic radii. */
+[data-theme='animal-island'] .card,
+[data-theme='animal-island'] .authorization-card,
+[data-theme='animal-island'] .json-view,
+[data-theme='animal-island'] [data-slot='card'],
+[data-theme='animal-island'] .animal-island-card {
+  color: var(--ui-card-foreground);
+  background-color: var(--ui-card);
+  background-image:
+    radial-gradient(circle, rgb(196 184 158 / 14%) 1.5px, transparent 1.6px),
+    radial-gradient(circle, rgb(196 184 158 / 9%) 1px, transparent 1.1px);
+  background-position: 0 0, 7px 7px;
+  background-size: 28px 28px, 14px 14px;
+  border: 1.5px solid var(--ui-border);
+  border-radius: 20px !important;
+  box-shadow: none !important;
+}
+
+[data-theme='animal-island'] .card-header,
+[data-theme='animal-island'] .card-footer {
+  color: var(--ui-emphasis);
+  background: rgb(var(--ui-secondary-surface-rgb) / 72%);
+  border-color: var(--ui-border);
+  font-weight: 700;
+}
+
+[data-theme='animal-island'] .card-header:first-child {
+  border-radius: 18px 18px 0 0;
+}
+
+[data-theme='animal-island'] .card-btn,
+[data-theme='animal-island'] .list-group-item-action {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='animal-island'] .card-btn:hover,
+[data-theme='animal-island'] .list-group-item-action:hover {
+  border-color: var(--ui-primary);
+  transform: translateY(-2px);
+}
+
+/* Animal Island UI ships its card and primary-button colors as fixed light
+   values. Rebind the importer surfaces when the app switches to dark mode;
+   the extra importance is intentional because the package CSS is unlayered. */
+[data-theme='animal-island'][data-color-scheme='dark'] .animal-island-import-panel {
+  color: var(--ui-card-foreground) !important;
+  background-color: var(--ui-card) !important;
+  background-image:
+    radial-gradient(circle, rgb(205 191 164 / 10%) 1.5px, transparent 1.6px),
+    radial-gradient(circle, rgb(205 191 164 / 7%) 1px, transparent 1.1px) !important;
+  background-position: 0 0, 7px 7px !important;
+  background-size: 28px 28px, 14px 14px !important;
+  border-color: var(--ui-border) !important;
+}
+
+[data-theme='animal-island'][data-color-scheme='dark'] .animal-island-import-panel h2 {
+  color: var(--ui-emphasis) !important;
+}
+
+[data-theme='animal-island'][data-color-scheme='dark'] .animal-island-import-panel p {
+  color: var(--ui-muted-foreground) !important;
+}
+
+[data-theme='animal-island'][data-color-scheme='dark']
+  .animal-island-import-panel [class*='animal-btn-primary-'] {
+  color: var(--ui-primary-foreground) !important;
+  background: var(--ui-primary) !important;
+  border-color: var(--ui-primary) !important;
+  box-shadow: 0 5px var(--ui-primary-active) !important;
+}
+
+[data-theme='animal-island'][data-color-scheme='dark']
+  .animal-island-import-panel [class*='animal-btn-primary-']:hover:not(:disabled) {
+  background: var(--ui-primary-hover) !important;
+  border-color: var(--ui-primary-hover) !important;
+  box-shadow: 0 6px var(--ui-primary-active) !important;
+}
+
+[data-theme='animal-island'][data-color-scheme='dark'] .animal-island-import-warning {
+  color: var(--ui-warning-text) !important;
+  background: var(--ui-warning-subtle) !important;
+  border-color: var(--ui-warning-border) !important;
+}
+
+[data-theme='animal-island'][data-color-scheme='dark'] .animal-island-import-warning strong,
+[data-theme='animal-island'][data-color-scheme='dark'] .animal-island-import-warning span {
+  color: var(--ui-warning-text) !important;
+}
+
+[data-theme='animal-island'] .badge,
+[data-theme='animal-island'] [data-slot='badge'] {
+  padding: 0.35rem 0.65rem;
+  border: 1.5px solid rgb(121 79 39 / 16%);
+  border-radius: 50px !important;
+  font-weight: 700;
+}
+
+/* Forms */
+[data-theme='animal-island'] .form-control,
+[data-theme='animal-island'] .form-select,
+[data-theme='animal-island'] [data-slot='input'],
+[data-theme='animal-island'] [data-slot='textarea'],
+[data-theme='animal-island'] [data-slot='select-trigger'],
+[data-theme='animal-island'] input:not([type='checkbox']):not([type='radio']):not([type='range']),
+[data-theme='animal-island'] select,
+[data-theme='animal-island'] textarea {
+  color: var(--ui-foreground);
+  background: var(--ui-control-background);
+  border: 2.5px solid var(--ui-input-border);
+  border-radius: 50px !important;
+  box-shadow: none;
+  font-weight: 500;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='animal-island'] textarea,
+[data-theme='animal-island'] [data-slot='textarea'] {
+  border-radius: 18px !important;
+}
+
+[data-theme='animal-island'] .form-control:focus,
+[data-theme='animal-island'] .form-select:focus,
+[data-theme='animal-island'] [data-slot='input']:focus,
+[data-theme='animal-island'] [data-slot='textarea']:focus,
+[data-theme='animal-island'] [data-slot='select-trigger']:focus,
+[data-theme='animal-island'] input:focus,
+[data-theme='animal-island'] select:focus,
+[data-theme='animal-island'] textarea:focus {
+  color: var(--ui-foreground);
+  background: var(--ui-control-background);
+  border-color: #ffcc00;
+  outline: 2px solid rgb(149 108 0 / 55%);
+  outline-offset: 1px;
+  box-shadow: none !important;
+  transform: translateY(-1px);
+}
+
+[data-theme='animal-island'] .form-control::placeholder,
+[data-theme='animal-island'] input::placeholder,
+[data-theme='animal-island'] textarea::placeholder {
+  color: var(--ui-muted-foreground);
+  font-weight: 400;
+  opacity: 0.72;
+}
+
+[data-theme='animal-island'] .form-control:disabled,
+[data-theme='animal-island'] .form-select:disabled,
+[data-theme='animal-island'] input:disabled,
+[data-theme='animal-island'] textarea:disabled,
+[data-theme='animal-island'] select:disabled {
+  background: var(--ui-muted-surface);
+  opacity: 0.65;
+}
+
+[data-theme='animal-island'] .form-check-input,
+[data-theme='animal-island'] [data-slot='checkbox'] {
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  background-color: var(--ui-control-background);
+  border: 2.5px solid var(--ui-input-border);
+  border-radius: 8px !important;
+  box-shadow: none;
+}
+
+[data-theme='animal-island'] .form-check-input[type='radio'] {
+  border-radius: 12px !important;
+}
+
+[data-theme='animal-island'] .form-check-input:checked,
+[data-theme='animal-island'] [data-slot='checkbox'][data-state='checked'] {
+  color: #493b29;
+  background-color: #f5c31c;
+  border-color: #dba90e;
+}
+
+/* Tables, alerts, lists, tabs and page controls. */
+[data-theme='animal-island'] .table-responsive {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+  background: var(--ui-card);
+  border: 1.5px solid var(--ui-border);
+  border-radius: 20px;
+}
+
+[data-theme='animal-island'] .table {
+  color: var(--ui-table-foreground);
+  background: transparent;
+  border-color: var(--ui-table-border);
+}
+
+[data-theme='animal-island'] .table > :not(caption) > * > * {
+  color: inherit;
+  background-color: transparent;
+  border-color: var(--ui-table-border);
+}
+
+[data-theme='animal-island'] .table-striped > tbody > tr:nth-of-type(odd) > * {
+  background: var(--ui-table-striped-background);
+}
+
+[data-theme='animal-island'] .table-hover > tbody > tr:hover > * {
+  color: var(--ui-table-hover-foreground);
+  background: var(--ui-table-hover-background);
+}
+
+[data-theme='animal-island'] .alert,
+[data-theme='animal-island'] [data-slot='alert'],
+[data-theme='animal-island'] .callout {
+  color: var(--ui-card-foreground);
+  background: var(--ui-card);
+  border: 2px solid var(--ui-border);
+  border-radius: 18px;
+  box-shadow: var(--ui-shadow-sm);
+}
+
+[data-theme='animal-island'] .alert-warning,
+[data-theme='animal-island'] .callout-warning {
+  color: var(--ui-warning-text);
+  background: var(--ui-warning-subtle);
+  border-color: var(--ui-warning-border);
+}
+
+[data-theme='animal-island'] .alert-danger,
+[data-theme='animal-island'] .callout-danger {
+  color: var(--ui-destructive-text);
+  background: var(--ui-destructive-subtle);
+  border-color: var(--ui-destructive-border);
+}
+
+[data-theme='animal-island'] .alert-success,
+[data-theme='animal-island'] .callout-success {
+  color: var(--ui-success-text);
+  background: var(--ui-success-subtle);
+  border-color: var(--ui-success-border);
+}
+
+[data-theme='animal-island'] .alert-info,
+[data-theme='animal-island'] .callout-info,
+[data-theme='animal-island'] .alert-primary,
+[data-theme='animal-island'] .callout-primary {
+  color: var(--ui-primary-text);
+  background: var(--ui-primary-subtle);
+  border-color: var(--ui-primary-border);
+}
+
+[data-theme='animal-island'] .list-group {
+  gap: 0.55rem;
+}
+
+[data-theme='animal-island'] .list-group-item {
+  color: var(--ui-foreground);
+  background: var(--ui-card);
+  border: 1.5px solid var(--ui-border) !important;
+  border-radius: 16px !important;
+}
+
+[data-theme='animal-island'] .list-group-item.active {
+  color: #493b29;
+  background: #b7c6e5;
+  border-color: #889df0 !important;
+}
+
+[data-theme='animal-island'] .nav-tabs,
+[data-theme='animal-island'] [data-slot='tabs-list'] {
+  gap: 0.35rem;
+  padding: 0.35rem;
+  background: var(--ui-secondary-surface);
+  border: 1.5px solid var(--ui-border);
+  border-radius: 18px;
+}
+
+[data-theme='animal-island'] .nav-tabs .nav-link,
+[data-theme='animal-island'] [data-slot='tabs-trigger'] {
+  color: var(--ui-muted-foreground);
+  border: 2px solid transparent !important;
+  border-radius: 14px !important;
+  font-weight: 700;
+}
+
+[data-theme='animal-island'] .nav-tabs .nav-link:hover,
+[data-theme='animal-island'] [data-slot='tabs-trigger']:hover {
+  color: var(--ui-link);
+  background: var(--ui-accent-surface);
+}
+
+[data-theme='animal-island'] .nav-tabs .nav-link.active,
+[data-theme='animal-island'] [data-slot='tabs-trigger'][data-state='active'] {
+  color: #493b29;
+  background: #f5c31c;
+  border-color: #dba90e !important;
+  box-shadow: inset 0 -3px 0 rgb(114 93 66 / 16%);
+}
+
+[data-theme='animal-island'] .pagination {
+  gap: 0.35rem;
+}
+
+[data-theme='animal-island'] .page-link {
+  min-width: 2.1rem;
+  min-height: 2.1rem;
+  display: grid;
+  place-items: center;
+  color: var(--ui-foreground);
+  background: var(--ui-control-background);
+  border: 2px solid var(--ui-border) !important;
+  border-radius: 12px !important;
+  box-shadow: var(--ui-shadow-sm);
+}
+
+[data-theme='animal-island'] .page-item.active .page-link {
+  color: #493b29;
+  background: #19c8b9;
+  border-color: #11a89b !important;
+}
+
+[data-theme='animal-island'] .tab-selector,
+[data-theme='animal-island'] .checkbox-label {
+  min-height: 2.35rem;
+  color: var(--ui-foreground);
+  background: var(--ui-control-background);
+  border: 2px solid var(--ui-border);
+  border-radius: 50px;
+  box-shadow: var(--ui-shadow-sm);
+  font-weight: 700;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='animal-island'] .tab-selector:hover,
+[data-theme='animal-island'] .tab-selector-active,
+[data-theme='animal-island'] input[type='checkbox']:checked + .checkbox-label {
+  color: #493b29;
+  background: #f5c31c;
+  border-color: #dba90e;
+  transform: translateY(-1px);
+}
+
+/* App shell and portal surfaces. */
+[data-theme='animal-island'] .app-navbar {
+  top: 0.55rem;
+  right: 0.65rem;
+  left: 0.65rem;
+  box-sizing: border-box;
+  width: auto !important;
+  height: 4rem;
+  color: var(--ui-emphasis);
+  background: rgb(var(--ui-background-rgb) / 92%) !important;
+  border: 2px solid var(--ui-border);
+  border-radius: 20px;
+  box-shadow: var(--ui-shadow);
+  backdrop-filter: blur(18px) saturate(125%);
+}
+
+[data-theme='animal-island'] .navbar-brand {
+  color: var(--ui-emphasis);
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+
+[data-theme='animal-island'] .navbar-brand:hover {
+  color: var(--ui-primary-text);
+}
+
+[data-theme='animal-island'] .navbar-brand img {
+  filter: drop-shadow(0 2px 0 rgb(121 79 39 / 18%));
+}
+
+[data-theme='animal-island'] .sidebar {
+  top: 5.15rem;
+}
+
+@media (min-width: 992px) {
+  [data-theme='animal-island'] .sidebar {
+    margin-top: 5.15rem;
+    max-height: calc(100vh - 6rem);
+    min-width: 14.5rem;
+    padding: 0.85rem 1rem;
+    background-color: color-mix(in srgb, var(--ui-card) 92%, transparent);
+    background-image: radial-gradient(circle, rgb(154 131 90 / 13%) 1.2px, transparent 1.3px);
+    background-size: 22px 22px;
+    border: 1.5px solid var(--ui-border);
+    border-radius: 24px;
+  }
+}
+
+[data-theme='animal-island'] .shell-sidebar-nav .link-btn,
+[data-theme='animal-island'] .shell-user-popover .link-btn {
+  display: block;
+  padding: 0.42rem 0.7rem;
+  color: var(--ui-foreground);
+  border: 2px solid transparent;
+  border-radius: 12px !important;
+  font-weight: 600;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='animal-island'] .shell-sidebar-nav .link-btn:hover,
+[data-theme='animal-island'] .shell-user-popover .link-btn:hover {
+  color: var(--ui-emphasis) !important;
+  background: #d6dff0;
+  border-color: #b7c6e5;
+  transform: translateX(2px);
+}
+
+[data-theme='animal-island'] .shell-sidebar-nav .link-btn.active,
+[data-theme='animal-island'] .shell-user-popover .link-btn.active {
+  color: #493b29 !important;
+  background: #b7c6e5;
+  border-color: #889df0;
+  box-shadow: inset 0 -2px 0 rgb(74 90 138 / 18%);
+  font-weight: 800;
+}
+
+[data-theme='animal-island'] .shell-user-popover .link-btn-danger,
+[data-theme='animal-island'] .shell-user-popover .link-btn-danger:hover {
+  color: var(--ui-destructive-text) !important;
+  background: var(--ui-destructive-subtle);
+  border-color: var(--ui-destructive-border);
+}
+
+[data-theme='animal-island'] [data-slot='popover-content'],
+[data-theme='animal-island'] [data-slot='dropdown-menu-content'],
+[data-theme='animal-island'] [data-slot='dropdown-menu-sub-content'],
+[data-theme='animal-island'] .shell-user-popover,
+[data-theme='animal-island'] .shell-legacy-dropdown {
+  padding: 0.65rem !important;
+  color: var(--ui-popover-foreground) !important;
+  background-color: var(--ui-popover) !important;
+  background-image: radial-gradient(circle, rgb(154 131 90 / 10%) 1px, transparent 1.1px) !important;
+  background-size: 20px 20px !important;
+  border: 1.5px solid var(--ui-border) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--ui-shadow-lg) !important;
+}
+
+[data-theme='animal-island'] [data-slot='dropdown-menu-item']:not(.theme-menu-item),
+[data-theme='animal-island'] [data-slot='dropdown-menu-sub-trigger'],
+[data-theme='animal-island'] .shell-dropdown-item {
+  min-height: 2.25rem;
+  padding: 0.45rem 0.7rem !important;
+  color: var(--ui-popover-foreground) !important;
+  border: 1.5px solid transparent !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+}
+
+[data-theme='animal-island'] [data-slot='dropdown-menu-item']:not(.theme-menu-item):focus,
+[data-theme='animal-island'] [data-slot='dropdown-menu-item']:not(.theme-menu-item)[data-highlighted],
+[data-theme='animal-island'] [data-slot='dropdown-menu-sub-trigger']:focus,
+[data-theme='animal-island'] .shell-dropdown-item:hover,
+[data-theme='animal-island'] .shell-dropdown-item:focus {
+  color: var(--ui-emphasis) !important;
+  background: var(--ui-accent-surface) !important;
+  border-color: var(--ui-primary-border) !important;
+}
+
+[data-theme='animal-island'] .shell-dropdown-item.active {
+  color: #493b29 !important;
+  background: #f5c31c !important;
+  border-color: #dba90e !important;
+}
+
+[data-theme='animal-island'] [data-slot='dialog-overlay'],
+[data-theme='animal-island'] [data-slot='sheet-overlay'],
+[data-theme='animal-island'] .modal-backdrop,
+[data-theme='animal-island'] .offcanvas-backdrop {
+  background: var(--ui-overlay) !important;
+  opacity: 1 !important;
+  backdrop-filter: blur(3px);
+}
+
+[data-theme='animal-island'] [data-slot='dialog-content'],
+[data-theme='animal-island'] [data-slot='sheet-content'],
+[data-theme='animal-island'] .modal-content,
+[data-theme='animal-island'] .compat-modal,
+[data-theme='animal-island'] .offcanvas,
+[data-theme='animal-island'] .compat-offcanvas {
+  color: var(--ui-card-foreground) !important;
+  background: var(--ui-card) !important;
+  border: 2px solid var(--ui-border) !important;
+  border-radius: 24px !important;
+  box-shadow: var(--ui-shadow-lg) !important;
+}
+
+[data-theme='animal-island'] [data-slot='dialog-close'],
+[data-theme='animal-island'] [data-sheet-close],
+[data-theme='animal-island'] .btn-close {
+  border-radius: 50% !important;
+}
+
+/* The upstream Drawer ships fixed light colors. Rebind its generated module
+   classes to RinNET's semantic palette so the portal stays readable in dark mode. */
+[data-theme='animal-island'] [class*='animal-panel-'] {
+  color: var(--ui-card-foreground) !important;
+  background: var(--ui-card) !important;
+  box-shadow: var(--ui-shadow-lg) !important;
+}
+
+[data-theme='animal-island'] [class*='animal-header-'] {
+  color: var(--ui-emphasis) !important;
+  background: var(--ui-card-cap) !important;
+  border-bottom: 1.5px solid var(--ui-border);
+}
+
+[data-theme='animal-island'] [class*='animal-title-'] {
+  color: var(--ui-emphasis) !important;
+}
+
+[data-theme='animal-island'] [class*='animal-body-'] {
+  color: var(--ui-foreground) !important;
+}
+
+[data-theme='animal-island'] [class*='animal-close-'] {
+  color: var(--ui-muted-foreground) !important;
+}
+
+[data-theme='animal-island'] [class*='animal-close-']:hover {
+  color: var(--ui-emphasis) !important;
+  background: var(--ui-accent-surface) !important;
+}
+
+[data-theme='animal-island'] [class*='animal-mask-'] {
+  background: var(--ui-overlay) !important;
+}
+
+[data-theme='animal-island'] .modal-header,
+[data-theme='animal-island'] .modal-footer {
+  border-color: var(--ui-border);
+}
+
+[data-theme='animal-island'] .animal-island-modal > div:last-child,
+[data-theme='animal-island'] .animal-island-confirm-dialog > div:last-child {
+  color: var(--ui-card-foreground) !important;
+  background: var(--ui-card) !important;
+}
+
+[data-theme='animal-island'] .animal-island-modal [id$='-title'],
+[data-theme='animal-island'] .animal-island-confirm-dialog [id$='-title'] {
+  color: var(--ui-emphasis) !important;
+}
+
+[data-theme='animal-island'] .animal-island-modal [id$='-body'],
+[data-theme='animal-island'] .animal-island-confirm-dialog [id$='-body'] {
+  color: var(--ui-foreground) !important;
+  font-size: 1rem !important;
+}
+
+[data-theme='animal-island'] .animal-island-modal [id$='-body'] > *,
+[data-theme='animal-island'] .animal-island-confirm-dialog [id$='-body'] > *,
+[data-theme='animal-island'] .animal-island-modal form,
+[data-theme='animal-island'] .animal-island-confirm-dialog form {
+  width: 100%;
+}
+
+[data-theme='animal-island'] .animal-island-modal__scroll,
+[data-theme='animal-island'] .animal-island-modal--scrollable {
+  max-height: min(70vh, 640px);
+}
+
+/* Animal Island's organic clipped panel already provides the modal boundary.
+   The upstream dialog receives focus on open; suppress the browser's square
+   focus outline so it does not look like a second modal frame. */
+[data-theme='animal-island'] .animal-island-modal:focus,
+[data-theme='animal-island'] .animal-island-modal:focus-visible {
+  outline: none !important;
+}
+
+[data-theme='animal-island'] .animal-island-navbar-trigger {
+  width: 40px;
+  min-width: 40px;
+  padding: 0 !important;
+}
+
+[data-theme='animal-island'] .animal-island-user-trigger {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0 !important;
+  color: #493b29 !important;
+  background: var(--ui-primary) !important;
+  border: 2px solid var(--ui-primary-active) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 0 var(--ui-primary-active) !important;
+}
+
+[data-theme='animal-island'] .animal-island-user-trigger:hover:not(:disabled) {
+  background: var(--ui-primary-hover) !important;
+  box-shadow: 0 5px 0 var(--ui-primary-active) !important;
+  transform: translateY(-1px);
+}
+
+[data-theme='animal-island'] .animal-island-user-trigger:active:not(:disabled) {
+  box-shadow: 0 1px 0 var(--ui-primary-active) !important;
+  transform: translateY(2px);
+}
+
+[data-theme='animal-island'] .shell-mobile-animal-drawer nav {
+  padding-block: 0.5rem;
+}
+
+[data-theme='animal-island'] .shell-mobile-animal-drawer {
+  will-change: transform, opacity;
+  animation: animal-island-drawer-in 0.36s cubic-bezier(0.2, 0, 0.2, 1) both;
+}
+
+[data-theme='animal-island'] .shell-mobile-animal-drawer.is-closing {
+  pointer-events: none;
+  animation-name: animal-island-drawer-out;
+}
+
+@keyframes animal-island-drawer-in {
+  from {
+    opacity: 0.7;
+    transform: translateX(calc(-100% - 1rem)) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes animal-island-drawer-out {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0.7;
+    transform: translateX(calc(-100% - 1rem)) scale(0.98);
+  }
+}
+
+@keyframes animal-island-drawer-mask-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes animal-island-drawer-mask-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+[data-theme='animal-island'] .cards-unbind-button.btn-close {
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0 !important;
+  opacity: 1;
+  background-color: var(--ui-destructive) !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L6.586 9.414.293 15.707a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") !important;
+  background-position: center !important;
+  background-size: 0.9rem !important;
+  background-repeat: no-repeat !important;
+  border: 2px solid var(--ui-destructive-border) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 4px 0 #a94444 !important;
+}
+
+[data-theme='animal-island'] .cards-unbind-button.btn-close:hover {
+  background-color: var(--ui-destructive-control-hover-background) !important;
+  transform: translateY(-1px);
+}
+
+[data-theme='animal-island'] .animal-island-loading-pill {
+  width: 42px;
+  min-width: 42px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  border-radius: 50px;
+}
+
+[data-theme='animal-island'] .animal-island-toast {
+  position: relative;
+  width: min(350px, calc(100vw - 1.2rem));
+  padding: 1rem 1.15rem;
+  overflow: hidden;
+  border: 1.5px solid var(--ui-primary-border);
+  border-left: 7px solid var(--ui-info);
+  border-radius: 18px;
+  box-shadow: var(--ui-shadow-lg) !important;
+  animation: animal-island-toast-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='animal-island'] .animal-island-toast--success {
+  border-left-color: var(--ui-success);
+}
+
+[data-theme='animal-island'] .animal-island-toast--warning {
+  border-left-color: var(--ui-warning);
+}
+
+[data-theme='animal-island'] .animal-island-toast--danger {
+  border-left-color: var(--ui-destructive);
+}
+
+@keyframes animal-island-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(18px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+[data-theme='animal-island'] .animal-island-skeleton {
+  max-width: 100%;
+  border-radius: 18px !important;
+}
+
+[data-theme='animal-island'] .animal-island-import-warning,
+[data-theme='animal-island'] .animal-island-import-panel {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 1.2rem 1.35rem;
+  border-radius: 20px;
+}
+
+[data-theme='animal-island'] .animal-island-import-warning strong,
+[data-theme='animal-island'] .animal-island-import-warning span {
+  color: #725814;
+}
+
+[data-theme='animal-island'] .animal-island-import-panel {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+[data-theme='animal-island'] .animal-island-import-panel__meta h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.15rem;
+}
+
+[data-theme='animal-island'] .animal-island-import-panel__meta p {
+  margin: 0;
+  color: var(--ui-muted-foreground);
+  font-size: 0.875rem;
+}
+
+[data-theme='animal-island'] .footer {
+  position: relative;
+  isolation: isolate;
+  margin-top: 2rem;
+  padding: 0.25rem 0.65rem 0.35rem;
+  overflow: hidden;
+  color: var(--ui-emphasis);
+  background: rgb(var(--ui-background-rgb) / 90%);
+  border: 1.5px solid var(--ui-border);
+  border-bottom: 0;
+  border-radius: 24px 24px 0 0;
+}
+
+[data-theme='animal-island'] .footer > *:not(.animal-island-footer-decoration) {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme='animal-island'] .footer hr {
+  opacity: 0;
+}
+
+[data-theme='animal-island'] .footer a {
+  color: var(--ui-emphasis);
+  font-weight: 700;
+}
+
+[data-theme='animal-island'] .animal-island-footer-decoration {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 0;
+  height: 100%;
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+[data-theme='animal-island'] .route-view-transition,
+[data-theme='animal-island'] .pagination-view-transition {
+  animation: animal-island-fade-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes animal-island-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767.98px) {
+  [data-theme='animal-island'] .app-navbar {
+    top: 0.35rem;
+    right: 0.4rem;
+    left: 0.4rem;
+    width: auto !important;
+  }
+
+  [data-theme='animal-island'] .page-heading {
+    padding-right: 2rem;
+    font-size: 1.75rem;
+  }
+
+  [data-theme='animal-island'] .animal-island-import-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='animal-island'] *,
+  [data-theme='animal-island'] *::before,
+  [data-theme='animal-island'] *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

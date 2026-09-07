@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { LiquidAlert, LiquidButton, LiquidSurface } from '@liquefy-ui/react';
+import { Button as AnimalButton, Card as AnimalCard } from 'animal-island-ui';
 import { useId, useRef, type RefObject } from 'react';
 import { api } from '@/lib/api/client';
 import { notice } from '@/lib/message';
@@ -40,6 +41,19 @@ function ImportWarning() {
     );
   }
 
+  if (family === 'animal-island') {
+    return (
+      <AnimalCard
+        className="animal-island-import-warning my-4"
+        color="app-yellow"
+        pattern="app-yellow"
+      >
+        <strong>{t('ImportPage.WarningTitle')}</strong>
+        <span>{t('ImportPage.WarningContent')}</span>
+      </AnimalCard>
+    );
+  }
+
   return (
     <div className="card my-3">
       <div className="card-header">{t('ImportPage.WarningTitle')}</div>
@@ -71,7 +85,7 @@ function ImportPanel({
       id={inputId}
       ref={inputRef}
       accept=".json"
-      className={family === 'liquefy' ? 'visually-hidden' : 'form-control'}
+      className={family === 'liquefy' || family === 'animal-island' ? 'visually-hidden' : 'form-control'}
       type="file"
       onChange={(event) => onFileChange(event.target.files?.[0])}
     />
@@ -93,6 +107,27 @@ function ImportPanel({
           {t('ImportPage.SelectFile')}
         </LiquidButton>
       </LiquidSurface>
+    );
+  }
+
+  if (family === 'animal-island') {
+    return (
+      <AnimalCard
+        className="animal-island-import-panel my-4"
+        pattern="default"
+      >
+        <div className="animal-island-import-panel__meta">
+          <h2>{title}</h2>
+          <p>{t('ImportPage.FileHint')}</p>
+        </div>
+        {input}
+        <AnimalButton
+          type="primary"
+          onClick={() => inputRef.current?.click()}
+        >
+          {t('ImportPage.SelectFile')}
+        </AnimalButton>
+      </AnimalCard>
     );
   }
 

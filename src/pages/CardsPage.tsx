@@ -225,7 +225,12 @@ export function CardsPage() {
                 <div className="card-header d-flex align-items-center justify-content-between">
                   <div className="float-start">No.{card.id}</div>
                   <div className="float-end">
-                    <button className="btn btn-close" onClick={() => setModal({ kind: 'unbind', card })} />
+                    <button
+                      type="button"
+                      className="btn btn-close cards-unbind-button"
+                      aria-label={t('CardsPage.UnbindCard')}
+                      onClick={() => setModal({ kind: 'unbind', card })}
+                    />
                   </div>
                 </div>
                 <div className="card-body">

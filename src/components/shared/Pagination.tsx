@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { LiquidPagination } from '@liquefy-ui/react';
+import { Pagination as AnimalPagination } from 'animal-island-ui';
 import { useTheme } from '@/lib/theme';
 
 /**
@@ -43,6 +44,21 @@ export function Pagination({
           page={Math.min(totalPages, Math.max(1, current))}
           siblingCount={3}
           onPageChange={onPageChange}
+        />
+      </div>
+    );
+  }
+
+  if (family === 'animal-island') {
+    return (
+      <div key={current} className="pagination-view-transition" data-pagination-page={current}>
+        <AnimalPagination
+          className={`animal-island-pagination animal-island-pagination--${size}`}
+          total={totalItems}
+          current={Math.min(totalPages, Math.max(1, current))}
+          pageSize={pageSize}
+          variant="teal"
+          onChange={(page) => onPageChange(page)}
         />
       </div>
     );

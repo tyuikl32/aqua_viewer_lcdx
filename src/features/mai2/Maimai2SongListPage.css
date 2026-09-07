@@ -84,6 +84,22 @@
   object-fit: cover;
 }
 
+/* Modern theme cards use a textured, rounded surface. Keep jacket art centered
+   inside that surface instead of relying on the ratio utility's static position. */
+[data-theme='liquefy'] .maimai2-song-list-page .song-info .jacket-container,
+[data-theme='animal-island'] .maimai2-song-list-page .song-info .jacket-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+[data-theme='liquefy'] .maimai2-song-list-page .song-info .jacket-container img,
+[data-theme='animal-island'] .maimai2-song-list-page .song-info .jacket-container img {
+  inset: 0;
+  object-position: center;
+}
+
 .maimai2-song-list-page .song-info .song-info-id {
   font-size: 20px;
 }

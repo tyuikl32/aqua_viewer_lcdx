@@ -1,5 +1,6 @@
 import * as React from "react"
 import { LiquidSurface } from "@liquefy-ui/react"
+import { Card as AnimalCard } from "animal-island-ui"
 
 import { cn } from "@/lib/utils"
 import { useTheme } from "@/lib/theme"
@@ -19,6 +20,17 @@ function Card({ className, ...props }: React.ComponentProps<"div">) {
         interactive={false}
         lens={false}
         {...props}
+      />
+    )
+  }
+
+  if (theme.family === "animal-island") {
+    return (
+      <AnimalCard
+        data-slot="card"
+        className={cn("animal-island-card flex flex-col gap-6 py-6 text-card-foreground", className)}
+        hoverable={false}
+        {...(props as Omit<React.ComponentProps<"div">, "color">)}
       />
     )
   }

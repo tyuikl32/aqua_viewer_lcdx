@@ -1,8 +1,10 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Slot } from "radix-ui"
+import { Button as AnimalButton } from "animal-island-ui"
 
 import { cn } from "@/lib/utils"
+import { useTheme } from "@/lib/theme"
 
 const buttonVariants = cva(
   "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-invalid [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
@@ -43,12 +45,31 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  type: htmlType,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
   }) {
+  const { family } = useTheme()
   const Comp = asChild ? Slot.Root : "button"
+
+  if (family === "animal-island" && !asChild) {
+    const animalType = variant === "link" ? "link" : variant === "ghost" ? "text" : variant === "outline" || variant === "secondary" ? "default" : "primary"
+    const animalSize = size === "lg" || size === "icon-lg" ? "large" : size === "xs" || size === "sm" || size === "icon-xs" || size === "icon-sm" ? "small" : "middle"
+    const iconOnly = size?.startsWith("icon") ?? false
+
+    return (
+      <AnimalButton
+        className={cn("animal-island-button", iconOnly && "animal-island-button--icon", className)}
+        type={animalType}
+        size={animalSize}
+        danger={variant === "destructive"}
+        htmlType={htmlType}
+        {...props}
+      />
+    )
+  }
 
   return (
     <Comp
@@ -56,6 +77,7 @@ function Button({
       data-variant={variant}
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
+      type={htmlType}
       {...props}
     />
   )

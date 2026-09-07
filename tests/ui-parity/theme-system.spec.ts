@@ -342,7 +342,7 @@ test('every theme resolves the complete semantic contract without missing values
   const contractTokens = [...new Set(contract.match(/--ui-[\w-]+/g) ?? [])].sort();
   expect(contractTokens.length).toBeGreaterThan(100);
 
-  for (const themeFamily of ['legacy', 'liquefy']) {
+  for (const themeFamily of ['legacy', 'liquefy', 'animal-island']) {
     for (const colorTheme of ['light', 'dark']) {
       const context = await themeContext(browser, { colorTheme, themeFamily });
       const page = await context.newPage();
@@ -358,7 +358,7 @@ test('every theme resolves the complete semantic contract without missing values
 });
 
 test('the theme menu renders one theme-neutral component contract', async ({ browser }) => {
-  async function menuClasses(themeFamily: 'legacy' | 'liquefy') {
+  async function menuClasses(themeFamily: 'legacy' | 'liquefy' | 'animal-island') {
     const context = await themeContext(browser, { colorTheme: 'dark', themeFamily });
     const page = await context.newPage();
     await page.goto(REACT_ORIGIN, { waitUntil: 'domcontentloaded' });
@@ -547,7 +547,7 @@ test('shadcn focus rings consume the final semantic ring color without recomposi
 });
 
 test('focus indicators keep at least 3:1 contrast in every theme', async ({ browser }) => {
-  for (const themeFamily of ['legacy', 'liquefy']) {
+  for (const themeFamily of ['legacy', 'liquefy', 'animal-island']) {
     for (const colorTheme of ['light', 'dark']) {
       const context = await themeContext(browser, { colorTheme, themeFamily });
       const page = await context.newPage();
@@ -589,7 +589,7 @@ test('Liquefy muted foreground keeps normal text contrast in light mode', async 
 });
 
 test('Bootstrap colors are compatibility aliases of the semantic contract', async ({ browser }) => {
-  for (const themeFamily of ['legacy', 'liquefy']) {
+  for (const themeFamily of ['legacy', 'liquefy', 'animal-island']) {
     const context = await themeContext(browser, { colorTheme: 'light', themeFamily });
     const page = await context.newPage();
     await page.goto(REACT_ORIGIN, { waitUntil: 'domcontentloaded' });
@@ -642,9 +642,415 @@ test('the legacy theme menu uses the same family-over-color layout as Liquefy', 
   await expect(menu.getByRole('separator')).toHaveCount(1);
   await expect(menu.getByRole('menuitem', { name: '经典', exact: true })).toBeVisible();
   await expect(menu.getByRole('menuitem', { name: '液态玻璃', exact: true })).toBeVisible();
+  await expect(menu.getByRole('menuitem', { name: '动物朋友', exact: true })).toBeVisible();
   await expect(menu.getByRole('menuitem', { name: '自动', exact: true })).toBeVisible();
   await expect(menu.getByRole('menuitem', { name: '浅色', exact: true })).toBeVisible();
   await expect(menu.getByRole('menuitem', { name: '深色', exact: true })).toHaveClass(/active/);
+
+  await context.close();
+});
+
+test('Animal Friends restores its palette and native component adapters', async ({ browser }) => {
+  const context = await themeContext(browser, {
+    colorTheme: 'light',
+    themeFamily: 'animal-island',
+  });
+  const page = await context.newPage();
+  await page.goto(REACT_ORIGIN, { waitUntil: 'domcontentloaded' });
+
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'animal-island');
+  await expect(page.locator('html')).toHaveClass(/animal-cursor--force/);
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#f8f8f0');
+
+  const cursor = await page.locator('html').evaluate((element) => getComputedStyle(element).cursor);
+  expect(cursor).toContain('data:image/svg+xml');
+
+  await page.evaluate(async () => {
+    const reactModule = await import('/@id/react');
+    const reactDomClientModule = await import('/@id/react-dom/client');
+    const React = reactModule.default ?? reactModule;
+    const createRoot = reactDomClientModule.createRoot ?? reactDomClientModule.default.createRoot;
+    const { Card, CardContent } = await import('/src/components/ui/card.tsx');
+    const { Button } = await import('/src/components/ui/button.tsx');
+    const { BModal } = await import('/src/components/shared/BModal.tsx');
+    const { Pagination } = await import('/src/components/shared/Pagination.tsx');
+
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    createRoot(host).render(
+      React.createElement(
+        React.Fragment,
+        null,
+        React.createElement(Button, { 'data-testid': 'animal-button' }, 'Island action'),
+        React.createElement(
+          Card,
+          { 'data-testid': 'animal-card' },
+          React.createElement(CardContent, null, 'Island card'),
+        ),
+        React.createElement(Pagination, {
+          current: 1,
+          pageSize: 10,
+          totalItems: 30,
+          onPageChange: () => undefined,
+        }),
+        React.createElement(BModal, {
+          open: true,
+          onClose: () => undefined,
+          title: 'Island modal',
+          children: 'Island body',
+        }),
+      ),
+    );
+  });
+
+  await expect(page.getByTestId('animal-button')).toHaveClass(/animal-island-button/);
+  await expect(page.getByTestId('animal-card')).toHaveClass(/animal-island-card/);
+  await expect(page.locator('.animal-island-pagination')).toBeVisible();
+  await expect(page.locator('.animal-island-modal')).toBeVisible();
+  await expect(page.getByRole('dialog')).toContainText('Island body');
+  await expect(page.locator('.animal-island-modal')).toHaveCSS('outline-style', 'none');
+
+  await page.evaluate(async () => {
+    const { setTheme } = await import('/src/lib/theme.ts');
+    setTheme({ family: 'liquefy' });
+  });
+  await expect(page.locator('html')).not.toHaveClass(/animal-cursor--force/);
+
+  await context.close();
+});
+
+test('Animal Friends importer keeps native surfaces readable in dark mode', async ({ browser }) => {
+  const context = await themeContext(browser, {
+    colorTheme: 'dark',
+    themeFamily: 'animal-island',
+  });
+  const page = await context.newPage();
+  await page.goto(REACT_ORIGIN, { waitUntil: 'domcontentloaded' });
+
+  await page.evaluate(async () => {
+    const reactModule = await import('/@id/react');
+    const reactDomClientModule = await import('/@id/react-dom/client');
+    const React = reactModule.default ?? reactModule;
+    const createRoot = reactDomClientModule.createRoot ?? reactDomClientModule.default.createRoot;
+    const { ImporterPage } = await import('/src/pages/ImporterPage.tsx');
+    const host = document.createElement('div');
+    host.id = 'importer-dark-probe';
+    document.body.appendChild(host);
+    createRoot(host).render(React.createElement(ImporterPage));
+  });
+
+  await expect(page.locator('#importer-dark-probe .animal-island-import-panel')).toHaveCount(3);
+  const styles = await page.evaluate(() => {
+    const panel = document.querySelector<HTMLElement>('#importer-dark-probe .animal-island-import-panel');
+    const warning = document.querySelector<HTMLElement>('#importer-dark-probe .animal-island-import-warning');
+    const button = panel?.querySelector<HTMLElement>('[class*="animal-btn-primary-"]');
+    const warningTitle = warning?.querySelector<HTMLElement>('strong');
+    const warningContent = warning?.querySelector<HTMLElement>('span');
+    return {
+      panelBackground: panel ? getComputedStyle(panel).backgroundColor : '',
+      panelColor: panel ? getComputedStyle(panel).color : '',
+      warningBackground: warning ? getComputedStyle(warning).backgroundColor : '',
+      warningColor: warning ? getComputedStyle(warning).color : '',
+      warningTitleColor: warningTitle ? getComputedStyle(warningTitle).color : '',
+      warningContentColor: warningContent ? getComputedStyle(warningContent).color : '',
+      buttonBackground: button ? getComputedStyle(button).backgroundColor : '',
+      buttonColor: button ? getComputedStyle(button).color : '',
+    };
+  });
+
+  expect(styles.panelBackground).toBe('rgb(52, 47, 37)');
+  expect(styles.panelColor).toBe('rgb(234, 223, 201)');
+  expect(styles.warningBackground).toBe('rgb(81, 68, 31)');
+  expect(styles.warningColor).toBe('rgb(255, 225, 151)');
+  expect(styles.warningTitleColor).toBe('rgb(255, 225, 151)');
+  expect(styles.warningContentColor).toBe('rgb(255, 225, 151)');
+  expect(styles.buttonBackground).toBe('rgb(98, 216, 201)');
+  expect(styles.buttonColor).toBe('rgb(44, 42, 34)');
+
+  await context.close();
+});
+
+test('Animal Friends bridges RinNET notices to themed native cards', async ({ browser }) => {
+  const context = await themeContext(browser, {
+    colorTheme: 'light',
+    themeFamily: 'animal-island',
+  });
+  const page = await context.newPage();
+  await page.goto(REACT_ORIGIN, { waitUntil: 'domcontentloaded' });
+
+  await page.evaluate(async () => {
+    const { notice } = await import('/src/lib/message.ts');
+    notice('Island notification', 'success');
+  });
+
+  const notification = page.locator('.animal-island-toast');
+  await expect(notification).toContainText('Island notification');
+  await expect(notification).toHaveAttribute('role', 'alert');
+
+  await context.close();
+});
+
+test('search-param pagination does not key route contents by history entry', async () => {
+  const shellSource = await readFile(
+    new URL('../../src/components/shell/AppShell.tsx', import.meta.url),
+    'utf8',
+  );
+
+  expect(shellSource).toContain('key={location.pathname}');
+  expect(shellSource).not.toContain('key={location.key}');
+});
+
+test('game-specific pagination uses the Animal Friends component adapter', async ({ browser }) => {
+  const context = await themeContext(browser, {
+    colorTheme: 'light',
+    themeFamily: 'animal-island',
+  });
+  const page = await context.newPage();
+  await page.goto(REACT_ORIGIN, { waitUntil: 'domcontentloaded' });
+
+  await page.evaluate(async () => {
+    const reactModule = await import('/@id/react');
+    const reactDomClientModule = await import('/@id/react-dom/client');
+    const React = reactModule.default ?? reactModule;
+    const createRoot = reactDomClientModule.createRoot ?? reactDomClientModule.default.createRoot;
+    const { OngekiPagination } = await import('/src/features/ongeki/OngekiPagination.tsx');
+    const { ChuniV2Pagination } = await import('/src/features/chuni/ChuniV2Pagination.tsx');
+    const { Maimai2Pagination } = await import('/src/features/mai2/Maimai2Pagination.tsx');
+    const components = [OngekiPagination, ChuniV2Pagination, Maimai2Pagination];
+
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    createRoot(host).render(
+      React.createElement(
+        React.Fragment,
+        null,
+        ...components.map((Component, index) =>
+          React.createElement(Component, {
+            current: 1,
+            key: index,
+            onPageChange: () => undefined,
+            pageSize: 10,
+            totalItems: 80,
+          }),
+        ),
+      ),
+    );
+  });
+
+  await expect(page.locator('.animal-island-pagination')).toHaveCount(3);
+
+  await context.close();
+});
+
+test('Animal Friends keeps shell gutters and responsive admin controls usable', async ({ browser }) => {
+  const context = await themeContext(browser, {
+    colorTheme: 'light',
+    themeFamily: 'animal-island',
+  });
+  const page = await context.newPage();
+  await page.goto(REACT_ORIGIN, { waitUntil: 'domcontentloaded' });
+
+  const headerGutters = await page.locator('.app-navbar').evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { left: rect.left, right: window.innerWidth - rect.right };
+  });
+  expect(headerGutters.left).toBeGreaterThan(0);
+  expect(Math.abs(headerGutters.left - headerGutters.right)).toBeLessThanOrEqual(1);
+
+  const controls = await page.evaluate(() => {
+    const host = document.createElement('div');
+    host.innerHTML = `
+      <div class="table-responsive" data-testid="responsive-table" style="width: 240px">
+        <div style="width: 720px;height:20px"></div>
+      </div>
+      <button class="btn btn-outline-danger" data-testid="delete-save">删除存档</button>
+      <button class="btn btn-close cards-unbind-button" data-testid="unbind-card"></button>
+    `;
+    document.body.appendChild(host);
+    const responsive = host.querySelector<HTMLElement>('[data-testid="responsive-table"]')!;
+    const destructive = host.querySelector<HTMLElement>('[data-testid="delete-save"]')!;
+    const close = host.querySelector<HTMLElement>('[data-testid="unbind-card"]')!;
+    const rootStyle = getComputedStyle(document.documentElement);
+    return {
+      closeBackground: getComputedStyle(close).backgroundColor,
+      destructiveBorder: getComputedStyle(destructive).borderColor,
+      destructiveToken: rootStyle.getPropertyValue('--ui-destructive').trim(),
+      overflowX: getComputedStyle(responsive).overflowX,
+      overflowY: getComputedStyle(responsive).overflowY,
+      scrollable: responsive.scrollWidth > responsive.clientWidth,
+    };
+  });
+
+  expect(controls.overflowX).toBe('auto');
+  expect(controls.overflowY).toBe('hidden');
+  expect(controls.scrollable).toBeTruthy();
+  expect(controls.destructiveBorder).toBe('rgb(224, 90, 90)');
+  expect(controls.destructiveToken).toBe('#e05a5a');
+  expect(controls.closeBackground).toBe('rgb(224, 90, 90)');
+
+  await context.close();
+});
+
+test('Legacy mobile header spans the viewport instead of shrinking to its contents', async ({ browser }) => {
+  const context = await themeContext(browser, {
+    colorTheme: 'dark',
+    themeFamily: 'legacy',
+  });
+  const page = await context.newPage();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${REACT_ORIGIN}/import`, { waitUntil: 'domcontentloaded' });
+
+  const geometry = await page.locator('.app-navbar').evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { left: rect.left, right: window.innerWidth - rect.right, width: rect.width };
+  });
+
+  expect(geometry.left).toBe(0);
+  expect(geometry.right).toBe(0);
+  expect(geometry.width).toBe(390);
+
+  await context.close();
+});
+
+test('Animal Friends mobile navigation animates in and out', async ({ browser }) => {
+  const context = await themeContext(browser, {
+    colorTheme: 'light',
+    themeFamily: 'animal-island',
+  });
+  const page = await context.newPage();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${REACT_ORIGIN}/import`, { waitUntil: 'domcontentloaded' });
+  await page.evaluate(async () => {
+    const { accountStore } = await import('/src/lib/auth/account.ts');
+    accountStore.set({ accessToken: 'test', refreshToken: 'test', tokenType: 'Bearer' });
+  });
+
+  await page.getByRole('button', { name: '导航' }).click();
+  const drawer = page.locator('.shell-mobile-animal-drawer');
+  await expect(drawer).toBeVisible();
+  await expect(drawer).toHaveCSS('animation-name', 'animal-island-drawer-in');
+  await expect(drawer).toHaveCSS('animation-duration', '0.36s');
+
+  await page.getByRole('button', { name: '关闭' }).click();
+  await expect(drawer).toHaveClass(/is-closing/);
+  await expect(drawer).toHaveCSS('animation-name', 'animal-island-drawer-out');
+  await expect(drawer).toHaveCount(0, { timeout: 1_000 });
+
+  await context.close();
+});
+
+test('Animal Friends dark mobile navigation uses the dark panel palette', async ({ browser }) => {
+  const context = await themeContext(browser, {
+    colorTheme: 'dark',
+    themeFamily: 'animal-island',
+  });
+  const page = await context.newPage();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${REACT_ORIGIN}/import`, { waitUntil: 'domcontentloaded' });
+  await page.evaluate(async () => {
+    const { accountStore } = await import('/src/lib/auth/account.ts');
+    accountStore.set({ accessToken: 'test', refreshToken: 'test', tokenType: 'Bearer' });
+  });
+  await page.getByRole('button', { name: '导航' }).click();
+
+  const palette = await page.locator('.shell-mobile-animal-drawer').evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      background: style.backgroundColor,
+      color: style.color,
+      expectedBackground: getComputedStyle(document.documentElement)
+        .getPropertyValue('--ui-card')
+        .trim(),
+    };
+  });
+
+  expect(palette.background).toBe('rgb(52, 47, 37)');
+  expect(palette.color).toBe('rgb(234, 223, 201)');
+  expect(palette.background).not.toBe('rgb(247, 243, 223)');
+  expect(palette.expectedBackground).toBe('#342f25');
+
+  await context.close();
+});
+
+test('modern Mai surfaces keep jacket art centered and use the Animal palette', async ({ browser }) => {
+  const context = await themeContext(browser, {
+    colorTheme: 'dark',
+    themeFamily: 'animal-island',
+  });
+  const page = await context.newPage();
+  await page.goto(`${REACT_ORIGIN}/mai2/songlist`, { waitUntil: 'domcontentloaded' });
+
+  const styles = await page.evaluate(() => {
+    const host = document.createElement('div');
+    host.innerHTML = `
+      <div data-theme="liquefy">
+        <div class="maimai2-song-list-page">
+          <div class="song-info">
+            <div class="jacket-container ratio ratio-1x1 position-relative">
+              <img class="position-absolute rounded-start" alt="liquefy probe" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="maimai2-song-list-page">
+        <div class="song-info">
+          <div class="jacket-container ratio ratio-1x1 position-relative">
+            <img class="position-absolute rounded-start" alt="animal probe" />
+          </div>
+        </div>
+      </div>
+      <div class="maimai2-song-detail">
+        <div class="card-body">probe</div>
+      </div>
+      <div data-theme="liquefy">
+        <div class="maimai2-song-detail">
+          <div class="card-body">liquefy probe</div>
+        </div>
+      </div>
+      <div class="announcement-detail-dialog">
+        <div class="animal-header-probe"><div class="animal-title-probe">公告</div></div>
+      </div>
+    `;
+    document.body.appendChild(host);
+    const jacketContainer = host.querySelector<HTMLElement>('.maimai2-song-list-page .jacket-container')!;
+    const jacket = host.querySelector<HTMLImageElement>('.maimai2-song-list-page .jacket-container img')!;
+    const liquefyJacketContainer = host.querySelector<HTMLElement>('[data-theme="liquefy"] .jacket-container')!;
+    const scoreBody = host.querySelector<HTMLElement>('.maimai2-song-detail .card-body')!;
+    const liquefyScoreBody = host.querySelector<HTMLElement>('[data-theme="liquefy"] .maimai2-song-detail .card-body')!;
+    const announcementHeader = host.querySelector<HTMLElement>('.animal-header-probe')!;
+    const jacketStyle = getComputedStyle(jacket);
+    const result = {
+      jacketPosition: jacketStyle.position,
+      jacketInset: [jacketStyle.top, jacketStyle.right, jacketStyle.bottom, jacketStyle.left],
+      jacketDisplay: getComputedStyle(jacketContainer).display,
+      jacketAlignItems: getComputedStyle(jacketContainer).alignItems,
+      jacketJustifyContent: getComputedStyle(jacketContainer).justifyContent,
+      jacketOverflow: getComputedStyle(jacketContainer).overflow,
+      liquefyJacketDisplay: getComputedStyle(liquefyJacketContainer).display,
+      liquefyJacketAlignItems: getComputedStyle(liquefyJacketContainer).alignItems,
+      liquefyJacketJustifyContent: getComputedStyle(liquefyJacketContainer).justifyContent,
+      liquefyJacketOverflow: getComputedStyle(liquefyJacketContainer).overflow,
+      scoreBodyBackground: getComputedStyle(scoreBody).backgroundColor,
+      liquefyScoreBodyBackground: getComputedStyle(liquefyScoreBody).backgroundColor,
+      announcementHeaderBackground: getComputedStyle(announcementHeader).backgroundColor,
+    };
+    host.remove();
+    return result;
+  });
+
+  expect(styles.jacketPosition).toBe('absolute');
+  expect(styles.jacketInset).toEqual(['0px', '0px', '0px', '0px']);
+  expect(styles.jacketDisplay).toBe('flex');
+  expect(styles.jacketAlignItems).toBe('center');
+  expect(styles.jacketJustifyContent).toBe('center');
+  expect(styles.jacketOverflow).toBe('hidden');
+  expect(styles.liquefyJacketDisplay).toBe('flex');
+  expect(styles.liquefyJacketAlignItems).toBe('center');
+  expect(styles.liquefyJacketJustifyContent).toBe('center');
+  expect(styles.liquefyJacketOverflow).toBe('hidden');
+  expect(styles.scoreBodyBackground).toBe('rgba(0, 0, 0, 0)');
+  expect(styles.liquefyScoreBodyBackground).toBe('rgba(0, 0, 0, 0)');
+  expect(styles.announcementHeaderBackground).toBe('rgba(0, 0, 0, 0)');
 
   await context.close();
 });

@@ -8,12 +8,14 @@ import {
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Pagination as ThemedPagination } from '@/components/shared/Pagination';
 import { confirm } from '@/components/shell/ConfirmDialog';
 import { api } from '@/lib/api/client';
 import { notice } from '@/lib/message';
 import { StatusCode, type Card, type User } from '@/lib/models';
 import { getAccount, IMPERSONATED_USER_KEY, IMPERSONATION_KEY, type Account } from '@/lib/auth/account';
 import { IMPERSONATE_GRANT, IMPERSONATE_REQUEST } from '@/lib/auth/impersonation';
+import { useTheme } from '@/lib/theme';
 import './AdminPage.css';
 
 const PAGE_SIZE = 12;
@@ -196,6 +198,7 @@ function Pagination({
   onChange: (page: number) => void;
   totalElements: number;
 }) {
+  const { family } = useTheme();
   const totalPages = Math.max(1, Math.ceil(totalElements / PAGE_SIZE));
   const pages = useMemo(() => {
     const visible = Math.min(7, totalPages);
@@ -204,6 +207,19 @@ function Pagination({
     start = Math.min(start, Math.max(1, totalPages - visible + 1));
     return Array.from({ length: visible }, (_, index) => start + index);
   }, [currentPage, totalPages]);
+
+  if (family === 'animal-island') {
+    return (
+      <div className="admin-pagination-host user-select-none">
+        <ThemedPagination
+          current={currentPage}
+          pageSize={PAGE_SIZE}
+          totalItems={totalElements}
+          onPageChange={onChange}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="admin-pagination-host user-select-none">

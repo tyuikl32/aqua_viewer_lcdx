@@ -10,6 +10,7 @@ import type {
   Maimai2SongRanking,
   Maimai2SongRecord,
 } from './models';
+import '@/styles/song-detail.css';
 import './Maimai2SongDetail.css';
 
 const DIFFICULTIES: Record<number, { color: string; name: string }> = {
@@ -186,7 +187,7 @@ export function Maimai2SongDetail({
       <SheetContent
         side="right"
         showCloseButton={false}
-        className="maimai2-song-detail w-[400px] max-w-full gap-0 overflow-y-auto bg-[var(--bs-body-bg)] p-0 sm:max-w-[400px]"
+        className="song-detail-surface maimai2-song-detail w-[400px] max-w-full gap-0 overflow-y-auto bg-[var(--bs-body-bg)] p-0 sm:max-w-[400px]"
         overlayClassName="maimai2-song-detail-overlay"
       >
         <SheetTitle className="visually-hidden">{music.name}</SheetTitle>

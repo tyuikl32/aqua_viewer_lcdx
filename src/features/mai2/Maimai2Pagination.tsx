@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { Pagination } from '@/components/shared/Pagination';
+import { useTheme } from '@/lib/theme';
 
 type PageEntry = { label: string; value: number | null };
 
@@ -52,8 +54,20 @@ export function Maimai2Pagination({
   totalItems: number;
   onPageChange: (page: number) => void;
 }) {
+  const { family } = useTheme();
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
   const pages = useMemo(() => pageEntries(current, totalPages), [current, totalPages]);
+
+  if (family === 'animal-island') {
+    return (
+      <Pagination
+        current={Math.min(Math.max(current, 1), totalPages)}
+        pageSize={pageSize}
+        totalItems={totalItems}
+        onPageChange={onPageChange}
+      />
+    );
+  }
 
   return (
     <ul key={current} data-pagination-page={current} className="pagination pagination-sm justify-content-center mb-2 user-select-none">

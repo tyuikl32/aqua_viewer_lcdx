@@ -11,6 +11,7 @@ import { fullWidth, ordinal, padDigits } from '@/lib/format';
 import { toLevelDecimal, toTechHonorSprite } from './pipes';
 import { OngekiCardLevel } from './OngekiCardLevel';
 import type { OngekiCard, OngekiMusic } from './models';
+import '@/styles/song-detail.css';
 import './song-score-ranking.css';
 
 interface Ranking {
@@ -296,7 +297,7 @@ export function OngekiSongScoreRanking({
       <SheetContent
         side="right"
         showCloseButton={false}
-        className="ongeki-song-score-ranking ongeki-song-score-ranking-sheet z-[1045] w-[400px] max-w-full sm:max-w-[400px] p-0 text-sm bg-[var(--bs-body-bg)] outline-none"
+        className="song-detail-surface ongeki-song-score-ranking ongeki-song-score-ranking-sheet z-[1045] w-[400px] max-w-full sm:max-w-[400px] p-0 text-sm bg-[var(--bs-body-bg)] outline-none"
         overlayClassName="ongeki-song-score-ranking-overlay"
       >
         <div className="offcanvas-header position-absolute end-0 z-3">
@@ -304,6 +305,9 @@ export function OngekiSongScoreRanking({
             <button type="button" className="btn-close" aria-label="Close" />
           </SheetClose>
         </div>
+        <SheetClose asChild>
+          <button type="button" className="btn-close song-detail-modern-close" aria-label="Close" />
+        </SheetClose>
         <div className="offcanvas-body pt-0 px-0">
           <div
             className="music-info-container row pb-3 pt-3 gap-3 px-3 m-0"

@@ -1,4 +1,6 @@
 import { useEffect, useMemo } from 'react';
+import { Pagination } from '@/components/shared/Pagination';
+import { useTheme } from '@/lib/theme';
 
 interface PageNumber {
   kind: 'page';
@@ -71,6 +73,7 @@ export function OngekiPagination({
   totalItems: number;
   onPageChange: (page: number) => void;
 }) {
+  const { family } = useTheme();
   const totalPages = Math.max(Math.ceil(totalItems / pageSize), 1);
   const normalizedCurrent = Math.min(Math.max(current, 1), totalPages);
   const pages = useMemo(
@@ -79,8 +82,21 @@ export function OngekiPagination({
   );
 
   useEffect(() => {
-    if (current !== normalizedCurrent) onPageChange(normalizedCurrent);
-  }, [current, normalizedCurrent, onPageChange]);
+    if (totalItems > 0 && current !== normalizedCurrent) onPageChange(normalizedCurrent);
+  }, [current, normalizedCurrent, onPageChange, totalItems]);
+
+  if (family === 'animal-island') {
+    return (
+      <div className={marginClassName}>
+        <Pagination
+          current={normalizedCurrent}
+          pageSize={pageSize}
+          totalItems={totalItems}
+          onPageChange={onPageChange}
+        />
+      </div>
+    );
+  }
 
   return (
     <div key={normalizedCurrent} className="d-flex user-select-none pagination-view-transition" data-pagination-page={normalizedCurrent} style={{ cursor: 'default' }}>
