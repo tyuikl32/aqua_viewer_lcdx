@@ -118,7 +118,7 @@ The durable product-level differences are more useful than a raw tree diff:
 ### Branding and content
 
 - Browser/PWA branding is `NET` / `LCDX - RinNet` with `laochan.svg` and a local ICP footer.
-- Asset hosts are customized; production maimai assets use `https://sdgb-dist.sys-all.com.cn/d/189/`, while general assets remain on `rinnet.stehp.cn`.
+- Asset hosts are customized; production maimai assets use `https://alist.am-allnet.com/d/189/` (was `sdgb-dist.sys-all.com.cn`, same `/d/189/` path), while general assets remain on `rinnet.stehp.cn`.
 - The home, dashboard, sign-in, and sign-up experiences are simplified and LCDX-specific.
 
 ### Shared or independently converged features

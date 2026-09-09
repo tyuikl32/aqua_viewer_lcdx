@@ -175,7 +175,7 @@ npm run supportedBrowsers  # 重新生成 src/app/supportedBrowsers.ts
 
 - `angular.json` 中 production 配置用 `fileReplacements` 把 `environment.ts` 换成 `environment.prod.ts`：
   - dev：`apiServer=https://portal.naominet.live/`、`lcdxApiServer=https://lcdxnet.am-allnet.com/`、`maiAssetsHost=https://rinnet.stehp.cn/`
-  - prod：`apiServer='/'`、`lcdxApiServer='/'`（同源，依赖反向代理）、`maiAssetsHost=https://sdgb-dist.sys-all.com.cn/d/189/`
+  - prod：`apiServer='/'`、`lcdxApiServer='/'`（同源，依赖反向代理）、`maiAssetsHost=https://alist.am-allnet.com/d/189/`
 - `proxy.conf.json` 当前为空 `{}`（直连远端域名，无需代理）。
 
 ## 11. 近期演进脉络（git log）
