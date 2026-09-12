@@ -3,7 +3,7 @@ name: React test-server CI/CD
 on:
   push:
     branches:
-      - RinNET-frontend-revived
+      - next
   workflow_dispatch:
 
 permissions:

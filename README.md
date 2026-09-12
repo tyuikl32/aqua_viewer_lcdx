@@ -1,7 +1,7 @@
 # RinNET Portal（revived）
 
 RinNET 门户前端重写版：**React 19 + Vite + TypeScript + Tailwind v4 + shadcn/ui**。
-第一阶段目标：与旧版 Angular 实现（见 master 分支 / 主 worktree）功能与观感 1:1 等价，用户无感切换。
+第一阶段目标：与旧版 Angular 实现（见 backup 分支 / 主 worktree）功能与观感 1:1 等价，用户无感切换。
 
 ## 本地开发环境
 
