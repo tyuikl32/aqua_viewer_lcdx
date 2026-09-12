@@ -279,7 +279,7 @@ async function installFixtureApi(
 async function installStorage(
   context: BrowserContext,
   colorTheme: 'light' | 'dark',
-  themeFamily: 'legacy' | 'liquefy' = 'legacy',
+  themeFamily: 'legacy' | 'liquefy' | 'animal-island' = 'legacy',
   overrides: { account?: unknown; user?: unknown } = {},
 ) {
   await context.addInitScript(
@@ -331,6 +331,13 @@ async function openFirstUserDetail(page: Page): Promise<Locator> {
   const detail = page.getByRole('dialog').first();
   await expect(detail).toContainText('Fixture Passkey');
   return detail;
+}
+
+async function dismissReactConfirmation(page: Page, message?: string) {
+  if (!page.url().startsWith(REACT_ORIGIN)) return;
+  const confirmation = page.locator('[role="dialog"]:visible').filter({ hasText: message ?? '确认' }).last();
+  await expect(confirmation).toBeVisible({ timeout: 3_000 });
+  await confirmation.getByRole('button', { name: '取消' }).click();
 }
 
 async function compare(
@@ -436,8 +443,13 @@ test.describe('Admin page parity and safety', () => {
     await compare(legacyDetail, reactDetail, testInfo, 'admin-user-detail');
 
     for (const page of [pages.legacy, pages.react]) {
-      page.once('dialog', (dialog) => dialog.dismiss());
-      await page.getByRole('dialog').getByRole('button', { name: '封禁账户' }).click();
+      if (page.url().startsWith(REACT_ORIGIN)) {
+        await page.getByRole('dialog').getByRole('button', { name: '封禁账户' }).click();
+        await dismissReactConfirmation(page, '封禁 fixture-user-01');
+      } else {
+        page.once('dialog', (dialog) => dialog.dismiss());
+        await page.getByRole('dialog').getByRole('button', { name: '封禁账户' }).click();
+      }
       page.once('dialog', (dialog) => dialog.dismiss());
       await page.getByRole('dialog').getByRole('button', { name: '删除存档' }).first().click();
       await page.getByRole('dialog').getByRole('button', { name: '原始 JSON', exact: true }).click();
@@ -457,6 +469,51 @@ test.describe('Admin page parity and safety', () => {
     expect(audit.blockedWrites).toEqual([]);
     await context.close();
   });
+
+  for (const themeFamily of ['liquefy', 'animal-island'] as const) {
+    test(`${themeFamily} ban confirmation stays above the user detail`, async ({ browser }) => {
+      const context = await browser.newContext({
+        colorScheme: 'light',
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+        locale: 'zh-CN',
+        serviceWorkers: 'block',
+        timezoneId: 'Asia/Hong_Kong',
+        viewport: { width: 1280, height: 720 },
+      });
+      await installFixtureApi(context);
+      await installStorage(context, 'light', themeFamily);
+      const page = await context.newPage();
+      await page.goto(`${REACT_ORIGIN}/admin`, { waitUntil: 'domcontentloaded' });
+
+      const detail = await openFirstUserDetail(page);
+      await detail.getByRole('button', { name: '封禁账户' }).click();
+      await expect(page.locator('[role="dialog"]:visible')).toHaveCount(2);
+
+      const detailZIndex = await page.locator('.admin-dialog-content:visible').evaluate((element) => Number.parseInt(getComputedStyle(element).zIndex, 10));
+      const confirmLayer = themeFamily === 'liquefy'
+        ? page.locator('.liquefy-confirm-dialog:visible')
+        : page.locator('[class*="animal-mask-"]').filter({ has: page.locator('.animal-island-confirm-dialog') });
+      await expect(confirmLayer).toBeVisible();
+      const confirmZIndex = await confirmLayer.evaluate((element) => Number.parseInt(getComputedStyle(element).zIndex, 10));
+      expect(confirmZIndex, `${themeFamily} confirmation should be above the open user detail`).toBeGreaterThan(detailZIndex);
+
+      const cancelButton = page.getByRole('dialog').filter({ hasText: '封禁 fixture-user-01' }).getByRole('button', { name: '取消' });
+      await expect(cancelButton).toBeVisible();
+      if (themeFamily === 'liquefy') {
+        await expect(cancelButton).toHaveCSS('border-radius', '14px');
+        await expect(cancelButton).toHaveCSS('padding-left', '21px');
+        await expect(cancelButton).toHaveCSS('padding-right', '21px');
+      }
+      await cancelButton.click();
+      await expect(page.locator('[role="dialog"]:visible')).toHaveCount(1);
+      await page.waitForTimeout(500);
+      await expect(page.locator('.admin-dialog-content:visible')).toHaveCount(1);
+      await expect(detail).toContainText('Fixture Passkey');
+
+      await context.close();
+    });
+  }
 
   test('Keychip and safe EULA preview match without writes', async ({ browser }, testInfo) => {
     const context = await browser.newContext({
@@ -561,8 +618,13 @@ test.describe('Admin page parity and safety', () => {
     await expect(detail).toContainText('Fixture Passkey');
 
     for (const buttonName of ['封禁账户', '撤销全部会话', '重置两步验证', '删除 Passkey：Fixture Passkey', '解绑 discord：oauth@example.invalid', '设为默认', '按 ExtId 解绑', '删除 40000000000000000001']) {
-      page.once('dialog', (dialog) => dialog.dismiss());
-      await detail.getByRole('button', { name: buttonName, exact: true }).click();
+      if (page.url().startsWith(REACT_ORIGIN)) {
+        await detail.getByRole('button', { name: buttonName, exact: true }).click();
+        await dismissReactConfirmation(page);
+      } else {
+        page.once('dialog', (dialog) => dialog.dismiss());
+        await detail.getByRole('button', { name: buttonName, exact: true }).click();
+      }
     }
     page.once('dialog', (dialog) => dialog.dismiss('wrong-ext-id'));
     await detail.getByRole('button', { name: '删除存档' }).first().click();

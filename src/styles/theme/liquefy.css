@@ -41,6 +41,12 @@
   --lq-solid-fill: #e9f7f6;
   --lq-switch-fill: rgb(255 255 255 / 34%);
   --lq-switch-line: rgb(18 94 105 / 25%);
+  --liquefy-shell-fill: color-mix(in srgb, var(--lq-solid-fill) 30%, transparent);
+  --liquefy-shell-line: color-mix(in srgb, var(--lq-quiet-line) 80%, var(--lq-glass-bright));
+  --liquefy-shell-filter: blur(24px) saturate(1.5);
+  --liquefy-shell-shadow:
+    0 12px 30px color-mix(in srgb, var(--lq-shadow-color) 26%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 74%, transparent);
   --liquefy-footer-clearance: 7.25rem;
 
   --ui-primary: var(--lq-accent);
@@ -462,6 +468,114 @@
   opacity: 0.48;
 }
 
+/* Admin detail actions keep their Bootstrap semantics while using Liquefy's
+   glass controls. The dialog is dense, so neutralising these variants makes
+   destructive and recovery actions too easy to confuse. */
+[data-theme='liquefy'] .admin-dialog-content .btn-primary {
+  --bs-btn-color: var(--ui-primary-foreground);
+  --bs-btn-bg: var(--ui-primary-control-background);
+  --bs-btn-border-color: var(--ui-primary-control-border);
+  --bs-btn-hover-color: var(--ui-primary-foreground);
+  --bs-btn-hover-bg: var(--ui-primary-control-hover-background);
+  --bs-btn-hover-border-color: var(--ui-primary-control-hover-border);
+  --bs-btn-active-color: var(--ui-primary-foreground);
+  --bs-btn-active-bg: var(--ui-primary-control-active-background);
+  --bs-btn-active-border-color: var(--ui-primary-control-active-border);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-danger {
+  --bs-btn-color: var(--ui-destructive-foreground);
+  --bs-btn-bg: var(--ui-destructive-control-background);
+  --bs-btn-border-color: var(--ui-destructive-control-border);
+  --bs-btn-hover-color: var(--ui-destructive-foreground);
+  --bs-btn-hover-bg: var(--ui-destructive-control-hover-background);
+  --bs-btn-hover-border-color: var(--ui-destructive-control-hover-border);
+  --bs-btn-active-color: var(--ui-destructive-foreground);
+  --bs-btn-active-bg: var(--ui-destructive-control-active-background);
+  --bs-btn-active-border-color: var(--ui-destructive-control-active-border);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-success {
+  --bs-btn-color: var(--ui-primary-foreground);
+  --bs-btn-bg: color-mix(in srgb, var(--ui-success) 82%, var(--lq-control-fill));
+  --bs-btn-border-color: color-mix(in srgb, var(--ui-success) 68%, white);
+  --bs-btn-hover-color: var(--ui-primary-foreground);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--ui-success) 92%, white 8%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--ui-success) 78%, white);
+  --bs-btn-active-color: var(--ui-primary-foreground);
+  --bs-btn-active-bg: color-mix(in srgb, var(--ui-success) 82%, black 8%);
+  --bs-btn-active-border-color: var(--ui-success);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-warning {
+  --bs-btn-color: var(--ui-warning-control-foreground);
+  --bs-btn-bg: var(--ui-warning);
+  --bs-btn-border-color: var(--ui-warning-border);
+  --bs-btn-hover-color: var(--ui-warning-control-foreground);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--ui-warning) 90%, white 10%);
+  --bs-btn-hover-border-color: var(--ui-warning);
+  --bs-btn-active-color: var(--ui-warning-control-foreground);
+  --bs-btn-active-bg: color-mix(in srgb, var(--ui-warning) 84%, black 8%);
+  --bs-btn-active-border-color: var(--ui-warning);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-primary,
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-secondary,
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-success,
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-danger,
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-warning,
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-info {
+  --bs-btn-bg: var(--ui-outline-control-background);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-primary {
+  --bs-btn-color: var(--ui-primary-text);
+  --bs-btn-border-color: var(--ui-primary-border);
+  --bs-btn-hover-color: var(--ui-primary-foreground);
+  --bs-btn-hover-bg: var(--ui-primary);
+  --bs-btn-hover-border-color: var(--ui-primary);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-secondary {
+  --bs-btn-color: var(--ui-secondary-text);
+  --bs-btn-border-color: var(--ui-secondary-border);
+  --bs-btn-hover-color: var(--ui-secondary-foreground);
+  --bs-btn-hover-bg: var(--ui-secondary);
+  --bs-btn-hover-border-color: var(--ui-secondary);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-success {
+  --bs-btn-color: var(--ui-success-text);
+  --bs-btn-border-color: var(--ui-success-border);
+  --bs-btn-hover-color: var(--ui-primary-foreground);
+  --bs-btn-hover-bg: var(--ui-success);
+  --bs-btn-hover-border-color: var(--ui-success);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-danger {
+  --bs-btn-color: var(--ui-destructive-text);
+  --bs-btn-border-color: var(--ui-destructive-border);
+  --bs-btn-hover-color: var(--ui-destructive-foreground);
+  --bs-btn-hover-bg: var(--ui-destructive);
+  --bs-btn-hover-border-color: var(--ui-destructive);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-warning {
+  --bs-btn-color: var(--ui-warning-text);
+  --bs-btn-border-color: var(--ui-warning-border);
+  --bs-btn-hover-color: var(--ui-warning-control-foreground);
+  --bs-btn-hover-bg: var(--ui-warning);
+  --bs-btn-hover-border-color: var(--ui-warning);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-info {
+  --bs-btn-color: var(--ui-info-text);
+  --bs-btn-border-color: var(--ui-info-border);
+  --bs-btn-hover-color: var(--ui-primary-foreground);
+  --bs-btn-hover-bg: var(--ui-info);
+  --bs-btn-hover-border-color: var(--ui-info);
+}
+
 /* Cards, content wells, and metadata */
 [data-theme='liquefy'] .card,
 [data-theme='liquefy'] .authorization-card,
@@ -852,29 +966,29 @@
   margin-inline: auto;
   min-height: 4.1rem;
   height: 4.1rem;
-  background: color-mix(in srgb, var(--lq-solid-fill) 30%, transparent) !important;
-  border: 1px solid color-mix(in srgb, var(--lq-quiet-line) 80%, var(--lq-glass-bright));
+  background: var(--liquefy-shell-fill) !important;
+  border: 1px solid var(--liquefy-shell-line);
   border-radius: 1.15rem;
-  box-shadow:
-    0 12px 30px color-mix(in srgb, var(--lq-shadow-color) 26%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 74%, transparent);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  backdrop-filter: blur(24px) saturate(1.5);
+  box-shadow: var(--liquefy-shell-shadow);
+  -webkit-backdrop-filter: var(--liquefy-shell-filter);
+  backdrop-filter: var(--liquefy-shell-filter);
 }
 
 /*
- * The legacy shell declares its navbar background and the Bootstrap shadow
- * utility as !important inside the legacy-bootstrap layer. Important layer
+ * The legacy shell declares its navbar background and Bootstrap declares its
+ * shadow utility as !important inside the legacy-bootstrap layer. Important layer
  * precedence is inverted, so keep the Liquefy surface overrides in that same
  * layer and win through the theme selector's higher specificity.
  */
 @layer legacy-bootstrap {
   [data-theme='liquefy'] .app-navbar {
     width: auto !important;
-    background: color-mix(in srgb, var(--lq-solid-fill) 30%, transparent) !important;
-    box-shadow:
-      0 12px 30px color-mix(in srgb, var(--lq-shadow-color) 26%, transparent),
-      inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 74%, transparent) !important;
+    background: var(--liquefy-shell-fill) !important;
+    box-shadow: var(--liquefy-shell-shadow) !important;
+  }
+
+  [data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface {
+    box-shadow: var(--liquefy-shell-shadow) !important;
   }
 }
 
@@ -885,6 +999,11 @@
 
 [data-theme='liquefy'] .navbar-brand:hover {
   color: var(--lq-accent);
+}
+
+[data-theme='liquefy'] .app-navbar-menu-trigger.lq-icon-button {
+  --lq-button-radius: 999px;
+  border-radius: 999px !important;
 }
 
 [data-theme='liquefy'] .sidebar {
@@ -951,14 +1070,12 @@
   max-width: 1320px;
   margin: 0 auto !important;
   color: var(--ui-secondary-foreground);
-  background: color-mix(in srgb, var(--lq-solid-fill) 30%, transparent);
-  border: 1px solid color-mix(in srgb, var(--lq-quiet-line) 80%, var(--lq-glass-bright));
+  background: var(--liquefy-shell-fill);
+  border: 1px solid var(--liquefy-shell-line);
   border-radius: 1.15rem;
-  box-shadow:
-    0 12px 30px color-mix(in srgb, var(--lq-shadow-color) 26%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 74%, transparent);
-  -webkit-backdrop-filter: blur(24px) saturate(1.5);
-  backdrop-filter: blur(24px) saturate(1.5);
+  box-shadow: var(--liquefy-shell-shadow);
+  -webkit-backdrop-filter: var(--liquefy-shell-filter);
+  backdrop-filter: var(--liquefy-shell-filter);
 }
 
 [data-theme='liquefy'] .app-container > .flex-grow-1 {
@@ -990,6 +1107,11 @@
     0 18px 44px var(--lq-shadow-color),
     inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 88%, white),
     inset 0 -1px 0 var(--lq-glass-shade) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.65);
+  backdrop-filter: blur(28px) saturate(1.65);
+}
+
+[data-theme='liquefy'] [data-slot='dropdown-menu-content'].theme-menu-content {
   -webkit-backdrop-filter: blur(28px) saturate(1.65);
   backdrop-filter: blur(28px) saturate(1.65);
 }
@@ -1095,6 +1217,27 @@
   animation: liquefy-dialog-soft-out 140ms ease-in both;
 }
 
+/* Confirmations opened from an already-visible admin dialog must sit above
+   that dialog rather than being trapped behind its Bootstrap-compatible layer. */
+[data-theme='liquefy'] .liquefy-confirm-dialog.lq-dialog {
+  pointer-events: auto !important;
+  z-index: 1070 !important;
+}
+
+[data-theme='liquefy'] .liquefy-confirm-dialog .lq-button {
+  /* Tailwind preflight resets native buttons; restore Liquefy's intended md
+     glass-button geometry for the confirmation actions. */
+  border-radius: 14px !important;
+  display: inline-flex !important;
+  min-height: 46px !important;
+  padding: 0 21px !important;
+}
+
+[data-theme='liquefy'] body:has(.liquefy-confirm-dialog) .lq-dialog__backdrop {
+  pointer-events: auto !important;
+  z-index: 1069 !important;
+}
+
 [data-theme='liquefy'] .liquefy-modal .lq-dialog__header,
 [data-theme='liquefy'] .liquefy-confirm-dialog .lq-dialog__header {
   gap: 0.75rem;
@@ -1121,19 +1264,112 @@
   padding-right: 0.25rem;
 }
 
+/* Song details use the shell glass in a rounded, floating right-hand panel. */
+[data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface {
+  --liquefy-song-gap: 0.75rem;
+  --liquefy-song-right: calc(var(--liquefy-song-gap) + env(safe-area-inset-right));
+  inset:
+    calc(var(--liquefy-song-gap) + env(safe-area-inset-top))
+    var(--liquefy-song-right)
+    calc(var(--liquefy-song-gap) + env(safe-area-inset-bottom))
+    auto;
+  max-width: calc(100vw - 2 * var(--liquefy-song-gap) - env(safe-area-inset-left) - env(safe-area-inset-right)) !important;
+  height: auto !important;
+  max-height: calc(100dvh - 2 * var(--liquefy-song-gap) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  color: var(--lq-foreground);
+  background: var(--liquefy-shell-fill) !important;
+  border: 1px solid var(--liquefy-shell-line) !important;
+  border-radius: 1.5rem !important;
+  box-shadow: var(--liquefy-shell-shadow) !important;
+  -webkit-backdrop-filter: var(--liquefy-shell-filter);
+  backdrop-filter: var(--liquefy-shell-filter);
+  transform: none !important;
+  will-change: auto;
+}
+
+[data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface .btn-close {
+  position: absolute !important;
+  top: 1rem !important;
+  right: 1rem !important;
+}
+
+/* Moving the inset preserves backdrop sampling throughout the transition. */
+[data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface[data-sheet-state='open'] {
+  animation: liquefy-song-detail-in 420ms var(--lq-easing) both !important;
+}
+
+[data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface[data-sheet-state='closed'] {
+  animation: liquefy-song-detail-out 280ms ease-in both !important;
+}
+
+@keyframes liquefy-song-detail-in {
+  from { right: -400px; }
+  to { right: var(--liquefy-song-right); }
+}
+
+@keyframes liquefy-song-detail-out {
+  from { right: var(--liquefy-song-right); }
+  to { right: -400px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface[data-sheet-state] {
+    animation: none !important;
+  }
+}
+
 [data-theme='liquefy'] .shell-mobile-liquid-drawer .lq-drawer__surface {
   --lq-radius: 1.5rem;
-  --lq-line: color-mix(in srgb, var(--lq-accent) 22%, var(--lq-glass-bright));
-  --lq-fill: color-mix(in srgb, var(--lq-solid-fill) 43%, transparent);
-  --lq-blur: 30px;
-  --lq-saturate: 1.72;
-  --lq-glow: 0.4;
-  border-radius: 0 1.5rem 1.5rem 0;
+  -webkit-backdrop-filter: var(--liquefy-shell-filter) !important;
+  backdrop-filter: var(--liquefy-shell-filter) !important;
+  background: var(--liquefy-shell-fill) !important;
+  border: 1px solid var(--liquefy-shell-line);
+  border-radius: 1.5rem;
+  box-shadow: var(--liquefy-shell-shadow);
+  /* Keep the absolute glass edge and ::after highlight out of the scroller. */
+  overflow: hidden;
   padding: 1.35rem;
+  transform: none !important;
+  transform-style: flat !important;
+  will-change: auto;
 }
 
 [data-theme='liquefy'] .shell-mobile-liquid-drawer {
+  inset: 0.75rem auto calc(0.75rem + env(safe-area-inset-bottom)) 0.75rem;
+  width: min(24rem, calc(100vw - 1.5rem));
+  height: auto;
+  max-height: none;
   z-index: 1050;
+}
+
+@keyframes liquefy-mobile-drawer-in {
+  from {
+    left: -24rem;
+  }
+
+  to {
+    left: 0.75rem;
+  }
+}
+
+@keyframes liquefy-mobile-drawer-out {
+  from {
+    left: 0.75rem;
+  }
+
+  to {
+    left: -24rem;
+  }
+}
+
+[data-theme='liquefy'] .shell-mobile-liquid-drawer[data-open][data-side='left'] {
+  animation: liquefy-mobile-drawer-in 420ms var(--lq-easing) both !important;
+  transform: none !important;
+}
+
+[data-theme='liquefy'] .shell-mobile-liquid-drawer[data-closed][data-side='left'] {
+  animation: liquefy-mobile-drawer-out 320ms ease-in both !important;
+  transform: none !important;
 }
 
 [data-theme='liquefy'] .lq-drawer__backdrop {
@@ -1141,7 +1377,14 @@
 }
 
 [data-theme='liquefy'] .shell-mobile-liquid-drawer .lq-drawer__header {
+  flex-shrink: 0;
   margin-bottom: 1.2rem;
+}
+
+[data-theme='liquefy'] .shell-mobile-liquid-drawer .lq-drawer__body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
 
 [data-theme='liquefy'] .shell-mobile-liquid-drawer .lq-drawer__header h2 {
@@ -1153,10 +1396,10 @@
   border-radius: 0.75rem;
 }
 
-[data-theme='liquefy'] .lq-drawer__backdrop {
-  background: rgb(7 11 18 / 42%);
-  -webkit-backdrop-filter: blur(7px) saturate(1.04);
-  backdrop-filter: blur(7px) saturate(1.04);
+[data-theme='liquefy'] body:has(.shell-mobile-liquid-drawer) .lq-drawer__backdrop {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 [data-theme='liquefy'] .liquefy-toast {
@@ -1292,23 +1535,106 @@
     --liquefy-footer-clearance: 11.5rem;
   }
 
-  [data-theme='liquefy'] .sidebar {
-    border-right: 0;
-  }
-
   [data-theme='liquefy'] .app-navbar {
     top: 0.5rem;
     right: 0.5rem;
     left: 0.5rem;
     height: 4.1rem;
     border-radius: 1rem;
-    border-bottom-color: transparent;
+    background-clip: padding-box;
+    overflow: hidden;
+  }
+
+  [data-theme='liquefy'] .app-navbar-menu-trigger-detached {
+    position: fixed;
+    top: 1.1125rem;
+    left: 0.5rem;
+    z-index: 1000;
+    margin: 0;
+    background: var(--liquefy-shell-fill) !important;
+    border: 1px solid var(--liquefy-shell-line) !important;
+    box-shadow: var(--liquefy-shell-shadow);
+    -webkit-backdrop-filter: var(--liquefy-shell-filter);
+    backdrop-filter: var(--liquefy-shell-filter);
+    /* Keep the glass in the page's backdrop while the icon reacts to input. */
+    transform: none !important;
+    transform-style: flat;
+    will-change: auto;
+  }
+
+  [data-theme='liquefy'] .app-navbar-menu-trigger-detached:not(.v-hidden):not(.v-not-login) + .app-navbar {
+    left: 3.875rem;
   }
 
   [data-theme='liquefy'] .footer {
-    right: 0.5rem;
+    --footer-expanded-width: calc(100vw - 1rem - env(safe-area-inset-left) - env(safe-area-inset-right));
+    right: auto;
     bottom: calc(0.5rem + env(safe-area-inset-bottom));
-    left: 0.5rem;
+    left: calc(0.5rem + env(safe-area-inset-left));
+    width: var(--footer-expanded-width) !important;
+    height: var(--footer-expanded-height, auto);
+    padding: 0;
+    overflow: hidden;
+    z-index: 990;
+    /* Morph the actual glass bounds, never scale/translate the backdrop layer. */
+    transition:
+      width 480ms var(--lq-easing),
+      height 480ms var(--lq-easing),
+      border-radius 480ms var(--lq-easing);
+  }
+
+  [data-theme='liquefy'] .footer[data-scroll-state='compact'] {
+    width: min(var(--footer-compact-width), var(--footer-expanded-width)) !important;
+    height: var(--footer-compact-height);
+    border-radius: calc(var(--footer-compact-height) / 2);
+  }
+
+  [data-theme='liquefy'] .shell-footer-layout {
+    box-sizing: border-box;
+    width: calc(var(--footer-expanded-width) - 2px);
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  [data-theme='liquefy'] .shell-footer-controls {
+    width: max-content;
+    max-width: 100%;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  [data-theme='liquefy'] .shell-footer-controls > .col-auto {
+    padding-inline: 0;
+  }
+
+  [data-theme='liquefy'] .shell-footer-controls [data-slot='dropdown-menu-trigger'] {
+    min-height: 44px;
+    padding-inline: 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: background-color 180ms var(--lq-easing);
+  }
+
+  [data-theme='liquefy'] .shell-footer-controls [data-slot='dropdown-menu-trigger']:hover,
+  [data-theme='liquefy'] .shell-footer-controls [data-slot='dropdown-menu-trigger'][data-state='open'] {
+    background: var(--lq-control-fill);
+  }
+
+  [data-theme='liquefy'] .shell-footer-details {
+    width: 100%;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: opacity 220ms ease 100ms, transform 400ms var(--lq-easing), visibility 0s;
+  }
+
+  [data-theme='liquefy'] .footer[data-scroll-state='compact'] .shell-footer-details {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(0.6rem);
+    pointer-events: none;
+    transition: opacity 120ms ease, transform 320ms var(--lq-easing), visibility 0s 120ms;
   }
 
   [data-theme='liquefy'] .shell-mobile-sheet {
@@ -1321,6 +1647,24 @@
     box-shadow: none;
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+}
+
+/* Match the priority of Bootstrap spacing utilities without changing the
+   classic/Animal Island footer or the desktop layout. */
+@layer legacy-bootstrap {
+  @media (max-width: 991.98px) {
+    [data-theme='liquefy'] .shell-footer-layout {
+      padding: 0.5rem 0.75rem !important;
+    }
+
+    [data-theme='liquefy'] .shell-footer-controls {
+      margin: 0 !important;
+    }
+
+    [data-theme='liquefy'] .shell-footer-details {
+      margin: 0.25rem 0 0 !important;
+    }
   }
 }
 
@@ -1359,6 +1703,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  [data-theme='liquefy'] .shell-footer-details {
+    transition-delay: 0s !important;
+  }
+
   [data-theme='liquefy'] *,
   [data-theme='liquefy'] *::before,
   [data-theme='liquefy'] *::after {

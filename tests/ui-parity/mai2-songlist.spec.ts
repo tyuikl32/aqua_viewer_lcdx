@@ -1,4 +1,5 @@
 import { expect, test, type BrowserContext, type Page, type TestInfo } from '@playwright/test';
+import { verifyModernSongDetails } from './song-detail-surface';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import pixelmatch from 'pixelmatch';
@@ -263,7 +264,7 @@ async function installFixtureApi(context: BrowserContext) {
 async function installFixtureStorage(
   context: BrowserContext,
   theme: 'light' | 'dark',
-  family: 'legacy' | 'liquefy' = 'legacy',
+  family: 'legacy' | 'liquefy' | 'animal-island' = 'legacy',
 ) {
   await context.addInitScript(
     ({ account, user, selectedTheme, selectedFamily, origins, dbVersion }) => {
@@ -398,6 +399,108 @@ async function saveComparison(
 test.describe('Maimai2 song list visual parity', () => {
   test.describe.configure({ timeout: 120_000 });
 
+  // Match the option names and IDs in the original Angular song-list component.
+  const originalGenres = ['POPS＆アニメ', 'niconico＆ボーカロイド', '東方Project', 'ゲーム＆バラエティ', 'ORIGINAL', 'オンゲキ＆CHUNITHM', '宴会場'];
+  const originalVersions = ['maimai', 'maimai+', 'GreeN', 'GreeN+', 'ORANGE', 'ORANGE+', 'PiNK', 'PiNK+', 'MURASAKi', 'MURASAKi+', 'MiLK', 'MiLK+', 'FiNALE', 'maimai DX', 'maimai DX+', 'Splash', 'Splash+', 'UNiVERSE', 'UNiVERSE+', 'FESTiVAL', 'FESTiVAL+', 'BUDDiES', 'BUDDiES+', 'PRiSM'];
+
+  for (const family of ['legacy', 'liquefy', 'animal-island'] as const) {
+    for (const theme of themes) {
+      test(`genre and version filters are visible and functional in ${family} ${theme}`, async ({ browser }, testInfo) => {
+        const context = await browser.newContext({
+          ignoreHTTPSErrors: true, serviceWorkers: 'block', viewport: { width: 1280, height: 844 },
+        });
+        try {
+          const blockedWrites = await installFixtureApi(context);
+          await installFixtureStorage(context, theme, family);
+          const page = await context.newPage();
+          await page.goto(`${REACT_ORIGIN}/mai2/songlist`, { waitUntil: 'domcontentloaded' });
+          await waitForCatalog(page);
+          for (const width of [1280, 390]) {
+            await test.step(`${width}px`, async () => {
+              await page.setViewportSize({ width, height: 844 });
+              await page.reload({ waitUntil: 'domcontentloaded' });
+              await settleList(page);
+              await expect(page.locator('html')).toHaveAttribute('data-theme', family);
+              await expect(page.locator('html')).toHaveAttribute('data-color-scheme', theme);
+              const genreButton = page.getByRole('button', { name: '流派', exact: true });
+              const versionButton = page.getByRole('button', { name: '版本', exact: true });
+              const genreLabels = page.locator('#collapseOne .checkbox-label');
+              const versionLabels = page.locator('#collapseTwo .checkbox-label');
+              const original = genreLabels.filter({ hasText: /^ORIGINAL$/ });
+              const pops = genreLabels.filter({ hasText: /^POPS＆アニメ$/ });
+              const prism = versionLabels.filter({ hasText: /^PRiSM$/ });
+              const festivalPlus = versionLabels.filter({ hasText: /^FESTiVAL\+$/ });
+              const songs = page.locator('.card-btn.card');
+
+              await expect(genreButton).toHaveAttribute('aria-expanded', 'false');
+              await expect(versionButton).toHaveAttribute('aria-expanded', 'false');
+              await expect(original).toBeHidden();
+              await expect(prism).toBeHidden();
+              await genreButton.click();
+              await versionButton.click();
+              await expect(genreButton).toHaveAttribute('aria-expanded', 'true');
+              await expect(versionButton).toHaveAttribute('aria-expanded', 'true');
+              await expect(genreLabels).toHaveText(originalGenres);
+              await expect(versionLabels).toHaveText(originalVersions);
+              for (const label of [...await genreLabels.all(), ...await versionLabels.all()]) {
+                await expect(label).toBeVisible();
+                const bounds = await label.boundingBox();
+                expect(bounds!.x).toBeGreaterThanOrEqual(0);
+                expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1);
+              }
+              await page.locator('#Filter').screenshot({ path: testInfo.outputPath(`filters-${width}.png`) });
+
+              await original.click();
+              await expect(page.locator('#genre4')).toBeChecked();
+              await expect(songs).toHaveCount(1);
+              await expect(songs.first()).toContainText('Fixture Alpha');
+              await pops.click();
+              await expect(songs).toHaveCount(2);
+              await prism.click();
+              await expect(page.locator('#version23')).toBeChecked();
+              await expect(songs).toHaveCount(1);
+              await expect(songs.first()).toContainText('Fixture Alpha');
+              await festivalPlus.click();
+              await expect(page.locator('#version20')).toBeChecked();
+              await expect(songs).toHaveCount(2);
+
+              await page.getByPlaceholder('搜索', { exact: true }).fill('Alpha');
+              await expect(songs).toHaveCount(1);
+              await page.getByPlaceholder('搜索', { exact: true }).fill('');
+              await expect(songs).toHaveCount(2);
+              await genreButton.click();
+              await expect(original).toBeHidden();
+              await expect(prism).toBeVisible();
+              await expect(songs).toHaveCount(2);
+              await genreButton.click();
+              await expect(original).toBeVisible();
+              await expect(page.locator('#genre4')).toBeChecked();
+              await expect(page.locator('#genre0')).toBeChecked();
+
+              await prism.click();
+              await expect(songs).toHaveCount(1);
+              await expect(songs.first()).toContainText('Fixture Beta DX');
+              await pops.click();
+              await expect(songs).toHaveCount(0);
+              await festivalPlus.click();
+              await expect(songs).toHaveCount(1);
+              await expect(songs.first()).toContainText('Fixture Alpha');
+              await original.click();
+              await expect(songs).toHaveCount(PAGE_SIZE);
+              await versionButton.click();
+              await expect(prism).toBeHidden();
+              await versionButton.click();
+              await expect(prism).toBeVisible();
+            });
+          }
+          expect(blockedWrites, 'Filtering must stay local and read-only').toEqual([]);
+        } finally {
+          await context.close();
+        }
+      });
+    }
+  }
+
   for (const theme of themes) {
     test(`list and read-only detail match Angular in ${theme} mode`, async ({ browser }, testInfo) => {
       const context = await browser.newContext({
@@ -516,5 +619,24 @@ test.describe('Maimai2 song list visual parity', () => {
     await expect(page.locator('.maimai2-song-detail')).toHaveCount(0);
     expect(blockedBusinessWrites, 'Liquefy-theme interactions must remain read-only').toEqual([]);
     await context.close();
+  });
+
+  test('modern song details preserve glass, corners and hidden-scrollbar interactions', async ({ browser }) => {
+    const context = await browser.newContext({
+      ignoreHTTPSErrors: true, serviceWorkers: 'block', hasTouch: true,
+      reducedMotion: 'no-preference', viewport: { width: 390, height: 844 },
+    });
+    try {
+      const blockedWrites = await installFixtureApi(context);
+      await installFixtureStorage(context, 'light');
+      const page = await context.newPage();
+      await page.goto(`${REACT_ORIGIN}/mai2/songlist`, { waitUntil: 'domcontentloaded' });
+      await waitForCatalog(page);
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await verifyModernSongDetails(page);
+      expect(blockedWrites).toEqual([]);
+    } finally {
+      await context.close();
+    }
   });
 });

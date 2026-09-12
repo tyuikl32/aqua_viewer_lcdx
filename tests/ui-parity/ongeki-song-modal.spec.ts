@@ -1,4 +1,5 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
+import { verifyModernSongDetails } from './song-detail-surface';
 
 const LEGACY_ORIGIN = process.env.LEGACY_ORIGIN ?? 'https://portal.naominet.live:4201';
 const REACT_ORIGIN = process.env.REACT_ORIGIN ?? 'https://portal.naominet.live:5173';
@@ -197,7 +198,7 @@ async function openSongDetail(page: Page, origin: string, legacy: boolean) {
   await page.locator('.card-btn.card').first().click();
   const root = page.locator(legacy ? '.compat-offcanvas' : '.ongeki-song-score-ranking');
   await root.waitFor({ state: 'visible', timeout: 30_000 });
-  await root.locator('.btn-close').waitFor({ state: 'visible', timeout: 30_000 });
+  await root.locator('.btn-close:visible').waitFor({ state: 'visible', timeout: 30_000 });
   return root;
 }
 
@@ -220,6 +221,25 @@ async function sheetGeometry(page: Page, legacy: boolean) {
 
 test.describe('Ongeki song detail Sheet lifecycle', () => {
   test.describe.configure({ timeout: 120_000 });
+
+  test('modern song details preserve glass, corners and hidden-scrollbar interactions', async ({ browser }) => {
+    const context = await browser.newContext({
+      ignoreHTTPSErrors: true, serviceWorkers: 'block', hasTouch: true,
+      reducedMotion: 'no-preference', viewport: { width: 390, height: 844 },
+    });
+    try {
+      const blockedWrites = await installFixtureApi(context);
+      await installFixtureStorage(context);
+      const page = await context.newPage();
+      await page.goto(`${REACT_ORIGIN}/ongeki/song`, { waitUntil: 'domcontentloaded' });
+      await waitForCatalog(page);
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await verifyModernSongDetails(page);
+      expect(blockedWrites).toEqual([]);
+    } finally {
+      await context.close();
+    }
+  });
 
   test('keeps the close control inset and animates the Sheet out', async ({ browser }) => {
     const context = await browser.newContext({
@@ -260,7 +280,7 @@ test.describe('Ongeki song detail Sheet lifecycle', () => {
       expect(newGeometry!.rightInset).toBeGreaterThanOrEqual(15);
       expect(newGeometry!.topInset).toBeGreaterThanOrEqual(15);
 
-      await newRoot.locator('.btn-close').click();
+      await newRoot.locator('.btn-close:visible').click();
       await expect(newRoot).toHaveCount(1);
       await newPage.waitForTimeout(100);
       await expect(newRoot).toHaveCount(1);

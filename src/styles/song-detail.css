@@ -14,6 +14,23 @@
   overflow: hidden !important;
 }
 
+/* Keep wheel and touch scrolling, without a visible scrollbar at either level. */
+[data-theme='liquefy'] .song-detail-surface,
+[data-theme='animal-island'] .song-detail-surface,
+[data-theme='liquefy'] .song-detail-surface > .offcanvas-body,
+[data-theme='animal-island'] .song-detail-surface > .offcanvas-body {
+  scrollbar-width: none;
+}
+
+[data-theme='liquefy'] .song-detail-surface::-webkit-scrollbar,
+[data-theme='animal-island'] .song-detail-surface::-webkit-scrollbar,
+[data-theme='liquefy'] .song-detail-surface > .offcanvas-body::-webkit-scrollbar,
+[data-theme='animal-island'] .song-detail-surface > .offcanvas-body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 [data-theme='liquefy'] .song-detail-surface > .offcanvas-header,
 [data-theme='animal-island'] .song-detail-surface > .offcanvas-header {
   display: none !important;
@@ -31,6 +48,7 @@
 [data-theme='liquefy'] .song-detail-surface > .offcanvas-body,
 [data-theme='animal-island'] .song-detail-surface > .offcanvas-body {
   box-sizing: border-box;
+  min-height: 0;
   max-height: 100vh !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -43,6 +61,9 @@
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
+  /* Layout-only wrapper: the outer sheet already provides the glass material. */
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 [data-theme='liquefy'] .song-detail-surface .song-detail-card-body,
@@ -95,6 +116,15 @@
   margin: 1rem auto !important;
   border-radius: var(--ui-radius-md, 0.5rem);
   box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
+}
+
+/* Bootstrap's layered !important ms-4 otherwise wins over the centered margin.
+ * Match its layer without changing the classic theme's jacket spacing. */
+@layer legacy-bootstrap {
+  [data-theme='liquefy'] .song-detail-surface .music-info-container .music-img,
+  [data-theme='animal-island'] .song-detail-surface .music-info-container .music-img {
+    margin-inline: auto !important;
+  }
 }
 
 [data-theme='liquefy'] .song-detail-surface .music-info,

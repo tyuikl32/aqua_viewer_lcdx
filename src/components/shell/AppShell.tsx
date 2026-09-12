@@ -18,6 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Toasts } from '@/components/shell/Toasts';
 import { LoadingBar } from '@/components/shell/LoadingBar';
+import { useMobileLiquidFooter } from '@/components/shell/useMobileLiquidFooter';
 import { ThemeMenu } from '@/components/theme/ThemeMenu';
 import { accountStore } from '@/lib/auth/account';
 import { userStore } from '@/lib/user';
@@ -223,9 +224,13 @@ function Footer() {
   const { t } = useTranslation();
   const currentLang = useStore(langStore);
   const { family } = useTheme();
+  const location = useLocation();
+  const { footerRef, compact } = useMobileLiquidFooter(family === 'liquefy', location.pathname);
 
   return (
     <footer
+      ref={footerRef}
+      data-scroll-state={family === 'liquefy' ? (compact ? 'compact' : 'expanded') : undefined}
       className={
         'footer container-xxl' +
         (family === 'liquefy' || family === 'animal-island' ? '' : ' mb-2')
@@ -235,8 +240,8 @@ function Footer() {
         <AnimalFooter className="animal-island-footer-decoration" type="tree" />
       )}
       <hr className="m-0 pt-2" />
-      <div className="d-flex justify-content-between flex-wrap px-2 px-lg-3 py-3 column-gap-3">
-        <div className="row fw-bold my-2">
+      <div className="shell-footer-layout d-flex justify-content-between flex-wrap px-2 px-lg-3 py-3 column-gap-3">
+        <div className="shell-footer-controls row fw-bold my-2">
           <div className="col-auto">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -266,7 +271,7 @@ function Footer() {
             <ThemeMenu />
           </div>
         </div>
-        <div className="row my-2">
+        <div className="shell-footer-details row my-2" inert={compact} aria-hidden={compact || undefined}>
           <div className="col-auto">
             <a target="_blank" rel="noreferrer" href="https://status.naominet.live/status/aquaserver">
               {t('App.Footer.Status')}
@@ -310,16 +315,17 @@ export function AppShell() {
   const deepest = [...matches].reverse().find((m) => m.handle)?.handle ?? {};
   const accessLayout = deepest.accessLayout === true;
   const disableSidebar = deepest.disableSidebar === true;
+  // Gate the navigation tree itself; responsive display classes must not expose guest menus.
+  const sidebarEnabled = Boolean(account) && !disableSidebar && !accessLayout;
 
-  const isRouterHome = location.pathname === '/';
   const [sheetOpen, setSheetOpen] = useState(false);
   const [animalDrawerMounted, setAnimalDrawerMounted] = useState(false);
   const [animalDrawerClosing, setAnimalDrawerClosing] = useState(false);
 
-  useEffect(() => setSheetOpen(false), [location.pathname]);
+  useEffect(() => setSheetOpen(false), [location.pathname, sidebarEnabled]);
 
   useEffect(() => {
-    if (!isAnimalIsland) {
+    if (!isAnimalIsland || !sidebarEnabled) {
       setAnimalDrawerMounted(false);
       setAnimalDrawerClosing(false);
       return;
@@ -336,79 +342,85 @@ export function AppShell() {
       setAnimalDrawerClosing(false);
     }, 360);
     return () => window.clearTimeout(timer);
-  }, [animalDrawerMounted, isAnimalIsland, sheetOpen]);
+  }, [animalDrawerMounted, isAnimalIsland, sheetOpen, sidebarEnabled]);
 
-  const togglerHidden = isRouterHome && account ? 'v-hidden' : '';
-  const togglerNotLogin = disableSidebar && !account ? 'v-not-login' : '';
   return (
     <div className="app-container">
       <BootEffects />
       <div className="flex-grow-1">
         {!accessLayout && (
-          <nav className="app-navbar navbar navbar-expand-lg position-fixed shadow">
-            <div className="container-xxl">
-              {isLiquefy ? (
-                <LiquidIconButton
-                  className={`app-navbar-menu-trigger d-lg-none ${togglerHidden} ${togglerNotLogin}`}
-                  label={t('App.Sidebar.Navigation')}
-                  onClick={() => setSheetOpen(true)}
-                  shape="rounded"
-                >
-                  <List size="1.4rem" />
-                </LiquidIconButton>
-              ) : isAnimalIsland ? (
-                <AnimalButton
-                  className={`app-navbar-menu-trigger animal-island-navbar-trigger d-lg-none ${togglerHidden} ${togglerNotLogin}`}
-                  type="text"
-                  aria-label={t('App.Sidebar.Navigation')}
-                  icon={<List size="1.4rem" />}
-                  onClick={() => setSheetOpen(true)}
-                />
-              ) : (
-                <button
-                  className={`navbar-toggler btn btn-icon d-lg-none ${togglerHidden} ${togglerNotLogin}`}
-                  type="button"
-                  onClick={() => setSheetOpen(true)}
-                >
-                  <div className="d-flex align-items-center">
-                    <List size="1.4rem" />
-                  </div>
-                </button>
-              )}
-              <Link to="/" className="navbar-brand sm-center">
-                <img
-                  src={assetsHost + 'assets/turtle.svg'}
-                  alt="turtle"
-                  width="30"
-                  height="24"
-                  className="d-inline-block align-text-top"
-                />
-                RinNET
-              </Link>
-              <div className="hstack gap-1 ms-auto">
-                {account && <LoadingBar inNavbar />}
-                {account && <UserPopover />}
+          <>
+            {sidebarEnabled && isLiquefy && (
+              <LiquidIconButton
+                className="app-navbar-menu-trigger app-navbar-menu-trigger-detached d-lg-none"
+                label={t('App.Sidebar.Navigation')}
+                onClick={() => setSheetOpen(true)}
+                shape="circle"
+              >
+                <List size="1.4rem" />
+              </LiquidIconButton>
+            )}
+            <nav
+              className={
+                'app-navbar navbar navbar-expand-lg position-fixed' + (isLiquefy ? '' : ' shadow')
+              }
+            >
+              <div className="container-xxl">
+                {sidebarEnabled && !isLiquefy && (isAnimalIsland ? (
+                  <AnimalButton
+                    className="app-navbar-menu-trigger animal-island-navbar-trigger d-lg-none"
+                    type="text"
+                    aria-label={t('App.Sidebar.Navigation')}
+                    icon={<List size="1.4rem" />}
+                    onClick={() => setSheetOpen(true)}
+                  />
+                ) : (
+                  <button
+                    className="navbar-toggler btn btn-icon d-lg-none"
+                    type="button"
+                    aria-label={t('App.Sidebar.Navigation')}
+                    onClick={() => setSheetOpen(true)}
+                  >
+                    <div className="d-flex align-items-center">
+                      <List size="1.4rem" />
+                    </div>
+                  </button>
+                ))}
+                <Link to="/" className="navbar-brand sm-center">
+                  <img
+                    src={assetsHost + 'assets/turtle.svg'}
+                    alt="turtle"
+                    width="30"
+                    height="24"
+                    className="d-inline-block align-text-top"
+                  />
+                  RinNET
+                </Link>
+                <div className="hstack gap-1 ms-auto">
+                  {account && <LoadingBar inNavbar />}
+                  {account && <UserPopover />}
+                </div>
               </div>
-            </div>
-          </nav>
+            </nav>
+          </>
         )}
         <div className="position-relative">
           <LoadingBar />
           <div
             className={'d-lg-grid' + (accessLayout ? '' : ' container-xxl')}
-            style={{ gridTemplateAreas: "'sidebar main'", gridTemplateColumns: 'auto 1fr' }}
+            style={{
+              gridTemplateAreas: sidebarEnabled ? "'sidebar main'" : "'main'",
+              gridTemplateColumns: sidebarEnabled ? 'auto 1fr' : 'minmax(0, 1fr)',
+            }}
           >
-            <aside
-              className={
-                'sidebar d-block overflow-y-auto position-sticky' +
-                (disableSidebar || !account ? ' d-none' : '')
-              }
-            >
-              <div className="d-none d-lg-block">
-                <SidebarNav />
-              </div>
-            </aside>
-            {account &&
+            {sidebarEnabled && (
+              <aside className="sidebar d-none d-lg-block overflow-y-auto position-sticky">
+                <div className="d-none d-lg-block">
+                  <SidebarNav />
+                </div>
+              </aside>
+            )}
+            {sidebarEnabled &&
               (isLiquefy ? (
                 <LiquidDrawer
                   className="shell-mobile-liquid-drawer"

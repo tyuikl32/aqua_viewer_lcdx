@@ -1,3 +1,9 @@
+.maimai2-song-list-page .accordion-collapse {
+  /* Bootstrap toggles display via .show; Tailwind's .collapse visibility
+     utility must not keep an expanded filter invisible. */
+  visibility: visible;
+}
+
 .maimai2-song-list-page .checkbox-btn {
   margin-right: 0.5rem;
 }

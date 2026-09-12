@@ -1035,6 +1035,11 @@
   box-shadow: var(--ui-shadow-lg) !important;
 }
 
+/* Song details dock against the right edge on both desktop and mobile. */
+[data-theme='animal-island'] [data-slot='sheet-content'].song-detail-surface {
+  border-radius: 24px 0 0 24px !important;
+}
+
 [data-theme='animal-island'] [data-slot='dialog-close'],
 [data-theme='animal-island'] [data-sheet-close],
 [data-theme='animal-island'] .btn-close {
@@ -1074,6 +1079,11 @@
 
 [data-theme='animal-island'] [class*='animal-mask-'] {
   background: var(--ui-overlay) !important;
+}
+
+[data-theme='animal-island'] body:has(.animal-island-confirm-dialog) [class*='animal-mask-'] {
+  pointer-events: auto !important;
+  z-index: 1070 !important;
 }
 
 [data-theme='animal-island'] .modal-header,

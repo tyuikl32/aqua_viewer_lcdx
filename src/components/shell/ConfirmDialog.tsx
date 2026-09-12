@@ -72,6 +72,7 @@ function ConfirmDialogRoot({
           onOpenChange={(nextOpen) => {
             if (!nextOpen) finish(false);
           }}
+          onPointerDown={(event) => event.stopPropagation()}
           title={opts.title ?? '确认'}
           className="liquefy-confirm-dialog"
         >
