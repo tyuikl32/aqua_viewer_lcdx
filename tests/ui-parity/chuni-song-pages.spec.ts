@@ -1,4 +1,5 @@
 import { expect, test, type BrowserContext, type Page, type TestInfo } from '@playwright/test';
+import { verifyModernSongDetails } from './song-detail-surface';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import pixelmatch from 'pixelmatch';
@@ -296,6 +297,25 @@ async function saveComparison(
 
 test.describe('Chunithm v2 song pages visual parity', () => {
   test.describe.configure({ timeout: 120_000 });
+
+  test('modern song details preserve glass, corners and hidden-scrollbar interactions', async ({ browser }) => {
+    const context = await browser.newContext({
+      ignoreHTTPSErrors: true, serviceWorkers: 'block', hasTouch: true,
+      reducedMotion: 'no-preference', viewport: { width: 390, height: 844 },
+    });
+    try {
+      const blockedWrites = await installFixtureApi(context);
+      await installFixtureStorage(context, 'light');
+      const page = await context.newPage();
+      await page.goto(`${REACT_ORIGIN}/chuni/v2/song`, { waitUntil: 'domcontentloaded' });
+      await waitForCatalog(page);
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await verifyModernSongDetails(page);
+      expect(blockedWrites).toEqual([]);
+    } finally {
+      await context.close();
+    }
+  });
 
   for (const theme of themes) {
     test(`list and read-only ranking match Angular in ${theme} mode`, async ({

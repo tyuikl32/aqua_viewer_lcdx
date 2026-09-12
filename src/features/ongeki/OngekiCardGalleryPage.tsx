@@ -10,6 +10,10 @@ import { getCurrentUser } from '@/lib/user';
 import { assetsHost } from '@/lib/utils';
 import { OngekiCardSurface } from './OngekiCardSurface';
 import { resetOngekiInteractiveCardTilt } from './OngekiInteractiveCard';
+import {
+  findFixedPositioningContext,
+  toFixedPositionPoint,
+} from './card-pick-position';
 import type { OngekiCard, OngekiCharacter, OngekiSkill, PlayerCard } from './models';
 import './card-gallery.css';
 import './ongeki-common.css';
@@ -205,6 +209,7 @@ export function OngekiCardGalleryPage() {
   const pickParams = useRef({ left: 0, top: 0, width: 0, height: 0, expandedWidth: 0, expandedHeight: 0 });
   const pickedParentRef = useRef<HTMLElement | null>(null);
   const pickedElRef = useRef<HTMLElement | null>(null);
+  const pickedPositioningContextRef = useRef<HTMLElement | null>(null);
 
   function clearPickingTimer() {
     if (pickingTimerRef.current !== null) {
@@ -222,6 +227,7 @@ export function OngekiCardGalleryPage() {
     }
     pickedElRef.current = null;
     pickedParentRef.current = null;
+    pickedPositioningContextRef.current = null;
     pickedOriginalStyleRef.current = null;
     document.body.classList.remove('overflow-hidden');
   }
@@ -440,10 +446,19 @@ export function OngekiCardGalleryPage() {
     clearPickingTimer();
     pickedOriginalStyleRef.current = cardCol.getAttribute('style');
     const rect = cardCol.getBoundingClientRect();
+    const positioningContext = findFixedPositioningContext(cardCol);
+    const startPoint = toFixedPositionPoint(
+      { x: (rect.right + rect.left) / 2, y: (rect.bottom + rect.top) / 2 },
+      positioningContext,
+    );
+    const viewportCenter = toFixedPositionPoint(
+      { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+      positioningContext,
+    );
     pickParams.current.width = rect.width;
     pickParams.current.height = rect.height;
-    pickParams.current.left = (rect.right + rect.left) / 2;
-    pickParams.current.top = (rect.bottom + rect.top) / 2;
+    pickParams.current.left = startPoint.left;
+    pickParams.current.top = startPoint.top;
     let maxWidth = Math.min(window.innerHeight * 0.730038022813688, window.innerWidth);
     maxWidth *= 0.9;
     maxWidth = Math.min(maxWidth, 768);
@@ -453,6 +468,7 @@ export function OngekiCardGalleryPage() {
 
     pickedElRef.current = cardCol;
     pickedParentRef.current = cardCol.parentElement;
+    pickedPositioningContextRef.current = positioningContext;
     pickedCardIdRef.current = cardId;
     // The element moves under a stationary pointer during this transition.
     // Mark the phase synchronously so a mouseleave/mousemove dispatched before
@@ -477,8 +493,8 @@ export function OngekiCardGalleryPage() {
     s.transition = 'all 1s ease-in-out';
     s.setProperty('--rotator-transition', 'all 1s ease-out');
     // 等价旧版 Angular 动画：从原位滑移到屏幕中央并同时放大
-    s.top = '50%';
-    s.left = '50%';
+    s.top = `${viewportCenter.top}px`;
+    s.left = `${viewportCenter.left}px`;
     s.width = `${pickParams.current.expandedWidth}px`;
     s.height = `${pickParams.current.expandedHeight}px`;
     s.transform = 'translate(-50%, -50%) translateZ(10000px)';
@@ -502,13 +518,19 @@ export function OngekiCardGalleryPage() {
       const parentRect = parent.getBoundingClientRect();
       const width = parentRect.width > 0 ? parentRect.width : pickParams.current.width;
       const height = parentRect.height > 0 ? parentRect.height : pickParams.current.height;
-      const left = parentRect.width > 0 ? (parentRect.left + parentRect.right) / 2 : pickParams.current.left;
-      const top = parentRect.height > 0 ? (parentRect.top + parentRect.bottom) / 2 : pickParams.current.top;
+      const parentCenter = {
+        x: parentRect.width > 0 ? (parentRect.left + parentRect.right) / 2 : 0,
+        y: parentRect.height > 0 ? (parentRect.top + parentRect.bottom) / 2 : 0,
+      };
+      const destination =
+        parentRect.width > 0 && parentRect.height > 0
+          ? toFixedPositionPoint(parentCenter, pickedPositioningContextRef.current)
+          : { left: pickParams.current.left, top: pickParams.current.top };
       const s = el.style;
       s.transition = 'all 1s ease-in-out';
       s.setProperty('--rotator-transition', 'all 1s ease-out');
-      s.top = `${top}px`;
-      s.left = `${left}px`;
+      s.top = `${destination.top}px`;
+      s.left = `${destination.left}px`;
       s.width = `${width}px`;
       s.height = `${height}px`;
       s.transform = 'translate(-50%, -50%)';

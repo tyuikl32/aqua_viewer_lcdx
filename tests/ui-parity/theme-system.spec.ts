@@ -425,6 +425,30 @@ test('Liquefy theme menu surfaces and item states remain controlled by semantic 
   await context.close();
 });
 
+test('Liquefy theme menu keeps its glass material', async ({ browser }) => {
+  const context = await themeContext(browser, { colorTheme: 'light', themeFamily: 'liquefy' });
+  const page = await context.newPage();
+  await page.goto(REACT_ORIGIN, { waitUntil: 'domcontentloaded' });
+  await page.getByLabel('主题', { exact: true }).click();
+
+  const appearance = await page.getByRole('menu').evaluate((menu) => {
+    const styles = getComputedStyle(menu);
+    return {
+      backdropFilter: styles.backdropFilter,
+      backgroundColor: styles.backgroundColor,
+      borderColor: styles.borderColor,
+      boxShadow: styles.boxShadow,
+    };
+  });
+
+  expect(appearance.backdropFilter).toContain('blur(');
+  expect(appearance.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+  expect(appearance.borderColor).not.toBe('rgba(0, 0, 0, 0)');
+  expect(appearance.boxShadow).toContain('inset');
+
+  await context.close();
+});
+
 test('shadcn primitives consume destructive and overlay semantic tokens', async ({ browser }) => {
   const context = await themeContext(browser, { colorTheme: 'dark', themeFamily: 'liquefy' });
   const page = await context.newPage();
