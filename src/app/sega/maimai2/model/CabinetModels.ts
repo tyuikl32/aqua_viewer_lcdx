@@ -142,6 +142,17 @@ export const LC_MODES: { mode: number; labelKey: string }[] = [
   {mode: 10, labelKey: 'Maimai2.Cabinets.Mode10'},
 ];
 
+/** CabmodeList 目录项（后端 GET lcdx/cabinet/modes；level = 最低机台档） */
+export interface CabModeItem {
+  id: number;
+  name: string;
+  level: number;
+}
+
+export interface CabinetModesResponse {
+  modes: CabModeItem[];
+}
+
 /** 机台级别 8 档（Recover..Special；级别越低配信越少警告） */
 export const CABINET_LEVELS: { level: number; name: string; descKey: string }[] = [
   {level: -1, name: 'Recover', descKey: 'Maimai2.CabinetControl.LevelRecover'},

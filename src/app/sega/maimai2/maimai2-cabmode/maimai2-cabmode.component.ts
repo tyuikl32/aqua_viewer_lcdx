@@ -6,6 +6,7 @@ import { isOk } from '../../../model/ApiResponse';
 import { BotPermissionService } from '../../../bot-permission.service';
 import {
   CABINET_LEVELS,
+  CabModeItem,
   CabinetLevelResult,
   CabinetSettingItem,
   CabinetSummary,
@@ -18,6 +19,7 @@ import {
  * LC 模式卡 + 传统重启卡：激活用户（P≥1 持授权行）均可用；
  * LC 功能卡（EP-10）：仅 P≥4（完整 9 项，P≤3 整卡隐藏）；
  * 管理区机台级别卡（EP-11）：P≥4 显示——P4-6 仅 2..5 档，P≥7 全档 -1..7。
+ * LC 模式选项来自 CabmodeList（IsEnabled + 机台 level ≥ 目录最低档）；LC_MODES 仅作 API 失败回退。
  */
 @Component({
   selector: 'app-maimai2-cabmode',
@@ -42,6 +44,9 @@ export class Maimai2CabmodeComponent implements OnInit {
   rebooting = false;
   permission = 0;
 
+  /** CabmodeList 实时目录；空数组表示尚未加载或 API 失败（回退 LC_MODES） */
+  cabModes: CabModeItem[] = [];
+
   lcsetKeys: { key: string; setting: string; default?: string; note?: string }[] = [];
   lcsetKey = '';
   lcsetVal = '';
@@ -63,6 +68,7 @@ export class Maimai2CabmodeComponent implements OnInit {
     this.permission = this.botPermission.currentValue.permission;
     // v2 D13：LCset 仅 P≥4（完整 9 项）；P≤3 返回空（整卡隐藏）
     this.lcsetKeys = BotPermissionService.filterLcsetKeys(this.permission, LCSET_KEYS);
+    this.loadCabModes();
     this.loadCabinets();
   }
 
@@ -75,6 +81,74 @@ export class Maimai2CabmodeComponent implements OnInit {
 
   userName(): string {
     return this.userService.currentUser?.username ?? '';
+  }
+
+  loadCabModes(): void {
+    this.api.getLcdx(`lcdx/cabinet/modes/${encodeURIComponent(this.userName())}`).subscribe({
+      next: resp => this.runInAngular(() => {
+        if (isOk(resp) && resp.data?.modes) {
+          this.cabModes = resp.data.modes;
+        }
+      })
+    });
+  }
+
+  /** 可选模式：目录已滤 IsEnabled；此处再滤机台 level ≥ 目录最低档；无目录时回退 LC_MODES */
+  get visibleModes(): { mode: number; label: string }[] {
+    if (this.cabModes.length > 0) {
+      const cabLevel = this.info?.level;
+      return this.cabModes
+        .filter(m => cabLevel === undefined || cabLevel >= m.level)
+        .map(m => ({ mode: m.id, label: this.formatModeButtonLabel(m.name) }));
+    }
+    return LC_MODES.map(m => ({ mode: m.mode, label: '' }));
+  }
+
+  /** 按钮长名换行：显示宽度 > 16 时在最后一个空格拆行（CJK/全角计 2） */
+  formatModeButtonLabel(name: string): string {
+    if (this.displayWidth(name) <= 16) {
+      return name;
+    }
+    const lastSpace = name.lastIndexOf(' ');
+    if (lastSpace > 0) {
+      return name.slice(0, lastSpace) + '\n' + name.slice(lastSpace + 1);
+    }
+    return name;
+  }
+
+  private displayWidth(s: string): number {
+    let w = 0;
+    for (const ch of s) {
+      const code = ch.codePointAt(0) ?? 0;
+      w += (code >= 0x1100 && code <= 0x115F)
+        || (code >= 0x2E80 && code <= 0xA4CF)
+        || (code >= 0xAC00 && code <= 0xD7A3)
+        || (code >= 0xF900 && code <= 0xFAFF)
+        || (code >= 0xFE30 && code <= 0xFE6F)
+        || (code >= 0xFF00 && code <= 0xFF60)
+        || (code >= 0xFFE0 && code <= 0xFFE6)
+        ? 2 : 1;
+    }
+    return w;
+  }
+
+  /** 当前模式文案：4（名称）；查不到 DB 名时回退 i18n Mode* */
+  get currentModeLabel(): string {
+    const id = this.info?.isSpecialMode;
+    if (id === undefined || id === null) {
+      return '';
+    }
+    const fromDb = this.cabModes.find(m => m.id === id)?.name;
+    if (fromDb) {
+      return `${id}（${fromDb}）`;
+    }
+    return String(id);
+  }
+
+  /** fallback 模式名的 i18n key（无 DB 名时） */
+  currentModeFallbackLabelKey(): string {
+    const id = this.info?.isSpecialMode;
+    return LC_MODES.find(m => m.mode === id)?.labelKey ?? '';
   }
 
   loadCabinets(): void {

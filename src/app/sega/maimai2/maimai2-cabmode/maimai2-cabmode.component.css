@@ -1,1 +1,8 @@
-/* 页② 机台控制：遵循既有克制风格，无额外自定义样式 */
+/* LC 模式按钮：长名 pre-line 两行，限制宽度避免撑破卡片 */
+.cab-mode-btn {
+  white-space: pre-line;
+  min-width: 7.5rem;
+  max-width: 11rem;
+  text-align: center;
+  line-height: 1.25;
+}
