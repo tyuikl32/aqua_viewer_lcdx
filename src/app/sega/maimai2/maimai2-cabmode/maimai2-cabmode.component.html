@@ -19,24 +19,26 @@
       <div class="card shadow h-100">
         <div class="card-header"><h5 class="mb-0">{{ "Maimai2.CabinetControl.LCModeCard" | translate }}</h5></div>
         <div class="card-body">
-          <div class="mb-2 text-muted small">{{ "Maimai2.CabinetControl.CurrentMode" | translate }}:
-            @if (cabModes.length > 0) {
-              {{ currentModeLabel }}
-            } @else {
-              {{ info?.isSpecialMode }}@if (currentModeFallbackLabelKey()) {（{{ currentModeFallbackLabelKey() | translate }}）}
-            }
+          <div class="cab-mode-block">
+            <div class="mb-2 text-muted small">{{ "Maimai2.CabinetControl.CurrentMode" | translate }}:
+              @if (cabModes.length > 0) {
+                {{ currentModeLabel }}
+              } @else {
+                {{ info?.isSpecialMode }}@if (currentModeFallbackLabelKey()) {（{{ currentModeFallbackLabelKey() | translate }}）}
+              }
+            </div>
+            <div class="cab-mode-grid">
+              @for (m of visibleModes; track m.mode) {
+                <button type="button" class="btn cab-mode-btn"
+                        [class.btn-primary]="selectedMode === m.mode"
+                        [class.btn-outline-primary]="selectedMode !== m.mode"
+                        (click)="setMode(m.mode)">@if (m.label) { {{ m.label }} } @else { {{ ("Maimai2.Cabinets.Mode" + m.mode) | translate }} }</button>
+              }
+            </div>
+            <button class="btn btn-success mt-3 cab-mode-submit" [disabled]="!modeChanged" (click)="submitMode()">
+              {{ "Maimai2.CabinetControl.Submit" | translate }}
+            </button>
           </div>
-          <div class="cab-mode-grid">
-            @for (m of visibleModes; track m.mode) {
-              <button type="button" class="btn cab-mode-btn"
-                      [class.btn-primary]="selectedMode === m.mode"
-                      [class.btn-outline-primary]="selectedMode !== m.mode"
-                      (click)="setMode(m.mode)">@if (m.label) { {{ m.label }} } @else { {{ ("Maimai2.Cabinets.Mode" + m.mode) | translate }} }</button>
-            }
-          </div>
-          <button class="btn btn-success mt-3 cab-mode-submit" [disabled]="!modeChanged" (click)="submitMode()">
-            {{ "Maimai2.CabinetControl.Submit" | translate }}
-          </button>
         </div>
       </div>
     </div>

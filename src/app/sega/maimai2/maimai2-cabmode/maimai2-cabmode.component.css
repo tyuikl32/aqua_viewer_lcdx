@@ -1,9 +1,16 @@
-/* LC 模式卡：PC 双列均分，手机单列满宽；长名 pre-line 两行 */
+/* LC 模式卡：PC 双列居中，手机单列满宽；长名只在显式 \n 换行 */
+
+.cab-mode-block {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
 
 .cab-mode-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.5rem;
+  width: 100%;
 }
 
 .cab-mode-btn {
@@ -16,23 +23,29 @@
   overflow-wrap: anywhere;
 }
 
-/* sm 及以上：两列均分，适配 col-lg-4 卡片宽度 */
+/* 提交：手机满宽；sm+ 固定宽并水平居中于卡片 */
+.cab-mode-submit {
+  width: 100%;
+  display: block;
+  margin-inline: auto;
+}
+
+/* sm 及以上：两列均分、限宽居中，避免在宽卡片里看起来贴左拉长 */
 @media (min-width: 576px) {
   .cab-mode-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 22rem;
+    margin-inline: auto;
   }
 
   .cab-mode-submit {
     width: auto;
+    min-width: 8rem;
+    margin-inline: auto;
   }
 }
 
-/* 手机端提交按钮满宽，便于点按 */
-.cab-mode-submit {
-  width: 100%;
-}
-
-/* 极窄屏（<400px）：提交按钮已在模板 w-100；此处保证模式按钮不横向溢出 */
+/* 极窄屏：略缩字号防横向溢出 */
 @media (max-width: 400px) {
   .cab-mode-btn {
     font-size: 0.875rem;
