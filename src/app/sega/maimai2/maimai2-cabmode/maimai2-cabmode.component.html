@@ -14,15 +14,16 @@
   </div>
 
   <div class="row">
-    <!-- LC 模式卡 -->
-    <div class="col-lg-4 mb-4">
+    <!-- LC 模式卡（加宽：长名当前模式与按钮文案需要更多横向空间） -->
+    <div class="col-12 col-md-6 col-lg-5 mb-4">
       <div class="card shadow h-100">
         <div class="card-header"><h5 class="mb-0">{{ "Maimai2.CabinetControl.LCModeCard" | translate }}</h5></div>
         <div class="card-body">
           <div class="cab-mode-block">
-            <div class="mb-2 text-muted small">{{ "Maimai2.CabinetControl.CurrentMode" | translate }}:
+            <div class="mb-3 text-muted small cab-mode-current">
+              {{ "Maimai2.CabinetControl.CurrentMode" | translate }}:
               @if (cabModes.length > 0) {
-                {{ currentModeLabel }}
+                <span class="cab-mode-current-name">{{ currentModeLabel }}</span>
               } @else {
                 {{ info?.isSpecialMode }}@if (currentModeFallbackLabelKey()) {（{{ currentModeFallbackLabelKey() | translate }}）}
               }
@@ -44,7 +45,7 @@
     </div>
 
     <!-- 传统重启卡 -->
-    <div class="col-lg-4 mb-4">
+    <div class="col-md-6 col-lg-3 mb-4">
       <div class="card shadow h-100">
         <div class="card-header"><h5 class="mb-0">{{ "Maimai2.CabinetControl.RebootCard" | translate }}</h5></div>
         <div class="card-body">
@@ -60,7 +61,7 @@
 
     <!-- LC 功能卡（v2 D13：仅 P≥4） -->
     @if (permission >= MANAGE_GRANTS) {
-      <div class="col-lg-4 mb-4">
+      <div class="col-md-6 col-lg-4 mb-4">
       <div class="card shadow h-100">
         <div class="card-header"><h5 class="mb-0">{{ "Maimai2.CabinetControl.LCSettingsCard" | translate }}</h5></div>
         <div class="card-body">

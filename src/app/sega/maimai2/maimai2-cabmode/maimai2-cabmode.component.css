@@ -1,9 +1,19 @@
-/* LC 模式卡：PC 双列居中，手机单列满宽；长名只在显式 \n 换行 */
+/* LC 模式卡：PC 加宽（col-lg-5）；按钮 flex 居中；长名只在显式 \n 换行 */
 
 .cab-mode-block {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+/* 当前模式：允许在词/CJK 边界自然折行，避免整行硬挤或怪异断点 */
+.cab-mode-current {
+  line-height: 1.45;
+}
+
+.cab-mode-current-name {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .cab-mode-grid {
@@ -14,27 +24,31 @@
 }
 
 .cab-mode-btn {
-  /* 只在 formatModeButtonLabel 插入的 \n 处换行，避免任意空格被拆成 CiRCLE / PLUS */
+  /* 保留 formatModeButtonLabel 的 \n；宽按钮内不再裁切日文半角字 */
   white-space: pre;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  min-height: 2.5rem;
+  min-height: 3rem;
+  padding: 0.55rem 0.75rem;
   text-align: center;
-  line-height: 1.25;
-  overflow-wrap: anywhere;
+  line-height: 1.3;
+  overflow-wrap: normal;
 }
 
-/* 提交：手机满宽；sm+ 固定宽并水平居中于卡片 */
+/* 提交：手机满宽；sm+ 固定宽并水平居中 */
 .cab-mode-submit {
   width: 100%;
   display: block;
   margin-inline: auto;
 }
 
-/* sm 及以上：两列均分、限宽居中，避免在宽卡片里看起来贴左拉长 */
+/* sm：两列，限宽居中 */
 @media (min-width: 576px) {
   .cab-mode-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    max-width: 22rem;
+    max-width: 26rem;
     margin-inline: auto;
   }
 
@@ -45,11 +59,26 @@
   }
 }
 
+/* lg+：卡片已加宽（col-lg-5），按钮组吃满可用宽度，保证「maimai でらっくす」不溢出 */
+@media (min-width: 992px) {
+  .cab-mode-grid {
+    max-width: 100%;
+    gap: 0.65rem;
+  }
+
+  .cab-mode-btn {
+    min-height: 3.25rem;
+    font-size: 1rem;
+    padding: 0.6rem 0.85rem;
+  }
+}
+
 /* 极窄屏：略缩字号防横向溢出 */
 @media (max-width: 400px) {
   .cab-mode-btn {
     font-size: 0.875rem;
     padding-left: 0.35rem;
     padding-right: 0.35rem;
+    min-height: 2.75rem;
   }
 }
