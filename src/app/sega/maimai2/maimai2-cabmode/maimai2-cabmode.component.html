@@ -26,13 +26,15 @@
               {{ info?.isSpecialMode }}@if (currentModeFallbackLabelKey()) {（{{ currentModeFallbackLabelKey() | translate }}）}
             }
           </div>
-          <div class="d-flex gap-2 flex-wrap">
+          <div class="cab-mode-grid">
             @for (m of visibleModes; track m.mode) {
-              <button class="btn cab-mode-btn" [class.btn-primary]="selectedMode === m.mode" [class.btn-outline-primary]="selectedMode !== m.mode"
+              <button type="button" class="btn cab-mode-btn"
+                      [class.btn-primary]="selectedMode === m.mode"
+                      [class.btn-outline-primary]="selectedMode !== m.mode"
                       (click)="setMode(m.mode)">@if (m.label) { {{ m.label }} } @else { {{ ("Maimai2.Cabinets.Mode" + m.mode) | translate }} }</button>
             }
           </div>
-          <button class="btn btn-success mt-3" [disabled]="!modeChanged" (click)="submitMode()">
+          <button class="btn btn-success mt-3 cab-mode-submit" [disabled]="!modeChanged" (click)="submitMode()">
             {{ "Maimai2.CabinetControl.Submit" | translate }}
           </button>
         </div>
