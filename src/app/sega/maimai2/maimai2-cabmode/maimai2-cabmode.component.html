@@ -14,8 +14,8 @@
   </div>
 
   <div class="row">
-    <!-- LC 模式卡（加宽：长名当前模式与按钮文案需要更多横向空间） -->
-    <div class="col-12 col-md-6 col-lg-5 mb-4">
+    <!-- LC 模式卡：PC 半宽（col-lg-6），长名按钮不再挤扁旁边功能卡 -->
+    <div class="col-12 col-lg-6 mb-4">
       <div class="card shadow h-100">
         <div class="card-header"><h5 class="mb-0">{{ "Maimai2.CabinetControl.LCModeCard" | translate }}</h5></div>
         <div class="card-body">
@@ -44,8 +44,8 @@
       </div>
     </div>
 
-    <!-- 传统重启卡 -->
-    <div class="col-md-6 col-lg-3 mb-4">
+    <!-- 传统重启卡：与模式卡同行（lg 6+6），不塞进 1/3 窄列 -->
+    <div class="col-12 col-md-6 col-lg-6 mb-4">
       <div class="card shadow h-100">
         <div class="card-header"><h5 class="mb-0">{{ "Maimai2.CabinetControl.RebootCard" | translate }}</h5></div>
         <div class="card-body">
@@ -59,9 +59,9 @@
       </div>
     </div>
 
-    <!-- LC 功能卡（v2 D13：仅 P≥4） -->
+    <!-- LC 功能卡：lg 起占半宽，自动换到下一行（与级别卡并排） -->
     @if (permission >= MANAGE_GRANTS) {
-      <div class="col-md-6 col-lg-4 mb-4">
+      <div class="col-12 col-md-6 col-lg-6 mb-4">
       <div class="card shadow h-100">
         <div class="card-header"><h5 class="mb-0">{{ "Maimai2.CabinetControl.LCSettingsCard" | translate }}</h5></div>
         <div class="card-body">
@@ -98,7 +98,7 @@
 
     <!-- 管理区：机台级别卡（v2 D13：P≥4 显示；P4-6 仅 2..5，P≥7 全档） -->
     @if (permission >= MANAGE_GRANTS) {
-      <div class="col-lg-6 mb-4">
+      <div class="col-12 col-md-6 col-lg-6 mb-4">
         <div class="card shadow h-100 border-warning">
           <div class="card-header bg-warning-subtle"><h5 class="mb-0">⚙ {{ "Maimai2.CabinetControl.LevelCard" | translate }}</h5></div>
           <div class="card-body">
