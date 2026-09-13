@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ApiService } from '../../../api.service';
 import { MessageService } from '../../../message.service';
 import { UserService } from '../../../user.service';
@@ -27,7 +28,7 @@ import {
   styleUrls: ['./maimai2-cabmode.component.css'],
   standalone: false
 })
-export class Maimai2CabmodeComponent implements OnInit {
+export class Maimai2CabmodeComponent implements OnInit, OnDestroy {
 
   protected readonly LC_MODES = LC_MODES;
   protected readonly CABINET_LEVELS = CABINET_LEVELS;
@@ -54,6 +55,8 @@ export class Maimai2CabmodeComponent implements OnInit {
   selectedLevel = 3;
   levelResult: CabinetLevelResult | null = null;
 
+  private permissionSubscription: Subscription | null = null;
+
   constructor(
     private api: ApiService,
     private userService: UserService,
@@ -65,11 +68,18 @@ export class Maimai2CabmodeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.permission = this.botPermission.currentValue.permission;
-    // v2 D13：LCset 仅 P≥4（完整 9 项）；P≤3 返回空（整卡隐藏）
-    this.lcsetKeys = BotPermissionService.filterLcsetKeys(this.permission, LCSET_KEYS);
+    // Permission 在用户资料加载后才回来；首屏若只读一次会把 P≥4 功能卡永久藏掉
+    this.permissionSubscription = this.botPermission.state.subscribe(state => {
+      this.permission = state.permission;
+      this.lcsetKeys = BotPermissionService.filterLcsetKeys(state.permission, LCSET_KEYS);
+      this.changeDetector.markForCheck();
+    });
     this.loadCabModes();
     this.loadCabinets();
+  }
+
+  ngOnDestroy(): void {
+    this.permissionSubscription?.unsubscribe();
   }
 
   /** 级别下拉选项（v2 D13）：P4-6 仅 2..5；P≥7 全档 -1..7 */
