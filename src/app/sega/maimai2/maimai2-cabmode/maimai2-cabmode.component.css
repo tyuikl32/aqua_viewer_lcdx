@@ -7,7 +7,8 @@
 }
 
 .cab-mode-btn {
-  white-space: pre-line;
+  /* 只在 formatModeButtonLabel 插入的 \n 处换行，避免任意空格被拆成 CiRCLE / PLUS */
+  white-space: pre;
   width: 100%;
   min-height: 2.5rem;
   text-align: center;

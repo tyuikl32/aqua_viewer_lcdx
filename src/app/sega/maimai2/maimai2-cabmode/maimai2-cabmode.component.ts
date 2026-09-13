@@ -104,8 +104,22 @@ export class Maimai2CabmodeComponent implements OnInit {
     return LC_MODES.map(m => ({ mode: m.mode, label: '' }));
   }
 
-  /** 按钮长名换行：显示宽度 > 16 时在最后一个空格拆行（CJK/全角计 2） */
+  /**
+   * 按钮长名换行（只插入显式 \n，CSS 用 pre 不再按空格自动折）：
+   * 1. 含「maimai でらっくす」时在品牌后断行，版本名整段保留在第二行（CiRCLE PLUS / PRiSM 不拆）
+   * 2. 否则显示宽度 > 16 时在最后一个空格拆行（CJK/全角计 2）
+   */
   formatModeButtonLabel(name: string): string {
+    const brand = 'maimai でらっくす';
+    const brandIdx = name.indexOf(brand);
+    if (brandIdx >= 0) {
+      const head = name.slice(0, brandIdx + brand.length).trimEnd();
+      const tail = name.slice(brandIdx + brand.length).trim();
+      if (tail) {
+        return `${head}\n${tail}`;
+      }
+      return head;
+    }
     if (this.displayWidth(name) <= 16) {
       return name;
     }
