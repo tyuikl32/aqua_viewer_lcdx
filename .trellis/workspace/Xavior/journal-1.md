@@ -436,3 +436,24 @@ Cabmode cabinet select now shows nickName (locationName) matching /mai2/cabinets
 ### Status
 
 [OK] **Completed**
+
+
+## Session 14: remote/locks cabinet locationName no-stretch
+
+**Date**: 2026-09-17
+**Task**: remote/locks cabinet locationName no-stretch
+**Branch**: `master`
+
+### Summary
+
+Remotecontrol and locks cabinet selects now show nickName (locationName); shared cabinet-select CSS prevents option text from stretching the control or grid column; cabmode hardened the same way; quality-guidelines updated; tsc green; locks pagination 3 failures pre-existing; pushed.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `476884a` | (see git log) |
+
+### Status
+
+[OK] **Completed**
