@@ -415,3 +415,24 @@ zh MergeLastSuccessDate 上次成功的日期 -> 上次成功引继的日期 (9 
 - **发布需前后端同步**：后端 `getBindAccessCode` 路由签名已变，前端与后端必须同版本上线，否则设置页绑卡查询 404
 - 残留风险：已登录用户仍可查询他人卡号绑定关系（从匿名可查降级为登录可查），彻底修复需仓储层所有权校验
 - 少量 `OperationFailed` 兜底文案语义偏通用，后续可按页面替换为专属 key
+
+
+## Session 13: cabmode cabinet list locationName
+
+**Date**: 2026-09-17
+**Task**: cabmode cabinet list locationName
+**Branch**: `master`
+
+### Summary
+
+Cabmode cabinet select now shows nickName (locationName) matching /mai2/cabinets; ngValue contract unchanged; tsc green; pushed to origin/master.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2c38fee` | (see git log) |
+
+### Status
+
+[OK] **Completed**
