@@ -132,7 +132,12 @@ export class SignUpComponent implements OnDestroy {
       next: async resp => {
         const statusCode: StatusCode = resp?.status?.code;
         if (statusCode === StatusCode.OK && resp.data) {
-          this.messageService.noticeTranslated('SignUpPage.OperationFailed');
+          const messageKey = String(resp.status?.message ?? '').toLowerCase().includes('reset')
+            ? 'SignUpPage.Messages.ResetSuccess'
+            : 'SignUpPage.Messages.RegisterSuccess';
+          this.translate.get(messageKey).subscribe(message => {
+            this.messageService.notice(message, 'success');
+          });
           if (this.router.url.startsWith('/sign-up')) {
             await this.router.navigate(['/dashboard']);
           }

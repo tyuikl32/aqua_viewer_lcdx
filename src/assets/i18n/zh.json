@@ -228,7 +228,9 @@
       "EmailInvailable": "邮箱已被使用。",
       "UsernameAvailable": "用户名没有被使用。",
       "UsernameAlreadyTaken": "用户名已被使用。",
-      "CodeIncorrect": "验证码错误。"
+      "CodeIncorrect": "验证码错误。",
+      "RegisterSuccess": "注册成功。",
+      "ResetSuccess": "密码重设成功。"
     },
     "OperationFailed": "操作失败"
   },

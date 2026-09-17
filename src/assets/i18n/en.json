@@ -228,7 +228,9 @@
       "EmailInvailable": "Email already in use.",
       "UsernameAvailable": "Username is available.",
       "UsernameAlreadyTaken": "Username already taken.",
-      "CodeIncorrect": "Verification code incorrect."
+      "CodeIncorrect": "Verification code incorrect.",
+      "RegisterSuccess": "Registration successful.",
+      "ResetSuccess": "Password reset successful."
     },
     "OperationFailed": "Operation failed"
   },
