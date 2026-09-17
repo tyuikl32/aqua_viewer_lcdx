@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Frontend quality rules: localization, template constraints, review checklist"}
+{"file": "AGENTS.md", "reason": "Project identity: Angular 22 NgModule + Bootstrap, do not change API contracts casually"}
