@@ -1,5 +1,17 @@
 /* LC 模式卡：PC 加宽（col-lg-5）；按钮 flex 居中；长名只在显式 \n 换行 */
 
+/* 机台下拉：框宽跟父列，不因 option 长文案拉伸；收起态省略 */
+.cabinet-select-col {
+  min-width: 0;
+}
+
+.cabinet-select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis;
+}
+
 .cab-mode-block {
   display: flex;
   flex-direction: column;

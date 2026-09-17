@@ -51,6 +51,16 @@ This allows re-stubbing per test case without spy bookkeeping.
 - For server-side paging (EP-14 style), pipe the server-returned slice with `totalItems` set to the server-reported total; when `totalItems !== slice.length` the pipe passes the collection through unchanged while still registering the controls' state (exemplar: `maimai2-locks` 卡A audit table, fixed 2026-08-22 after shipping bare and rendering nothing).
 - `[rotate]` is not a real input of `pagination-controls` (harmless no-op; removed from both locks cards — do not reintroduce).
 
+### Cabinet selects: show alias (locationName) and never stretch the box
+
+- Cabinet dropdowns on cabmode / remotecontrol / locks must match cabinets page option text:
+  - `{{ cab.nickName || cab.fullKeychip }}@if (cab.locationName) {<text> ({{ cab.locationName }})</text>}`
+- Keep `[ngValue]="cab.nickName ?? cab.fullKeychip"` — backend locate contract (NickName exact → FullKeychip.Contains) must not change for display reasons.
+- Long option text must **not** widen the closed select or the Bootstrap grid column. Use the shared classes on the select and its wrapping column (see `maimai2-remote-control` / `maimai2-locks` / `maimai2-cabmode`):
+  - column: `cabinet-select-col` → `min-width: 0` (prevents flex/grid auto min-content from inflating the column)
+  - select: `form-select cabinet-select` → `width/max-width/min-width: 100%|0` + `text-overflow: ellipsis`
+- Do not widen `col-md-*` to fit longer names; truncation in the closed control is expected.
+
 ### User-facing messages must be localized (no raw `status.message` passthrough)
 
 - Backend `status.message` is **English** (`"Login success"`, etc.). Displaying it directly to the user is a defect: `this.messageService.notice(resp.status.message)` produces English toasts on the Chinese-facing site.

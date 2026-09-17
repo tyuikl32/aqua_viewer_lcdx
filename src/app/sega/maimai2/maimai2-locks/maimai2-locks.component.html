@@ -103,12 +103,14 @@
               <label class="form-label">{{ "Maimai2.LocksPage.TargetQQ" | translate }}</label>
               <input class="form-control" type="number" [(ngModel)]="grantQQ">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 cabinet-select-col">
               <label class="form-label">{{ "Maimai2.Cabinets.SelectCabinet" | translate }}</label>
-              <select class="form-select" [(ngModel)]="grantNick">
+              <select class="form-select cabinet-select" [(ngModel)]="grantNick">
                 <option value="" disabled>{{ "Maimai2.LocksPage.SelectGrantCabinet" | translate }}</option>
                 @for (cab of cabinets; track cab.fullKeychip) {
-                  <option [ngValue]="cab.nickName ?? cab.fullKeychip">{{ cab.nickName || cab.fullKeychip }}</option>
+                  <option [ngValue]="cab.nickName ?? cab.fullKeychip">
+                    {{ cab.nickName || cab.fullKeychip }}@if (cab.locationName) {<text> ({{ cab.locationName }})</text>}
+                  </option>
                 }
               </select>
             </div>

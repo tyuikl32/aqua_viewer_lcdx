@@ -1,1 +1,13 @@
-/* 页③ 远程控制：遵循既有克制风格，无额外自定义样式 */
+/* 页③ 远程控制 */
+
+/* 机台下拉：框宽跟父列，不因 option 长文案拉伸；收起态省略 */
+.cabinet-select-col {
+  min-width: 0;
+}
+
+.cabinet-select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis;
+}

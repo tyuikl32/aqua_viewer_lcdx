@@ -6,11 +6,13 @@
   <div class="card shadow mb-4">
     <div class="card-body">
       <div class="row g-2 align-items-start">
-        <div class="col-md-4">
+        <div class="col-md-4 cabinet-select-col">
           <label class="form-label">{{ "Maimai2.Cabinets.SelectCabinet" | translate }}</label>
-          <select class="form-select" [(ngModel)]="selectedNick">
+          <select class="form-select cabinet-select" [(ngModel)]="selectedNick">
             @for (cab of cabinets; track cab.fullKeychip) {
-              <option [ngValue]="cab.nickName ?? cab.fullKeychip">{{ cab.nickName || cab.fullKeychip }}</option>
+              <option [ngValue]="cab.nickName ?? cab.fullKeychip">
+                {{ cab.nickName || cab.fullKeychip }}@if (cab.locationName) {<text> ({{ cab.locationName }})</text>}
+              </option>
             }
           </select>
         </div>

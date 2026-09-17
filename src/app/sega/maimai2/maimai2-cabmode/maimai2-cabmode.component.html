@@ -4,8 +4,8 @@
   <div class="alert alert-info">{{ "Maimai2.CabinetsPage.NoCabinets" | translate }}</div>
 } @else {
   <div class="row mb-3">
-    <div class="col-md-5">
-      <select class="form-select" [(ngModel)]="selectedNick" (change)="onCabinetChange()">
+    <div class="col-md-5 cabinet-select-col">
+      <select class="form-select cabinet-select" [(ngModel)]="selectedNick" (change)="onCabinetChange()">
         @for (cab of cabinets; track cab.fullKeychip) {
           <option [ngValue]="cab.nickName ?? cab.fullKeychip">
             {{ cab.nickName || cab.fullKeychip }}@if (cab.locationName) {<text> ({{ cab.locationName }})</text>}
