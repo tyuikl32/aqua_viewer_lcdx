@@ -7,7 +7,9 @@
     <div class="col-md-5">
       <select class="form-select" [(ngModel)]="selectedNick" (change)="onCabinetChange()">
         @for (cab of cabinets; track cab.fullKeychip) {
-          <option [ngValue]="cab.nickName ?? cab.fullKeychip">{{ cab.nickName || cab.fullKeychip }}</option>
+          <option [ngValue]="cab.nickName ?? cab.fullKeychip">
+            {{ cab.nickName || cab.fullKeychip }}@if (cab.locationName) {<text> ({{ cab.locationName }})</text>}
+          </option>
         }
       </select>
     </div>
