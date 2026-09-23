@@ -74,10 +74,12 @@
             }
           </select>
           <input class="form-control mb-2" [(ngModel)]="lcsetVal"
-                 [placeholder]="currentLcsetNote ?? ('Maimai2.CabinetControl.ValuePlaceholder' | translate)"
-                 [readonly]="!!currentLcsetNote">
+                 [placeholder]="currentLcsetNote ?? ('Maimai2.CabinetControl.ValuePlaceholder' | translate)">
+          @if (currentLcsetNote) {
+            <div class="form-text mb-2">{{ "Maimai2.CabinetControl.ValueFormatHint" | translate }}: {{ currentLcsetNote }}</div>
+          }
           <div class="d-flex gap-2 flex-wrap">
-            <button class="btn btn-success" [disabled]="!lcsetKey || !!currentLcsetNote" (click)="submitLcset()">
+            <button class="btn btn-success" [disabled]="!lcsetKey" (click)="submitLcset()">
               {{ "Maimai2.CabinetControl.Submit" | translate }}
             </button>
             <button class="btn btn-outline-secondary" [disabled]="!lcsetKey || currentLcsetDefault === undefined" (click)="restoreDefault()">

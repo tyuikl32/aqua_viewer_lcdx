@@ -792,6 +792,7 @@
       "LCSettingsCard": "LC Settings",
       "SelectKey": "Select setting",
       "ValuePlaceholder": "Value",
+      "ValueFormatHint": "Format",
       "RestoreDefault": "Restore Default",
       "Submit": "Submit",
       "LevelCard": "Cabinet Level",

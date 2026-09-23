@@ -167,7 +167,7 @@ export const CABINET_LEVELS: { level: number; name: string; descKey: string }[] 
 ];
 
 /** lcset 9 项（Admin；与后端 CabinetPolicy.LcsetKeys 一致，普通子集由 BotPermissionService 过滤）
- *  default："恢复默认值"按钮填充值；note：只读提示（如 cc 格式(0,1)） */
+ *  default："恢复默认值"按钮填充值；note：输入格式提示（如 cc 格式(0,1)），可正常编辑提交 */
 export const LCSET_KEYS: { key: string; setting: string; default?: string; note?: string }[] = [
   {key: '跳过闭店', setting: 'ForceBypassCloseShop', default: '0'},
   {key: 'bd', setting: 'ForceBypassCloseShop', default: '0'},

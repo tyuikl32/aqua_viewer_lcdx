@@ -266,7 +266,7 @@ export class Maimai2CabmodeComponent implements OnInit, OnDestroy {
     return this.lcsetKeys.find(k => k.key === this.lcsetKey)?.default;
   }
 
-  /** 当前选中的 lcset key 是否携带只读提示（如 cc 的格式(0,1)） */
+  /** 当前选中的 lcset key 的输入格式提示（如 cc 的格式(0,1)），仅作 placeholder/辅助说明，不锁定输入 */
   get currentLcsetNote(): string | undefined {
     return this.lcsetKeys.find(k => k.key === this.lcsetKey)?.note;
   }
