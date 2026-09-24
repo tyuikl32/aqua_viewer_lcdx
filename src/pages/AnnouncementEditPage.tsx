@@ -85,7 +85,7 @@ export function AnnouncementEditPage() {
 
   return (
     <div className="content announcement-edit-page">
-      <h1 className="page-heading">撰写公告</h1>
+      <h1 className="page-heading">{t('AnnouncementsPage.DraftNew')}</h1>
       {announcement && (
         <>
           <ul className="nav nav-tabs mb-3" id="myTab" role="tablist">
@@ -98,7 +98,7 @@ export function AnnouncementEditPage() {
                 aria-selected={activeTab === 'zh'}
                 onClick={() => setActiveTab('zh')}
               >
-                简体中文
+                {languages.get('zh')}
               </button>
             </li>
             {announcement.translations.map((translation) => (
@@ -127,13 +127,13 @@ export function AnnouncementEditPage() {
             >
               <input
                 className="form-control mb-3"
-                placeholder="标题"
+                placeholder={t('AnnouncementsPage.Edit.TitlePlaceholder')}
                 value={announcement.title}
                 onChange={(event) => updateAnnouncement((draft) => { draft.title = event.target.value; })}
               />
               <textarea
                 className="form-control announcement-content mb-3"
-                placeholder="内容"
+                placeholder={t('AnnouncementsPage.Edit.ContentPlaceholder')}
                 value={announcement.content}
                 onChange={(event) => updateAnnouncement((draft) => { draft.content = event.target.value; })}
               />
@@ -173,27 +173,27 @@ export function AnnouncementEditPage() {
               value={announcement.type}
               onChange={(event) => updateAnnouncement((draft) => { draft.type = event.target.value as AnnouncementType; })}
             >
-              <option value={AnnouncementType.GENERAL}>一般</option>
-              <option value={AnnouncementType.MAINTENANCE}>维护</option>
-              <option value={AnnouncementType.UPDATE}>更新</option>
-              <option value={AnnouncementType.EVENT}>活动</option>
-              <option value={AnnouncementType.TUTORIAL}>教程</option>
-              <option value={AnnouncementType.OTHER}>其它</option>
+              <option value={AnnouncementType.GENERAL}>{t('AnnouncementsPage.General')}</option>
+              <option value={AnnouncementType.MAINTENANCE}>{t('AnnouncementsPage.Maintenance')}</option>
+              <option value={AnnouncementType.UPDATE}>{t('AnnouncementsPage.Update')}</option>
+              <option value={AnnouncementType.EVENT}>{t('AnnouncementsPage.Event')}</option>
+              <option value={AnnouncementType.TUTORIAL}>{t('AnnouncementsPage.Tutorial')}</option>
+              <option value={AnnouncementType.OTHER}>{t('AnnouncementsPage.Other')}</option>
             </select>
             <select
               className="form-select mb-3"
               value={announcement.priority}
               onChange={(event) => updateAnnouncement((draft) => { draft.priority = Number(event.target.value); })}
             >
-              <option value={0}>不置顶</option>
-              <option value={1}>重要</option>
-              <option value={2}>置顶</option>
+              <option value={0}>{t('AnnouncementsPage.NotPinned')}</option>
+              <option value={1}>{t('AnnouncementsPage.Important')}</option>
+              <option value={2}>{t('AnnouncementsPage.Pinned')}</option>
             </select>
             <div className="d-flex gap-2 mb-3">
-              <button className="btn btn-primary btn-sm" onClick={() => setPreviewOpen(true)}>快速预览</button>
-              <button className="btn btn-primary btn-sm" onClick={() => void post(AnnouncementStatus.DRAFT)}>保存草稿</button>
-              <button className="btn btn-primary btn-sm" onClick={() => void post(AnnouncementStatus.ACTIVE)}>发布公告</button>
-              <button className="btn btn-danger btn-sm" onClick={() => void post(AnnouncementStatus.EXPIRED)}>设为过期</button>
+              <button className="btn btn-primary btn-sm" onClick={() => setPreviewOpen(true)}>{t('AnnouncementsPage.QuickPreview')}</button>
+              <button className="btn btn-primary btn-sm" onClick={() => void post(AnnouncementStatus.DRAFT)}>{t('AnnouncementsPage.SaveDraft')}</button>
+              <button className="btn btn-primary btn-sm" onClick={() => void post(AnnouncementStatus.ACTIVE)}>{t('AnnouncementsPage.Publish')}</button>
+              <button className="btn btn-danger btn-sm" onClick={() => void post(AnnouncementStatus.EXPIRED)}>{t('AnnouncementsPage.SetExpired')}</button>
             </div>
           </div>
         </>
