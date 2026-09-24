@@ -297,14 +297,6 @@ export const router = createBrowserRouter([
       { path: '/netcode-bind', element: auth(<NetcodeBindPage />), handle: { title: 'NetCodeBind', disableSidebar: true } },
       // LCDX 一次性登录（等价旧版 /onetime-sign-in：游客可访问，无侧栏布局）
       { path: '/onetime-sign-in', element: <OnetimeSignInPage />, handle: { title: 'OneTimeSignIn', disableSidebar: true } },
-      // LCDX 一次性登录（等价旧版 /onetime-sign-in：游客可访问，无侧栏布局）
-      { path: '/onetime-sign-in', element: <OnetimeSignInPage />, handle: { title: 'OneTimeSignIn', disableSidebar: true } },
-      // LCDX 网络码绑定（等价旧版 /netcode-bind：登录后可访问，无侧栏布局）
-      { path: '/netcode-bind', element: auth(<NetcodeBindPage />), handle: { title: 'NetCodeBind', disableSidebar: true } },
-      // LCDX 一次性登录（等价旧版 /onetime-sign-in：游客可访问，无侧栏布局）
-      { path: '/onetime-sign-in', element: <OnetimeSignInPage />, handle: { title: 'OneTimeSignIn', disableSidebar: true } },
-      // LCDX 一次性登录（等价旧版 /onetime-sign-in：游客可访问，无侧栏布局）
-      { path: '/onetime-sign-in', element: <OnetimeSignInPage />, handle: { title: 'OneTimeSignIn', disableSidebar: true } },
       { path: '/sign-in', element: <RequireGuest><SignInPage /></RequireGuest>, handle: { title: 'SignIn', disableSidebar: true } },
       { path: '/sign-up', element: <RequireGuest><SignUpPage /></RequireGuest>, handle: { title: 'SignUp', disableSidebar: true } },
       { path: '/password-reset', element: <RequireGuest><PasswordResetPage /></RequireGuest>, handle: { title: 'ResetPassword', disableSidebar: true } },
