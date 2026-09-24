@@ -17,7 +17,7 @@ export function ChuniV2ProfilePage() {
         return api.get('api/game/chuni/v2/profile', { aimeId });
       })
       .then((data) => setProfile(data as ChuniV2Profile))
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }, []);
 
   return (

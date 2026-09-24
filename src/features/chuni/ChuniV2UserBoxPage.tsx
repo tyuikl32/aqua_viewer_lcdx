@@ -98,7 +98,7 @@ export function ChuniV2UserBoxPage() {
       const data = (await api.get('api/game/chuni/v2/profile', { aimeId })) as ChuniV2UserBoxProfile;
       setProfile(data);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   }, [aimeId]);
 
@@ -107,7 +107,7 @@ export function ChuniV2UserBoxPage() {
     void api
       .get('api/game/chuni/v2/profile/symbolChatInfo', { aimeId })
       .then((data) => setSymbolChatInfo(mergeSymbolChats((data ?? []) as ChuniV2UserSymbolChat[])))
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }, [aimeId, loadProfile]);
 
   const catalogsReady = [
@@ -144,7 +144,7 @@ export function ChuniV2UserBoxPage() {
         });
         setAllSymbolChats(chats);
       })
-      .catch((error) => active && notice(String(error)));
+      .catch(() => active && notice(t('Common.OperationFailed')));
     return () => {
       active = false;
     };
@@ -205,8 +205,8 @@ export function ChuniV2UserBoxPage() {
         })) as Array<{ itemId: number }>;
         return [kind, (data ?? []).map((item) => item.itemId)] as const;
       }),
-    ).catch((error) => {
-      notice(String(error));
+    ).catch(() => {
+      notice(t('Common.OperationFailed'));
       return [] as Array<readonly [number, number[]]>;
     });
     setFavorites(Object.fromEntries(entries));

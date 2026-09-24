@@ -27,7 +27,7 @@ export function OngekiProfilePage() {
           if (x) setProfile((prev) => (prev ? { ...prev, trophy: x } : prev));
         });
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }, []);
 
   if (!profile) return null;

@@ -199,7 +199,7 @@ export function Maimai2FestaPage() {
         setAimeId(id);
         await loadAll(id);
       } catch (error) {
-        if (active) notice(String(error));
+        if (active) notice(t('Common.OperationFailed'));
       }
     })();
     return () => { active = false; };
@@ -211,7 +211,7 @@ export function Maimai2FestaPage() {
       notice(response.data ? '队伍投票成功' : '队伍投票失败', response.data ? 'success' : 'danger');
       if (response.data && gameFestaInfo?.gameFesta) setUserFestaInfo(await loadUserFesta(aimeId, gameFestaInfo.gameFesta));
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   }
 

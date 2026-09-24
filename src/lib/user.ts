@@ -7,6 +7,7 @@ import { isImpersonationBootstrapFrame } from '@/lib/auth/impersonation';
 import type { User } from '@/lib/models';
 import { notice } from '@/lib/message';
 import { clearBotPermission, loadBotPermission } from '@/lib/botPermission';
+import { translate } from '@/lib/i18n';
 
 /** 等价旧版 user.service.ts */
 
@@ -66,13 +67,13 @@ export function loadUser(forceReload = false): Promise<any | null> {
           // LCDX 机台权限探测（等价旧版 user.service.ts：load 成功后 EP-01/EP-18 并行探测）
           loadBotPermission(user.username);
         } else {
-          notice(resp.status.message);
+          notice(translate('Common.OperationFailed'));
         }
       }
       return resp;
     })
     .catch((error) => {
-      notice(error?.toString?.() ?? String(error));
+      notice(translate('Common.OperationFailed'));
       throw error;
     })
     .finally(() => {

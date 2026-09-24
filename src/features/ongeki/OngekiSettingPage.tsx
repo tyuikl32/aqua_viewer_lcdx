@@ -43,7 +43,7 @@ export function OngekiSettingPage() {
     void api
       .get('api/game/ongeki/profile')
       .then((data) => setProfile(data as DisplayOngekiProfile))
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }, []);
 
   function onUserNameInput(value: string) {
@@ -66,7 +66,7 @@ export function OngekiSettingPage() {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(objectUrl);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   }
 
@@ -83,7 +83,7 @@ export function OngekiSettingPage() {
           notice(t('Ongeki.SettingsPage.ChangeUserNameFailed'), 'warning');
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }
 
   function onChangeRomVersion() {
@@ -99,7 +99,7 @@ export function OngekiSettingPage() {
           notice(t('Ongeki.SettingsPage.ModifyRomVersionFailed'), 'warning');
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }
 
   function onChangeDataVersion() {
@@ -115,7 +115,7 @@ export function OngekiSettingPage() {
           notice(t('Ongeki.SettingsPage.ModifyDataVersionFailed'), 'warning');
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }
 
   if (!profile) return null;

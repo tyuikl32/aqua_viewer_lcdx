@@ -56,7 +56,7 @@ export function ChuniV2SettingPage() {
         setAimeId(id);
         setProfile((await api.get('api/game/chuni/v2/profile', { aimeId: id })) as ChuniV2Profile);
       } catch (error) {
-        notice(String(error));
+        notice(t('Common.OperationFailed'));
       }
     })();
   }, []);
@@ -83,7 +83,7 @@ export function ChuniV2SettingPage() {
       notice('Successfully changed');
       setNameOpen(false);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   };
 
@@ -100,7 +100,7 @@ export function ChuniV2SettingPage() {
       notice('Successfully changed');
       setVersionKind(null);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   };
 
@@ -115,7 +115,7 @@ export function ChuniV2SettingPage() {
       URL.revokeObjectURL(url);
       notice('Chunithm Download Over');
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   };
 

@@ -142,7 +142,7 @@ export function ChuniV2RecentPage() {
         setRecent(rows);
         setTotalElements(data.totalElements ?? rows.length);
       } catch (error) {
-        if (active) notice(String(error));
+        if (active) notice(t('Common.OperationFailed'));
       } finally {
         if (active) setLoading(false);
       }

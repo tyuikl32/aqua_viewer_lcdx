@@ -82,7 +82,7 @@ export function Maimai2ServerMissionsPage() {
         setPointData(data.userPointData);
       }
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   }
 
@@ -94,7 +94,7 @@ export function Maimai2ServerMissionsPage() {
       const data = responseData(response, '获取玩家任务列表失败');
       if (data) setMissions(data.serverMissionUserInfos);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   }
 
@@ -112,7 +112,7 @@ export function Maimai2ServerMissionsPage() {
         setAimeId(id);
         await load(id);
       } catch (error) {
-        if (active) notice(String(error));
+        if (active) notice(t('Common.OperationFailed'));
       }
     })();
     return () => {

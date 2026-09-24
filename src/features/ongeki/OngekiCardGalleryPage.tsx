@@ -396,7 +396,7 @@ export function OngekiCardGalleryPage() {
       }
       setCardList(cards);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
     setLoading(false);
   }
@@ -419,7 +419,7 @@ export function OngekiCardGalleryPage() {
         notice('Kaika success');
         void loadPage(currentPage);
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }
 
   function insertCard(cardId: number) {
@@ -431,7 +431,7 @@ export function OngekiCardGalleryPage() {
         setCardIds((ids) => [cardId, ...ids]);
         void loadPage(currentPage);
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }
 
   function pickCard(cardId: number, cardCol: HTMLElement) {

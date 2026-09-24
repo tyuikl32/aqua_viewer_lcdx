@@ -6,6 +6,7 @@ import { notice } from '@/lib/message';
 import { useStore } from '@/lib/store';
 import { ChuniV2SongScoreRanking } from './ChuniV2SongScoreRanking';
 import type { ChuniV2Song } from './song-models';
+import { translate } from '@/lib/i18n';
 
 /** Makes legacy ranking deep links usable while preserving the score offcanvas UI. */
 export function ChuniV2SongRankingPage() {
@@ -25,7 +26,7 @@ export function ChuniV2SongRankingPage() {
         if (item) setMusic(item);
         else navigate('/chuni/v2/song', { replace: true });
       })
-      .catch((error) => active && notice(String(error)));
+      .catch(() => active && notice(translate('Common.OperationFailed')));
     return () => {
       active = false;
     };

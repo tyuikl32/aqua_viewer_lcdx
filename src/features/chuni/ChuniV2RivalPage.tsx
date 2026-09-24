@@ -45,7 +45,7 @@ export function ChuniV2RivalPage() {
           notice(response.status.message);
         }
       })
-      .catch((error) => notice(String(error)))
+      .catch(() => notice(t('Common.OperationFailed')))
       .finally(() => setLoadingProfile(false));
 
     return () => {
@@ -101,7 +101,7 @@ export function ChuniV2RivalPage() {
           notice(`(id:${item.rivalId}) toggle Favorite Over!`);
           refreshFriends();
         })
-        .catch((error) => notice(String(error)));
+        .catch(() => notice(t('Common.OperationFailed')));
     }, 1_000);
   }
 

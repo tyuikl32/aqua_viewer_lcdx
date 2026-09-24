@@ -12,6 +12,7 @@ import type {
 } from './models';
 import '@/styles/song-detail.css';
 import './Maimai2SongDetail.css';
+import { translate } from '@/lib/i18n';
 
 const DIFFICULTIES: Record<number, { color: string; name: string }> = {
   0: { color: 'color-basic', name: 'Basic' },
@@ -119,7 +120,7 @@ export function Maimai2SongDetail({
         }
         setSongData(records);
       })
-      .catch((error) => active && notice(String(error)));
+      .catch(() => active && notice(translate('Common.OperationFailed')));
 
     void api
       .get('api/game/maimai2/musicScoreRanking', { musicId: music.musicId, level: 3 })
@@ -134,7 +135,7 @@ export function Maimai2SongDetail({
         }
         if (active) setRanking(rows ?? []);
       })
-      .catch((error) => active && notice(String(error)));
+      .catch(() => active && notice(translate('Common.OperationFailed')));
 
     return () => {
       active = false;
@@ -166,7 +167,7 @@ export function Maimai2SongDetail({
     void api
       .get('api/game/maimai2/musicScoreRanking', { musicId: music!.musicId, level })
       .then((response) => setRanking((response ?? []) as Maimai2SongRanking[]))
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(translate('Common.OperationFailed')));
   }
 
   return (

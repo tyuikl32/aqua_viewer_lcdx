@@ -172,7 +172,7 @@ export function ChuniV2RatingPage() {
         setLoadingRating(false);
         setLoadingRecent(false);
       } catch (error) {
-        notice(String(error));
+        notice(t('Common.OperationFailed'));
         setLoadingRating(false);
         setLoadingRecent(false);
       }

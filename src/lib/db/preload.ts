@@ -2,6 +2,7 @@ import { api } from '@/lib/api/client';
 import { createStore } from '@/lib/store';
 import { notice } from '@/lib/message';
 import { dbBulkAdd, dbClear, dbCount, STORE_NAMES, type StoreName } from '@/lib/db/db';
+import { translate } from '@/lib/i18n';
 
 /** 等价旧版 preload.service.ts：16 个游戏静态数据目录的 IndexedDB 预载与版本管理 */
 
@@ -89,6 +90,6 @@ export async function checkDbUpdate() {
   } catch (error) {
     loadAll();
     checkingUpdate.set('error');
-    notice(String(error));
+    notice(translate('Common.OperationFailed'));
   }
 }

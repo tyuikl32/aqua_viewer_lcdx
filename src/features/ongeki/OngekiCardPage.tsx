@@ -237,7 +237,7 @@ export function OngekiCardPage() {
         }
       }
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
       return;
     }
     await getCardInfo(ids);
@@ -255,7 +255,7 @@ export function OngekiCardPage() {
       setCardIDs(ids);
       setSkinValid(valid);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
       return;
     }
     await getCardInfo(ids);
@@ -279,7 +279,7 @@ export function OngekiCardPage() {
       }
       setCardInfoMap(map);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   }
 
@@ -340,7 +340,7 @@ export function OngekiCardPage() {
         }
       }
     } catch (err) {
-      notice(String(err));
+      notice(t('Common.OperationFailed'));
     }
   }
 
@@ -376,7 +376,7 @@ export function OngekiCardPage() {
       });
       await getCardInfo();
     } catch (err) {
-      notice(String(err));
+      notice(t('Common.OperationFailed'));
     }
   }
 
@@ -418,7 +418,7 @@ export function OngekiCardPage() {
         setGalleryIds(list);
         // 页面内容随 galleryFilteredIds 变化在下方 effect 中加载
       } catch (error) {
-        if (!cancelled) notice(String(error));
+        if (!cancelled) notice(t('Common.OperationFailed'));
       }
     })();
     return () => {
@@ -472,7 +472,7 @@ export function OngekiCardPage() {
       }
       setGalleryCards(cards);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   }
 

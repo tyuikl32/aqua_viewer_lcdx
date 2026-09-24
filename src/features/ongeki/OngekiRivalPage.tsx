@@ -41,8 +41,8 @@ export function OngekiRivalPage() {
         setMyProfile(data);
         setLoadingProfile(false);
       })
-      .catch((error) => {
-        notice(String(error));
+      .catch(() => {
+        notice(t('Common.OperationFailed'));
         setLoadingProfile(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps

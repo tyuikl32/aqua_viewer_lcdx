@@ -89,7 +89,7 @@ export function ChuniV2UserBoxItemDialog({
       const currentId = selection.mode === 'favorite' ? selection.favoriteIds?.[0] : selection.itemId;
       const currentIndex = nextItems.findIndex((item) => item.id === currentId);
       setCurrentPage(currentIndex < 0 ? 1 : Math.floor(currentIndex / PAGE_SIZE) + 1);
-    })().catch((error) => active && notice(String(error)));
+    })().catch(() => active && notice(t('Common.OperationFailed')));
 
     return () => {
       active = false;
@@ -127,7 +127,7 @@ export function ChuniV2UserBoxItemDialog({
       }
       onClose();
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     } finally {
       setSaving(false);
     }
@@ -247,7 +247,7 @@ export function ChuniV2SymbolChatDialog({
         notice(t('ChuniV2.UserBoxPage.MessageFailed'), 'warning');
       }
     } catch (error) {
-      notice(String(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 

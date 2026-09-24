@@ -20,7 +20,7 @@ export function OngekiBattlePage() {
     void api
       .get('api/game/ongeki/profile', { aimeId })
       .then((data) => setProfile(data as DisplayOngekiProfile))
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
 
     void api
       .get('api/game/ongeki/general', { aimeId, key: 'battle_point_base' })

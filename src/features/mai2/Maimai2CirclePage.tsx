@@ -221,7 +221,7 @@ export function Maimai2CirclePage() {
         setAimeId(id);
         await Promise.all([loadPublic(id, 0), loadCircleInfo(id), loadRequests(id, 0), loadMembers(id, 0)]);
       } catch (error) {
-        if (active) notice(String(error));
+        if (active) notice(t('Common.OperationFailed'));
       }
     })();
     return () => { active = false; };
@@ -236,7 +236,7 @@ export function Maimai2CirclePage() {
       }
       notice(`${t(`Maimai2.CirclePage.${failureKey}`)}: [${response?.status?.code}] ${response?.status?.message}`);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
     return false;
   };
@@ -246,7 +246,7 @@ export function Maimai2CirclePage() {
       await navigator.clipboard.writeText(circle.circleCode);
       notice(t('Maimai2.CirclePage.CopyCircleCodeSuccess'), 'success');
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   };
 

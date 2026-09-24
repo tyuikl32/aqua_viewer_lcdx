@@ -132,7 +132,7 @@ export function OngekiRatingPage() {
     void api
       .get('api/game/ongeki/profile')
       .then((data) => setProfile(data as DisplayOngekiProfile))
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
     void loadNewRating();
   }, []);
 
@@ -174,7 +174,7 @@ export function OngekiRatingPage() {
         }
       }
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
       console.log(error);
     }
   }

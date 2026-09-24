@@ -56,8 +56,8 @@ export function OngekiRecentPage() {
         setRecent(content);
         setLoading(false);
       })
-      .catch((error) => {
-        notice(String(error));
+      .catch(() => {
+        notice(t('Common.OperationFailed'));
         setLoading(false);
       });
   }, [currentPage]);

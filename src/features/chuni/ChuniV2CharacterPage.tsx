@@ -300,7 +300,7 @@ export function ChuniV2CharacterPage() {
         setFilterAcquiredIds(ids);
         setPrepared(true);
       } catch (error) {
-        if (active) notice(String(error));
+        if (active) notice(t('Common.OperationFailed'));
       }
     })();
     return () => {
@@ -392,8 +392,8 @@ export function ChuniV2CharacterPage() {
         setCharacters(rows);
         setLoadedOnce(true);
       })
-      .catch((error) => {
-        if (sequence === loadSequence.current) notice(String(error));
+      .catch(() => {
+        if (sequence === loadSequence.current) notice(t('Common.OperationFailed'));
       });
   }, [acquiredIds, aimeId, catalog, currentPage, filteredIds, prepared, totalPages]);
 
@@ -449,7 +449,7 @@ export function ChuniV2CharacterPage() {
       setSelectedCharacterId(null);
       notice(t('ChuniV2.CharacterPage.SetSuccess'), 'success');
     } catch (error) {
-      notice(String(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -465,7 +465,7 @@ export function ChuniV2CharacterPage() {
       });
       setAcquiredIds((current) => [characterId, ...current.filter((id) => id !== characterId)]);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   }
 

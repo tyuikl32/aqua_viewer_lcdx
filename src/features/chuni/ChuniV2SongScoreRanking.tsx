@@ -10,6 +10,7 @@ import { padDigits } from '@/lib/format';
 import '@/styles/song-detail.css';
 import type { ChuniV2Song, ChuniV2SongRankingRow, ChuniV2SongRecord } from './song-models';
 import './ChuniV2SongScoreRanking.css';
+import { translate } from '@/lib/i18n';
 
 const DIFFICULTIES: Record<number, { abbreviation: string; color: string; name: string }> = {
   0: { abbreviation: 'BA', color: 'color-basic', name: 'Basic' },
@@ -114,10 +115,10 @@ export function ChuniV2SongScoreRanking({
         setSongData(records);
         setRecordsReady(true);
       })
-      .catch((error) => {
+      .catch(() => {
         if (!active) return;
         setRecordsReady(true);
-        notice(String(error));
+        notice(translate('Common.OperationFailed'));
       });
 
     void api
@@ -136,7 +137,7 @@ export function ChuniV2SongScoreRanking({
         }
         if (active) setRanking(rows ?? []);
       })
-      .catch((error) => active && notice(String(error)));
+      .catch(() => active && notice(translate('Common.OperationFailed')));
 
     return () => {
       active = false;
@@ -157,7 +158,7 @@ export function ChuniV2SongScoreRanking({
     void api
       .get('api/game/chuni/v2/musicScoreRanking', { musicId: music!.musicId, level })
       .then((response) => setRanking((response ?? []) as ChuniV2SongRankingRow[]))
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(translate('Common.OperationFailed')));
   }
 
   function showPlayLog(level: number) {

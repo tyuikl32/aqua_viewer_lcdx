@@ -30,7 +30,7 @@ export function Maimai2PhotosPage() {
       setTotalElements(data.totalElements ?? 0);
       setCurrentPage(page);
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
       setPhotos([]);
       setTotalElements(0);
     } finally {

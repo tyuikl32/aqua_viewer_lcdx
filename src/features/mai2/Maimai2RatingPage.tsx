@@ -159,7 +159,7 @@ export function Maimai2RatingPage() {
         setBest35(oldSongs);
         setBest15(newSongs);
       } catch (error) {
-        if (active) notice(String(error));
+        if (active) notice(t('Common.OperationFailed'));
       }
     })();
     return () => { active = false; };

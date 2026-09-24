@@ -17,6 +17,7 @@ import {
   type Maimai2UserExchangeItem,
 } from './server-mission-models';
 import './Maimai2PointExchangesPage.css';
+import { translate } from '@/lib/i18n';
 
 const PAGE_SIZE = 20;
 const EMPTY_POINTS: Maimai2ServerMissionPointData = { totalPoints: 0, availablePoints: 0 };
@@ -207,7 +208,7 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
       const data = responseData(response, '获取玩家任务点数信息失败');
       if (data) setPoints(data.userPointData);
     } catch (error) {
-      notice(String(error));
+      notice(translate('Common.OperationFailed'));
     }
   }
 
@@ -221,7 +222,7 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
         setUserExchangeInfo(new Map(data.exchangeItemDataList.map((entry) => [entry.exchangedItemDataId, entry])));
       }
     } catch (error) {
-      notice(String(error));
+      notice(translate('Common.OperationFailed'));
     }
   }
 
@@ -249,7 +250,7 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
         setTotalCount(data.filterListTotalCount);
       }
     } catch (error) {
-      notice(String(error));
+      notice(translate('Common.OperationFailed'));
     }
   }
 
@@ -271,7 +272,7 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
         setAimeId(id);
         await loadAll(id, 0);
       } catch (error) {
-        if (active) notice(String(error));
+        if (active) notice(translate('Common.OperationFailed'));
       }
     })();
     return () => {
@@ -329,7 +330,7 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
         responseData(response, '获取玩家兑换物品信息失败');
       }
     } catch (error) {
-      notice(String(error));
+      notice(translate('Common.OperationFailed'));
     }
   }
 

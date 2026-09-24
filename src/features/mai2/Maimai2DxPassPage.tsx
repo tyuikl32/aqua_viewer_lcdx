@@ -78,7 +78,7 @@ export function Maimai2DxPassPage() {
       setCurrentPage(page);
       setDetails({});
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
       setPasses([]);
       setTotalElements(0);
     } finally {
@@ -97,7 +97,7 @@ export function Maimai2DxPassPage() {
       setDefaultCardType(Number(data?.data ?? cardType));
       if (data?.status?.code === 92001) notice('Success');
     } catch (error) {
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   };
 
