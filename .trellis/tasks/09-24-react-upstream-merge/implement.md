@@ -24,11 +24,11 @@ Context docs (read in order): `design.md` (full analysis & phased plan) → `prd
 - Q4: default theme = **Liquefy**. ✅ verified at runtime.
 - Q5 (CI): self-investigate. ✅ done — the fork *does* use `deploy-test-server.yml`; its customizations were merged back (commit `eced86a`).
 
-## Current position (updated 2026-09-25 session 3)
+## Current position (updated 2026-09-25 session 4)
 
-**Phase 0 ✅ · Phase 1 ✅ · Phase 2 ✅ · Phase 3 ✅ · Phase 4 ✅ · Phase 5 ⏳ 4 of 6 done — see Phase 5 below**
+**Phase 0 ✅ · Phase 1 ✅ · Phase 2 ✅ · Phase 3 ✅ · Phase 4 ✅ · Phase 5 ⏳ 5 of 6 done — see Phase 5 below**
 
-**36 commits ahead of `backup`, all local (user asked to commit but NOT push).** Working tree clean.
+**45 commits ahead of `backup`, all local (user asked to commit but NOT push).** Working tree clean.
 `master` is still the old Angular code; `legacy-angular` points at it — do not touch them until Phase 5's last step.
 
 ### Phase 4 — Shared-page replay ✅ COMPLETE
@@ -61,7 +61,7 @@ self-service (so never permanently stuck by frontend logic) — but LCDX upstrea
 the feature outright in `e1f80ea`. We followed upstream and removed it. **No frontend hack, no
 backend change needed.**
 
-### Phase 5 — Finalize ⏳ 4 of 6 done
+### Phase 5 — Finalize ⏳ 5 of 6 done
 
 | Item | Status | Evidence |
 |---|---|---|
@@ -70,33 +70,37 @@ backend change needed.**
 | CI workflow (Q5) | ✅ **merged** | commit `eced86a` — kept the fork's `master` trigger, `HAS_DEPLOY_SECRETS` guard and artifact/failed-run cleanup; kept upstream's `concurrency`, `npm ci` cache and React build paths |
 | `.trellis/spec/frontend/*` React rewrite | ✅ **done** | commit `d50691e` — all six files (five were empty templates) |
 | **Run-time verification** | ✅ **done (first time ever)** | Playwright smoke over 14 routes on a `vite preview` build: **zero console errors / zero page errors**, `#root` mounted on every route, theme `liquefy/light` everywhere. Verified: `/` (Home + ICP footer, Chinese copy), `/sign-in` (QQ + 密码 form), `/sign-up` (QQ号 + 验证码 + "注册账号或重设密码"), `/password-reset`, `/contributors`, `/not-found` ("TRACK 404 · SIGNAL LOST"), unknown route → `/not-found`, and the 6 auth-guarded routes correctly redirect guests to `/`. Not covered: anything behind login (needs a live LCDX backend) |
+| **Hardcoded Chinese copy sweep** | ✅ **done** | see below — 8 commits, catalogs now 1203 keys |
 | Adopt into `master` (Q1) | ⏸ **awaiting user confirmation** | `git checkout master && git reset --hard migrate/react-port` — destructive, not done |
 | UI-parity suite | ⛔ **blocked** | needs a hosts entry mapping `portal.naominet.live` → `127.0.0.1` (`scripts/add-hosts.ps1`, requires Administrator). Certs already exist under `ssl/`. Playwright uses `channel: 'chrome'` (system Chrome), and `ms-playwright` has no downloaded browser |
 
-### Newly found, needs a user decision — hardcoded Chinese copy outside `notice()`
+### Hardcoded Chinese copy sweep ✅ COMPLETE (2026-09-25 session 3–4)
 
-The notice sweep covered toasts only. A repo-wide scan (2026-09-25) found **~90 genuine user-facing
-Chinese string literals** still hardcoded, so an English-language user sees Chinese on these screens:
+The earlier notice sweep covered toasts only. An AST-based scan (Babel `jsx` + `typescript`, skipping
+comments and i18n keys) found **354 literal CJK strings in 30 files**; ~90 of them were genuine
+user-facing copy, the rest game-native data. The user approved an immediate full sweep, executed as
+one commit per functional unit (catalogs merged + `tsc -b` + `vite build` green before each commit):
 
-| File | ~count | What |
-|---|---|---|
-| `src/pages/AdminPage.tsx` | 33 | admin labels, filters, confirm prompts |
-| `src/components/shell/ConfirmDialog.tsx` | 9 | 确认 / 取消 / 确定 **defaults** — affects every `confirm()` call site |
-| `src/features/mai2/Maimai2PointExchangesPage.tsx` | 8 | 暂未开放 / 已达兑换上限 / 库存不足 / 点数不足 / 无法兑换, search placeholder |
-| `src/features/mai2/Maimai2FestaPage.tsx` | 6 | 未开催 / 投票选队中 / 已开始 / 已结束 / 同队排行榜 / 总排行榜 |
-| `src/features/mai2/Maimai2ServerMissionsPage.tsx` | 5 | 永久 / 每日刷新 / 每周刷新 / 每月刷新 |
-| `src/pages/AnnouncementEditPage.tsx` | 2 | 标题 / 内容 placeholders |
-| `src/pages/BannedPage.tsx` | 2 | 已复制 / 复制群号 |
-| `src/pages/PlaceholderPage.tsx`, `src/pages/KeychipPage.tsx`, `src/features/mai2/Maimai2PhotosPage.tsx`, `Maimai2DxPassPage.tsx`, `src/lib/auth/access.ts`, `src/main.tsx` | 1 each | page copy / placeholder / duration string / QQ group notice / impersonation bootstrap failure |
+| Commit | Unit |
+|---|---|
+| `8e07df2` | `ConfirmDialog` defaults — highest leverage, affects every `confirm()` call site |
+| `3d07cc0` | `AdminPage` (78 keys: labels, filters, table headers, confirm prompts, detail panel) |
+| `449ce76` | `Maimai2ServerMissionsPage` (refresh cycles, points, pagination) |
+| `4930423` | `Maimai2FestaPage` (phases, team vote, rankings) |
+| `6b846b0` | `Maimai2PointExchangesPage` (item types, reasons, filters) |
+| `2d10d46` | `Maimai2CabmodePage` + `Maimai2DxPassPage` + `Maimai2PhotosPage` + `cabinet-models.ts` |
+| `9c31f94` | `AnnouncementEditPage` (heading, tab label, placeholders, type/pin selects, buttons) |
+| `97dfa10` | `BannedPage`, `PlaceholderPage`, `KeychipPage`, `OngekiUserRankingPage`, `main.tsx`, `Maimai2SongListPage` |
 
-Most of this is **upstream's** code (e.g. `ConfirmDialog.tsx`, `PlaceholderPage.tsx`, `main.tsx` are
-byte-identical to `backup`), not something the port introduced. Deliberately **not** candidates:
-maimai dan ranks (`models.ts`), music genre names, mission reward category names, the maimai brand
-string — those mirror in-game wording.
+**Result**: 4 catalogs at **1203 keys each, zh/en key sets identical**; `tsc -b` + `vite build` green;
+scan down to **99 findings in 15 files, all verified non-copy** — full-width character palette
+(`ChuniV2SettingPage`), maimai dan ranks, music genre names, song-title `「」` decoration, ongeki
+card-name `【】` transform, the `lcset` protocol key `跳过闭店` (submitted to the backend verbatim),
+ICP licence number, developer names, the QQ group number, and the `languages` display names.
 
-Recommended shape if approved: **one sweep**, keys added to all four i18n files
-(`src/i18n/{zh,en}.json` + `public/assets/i18n/{zh,en}.json`) in the same commit per file group.
-`ConfirmDialog` should go first — it is the highest-leverage single file.
+Two deliberate shape decisions: `Maimai2CabmodePage`'s `LCSET_KEYS` gained `keyLabelKey`/`noteKey`
+instead of translating the protocol `key` itself; `BannedPage` keeps its decorative "YOU ARE BANNED"
+banner hardcoded (it is branding, not copy) and only the subtitle moves to a key.
 
 ## Phase 0–3 (recap, all done)
 
@@ -113,7 +117,7 @@ Recommended shape if approved: **one sweep**, keys added to all four i18n files
 
 ## 🔁 HANDOFF NOTES (for the next AI)
 
-**Branch / state**: work happens on `migrate/react-port` (branched from `backup`). 36 commits ahead of
+**Branch / state**: work happens on `migrate/react-port` (branched from `backup`). 45 commits ahead of
 `backup`, **pushed nowhere** (user asked to commit but not push). Working tree clean.
 
 **Resume ritual**:
