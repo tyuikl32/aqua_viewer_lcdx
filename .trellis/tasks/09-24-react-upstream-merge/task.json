@@ -3,7 +3,7 @@
   "name": "react-upstream-merge",
   "title": "Merge upstream React rewrite: port LCDX features onto new baseline",
   "description": "Upstream RinNET_frontend rewrote the portal from Angular 16 to React 19 + Vite + shadcn/ui (41 commits, synced into local `backup` branch). A git merge is impossible (entire src/app deleted/replaced). Strategy: adopt `backup` as the new baseline and port all LCDX custom features (dual-backend API, cabinet management pages, permission model, merge-request importer flow, i18n 982 keys, misc page tweaks) onto the React architecture, then move `master` forward.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "frontend",
   "package": null,

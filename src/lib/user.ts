@@ -6,6 +6,7 @@ import { inIframe } from '@/lib/utils';
 import { isImpersonationBootstrapFrame } from '@/lib/auth/impersonation';
 import type { User } from '@/lib/models';
 import { notice } from '@/lib/message';
+import { clearBotPermission, loadBotPermission } from '@/lib/botPermission';
 
 /** 等价旧版 user.service.ts */
 
@@ -62,6 +63,8 @@ export function loadUser(forceReload = false): Promise<any | null> {
           });
           userStore.set(user);
           storage.setItem(storageKey, JSON.stringify(user));
+          // LCDX 机台权限探测（等价旧版 user.service.ts：load 成功后 EP-01/EP-18 并行探测）
+          loadBotPermission(user.username);
         } else {
           notice(resp.status.message);
         }
@@ -81,6 +84,7 @@ export function loadUser(forceReload = false): Promise<any | null> {
 export function clearUser() {
   storage.removeItem(storageKey);
   userStore.set(null);
+  clearBotPermission();
 }
 
 export function isAdmin(): boolean {

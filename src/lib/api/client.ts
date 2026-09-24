@@ -12,6 +12,11 @@ import { getAccount, setAccount, clearAccount, accountStore, type Account } from
  */
 
 const API_SERVER = '/';
+/**
+ * LCDX 业务后端（机台/权限/引继/公告；等价旧版 environment.lcdxApiServer）。
+ * 生产与主站同域反代（'/'），开发直连远程（.env.development）。
+ */
+const LCDX_API_SERVER = import.meta.env.VITE_LCDX_API_SERVER ?? '/';
 const REFRESH_LEAD_TIME_MS = 30_000;
 
 export type QueryParams = Record<string, string | number | boolean | undefined>;
@@ -31,8 +36,8 @@ function endLoading() {
   if (loadingCount === 0) loadingStore.set(false);
 }
 
-function buildUrl(path: string, params?: QueryParams): string {
-  const url = API_SERVER + path;
+function buildUrl(path: string, params?: QueryParams, base: string = API_SERVER): string {
+  const url = base + path;
   if (!params) return url;
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
@@ -116,8 +121,14 @@ function handleErrorResponse(httpStatus: number, body: any, statusText: string):
 
 // ---- 主入口 ----
 
-async function perform(method: string, path: string, params?: QueryParams, body?: unknown): Promise<any> {
-  const url = buildUrl(path, params);
+async function perform(
+  method: string,
+  path: string,
+  params?: QueryParams,
+  body?: unknown,
+  base: string = API_SERVER,
+): Promise<any> {
+  const url = buildUrl(path, params, base);
   const isRefreshCall = path === 'api/auth/refresh';
   beginLoading();
   try {
@@ -165,6 +176,20 @@ export const api = {
     return resp.blob();
   },
   getHost: () => API_SERVER,
+};
+
+/**
+ * LCDX 业务后端（机台管理 / 权限 / 引继 / 公告）。
+ * 等价旧版 ApiService.getLcdx / postLcdx / deleteLcdx —— 共用同一套 Authorization、
+ * 401 单飞刷新、ref-count loading 与错误码映射（旧版 ErrorInterceptor 对 LCDX 请求同样生效）。
+ * 响应信封与主站一致（ApiResponse），isOk() 可直接使用。
+ */
+export const lcdx = {
+  get: (path: string, params?: QueryParams) => perform('GET', path, params, undefined, LCDX_API_SERVER),
+  post: (path: string, data?: object, params?: QueryParams) =>
+    perform('POST', path, params, data, LCDX_API_SERVER),
+  delete: (path: string, params?: QueryParams, body?: unknown) =>
+    perform('DELETE', path, params, body, LCDX_API_SERVER),
 };
 
 // ---- 主动刷新调度（等价 TokenInterceptor.rescheduleRefresh） ----
