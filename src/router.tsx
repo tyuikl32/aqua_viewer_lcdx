@@ -13,7 +13,6 @@ import { SignInPage } from '@/pages/auth/SignInPage';
 import { SignUpPage } from '@/pages/auth/SignUpPage';
 import { PasswordResetPage } from '@/pages/auth/PasswordResetPage';
 import { OauthCallbackPage } from '@/pages/auth/OauthCallbackPage';
-import { EulaPage } from '@/pages/EulaPage';
 import { BannedPage } from '@/pages/BannedPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 import { ContributorsPage } from '@/pages/ContributorsPage';
@@ -75,7 +74,6 @@ function RequireAuth({ children }: { children: ReactNode }) {
     if (!account) return;
     void restoreAccess().then((status) => {
       if (status?.banned) window.location.assign('/banned');
-      else if (status?.eulaRequired) window.location.assign('/eula');
     });
   }, [account]);
 
@@ -300,7 +298,6 @@ export const router = createBrowserRouter([
       { path: '/sign-in', element: <RequireGuest><SignInPage /></RequireGuest>, handle: { title: 'SignIn', disableSidebar: true } },
       { path: '/sign-up', element: <RequireGuest><SignUpPage /></RequireGuest>, handle: { title: 'SignUp', disableSidebar: true } },
       { path: '/password-reset', element: <RequireGuest><PasswordResetPage /></RequireGuest>, handle: { title: 'ResetPassword', disableSidebar: true } },
-      { path: '/eula', element: <EulaPage />, handle: { title: 'EULA', disableSidebar: true } },
       { path: '/banned', element: <BannedPage />, handle: { title: 'Account Banned', disableSidebar: true } },
       { path: '/admin', element: <RequireAdmin><AdminPage /></RequireAdmin>, handle: { title: 'Admin' } },
       { path: '/not-found', element: <NotFoundPage />, handle: { title: 'NotFound', disableSidebar: true } },

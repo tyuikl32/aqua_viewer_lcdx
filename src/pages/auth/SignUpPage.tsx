@@ -16,8 +16,8 @@ interface AuthNavState {
 /**
  * 等价旧版 sign-up.component（LCDX：QQ 号 + 4 位验证码 → 注册或重设密码）。
  * 与上游邮箱注册流的差异（LCDX 有意为之，勿合并回去）：
- * - 无昵称/用户名/邮箱字段，无 EULA 勾选、无 OAuth 入口（账号由后端以 QQ 号派生，
- *   EULA 由后端在登录/注册成功时自动接受当前版本）。
+ * - 无昵称/用户名/邮箱字段、无 OAuth 入口（账号由后端以 QQ 号派生）。
+ * - LCDX 已整体删除 EULA（上游 e1f80ea），故注册流不携带 eulaVersion。
  * - 该 QQ 号无账号则注册、已有账号则重设密码，成功后直接签发登录态（lcdx/register_confirm）。
  */
 export function SignUpPage() {

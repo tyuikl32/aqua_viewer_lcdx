@@ -8,7 +8,7 @@ import { loadUser, clearUser, getCurrentUser } from '@/lib/user';
 
 /** 等价旧版 authentication.service.ts */
 
-/** 等价旧版 procLoginResp：登录成功后设置 token、检查封禁/EULA、加载用户 */
+/** 等价旧版 procLoginResp：登录成功后设置 token、检查封禁、加载用户 */
 export async function procLoginResp(loginResp: any): Promise<any> {
   const loginStatusCode: number = loginResp?.status?.code;
   if (loginStatusCode !== StatusCode.OK || !loginResp.data) {
@@ -18,10 +18,6 @@ export async function procLoginResp(loginResp: any): Promise<any> {
   const status = await restoreAccess(true);
   if (status?.banned) {
     navigate('/banned');
-    return loginResp;
-  }
-  if (status?.eulaRequired) {
-    navigate('/eula');
     return loginResp;
   }
   const userResp = await loadUser(true);
@@ -64,9 +60,8 @@ export function signUp(
   verifyCode: string,
   password: string,
   token?: string,
-  eulaVersion?: number,
 ): Promise<any> {
-  const params: any = { name, username, email, verifyCode, password, eulaVersion };
+  const params: any = { name, username, email, verifyCode, password };
   if (token) {
     params.oAuth2Token = token;
   }

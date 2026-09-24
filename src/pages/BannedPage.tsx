@@ -13,7 +13,7 @@ export function BannedPage() {
   useEffect(() => {
     void restoreAccess().then((status) => {
       if (!status?.banned) {
-        void navigate(status?.eulaRequired ? '/eula' : '/dashboard');
+        void navigate('/dashboard');
       }
     });
   }, [navigate]);

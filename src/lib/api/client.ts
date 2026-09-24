@@ -6,7 +6,7 @@ import { getAccount, setAccount, clearAccount, accountStore, type Account } from
 /**
  * 等价旧版 ApiService + TokenInterceptor + ErrorInterceptor + LoadingInterceptor 的合并实现。
  * - 请求带 Authorization；401 时单飞刷新并重试一次
- * - 错误码映射：EULA_REQUIRED → /eula、ACCOUNT_BANNED → /banned（并广播 rinnet-account-access-error）
+ * - 错误码映射：ACCOUNT_BANNED → /banned（并广播 rinnet-account-access-error）
  * - ref-count 的全局 loading（驱动顶部进度条）
  * - 访问令牌 exp 前 30s 主动刷新
  */
@@ -104,10 +104,7 @@ async function refreshAccessToken(captured: Account): Promise<string> {
 
 function handleErrorResponse(httpStatus: number, body: any, statusText: string): never {
   const statusCode = body?.status?.code;
-  if (statusCode === StatusCode.EULA_REQUIRED) {
-    window.dispatchEvent(new CustomEvent('rinnet-account-access-error', { detail: 'EULA_REQUIRED' }));
-    navigate('/eula');
-  } else if (statusCode === StatusCode.ACCOUNT_BANNED) {
+  if (statusCode === StatusCode.ACCOUNT_BANNED) {
     window.dispatchEvent(new CustomEvent('rinnet-account-access-error', { detail: 'ACCOUNT_BANNED' }));
     navigate('/banned');
   }

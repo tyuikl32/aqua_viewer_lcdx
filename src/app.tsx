@@ -30,10 +30,6 @@ function initializeApp(): Promise<void> {
         navigate('/banned');
         return;
       }
-      if (status?.eulaRequired) {
-        navigate('/eula');
-        return;
-      }
       void checkDbUpdate();
       await loadUser();
     })();
