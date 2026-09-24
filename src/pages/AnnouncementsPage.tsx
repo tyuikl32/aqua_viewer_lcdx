@@ -5,7 +5,7 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { BModal } from '@/components/shared/BModal';
 import { Pagination } from '@/components/shared/Pagination';
-import { api } from '@/lib/api/client';
+import { api, lcdx } from '@/lib/api/client';
 import { notice } from '@/lib/message';
 import { StatusCode } from '@/lib/models';
 import { getCurrentLang, langStore } from '@/lib/i18n';
@@ -40,9 +40,9 @@ export function AnnouncementsPage() {
   const loadAnnouncements = useCallback(
     (page: number) => {
       setLoading(true);
-      const base = isAdmin() ? 'api/admin/announcement/' : 'api/user/announcement/';
-      void api
-        .get(base, {
+      // LCDX 公告统一走 lcdx/announcement/list（旧版此处按 isAdmin 分流 api/admin 与 api/user）
+      void lcdx
+        .get('lcdx/announcement/list', {
           lang: getCurrentLang(),
           page: page - 1,
           size: PAGE_SIZE,
@@ -54,17 +54,17 @@ export function AnnouncementsPage() {
               setTotalElements(resp.data.totalElements);
               setAnnouncements(resp.data.content.map((a: any) => Announcement.fromJSON(a)));
             } else {
-              notice(resp.status.message);
+              notice(t('AnnouncementsPage.OperationFailed'));
             }
             setLoading(false);
           }
         })
-        .catch((error) => {
-          notice(String(error));
+        .catch(() => {
+          notice(t('Common.OperationFailed'));
           setLoading(false);
         });
     },
-    [type],
+    [type, t],
   );
 
   useEffect(() => {
@@ -95,19 +95,18 @@ export function AnnouncementsPage() {
   }
 
   function showAnnouncement(announcement: Announcement) {
-    const base = isAdmin() ? 'api/admin/announcement/' : 'api/user/announcement/';
-    void api
-      .get(base + announcement.id, { lang: getCurrentLang() })
+    void lcdx
+      .get('lcdx/announcement/item/' + announcement.id, { lang: getCurrentLang() })
       .then((resp) => {
         if (resp?.status) {
           if (resp.status.code === StatusCode.OK && resp.data) {
             setDetail(Announcement.fromJSON(resp.data));
           } else {
-            notice(resp.status.message);
+            notice(t('AnnouncementsPage.OperationFailed'));
           }
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }
 
   function itemContext(e: React.MouseEvent, id: number) {
@@ -124,12 +123,12 @@ export function AnnouncementsPage() {
         if (resp?.status?.code === StatusCode.OK) {
           loadAnnouncements(currentPage);
         } else {
-          notice(resp?.status?.message);
+          notice(t('AnnouncementsPage.OperationFailed'));
         }
         setDeleting(null);
       })
-      .catch((error) => {
-        notice(String(error));
+      .catch(() => {
+        notice(t('Common.OperationFailed'));
         setDeleting(null);
       });
   }
@@ -201,7 +200,7 @@ export function AnnouncementsPage() {
       {!loading && announcements && announcements.length === 0 && (
         <div>
           <div className="card user-select-none mb-2">
-            <div className="card-body">没有公告</div>
+            <div className="card-body">{t('AnnouncementsPage.Empty')}</div>
           </div>
         </div>
       )}

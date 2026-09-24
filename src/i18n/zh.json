@@ -17,8 +17,10 @@
       "ContentPlaceholder": "正文",
       "LoadFailed": "公告加载失败",
       "SaveFailed": "公告保存失败",
+      "SaveSuccess": "公告已保存",
       "TitlePlaceholder": "标题"
     },
+    "Empty": "没有公告",
     "Event": "活动",
     "Expired": "过期",
     "General": "一般",

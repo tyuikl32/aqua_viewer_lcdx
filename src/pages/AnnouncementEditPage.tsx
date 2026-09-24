@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { BModal } from '@/components/shared/BModal';
@@ -13,6 +14,7 @@ import './AnnouncementEditPage.css';
 
 /** Equivalent to the legacy announcement editor. */
 export function AnnouncementEditPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [announcement, setAnnouncement] = useState<Announcement | null>(null);
   const [activeTab, setActiveTab] = useState('zh');
@@ -33,10 +35,11 @@ export function AnnouncementEditPage() {
         if (response?.status?.code === StatusCode.OK && response.data) {
           setAnnouncement(Announcement.fromJSON(response.data));
         } else {
-          notice(response?.status?.message);
+          notice(t('AnnouncementsPage.Edit.LoadFailed'));
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const updateAnnouncement = (apply: (draft: Announcement) => void) => {
@@ -67,9 +70,13 @@ export function AnnouncementEditPage() {
     }
     try {
       const response = await api.post('api/admin/announcement', data);
-      notice(response?.status?.message);
-    } catch (error) {
-      notice(String(error));
+      if (response?.status?.code === StatusCode.OK) {
+        notice(t('AnnouncementsPage.Edit.SaveSuccess'), 'success');
+      } else {
+        notice(t('AnnouncementsPage.Edit.SaveFailed'));
+      }
+    } catch {
+      notice(t('Common.OperationFailed'));
     }
   };
 
@@ -142,7 +149,7 @@ export function AnnouncementEditPage() {
               >
                 <input
                   className="form-control mb-3"
-                  placeholder="Title"
+                  placeholder={t('AnnouncementsPage.Edit.TitlePlaceholder')}
                   value={translation.translatedTitle}
                   onChange={(event) => updateAnnouncement((draft) => {
                     const target = draft.translations.find((item) => item.language === translation.language);
@@ -151,7 +158,7 @@ export function AnnouncementEditPage() {
                 />
                 <textarea
                   className="form-control announcement-content mb-3"
-                  placeholder="Content"
+                  placeholder={t('AnnouncementsPage.Edit.ContentPlaceholder')}
                   value={translation.translatedContent}
                   onChange={(event) => updateAnnouncement((draft) => {
                     const target = draft.translations.find((item) => item.language === translation.language);

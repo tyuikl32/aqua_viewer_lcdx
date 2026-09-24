@@ -17,8 +17,10 @@
       "ContentPlaceholder": "Content",
       "LoadFailed": "Failed to load the announcement",
       "SaveFailed": "Failed to save the announcement",
+      "SaveSuccess": "Announcement saved",
       "TitlePlaceholder": "Title"
     },
+    "Empty": "No announcements",
     "Event": "Event",
     "Expired": "Expired",
     "General": "General",

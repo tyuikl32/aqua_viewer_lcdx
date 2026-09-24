@@ -5,8 +5,6 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import DOMPurify from 'dompurify';
-import { marked } from 'marked';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Pagination as ThemedPagination } from '@/components/shared/Pagination';
 import { confirm } from '@/components/shell/ConfirmDialog';
@@ -16,11 +14,12 @@ import { StatusCode, type Card, type User } from '@/lib/models';
 import { getAccount, IMPERSONATED_USER_KEY, IMPERSONATION_KEY, type Account } from '@/lib/auth/account';
 import { IMPERSONATE_GRANT, IMPERSONATE_REQUEST } from '@/lib/auth/impersonation';
 import { useTheme } from '@/lib/theme';
+import { useTranslation } from 'react-i18next';
 import './AdminPage.css';
 
 const PAGE_SIZE = 12;
 
-type AdminTab = 'users' | 'keychips' | 'eula';
+type AdminTab = 'users' | 'keychips';
 type GameKey = 'CHUSAN' | 'MAIMAI2' | 'ONGEKI';
 
 interface ApiEnvelope<T> {
@@ -60,11 +59,6 @@ interface SupportCard {
 
 interface SupportProfile {
   cards?: SupportCard[];
-  eulaStatus?: {
-    acceptedVersion?: number | null;
-    currentVersion?: number;
-    required?: boolean;
-  };
   joinedAt?: string;
   oauthIdentities?: Array<{ email: string; id: number; provider: string }>;
   passkeys?: Array<{ id: number; nick: string }>;
@@ -74,7 +68,6 @@ interface SupportProfile {
 
 interface SupportResponse {
   account: SupportProfile;
-  eulaStatus?: SupportProfile['eulaStatus'];
   oauthIdentities?: SupportProfile['oauthIdentities'];
   passkeys?: SupportProfile['passkeys'];
   totpEnabled?: boolean;
@@ -86,12 +79,6 @@ interface AdminKeychip {
   placeName?: string;
   user?: { name?: string } | null;
   whiteListed?: boolean;
-}
-
-interface EulaDocument {
-  content: string;
-  title: string;
-  version: number;
 }
 
 interface ImpersonationState {
@@ -125,12 +112,6 @@ async function revokeRefreshToken(refreshToken: string, keepalive = false): Prom
     body: JSON.stringify({ refreshToken }),
     keepalive,
   });
-}
-
-function errorText(error: unknown): string {
-  if (error instanceof Error) return error.message;
-  if (typeof error === 'string') return error;
-  return String(error);
 }
 
 function isOk(response: ApiEnvelope<unknown>): boolean {
@@ -374,6 +355,7 @@ function GameBanRow({
 }
 
 export function AdminPage() {
+  const { t } = useTranslation();
   const [tab, setTab] = useState<AdminTab>('users');
   const [field, setField] = useState('all');
   const [pattern, setPattern] = useState('');
@@ -406,11 +388,6 @@ export function AdminPage() {
   const [newKeychipId, setNewKeychipId] = useState('');
   const [newKeychipPlace, setNewKeychipPlace] = useState('');
 
-  const [eulaCurrent, setEulaCurrent] = useState<EulaDocument | null>(null);
-  const [eulaDraftTitle, setEulaDraftTitle] = useState('');
-  const [eulaDraftContent, setEulaDraftContent] = useState('');
-  const [eulaPreview, setEulaPreview] = useState('');
-
   const [impersonation, setImpersonation] = useState<ImpersonationState | null>(null);
   const [loginAsPending, setLoginAsPending] = useState(false);
   const impersonationFrame = useRef<HTMLIFrameElement>(null);
@@ -434,10 +411,10 @@ export function AdminPage() {
         setUsers(response.data.content ?? []);
         setTotalElements(response.data.totalElements ?? 0);
       } else {
-        notice(response?.status?.message ?? '加载用户失败', 'warning');
+        notice(t('AdminPage.OperationFailed'), 'warning');
       }
-    } catch (error) {
-      notice(errorText(error), 'warning');
+    } catch {
+      notice(t('Common.OperationFailed'), 'warning');
     } finally {
       setLoading(false);
     }
@@ -453,8 +430,8 @@ export function AdminPage() {
         setKeychips(response.data.content ?? []);
         setKeychipTotal(response.data.totalElements ?? 0);
       }
-    } catch (error) {
-      notice(errorText(error), 'warning');
+    } catch {
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -490,7 +467,6 @@ export function AdminPage() {
       ) {
         setSelectedProfile({
           ...response.data.account,
-          eulaStatus: response.data.eulaStatus,
           oauthIdentities: response.data.oauthIdentities,
           passkeys: response.data.passkeys,
           totpEnabled: response.data.totpEnabled,
@@ -532,7 +508,7 @@ export function AdminPage() {
 
   async function createUser() {
     if (!createUsername || !createName || !createEmail || !createPassword) {
-      notice('请填写完整的用户信息', 'warning');
+      notice(t('AdminPage.CompleteUserInfoRequired'), 'warning');
       return;
     }
     setCreatingUser(true);
@@ -543,10 +519,10 @@ export function AdminPage() {
         email: createEmail,
         password: createPassword,
       }) as ApiEnvelope<unknown>;
-      notice(response?.status?.message ?? '');
+      notice(t('AdminPage.OperationFailed'));
       if (isOk(response)) await refreshUsers();
-    } catch (error) {
-      notice(errorText(error), 'warning');
+    } catch {
+      notice(t('Common.OperationFailed'), 'warning');
     } finally {
       setCreatingUser(false);
     }
@@ -579,7 +555,7 @@ export function AdminPage() {
       const account = response?.data;
       if (!isOk(response) || !isAccount(account)) {
         if (mountedRef.current && generation === impersonationGenerationRef.current) {
-          notice(response?.status?.message ?? '夺舍失败');
+          notice(t('AdminPage.OperationFailed'));
         }
         return;
       }
@@ -615,7 +591,7 @@ export function AdminPage() {
       setImpersonation(session);
     } catch (error) {
       if (mountedRef.current && generation === impersonationGenerationRef.current) {
-        notice(errorText(error), 'warning');
+        notice(t('Common.OperationFailed'), 'warning');
         console.warn('login as fail', error);
       }
     }
@@ -692,11 +668,11 @@ export function AdminPage() {
       : `解除 ${item.user.username} 的面板封禁？游戏封禁值不会自动恢复。`;
     if (!(await confirm(warning))) return;
     try {
-      const response = await api.post(`api/admin/accounts/${item.user.username}/${banned ? 'ban' : 'unban'}`, {}) as ApiEnvelope<unknown>;
-      notice(response?.status?.message ?? '');
+      await api.post(`api/admin/accounts/${item.user.username}/${banned ? 'ban' : 'unban'}`, {});
+      notice(t('AdminPage.OperationFailed'));
       await refreshUsers();
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -705,11 +681,11 @@ export function AdminPage() {
       const response = await api.put(`api/admin/accounts/${username}/games/${game}/${extId}/ban-state`, {
         status: Number(status),
       }) as ApiEnvelope<unknown>;
-      notice(response?.status?.message ?? '');
+      notice(t('AdminPage.OperationFailed'));
       await refreshUsers();
       if (isOk(response) && selectedProfile?.username === username) await loadSupport(username);
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -723,21 +699,21 @@ export function AdminPage() {
         `api/admin/accounts/${username}/games/${game}/${extId}`,
         { confirmExtId: String(extId) },
       ) as ApiEnvelope<unknown>;
-      notice(response?.status?.message ?? '');
+      notice(t('AdminPage.OperationFailed'));
       await refreshUsers();
       if (isOk(response) && selectedProfile?.username === username) await loadSupport(username);
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
   async function revokeSessions(username: string) {
     if (!(await confirm(`撤销 ${username} 的全部 refresh 会话？现有 access token 最多约 5 分钟后失效。`))) return;
     try {
-      const response = await api.post(`api/admin/accounts/${username}/sessions/revoke`, {}) as ApiEnvelope<unknown>;
-      notice(response?.status?.message ?? '');
+      await api.post(`api/admin/accounts/${username}/sessions/revoke`, {});
+      notice(t('AdminPage.OperationFailed'));
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -747,7 +723,7 @@ export function AdminPage() {
       await api.delete(`api/admin/accounts/${username}/passkeys/${id}`);
       await loadSupport(username);
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -757,7 +733,7 @@ export function AdminPage() {
       await api.delete(`api/admin/accounts/${username}/oauth/${id}`);
       await loadSupport(username);
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -767,7 +743,7 @@ export function AdminPage() {
       await api.put(`api/admin/accounts/${username}/cards/${extId}/default`, {});
       await loadSupport(username);
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -777,7 +753,7 @@ export function AdminPage() {
       await api.delete(`api/admin/accounts/${username}/cards/${extId}`);
       await Promise.all([loadSupport(username), refreshUsers()]);
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -787,90 +763,43 @@ export function AdminPage() {
       await api.delete(`api/admin/accounts/${username}/cards/${extId}/external/${luid}`);
       await loadSupport(username);
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
   async function resetTotp(username: string) {
     if (!(await confirm(`确定要重置 ${username} 的两步验证吗？该用户的所有会话会被登出。`))) return;
     try {
-      const response = await api.delete(`api/admin/users/${username}/totp`) as ApiEnvelope<unknown>;
-      notice(response?.status?.message ?? '');
+      await api.delete(`api/admin/users/${username}/totp`);
+      notice(t('AdminPage.OperationFailed'));
       setSelectedProfile((profile) => profile ? { ...profile, totpEnabled: false } : profile);
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
   async function cardOperation(path: string, body: Record<string, unknown>) {
     try {
-      const response = await api.post(path, body) as ApiEnvelope<unknown>;
-      notice(response?.status?.message ?? '');
+      await api.post(path, body);
+      notice(t('AdminPage.OperationFailed'));
       await refreshUsers();
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
   async function bindCardViaExtId(username: string) {
     const parsed = Number(cardExtId);
     if (!cardExtId || Number.isNaN(parsed)) {
-      notice('请输入正确的 ExtId', 'warning');
+      notice(t('AdminPage.ValidExtIdRequired'), 'warning');
       return;
     }
     await cardOperation('api/admin/bindCardViaExtId', { userName: username, extId: parsed });
   }
 
-  async function loadEula() {
-    setTab('eula');
-    try {
-      const response = await api.get('api/admin/eula') as ApiEnvelope<{
-        current: EulaDocument;
-        draft?: EulaDocument | null;
-      }>;
-      if (!response.data?.current) return;
-      const current = response.data.current;
-      const title = response.data.draft?.title ?? `${current.title}`;
-      const content = response.data.draft?.content ?? current.content;
-      setEulaCurrent(current);
-      setEulaDraftTitle(title);
-      setEulaDraftContent(content);
-      setEulaPreview(DOMPurify.sanitize(marked.parse(content || '') as string));
-    } catch (error) {
-      notice(errorText(error), 'warning');
-    }
-  }
-
-  function updateEulaContent(content: string) {
-    setEulaDraftContent(content);
-    setEulaPreview(DOMPurify.sanitize(marked.parse(content || '') as string));
-  }
-
-  async function saveEulaDraft() {
-    try {
-      const response = await api.put('api/admin/eula/draft', {
-        title: eulaDraftTitle,
-        content: eulaDraftContent,
-      }) as ApiEnvelope<unknown>;
-      notice(response?.status?.message ?? '');
-    } catch (error) {
-      notice(errorText(error), 'warning');
-    }
-  }
-
-  async function publishEula() {
-    if (!(await confirm('发布新版本后，全部用户（包括管理员）都必须重新同意。继续发布？'))) return;
-    try {
-      await api.post('api/admin/eula/publish', {});
-      window.location.assign('/eula');
-    } catch (error) {
-      notice(errorText(error), 'warning');
-    }
-  }
-
   async function addKeychip() {
     if (!newKeychipId) {
-      notice('请输入 Keychip ID', 'warning');
+      notice(t('AdminPage.KeychipIdRequired'), 'warning');
       return;
     }
     const body: Record<string, string> = { keychipId: newKeychipId };
@@ -878,11 +807,11 @@ export function AdminPage() {
     setNewKeychipId('');
     setNewKeychipPlace('');
     try {
-      const response = await api.post('api/admin/keychip', body) as ApiEnvelope<unknown>;
-      notice(response?.status?.message ?? '');
+      await api.post('api/admin/keychip', body);
+      notice(t('AdminPage.OperationFailed'));
       await loadKeychips(keychipPage - 1, keychipPattern);
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -892,7 +821,7 @@ export function AdminPage() {
       await api.delete(`api/admin/keychip/${id}`);
       await loadKeychips(keychipPage - 1, keychipPattern);
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -901,7 +830,7 @@ export function AdminPage() {
       await api.post('api/admin/keychip/toggleWhiteList', { keychipId });
       await loadKeychips(keychipPage - 1, keychipPattern);
     } catch (error) {
-      notice(errorText(error), 'warning');
+      notice(t('Common.OperationFailed'), 'warning');
     }
   }
 
@@ -917,9 +846,6 @@ export function AdminPage() {
         </div>
         <div className="col-auto">
           <button type="button" className={`tab-selector${tab === 'keychips' ? ' tab-selector-active' : ''}`} onClick={() => setTab('keychips')}>Keychip</button>
-        </div>
-        <div className="col-auto">
-          <button type="button" className={`tab-selector${tab === 'eula' ? ' tab-selector-active' : ''}`} onClick={() => void loadEula()}>EULA</button>
         </div>
       </div>
 
@@ -986,31 +912,6 @@ export function AdminPage() {
             </div>
           )}
           {!loading && <Pagination currentPage={currentPage} totalElements={totalElements} onChange={(page) => void loadUsers(page - 1, pattern, field)} />}
-        </div>
-      )}
-
-      {tab === 'eula' && (
-        <div className="row g-3">
-          <div className="col-12 col-lg-6">
-            <div className="card"><div className="card-body">
-              <h5>当前已发布版本 {eulaCurrent?.version}</h5>
-              <p className="text-secondary">{eulaCurrent?.title}</p>
-              <label className="form-label">草稿标题</label>
-              <input className="form-control mb-2" value={eulaDraftTitle} onChange={(event) => setEulaDraftTitle(event.target.value)} />
-              <label className="form-label">Markdown 正文</label>
-              <textarea className="form-control font-monospace" rows={20} value={eulaDraftContent} onChange={(event) => updateEulaContent(event.target.value)} />
-              <div className="d-flex gap-2 mt-2">
-                <button type="button" className="btn btn-outline-primary" onClick={() => void saveEulaDraft()}>保存草稿</button>
-                <button type="button" className="btn btn-danger" onClick={() => void publishEula()}>发布新版本</button>
-              </div>
-            </div></div>
-          </div>
-          <div className="col-12 col-lg-6">
-            <div className="card"><div className="card-body">
-              <h5>安全预览</h5>
-              <article dangerouslySetInnerHTML={{ __html: eulaPreview }} />
-            </div></div>
-          </div>
         </div>
       )}
 
@@ -1110,14 +1011,6 @@ export function AdminPage() {
                       : '—'}
                   </td>
                 </tr>
-                <tr>
-                  <th className="text-nowrap text-secondary fw-normal">EULA 当前版本</th><td>{selectedProfile?.eulaStatus?.currentVersion ?? '—'}</td>
-                  <th className="text-nowrap text-secondary fw-normal">用户同意版本</th>
-                  <td>
-                    {selectedProfile?.eulaStatus?.acceptedVersion ?? '未同意'}
-                    {selectedProfile?.eulaStatus?.required && <span className="badge bg-warning text-dark ms-1">需要重新同意</span>}
-                  </td>
-                </tr>
               </tbody></table>
             </div>
             <div className="fw-bold small mb-1">卡片与游戏档案</div>
@@ -1184,7 +1077,7 @@ export function AdminPage() {
               <button type="button" className="btn btn-outline-danger" onClick={() => void cardOperation('api/admin/unbindCard', { userName: selectedUsername, accessCode: cardAccessCode })}>解绑</button>
             </div>
             <div className="input-group input-group-sm mb-2">
-              <input type="text" className="form-control" placeholder="ExtId" value={cardExtId} onChange={(event) => setCardExtId(event.target.value)} />
+              <input type="text" className="form-control" placeholder={t('AdminPage.ExtIdPlaceholder')} value={cardExtId} onChange={(event) => setCardExtId(event.target.value)} />
               <button type="button" className="btn btn-outline-primary" onClick={() => void bindCardViaExtId(selectedUsername)}>通过ExtId绑定</button>
             </div>
             <div className="input-group input-group-sm mb-2">
