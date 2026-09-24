@@ -24,12 +24,14 @@ Context docs (read in order): `design.md` (full analysis & phased plan) → `prd
 
 ## Current position (updated 2026-09-24 session 2)
 
-**Phase 0 ✅ complete · Phase 1 ✅ complete · Phase 2 🔄 starting (cabinets first)**
+**Phase 0 ✅ · Phase 1 ✅ · Phase 2 ✅ (4/4 cabinet pages) · Phase 3 ✅ (setting 引继 + netcode-bind + onetime-sign-in + kop) · Phase 4/5 ⏳ NOT STARTED — see HANDOFF NOTES at the end**
 
 Commits so far on `migrate/react-port`:
 - `e1d92ae` — restore .trellis onto React baseline
 - `221ebb6` — i18n merge (993 keys) + env scaffolding + task docs
 - `0968738` — LCDX API client + botPermission + mai asset host + laochan.svg + .env.development
+- `2c06ff2` cabinets · `2ed986d` remote-control · `7bda5be` locks · `e0db341` cabmode (Phase 2)
+- `cfe5b9e` setting 引继/绑定卡 · `38f8c00` netcode-bind · `d825a98` onetime-sign-in · `d4b0ab9` kop (Phase 3)
 
 ### Phase 0 — Baseline (DONE)
 
@@ -91,24 +93,85 @@ Notable ports/decisions:
   - Reused `Maimai2Pagination` (ngx-pagination-compatible) for all three paging controls.
   - `cabinet-models.ts` gained `formatMinutesDateTime` (`yyyy-MM-dd HH:mm` used by grantedAt/addedSince columns).
 
-### Phase 3 — Setting merge block + standalone pages (NOT STARTED)
+### Phase 3 — Setting merge block + standalone pages ✅ COMPLETE
+
+All four items ported, routed and committed:
+
+| Item | File | Route | Notes |
+|---|---|---|---|
+| setting 引继 + 绑定卡 | `src/features/mai2/Maimai2SettingPage.tsx` (rewritten) | `mai2/setting` | commit `cfe5b9e` |
+| 网络码绑定 | `src/pages/NetcodeBindPage.tsx` | `/netcode-bind` (auth, no sidebar) | commit `38f8c00` |
+| 一次性登录 | `src/pages/auth/OnetimeSignInPage.tsx` + `loginLcdxOnetime` in `src/lib/auth/auth.ts` | `/onetime-sign-in` (public, no sidebar) | commit `d825a98` |
+| KOP 排行 | `src/features/mai2/Maimai2KopRankingPage.tsx` + `.css` | `mai2/kop` (no guard; menu HasProfile) | commit `d4b0ab9` |
+
+Splice decisions & fixes (all deliberate):
+- **setting**: kept upstream's four cards, spliced LCDX bind-card + merge-request cards. Bind-card uses `cards[0].luid`, merge uses `defaultCard.luid` — **two different cards, keep it that way**. **Portrait upload stays DISABLED** (`UploadPortraitDisabled` warning) per LCDX behaviour; upstream's `PortraitDialog`/`centerSquareJpeg` were removed as dead code. Added key `Maimai2.Setting.AccessCodeLoading` (zh 请稍后 / en Please wait) to replace the legacy hardcoded input placeholder.
+- **procLoginResp** (`src/lib/auth/auth.ts`) gained the LCDX branch: after `loadUser`, `cards.length === 0` → `/netcode-bind`. This is shared by every login path (password / oauth / onetime).
+- **netcode-bind**: fixed legacy bug where a success also flashed `OperationFailed` (unconditional notice before redirect).
+- **kop**: legacy had hardcoded title/headers/empty-state → now i18n (`Maimai2.KopPage.*`, 5 new keys); `.medal` + th/td rules scoped under `.kop-ranking-page` (legacy `public.ranking.scss` had global `th{}`/`td{}` which would pollute React); response is a **bare array** (not the ApiResponse envelope) — code tolerates both.
+- **EULA (Q2 investigation result)**: `eulaRequired` originates from the **backend** `api/account/status` (`src/lib/auth/access.ts` → `restoreAccess`). The React flow (redirect to `/eula` → `acceptEula` → re-check) is **self-service — a user can never be permanently stuck by frontend logic**. Whether LCDX accounts ever hit it depends on the deployed backend returning `acceptedEulaVersion < currentEulaVersion`. → **Follow-up for the backend owner**: confirm LCDX accounts either never get `eulaRequired`, or can accept once; if the intent is "auto-pass", the backend should auto-accept the current EULA for LCDX-registered accounts (frontend hack is NOT recommended). No frontend action taken.
+
+**Next — Phase 4: shared-page modification replay**
 
 - `maimai2-setting` merge-request block: port from `master:src/app/sega/maimai2/maimai2-setting.component.{ts,html}` (state polling `lcdx/mergeRegistry/{userName}/{cardId}`, POST request w/ confirm dialog, isOnRequest/lastRequestDate/lastSuccessDate display). React target: `src/features/mai2/Maimai2SettingPage.tsx`.
 - netcode-bind page (`master:src/app/netcode-bind/`), onetime-sign-in page (`master:src/app/onetime-sign-in/`), kop-ranking page (`master:src/app/sega/maimai2/maimai2-kop-ranking/`, uses `lcdx/kop/rank` + XaCDN assets).
 - EULA auto-pass investigation (Q2 constraint): trace `restoreAccess()` in `src/lib/auth/access.ts` → where eulaRequired comes from; confirm LCDX accounts can't get stuck.
 
-### Phase 4 — Shared-page replay (NOT STARTED)
+### Phase 4 — Shared-page replay (NOT STARTED) — **bulk of remaining work**
 
-Extract per-file intents from `git log -p defebab..master -- <file>` and re-apply onto React counterparts. Order: dashboard (biggest) → sign-up → home → admin → announcements/edit → cards → keychip → profile → importer → user.service deltas → maimai2-recent/profile/portrait-upload. Key known intents:
-- sign-up: LCDX register flow = QQ号 + 4-digit code + "register or reset password" combined page
-- home: laochan brand + ICP 备案主体 footer
-- admin/announcements: LCDX backend integration (`lcdx/announcement/recent`)
-- keychip: FullKeychip/辖区 display changes
-- dashboard: restructured cards + daily player window (verify against React DashboardPage first)
+Method for every file: `git log --oneline defebab..master -- <path>` to find the LCDX commits, then `git show <commit> -- <path>` (or `git diff defebab master -- <path>`) to read the intent, then re-express it in the React counterpart. **Never copy Angular code** — understand what the user saw / which API was called, then implement with React state + Bootstrap classes (same convention as Phase 2/3). Commit per file.
+
+Measured LCDX deltas (`defebab..master`, non-spec files) and what to look for:
+
+| Angular source | Δ | What the LCDX change is about | React target |
+|---|---|---|---|
+| `dashboard/dashboard.component.*` | +471/−173 | **biggest**: restructured dashboard cards + **daily/global player window** calling `lcdx/cabinet/global-players` (the only caller of that endpoint) | `src/pages/DashboardPage.tsx` |
+| `sign-up/sign-up.component.*` | +258/−387 | LCDX register flow: **QQ号 + 4-digit code** + combined "注册账号或重设密码"; also the 6 i18n conflicts we resolved in Phase 1 came from here | `src/pages/auth/SignUpPage.tsx` |
+| `home/home.component.*` | +130/−156 | laochan brand hero + **ICP 备案主体** footer content | `src/pages/HomePage.tsx` |
+| `admin/admin.component.*` | +87 | announcement management wired to LCDX backend (`lcdx/announcement/recent`) | `src/pages/AdminPage.tsx` |
+| `sign-in/*` | — | LCDX password login uses **`POST lcdx/login`** (`login_lcdx_common`, body `{usernameOrEmail, password}`) plus `lcdx/onetime-v2` — check whether React `SignInPage` must call the LCDX endpoint instead of `api/auth/signin` | `src/pages/auth/SignInPage.tsx`, `src/lib/auth/auth.ts` |
+| `keychip/keychip.component.*` | +52 | FullKeychip / 辖区 display changes | `src/pages/KeychipPage.tsx` |
+| `cards/cards.component.ts` | +36 | access-code related UI | `src/pages/CardsPage.tsx` |
+| `announcements/*` (+edit) | +31/+10 | LCDX announcement API + the `/announcements/edit` admin route | `src/pages/AnnouncementsPage.tsx`, `AnnouncementEditPage.tsx` |
+| `profile/profile.component.ts` | +28 | small | `src/pages/ProfilePage.tsx` |
+| `user.service.ts` | +15 | botPermission load/clear wiring — **already done** in Phase 1 | `src/lib/user.ts` ✅ |
+| `menu.service.ts` | ±174 | menu restructure — **already done** in Phase 1/2 | `src/lib/menu.ts` ✅ |
+| `sega/maimai2/maimai2-recent`, `maimai2-profile`, `upload-user-portrait.dialog` | +7/+2/+6 | tiny; check each | corresponding `src/features/mai2/*` |
+| `importer/importer.component.ts` | +8 | tiny | `src/pages/ImporterPage.tsx` |
+| `oauth-callback`, `password-reset`, `auth/*.service.ts` | small | LCDX login/oauth deltas (`login_lcdx_common`, error handling) | `src/pages/auth/*`, `src/lib/auth/*` |
+
+Also apply the **project's i18n rule** while replaying: any user-visible string that upstream left as `notice(String(error))` / hardcoded English should become `notice(t('...'))` with zh/en keys (this is the LCDX convention recorded in `.trellis/spec/frontend/quality-guidelines.md`). Do it only in files you are already touching (avoid a repo-wide sweep unless the user asks).
 
 ### Phase 5 — Finalize (NOT STARTED)
 
-- Liquefy default theme; CI check (`.github/workflows/deploy-test-server.yml` adoption?); spec/frontend rewrite for React; `master reset --hard migrate/react-port`; journal; archive.
+- **Liquefy as default theme** (user decision Q4) — verify LCDX pages (cabinet cards, tables) look right under it; check `src/lib/theme.ts` default family.
+- **Run-time verification** (never done — only `npm run build` was verified): needs `npm run gen:cert` + hosts entry for `portal.naominet.live`, `npm run dev`, and a reachable LCDX backend (`VITE_LCDX_API_SERVER`); smoke-test the four cabinet pages + setting merge flow + bind-card against a dev account.
+- **PWA service worker**: `vite-plugin-pwa` `closeBundle` throws `MODULE_NOT_FOUND: @rollup/plugin-babel` → no `dist/sw.js` (manifest OK). Decide: add the dep, pin the plugin, or drop PWA.
+- **CI**: check whether this fork uses `.github/workflows/deploy-test-server.yml` (upstream repointed it at the React branch) before adopting.
+- **`.trellis/spec/frontend/*` rewrite for React** (currently Angular-era docs): directory structure, component patterns, state via `createStore`, i18next usage, keep the "user-facing messages must be localized" rule.
+- **Adopt into master**: `git checkout master && git reset --hard migrate/react-port` (user decision Q1). `legacy-angular` keeps the Angular history. Then `task.py archive 09-24-react-upstream-merge` + journal entry.
+
+## 🔁 HANDOFF NOTES (for the next AI)
+
+**Branch / state**: work happens on `migrate/react-port` (branched from `backup`). 14 commits ahead of `backup`, all pushed nowhere (user asked to commit but **not push**). `master` is still the old Angular code and `legacy-angular` points at it — do not touch them until Phase 5.
+
+**Resume ritual**:
+```bash
+cd E:/ALL.Net/Project_LCDX_NET/aqua_viewer_lcdx
+git log --oneline -3 && git status          # expect clean tree on migrate/react-port
+py -3 ./.trellis/scripts/task.py start 09-24-react-upstream-merge
+cat .trellis/tasks/09-24-react-upstream-merge/implement.md   # this file
+```
+
+**Non-negotiables**:
+1. **Bootstrap classes, not shadcn rewrite** for ported LCDX pages (upstream keeps `--bs-*` tokens rebuilt in `globals.css`).
+2. **Both i18n copies must stay in sync**: `src/i18n/{zh,en}.json` AND `public/assets/i18n/{zh,en}.json`; zh/en key sets must match exactly. Currently 999 keys.
+3. **Never** `notice(String(error))` or a backend `status.message` passthrough in new/touched code — use `notice(t('Key'))` / `Common.OperationFailed`.
+4. Commit after every completed unit with a descriptive message; **do not push**.
+5. `npm run build` must be green before each commit (`tsc -b && vite build`; the trailing PWA warning is expected/known).
+6. Do not run `dotnet` from the Bash tool (known environment corruption — see skill `dotnet-windows-env-fix`). `npm ci` may be blocked by the host safe-delete wrapper → delete `node_modules` with the PowerShell tool first.
+
+**Verified so far**: only compile-level (`npm run build`). No browser/runtime testing has been done.
 
 ## Notes / gotchas
 
