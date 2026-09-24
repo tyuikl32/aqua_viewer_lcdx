@@ -25,6 +25,7 @@ import { userStore } from '@/lib/user';
 import { logout } from '@/lib/auth/auth';
 import { useStore } from '@/lib/store';
 import { menu, showItem, showMenu } from '@/lib/menu';
+import { useBotPermission } from '@/lib/botPermission';
 import { languages, languageKeys, langStore, setLang } from '@/lib/i18n';
 import { assetsHost } from '@/lib/utils';
 import { setNavigator } from '@/lib/nav';
@@ -77,6 +78,8 @@ function BootEffects() {
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { t } = useTranslation();
   const user = useStore(userStore);
+  // 订阅机台权限态：EP-01/EP-18 异步返回后需重渲染，requiredBotPermission 门控的菜单项才会出现
+  useBotPermission();
   const isActive = useIsActive();
   const navigate = useNavigate();
 

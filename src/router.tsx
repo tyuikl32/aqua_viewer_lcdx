@@ -1,10 +1,13 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Navigate, createBrowserRouter, useLocation, Outlet } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AppShell } from '@/components/shell/AppShell';
 import { getAccount } from '@/lib/auth/account';
 import { restoreAccess } from '@/lib/auth/access';
 import { isAdmin, loadUser, userStore } from '@/lib/user';
 import { useStore } from '@/lib/store';
+import { notice } from '@/lib/message';
+import { MANAGE_GRANTS, useBotPermission } from '@/lib/botPermission';
 import { HomePage } from '@/pages/HomePage';
 import { SignInPage } from '@/pages/auth/SignInPage';
 import { SignUpPage } from '@/pages/auth/SignUpPage';
@@ -37,6 +40,7 @@ import { Maimai2ProfilePage } from '@/features/mai2/Maimai2ProfilePage';
 import { Maimai2PhotosPage } from '@/features/mai2/Maimai2PhotosPage';
 import { Maimai2DxPassPage } from '@/features/mai2/Maimai2DxPassPage';
 import { Maimai2RivalPage } from '@/features/mai2/Maimai2RivalPage';
+import { Maimai2CabinetsPage } from '@/features/mai2/Maimai2CabinetsPage';
 import { Maimai2SettingPage } from '@/features/mai2/Maimai2SettingPage';
 import { Maimai2SongListPage } from '@/features/mai2/Maimai2SongListPage';
 import { Maimai2RecentPage } from '@/features/mai2/Maimai2RecentPage';
@@ -118,6 +122,55 @@ function RequireAdmin({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+/** 机台管理路由守卫（等价旧版 CabinetManageGuard）：EP-18 hasManage 门控。
+ * 未登录 → 首页；探测未完成放行（页面内空列表兜底，避免闪烁跳转）；无权限 → 提示并回仪表板。
+ * 安全边界仍在后端 L2/L3，守卫仅为 UX。 */
+export function RequireCabinetManage({ children }: { children: ReactNode }) {
+  const location = useLocation();
+  const { t } = useTranslation();
+  const account = getAccount();
+  const permission = useBotPermission();
+  const denied = Boolean(account) && permission.loaded && !permission.hasManage;
+
+  useEffect(() => {
+    if (denied) {
+      notice(t('Common.NoCabinetPermission'));
+    }
+  }, [denied, t]);
+
+  if (!account) {
+    return <Navigate to="/" replace state={{ from: location }} />;
+  }
+  if (denied) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <>{children}</>;
+}
+
+/** 页④ 操作记录与授权（等价旧版 CabinetAdminGuard）：P≥4（机台管理授权；
+ * Admin 授权卡 P≥7 由页面内部再分档） */
+export function RequireCabinetAdmin({ children }: { children: ReactNode }) {
+  const location = useLocation();
+  const { t } = useTranslation();
+  const account = getAccount();
+  const permission = useBotPermission();
+  const denied = Boolean(account) && permission.loaded && permission.permission < MANAGE_GRANTS;
+
+  useEffect(() => {
+    if (denied) {
+      notice(t('Common.NoCabinetPermission'));
+    }
+  }, [denied, t]);
+
+  if (!account) {
+    return <Navigate to="/" replace state={{ from: location }} />;
+  }
+  if (denied) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <>{children}</>;
+}
+
 export const router = createBrowserRouter([
   {
     element: <AppShell />,
@@ -172,6 +225,16 @@ export const router = createBrowserRouter([
           { path: 'festa', element: <Maimai2FestaPage />, handle: { title: 'Festa' } },
           { path: 'songlist', element: <Maimai2SongListPage />, handle: { title: 'MusicList' } },
           { path: 'rival', element: <Maimai2RivalPage />, handle: { title: 'Rival' } },
+          // LCDX 机台管理（等价旧版 maimai2.routing：cabinets/cabmode/remotecontrol → ManageGuard，locks → AdminGuard）
+          {
+            path: 'cabinets',
+            element: (
+              <RequireCabinetManage>
+                <Maimai2CabinetsPage />
+              </RequireCabinetManage>
+            ),
+            handle: { title: 'Cabinets' },
+          },
         ],
       },
 

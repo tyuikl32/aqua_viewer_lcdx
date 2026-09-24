@@ -1,4 +1,5 @@
 import { getAccount } from '@/lib/auth/account';
+import { getBotPermission } from '@/lib/botPermission';
 import type { User } from '@/lib/models';
 
 /** 等价旧版 menu.service.ts */
@@ -15,6 +16,8 @@ export interface Menu {
   name: string;
   url: string;
   displayCondition: DisplayCondition;
+  /** LCDX 机台管理门控：0=EP-18 hasManage；>0=permission 下限（locks 页为 4=MANAGE_GRANTS）；undefined=无门控 */
+  requiredBotPermission?: number;
 }
 
 export const menu = new Map<string, Menu[]>([
@@ -59,6 +62,8 @@ export const menu = new Map<string, Menu[]>([
       { id: 9, name: 'Festa', url: 'mai2/festa', displayCondition: DisplayCondition.HasProfile },
       { id: 10, name: 'ServerMissions', url: 'mai2/servermissions', displayCondition: DisplayCondition.HasProfile },
       { id: 7, name: 'Rival', url: 'mai2/rival', displayCondition: DisplayCondition.HasProfile },
+      // LCDX 机台管理（等价旧版 menu.service：AfterLogin + requiredBotPermission 门控）
+      { id: 11, name: 'Cabinets', url: 'mai2/cabinets', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },
       { id: 6, name: 'MusicList', url: 'mai2/songlist', displayCondition: DisplayCondition.Always },
       { id: 1, name: 'Setting', url: 'mai2/setting', displayCondition: DisplayCondition.HasProfile },
     ],
@@ -69,6 +74,14 @@ export function showItem(game: string, item: Menu, user: User | null): boolean {
   if (item.displayCondition === DisplayCondition.Always) {
     return true;
   } else if (item.displayCondition === DisplayCondition.AfterLogin && getAccount()) {
+    // 机台管理菜单组：附加 EP-18/EP-01 权限门控（等价旧版 menu.service.showItem）
+    if (item.requiredBotPermission !== undefined && item.requiredBotPermission !== null) {
+      const state = getBotPermission();
+      if (item.requiredBotPermission === 0) {
+        return state.hasManage;
+      }
+      return state.permission >= item.requiredBotPermission;
+    }
     return true;
   } else if (item.displayCondition === DisplayCondition.HasProfile && user?.games?.includes(game)) {
     return true;
