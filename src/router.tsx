@@ -43,6 +43,7 @@ import { Maimai2RivalPage } from '@/features/mai2/Maimai2RivalPage';
 import { Maimai2CabinetsPage } from '@/features/mai2/Maimai2CabinetsPage';
 import { Maimai2RemoteControlPage } from '@/features/mai2/Maimai2RemoteControlPage';
 import { Maimai2LocksPage } from '@/features/mai2/Maimai2LocksPage';
+import { Maimai2CabmodePage } from '@/features/mai2/Maimai2CabmodePage';
 import { Maimai2SettingPage } from '@/features/mai2/Maimai2SettingPage';
 import { Maimai2SongListPage } from '@/features/mai2/Maimai2SongListPage';
 import { Maimai2RecentPage } from '@/features/mai2/Maimai2RecentPage';
@@ -245,6 +246,15 @@ export const router = createBrowserRouter([
               </RequireCabinetManage>
             ),
             handle: { title: 'RemoteControl' },
+          },
+          {
+            path: 'cabmode',
+            element: (
+              <RequireCabinetManage>
+                <Maimai2CabmodePage />
+              </RequireCabinetManage>
+            ),
+            handle: { title: 'CabinetControl' },
           },
           {
             path: 'locks',

@@ -64,6 +64,7 @@ export const menu = new Map<string, Menu[]>([
       { id: 7, name: 'Rival', url: 'mai2/rival', displayCondition: DisplayCondition.HasProfile },
       // LCDX 机台管理（等价旧版 menu.service：AfterLogin + requiredBotPermission 门控）
       { id: 11, name: 'Cabinets', url: 'mai2/cabinets', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },
+      { id: 12, name: 'CabinetControl', url: 'mai2/cabmode', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },
       { id: 13, name: 'RemoteControl', url: 'mai2/remotecontrol', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },
       // 操作记录与授权：P≥4（机台管理授权；Admin 授权卡 P≥7 由页面内部再分档）
       { id: 14, name: 'Locks', url: 'mai2/locks', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 4 },
