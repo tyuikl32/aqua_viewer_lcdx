@@ -1,125 +1,78 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { InfoCircleFill } from 'react-bootstrap-icons';
 import './auth.css';
-import { login, loginWithTotp } from '@/lib/auth/auth';
-import { tokenTypes, getSignInUrl } from '@/lib/auth/oauth';
-import { webauthnLogin, isWebAuthnSupported, isWebAuthnAborted } from '@/lib/auth/webauthn';
+import { loginLcdx, loginWithTotp } from '@/lib/auth/auth';
 import { StatusCode } from '@/lib/models';
 import { notice } from '@/lib/message';
 
+const QQ_PATTERN = /^\d{5,12}$/;
 const TOTP_PATTERN = /^(\d{6}|[A-Za-z0-9]{5}-[A-Za-z0-9]{5})$/;
-const EMAIL_PATTERN = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
 
 interface AuthNavState {
-  token?: string;
-  type?: string;
-  name?: string;
-  username?: string;
-  email?: string;
+  qqNumber?: string;
 }
 
-/** 等价旧版 sign-in.component */
+/**
+ * 等价旧版 sign-in.component（LCDX：QQ 号 + 密码 → POST lcdx/login，TOTP 二段验证）。
+ * 与上游登录流的差异（LCDX 有意为之，勿合并回去）：账号为 QQ 号；无「用户名/邮箱」表单、
+ * 无 Passkey、无 OAuth 入口 —— LCDX 后端以 `ResolveQQAsync(userName)` 定位用户，
+ * 非 LCDX 账号（门户邮箱/OAuth/Passkey 账号）在机台等接口一律 401，故这些入口在本部署不可用。
+ * 上游对应实现（OauthCallbackPage / PasswordResetPage / lib/auth/webauthn）保留在代码中，仅不再暴露入口。
+ */
 export function SignInPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const state = (location.state ?? null) as AuthNavState | null;
 
-  const [token] = useState<string | undefined>(() => {
-    if (state && tokenTypes.has(state.type ?? '') && state.token?.length === 32) return state.token;
-    return undefined;
-  });
-  const [type] = useState<string | undefined>(token ? state?.type : undefined);
-  const [oauthName] = useState(state?.name);
-  const [oauthUsername] = useState(state?.username);
-  const [oauthEmail] = useState(state?.email);
-
-  const [usernameOrEmail, setUsernameOrEmail] = useState(() => {
-    if (!state) return '';
-    if (state.email) return state.email;
-    if (state.username) return state.username;
-    return '';
-  });
+  const [qqNumber, setQqNumber] = useState(() => state?.qqNumber ?? '');
   const [password, setPassword] = useState('');
-  const [touched, setTouched] = useState({ usernameOrEmail: false, password: false, code: false });
+  const [touched, setTouched] = useState({ qqNumber: false, password: false, code: false });
   const [totpToken, setTotpToken] = useState<string | null>(null);
   const [totpCode, setTotpCode] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [passkeySigningIn, setPasskeySigningIn] = useState(false);
 
-  const providers = [...tokenTypes.keys()];
-  const webAuthnSupported = isWebAuthnSupported();
-
-  // 等价旧版 history.replaceState 清掉 state（避免刷新重复消费）
+  // 等价旧版 history.replaceState：清掉 nav state，避免刷新重复消费
   useState(() => {
     if (state) window.history.replaceState({}, document.title);
     return null;
   });
 
-  const isEmail = (v: string) => EMAIL_PATTERN.test(v);
+  const qqNumberValid = QQ_PATTERN.test(qqNumber);
+  const totpCodeValid = TOTP_PATTERN.test(totpCode);
 
   function navigateToSignUp() {
-    const navState: AuthNavState = {};
-    if (usernameOrEmail) {
-      if (isEmail(usernameOrEmail)) {
-        navState.email = usernameOrEmail;
-        navState.username = oauthUsername;
-      } else {
-        navState.username = usernameOrEmail;
-        navState.email = oauthEmail;
-      }
-    } else {
-      navState.username = oauthUsername;
-      navState.email = oauthEmail;
-    }
-    if (token && type) {
-      navState.token = token;
-      navState.type = type;
-    }
-    navState.name = oauthName;
-    void navigate('/sign-up', { state: navState });
-  }
-
-  function navigateToPasswordReset() {
-    const navState: AuthNavState = {};
-    if (usernameOrEmail && isEmail(usernameOrEmail)) {
-      navState.email = usernameOrEmail;
-    }
-    if (token && type) {
-      navState.token = token;
-      navState.type = type;
-    }
-    navState.username = oauthUsername;
-    navState.name = oauthName;
-    void navigate('/password-reset', { state: navState });
+    void navigate('/sign-up', { state: { qqNumber } });
   }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!usernameOrEmail || !password) {
-      setTouched({ usernameOrEmail: true, password: true, code: false });
+    if (!qqNumberValid || !password) {
+      setTouched({ qqNumber: true, password: true, code: false });
       return;
     }
     setSubmitting(true);
     try {
-      const resp = await login(usernameOrEmail, password, token);
-      if (resp?.status) {
-        const statusCode: number = resp.status.code;
-        if (statusCode === StatusCode.OK && resp.data) {
-          notice(resp.status.message);
-          window.location.reload();
-        } else if (statusCode === StatusCode.TOTP_REQUIRED && resp.data?.totpToken) {
-          setTotpToken(resp.data.totpToken);
-        } else if (statusCode === StatusCode.LOGIN_FAILED) {
-          notice(t('SignInPage.LoginFailedMessage'), 'danger');
-        } else {
-          notice(resp.status.message);
+      const resp = await loginLcdx(qqNumber, password);
+      const statusCode: number = resp?.status?.code;
+      if (statusCode === StatusCode.OK && resp.data) {
+        notice(t('SignInPage.LoginSuccessMessage'));
+        // 等价旧版 `if (router.url.startsWith('/sign-in'))`：无卡用户已被 procLoginResp
+        // 送去 /netcode-bind，此处不得覆盖
+        if (window.location.pathname.startsWith('/sign-in')) {
+          await navigate('/dashboard');
         }
+      } else if (statusCode === StatusCode.TOTP_REQUIRED && resp.data?.totpToken) {
+        setTotpToken(resp.data.totpToken);
+      } else if (statusCode === StatusCode.LOGIN_FAILED) {
+        notice(t('SignInPage.LoginFailedMessage'), 'danger');
+      } else {
+        notice(t('SignInPage.LoginFailedMessage'));
       }
-    } catch (error) {
-      notice(String(error));
-      console.warn('login fail', error);
+    } catch {
+      notice(t('Common.OperationFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -127,17 +80,19 @@ export function SignInPage() {
 
   async function onSubmitTotp(e: React.FormEvent) {
     e.preventDefault();
-    if (!TOTP_PATTERN.test(totpCode)) {
-      setTouched((t) => ({ ...t, code: true }));
+    if (!totpCodeValid) {
+      setTouched((s) => ({ ...s, code: true }));
       return;
     }
     setSubmitting(true);
     try {
       const resp = await loginWithTotp(totpToken!, totpCode);
-      const statusCode = resp?.status?.code;
+      const statusCode: number = resp?.status?.code;
       if (statusCode === StatusCode.OK && resp.data) {
-        notice(resp.status.message);
-        window.location.reload();
+        notice(t('SignInPage.LoginSuccessMessage'));
+        if (window.location.pathname.startsWith('/sign-in')) {
+          await navigate('/dashboard');
+        }
         return;
       }
       if (statusCode === StatusCode.TOTP_INVALID) {
@@ -147,136 +102,111 @@ export function SignInPage() {
         notice(t('SignInPage.TotpLockedMessage'), 'danger');
       } else {
         setTotpToken(null);
-        notice(resp?.status?.message);
+        notice(t('SignInPage.LoginFailedMessage'));
       }
       setTotpCode('');
-    } catch (error) {
-      notice(String(error));
+    } catch {
+      notice(t('Common.OperationFailed'));
     } finally {
       setSubmitting(false);
     }
   }
 
-  async function signInWithPasskey() {
-    if (passkeySigningIn) return;
-    setPasskeySigningIn(true);
-    try {
-      const resp = await webauthnLogin();
-      const statusCode = resp?.status?.code;
-      if (statusCode === StatusCode.OK && resp.data) {
-        notice(resp.status.message);
-        window.location.reload();
-        return;
-      }
-      notice(t('SignInPage.PasskeyFailedMessage'), 'danger');
-    } catch (e) {
-      if (!isWebAuthnAborted(e)) {
-        console.warn('passkey login fail', e);
-        notice(t('SignInPage.PasskeyFailedMessage'), 'danger');
-      }
-    } finally {
-      setPasskeySigningIn(false);
-    }
+  function cancelTotp() {
+    setTotpToken(null);
+    setTotpCode('');
   }
 
   return (
-    <div className="d-flex justify-content-center">
+    <div className="d-flex justify-content-center px-2">
       <div className="card authorization-card col-12 mb-5">
-        <div className="pt-2 pt-lg-4 px-3 px-sm-5 mb-3">
+        <div className="alert alert-info d-flex gap-2 m-2 mb-0" role="alert">
+          <InfoCircleFill className="flex-shrink-0 mt-1" />
+          <div>
+            <div>{t('SignInPage.BotQuickLoginTip')}</div>
+            <div>{t('SignInPage.ManualLoginTip')}</div>
+          </div>
+        </div>
+
+        <div className="pt-3 pt-lg-4 px-3 px-sm-5 mb-3">
           <div className="mb-4">
-            <div className="fs-1 fw-bold">RinNET</div>
+            <div className="fs-1 fw-bold">NET</div>
             <div className="fs-5 fw-bold">{t('SignInPage.Title')}</div>
           </div>
-          {type && token && (
-            <div className="callout callout-info py-3" role="alert">
-              {t('SignInPage.BindTip', { type: tokenTypes.get(type) })}
-            </div>
-          )}
+
           {totpToken ? (
             <form onSubmit={(e) => void onSubmitTotp(e)}>
-              <div className="d-grid gap-1 small fw-bold">
-                <p className="fw-normal">{t('SignInPage.TotpTip')}</p>
-                <div className="position-relative">
+              <div className="d-grid gap-2 small fw-bold">
+                <p className="fw-normal mb-2">{t('SignInPage.TotpTip')}</p>
+                <div>
                   <label htmlFor="totpCode" className="form-label small">
                     {t('SignInPage.TotpCode')}
                   </label>
                   <input
                     type="text"
-                    className={
-                      'form-control form-control-sm' +
-                      (touched.code && !TOTP_PATTERN.test(totpCode) ? ' is-invalid' : '')
-                    }
-                    id="totpCode"
+                    inputMode="numeric"
                     autoComplete="one-time-code"
                     maxLength={11}
                     autoFocus
+                    className={'form-control form-control-sm' + (touched.code && !totpCodeValid ? ' is-invalid' : '')}
+                    id="totpCode"
                     value={totpCode}
                     onChange={(e) => setTotpCode(e.target.value)}
-                    onBlur={() => setTouched((t) => ({ ...t, code: true }))}
+                    onBlur={() => setTouched((s) => ({ ...s, code: true }))}
                   />
                 </div>
-                <button type="submit" className="btn btn-primary btn-sm mb-2" disabled={submitting}>
+                <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
                   {t('SignInPage.SignIn')}
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-link btn-sm text-decoration-none"
-                  onClick={() => {
-                    setTotpToken(null);
-                    setTotpCode('');
-                  }}
-                >
+                <button type="button" className="btn btn-link btn-sm text-decoration-none" onClick={cancelTotp}>
                   {t('SignInPage.TotpBack')}
                 </button>
               </div>
             </form>
           ) : (
             <form onSubmit={(e) => void onSubmit(e)}>
-              <div className="d-grid gap-1 small fw-bold">
-                <div className="position-relative">
-                  <label htmlFor="usernameOrEmail" className="form-label small">
+              <div className="d-grid gap-2 small fw-bold">
+                <div>
+                  <label htmlFor="qqNumber" className="form-label small">
                     {t('SignInPage.UsernameOrEmail')}
                   </label>
                   <input
                     type="text"
-                    className={
-                      'form-control form-control-sm' +
-                      (touched.usernameOrEmail && !usernameOrEmail ? ' is-invalid' : '')
-                    }
-                    id="usernameOrEmail"
-                    value={usernameOrEmail}
-                    onChange={(e) => setUsernameOrEmail(e.target.value)}
-                    onBlur={() => setTouched((t) => ({ ...t, usernameOrEmail: true }))}
+                    inputMode="numeric"
+                    autoComplete="username"
+                    className={'form-control form-control-sm' + (touched.qqNumber && !qqNumberValid ? ' is-invalid' : '')}
+                    id="qqNumber"
+                    value={qqNumber}
+                    onChange={(e) => setQqNumber(e.target.value)}
+                    onBlur={() => setTouched((s) => ({ ...s, qqNumber: true }))}
                   />
+                  {touched.qqNumber && !qqNumberValid && (
+                    <div className="invalid-feedback">{t('SignInPage.QQNumberInvalid')}</div>
+                  )}
                 </div>
-                <div className="position-relative">
+                <div>
                   <label htmlFor="password" className="form-label small">
                     {t('SignInPage.Password')}
                   </label>
                   <input
                     type="password"
-                    className={
-                      'form-control form-control-sm' + (touched.password && !password ? ' is-invalid' : '')
-                    }
+                    autoComplete="current-password"
+                    className={'form-control form-control-sm' + (touched.password && !password ? ' is-invalid' : '')}
                     id="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+                    onBlur={() => setTouched((s) => ({ ...s, password: true }))}
                   />
                 </div>
                 <div className="text-end">
-                  <button
-                    type="button"
-                    className="btn btn-link text-decoration-none btn-sm"
-                    onClick={navigateToPasswordReset}
-                  >
+                  <button type="button" className="btn btn-link text-decoration-none btn-sm" onClick={navigateToSignUp}>
                     {t('SignInPage.ResetPasswordTip')}
                   </button>
                 </div>
-                <button type="submit" className="btn btn-primary btn-sm mb-2" disabled={submitting}>
+                <button type="submit" className="btn btn-primary btn-sm" disabled={submitting}>
                   {t('SignInPage.SignIn')}
                 </button>
-                <div className="fw-normal d-flex align-items-center justify-content-center">
+                <div className="fw-normal d-flex align-items-center justify-content-center gap-1">
                   {t('SignInPage.SignUpTip')}
                   <button
                     type="button"
@@ -286,41 +216,6 @@ export function SignInPage() {
                     {t('SignInPage.SignUp')}
                   </button>
                 </div>
-                {(!type || !token) && (
-                  <>
-                    <div className="row justify-content-center align-items-center m-0 mb-2">
-                      <hr className="col m-0" />
-                      <div className="col-auto">{t('SignInPage.Or')}</div>
-                      <hr className="col m-0" />
-                    </div>
-                    {webAuthnSupported && (
-                      <button
-                        type="button"
-                        className="btn btn-theme"
-                        onClick={() => void signInWithPasskey()}
-                        disabled={passkeySigningIn}
-                      >
-                        <svg className="oauth-icon" viewBox="0 0 16 16">
-                          <use href="assets/passkey.svg#icon" />
-                        </svg>
-                        {t('SignInPage.SignInWithPasskey')}
-                      </button>
-                    )}
-                    {providers.map((provider) => (
-                      <button
-                        type="button"
-                        key={provider}
-                        className="btn btn-theme"
-                        onClick={() => getSignInUrl(provider)}
-                      >
-                        <svg className="oauth-icon" viewBox="0 0 16 16">
-                          <use href={`assets/${provider}.svg#icon`} />
-                        </svg>
-                        {t('OAuth.ContinueWith', { type: tokenTypes.get(provider) })}
-                      </button>
-                    ))}
-                  </>
-                )}
               </div>
             </form>
           )}
