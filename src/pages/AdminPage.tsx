@@ -339,6 +339,7 @@ function GameBanRow({
   onDelete: (game: GameKey, extId: number) => void;
   onSave: (game: GameKey, extId: number, status: string) => void;
 }) {
+  const { t } = useTranslation();
   const [status, setStatus] = useState(String(game === 'ONGEKI' ? data.banStatus ?? 0 : data.banState ?? 0));
   return (
     <div className={`input-group input-group-sm${game === 'ONGEKI' ? '' : ' mb-1'}`}>
@@ -348,8 +349,8 @@ function GameBanRow({
         <option value="1">1</option>
         <option value="2">2</option>
       </select>
-      <button type="button" className="btn btn-outline-primary" onClick={() => onSave(game, extId, status)}>保存</button>
-      <button type="button" className="btn btn-outline-danger" onClick={() => onDelete(game, extId)}>删除存档</button>
+      <button type="button" className="btn btn-outline-primary" onClick={() => onSave(game, extId, status)}>{t('AdminPage.GameBan.Save')}</button>
+      <button type="button" className="btn btn-outline-danger" onClick={() => onDelete(game, extId)}>{t('AdminPage.GameBan.DeleteSave')}</button>
     </div>
   );
 }
@@ -664,8 +665,8 @@ export function AdminPage() {
 
   async function setAccountBan(item: AdvancedUser, banned: boolean) {
     const warning = banned
-      ? `封禁 ${item.user.username}？其现有 Chusan、Maimai2、Ongeki 档案会设为 2，所有 refresh 会话会撤销。`
-      : `解除 ${item.user.username} 的面板封禁？游戏封禁值不会自动恢复。`;
+      ? t('AdminPage.Confirm.BanAccount', { username: item.user.username })
+      : t('AdminPage.Confirm.UnbanAccount', { username: item.user.username });
     if (!(await confirm(warning))) return;
     try {
       await api.post(`api/admin/accounts/${item.user.username}/${banned ? 'ban' : 'unban'}`, {});
@@ -691,7 +692,7 @@ export function AdminPage() {
 
   async function deleteGameSave(username: string, game: GameKey, extId: number) {
     const confirmation = window.prompt(
-      `不可恢复：删除 ${username} / ${extId} / ${game} 的完整游戏存档。下次游玩会创建全新档案。\n请输入完整 ExtId 确认：`,
+      t('AdminPage.Confirm.DeleteGameSave', { username, extId, game }),
     );
     if (confirmation !== String(extId)) return;
     try {
@@ -708,7 +709,7 @@ export function AdminPage() {
   }
 
   async function revokeSessions(username: string) {
-    if (!(await confirm(`撤销 ${username} 的全部 refresh 会话？现有 access token 最多约 5 分钟后失效。`))) return;
+    if (!(await confirm(t('AdminPage.Confirm.RevokeSessions', { username })))) return;
     try {
       await api.post(`api/admin/accounts/${username}/sessions/revoke`, {});
       notice(t('AdminPage.OperationFailed'));
@@ -718,7 +719,7 @@ export function AdminPage() {
   }
 
   async function deletePasskey(username: string, id: number) {
-    if (!(await confirm('删除此 Passkey 并撤销该用户全部 refresh 会话？'))) return;
+    if (!(await confirm(t('AdminPage.Confirm.DeletePasskey')))) return;
     try {
       await api.delete(`api/admin/accounts/${username}/passkeys/${id}`);
       await loadSupport(username);
@@ -728,7 +729,7 @@ export function AdminPage() {
   }
 
   async function deleteOauth(username: string, id: number) {
-    if (!(await confirm('解绑此 OAuth identity 并撤销该用户全部 refresh 会话？'))) return;
+    if (!(await confirm(t('AdminPage.Confirm.DeleteOauth')))) return;
     try {
       await api.delete(`api/admin/accounts/${username}/oauth/${id}`);
       await loadSupport(username);
@@ -738,7 +739,7 @@ export function AdminPage() {
   }
 
   async function setDefaultCard(username: string, extId: number) {
-    if (!(await confirm(`将 ExtId ${extId} 设为 ${username} 的默认卡？`))) return;
+    if (!(await confirm(t('AdminPage.Confirm.SetDefaultCard', { extId, username })))) return;
     try {
       await api.put(`api/admin/accounts/${username}/cards/${extId}/default`, {});
       await loadSupport(username);
@@ -748,7 +749,7 @@ export function AdminPage() {
   }
 
   async function unbindCardByExtId(username: string, extId: number) {
-    if (!(await confirm(`解绑 ${username} 的 ExtId ${extId}？关联 Access Code 会一并移除。`))) return;
+    if (!(await confirm(t('AdminPage.Confirm.UnbindCard', { username, extId })))) return;
     try {
       await api.delete(`api/admin/accounts/${username}/cards/${extId}`);
       await Promise.all([loadSupport(username), refreshUsers()]);
@@ -758,7 +759,7 @@ export function AdminPage() {
   }
 
   async function removeExternal(username: string, extId: number, luid: string) {
-    if (!(await confirm(`从 ExtId ${extId} 删除外部 Access Code ${luid}？`))) return;
+    if (!(await confirm(t('AdminPage.Confirm.RemoveExternal', { extId, luid })))) return;
     try {
       await api.delete(`api/admin/accounts/${username}/cards/${extId}/external/${luid}`);
       await loadSupport(username);
@@ -768,7 +769,7 @@ export function AdminPage() {
   }
 
   async function resetTotp(username: string) {
-    if (!(await confirm(`确定要重置 ${username} 的两步验证吗？该用户的所有会话会被登出。`))) return;
+    if (!(await confirm(t('AdminPage.Confirm.ResetTotp', { username })))) return;
     try {
       await api.delete(`api/admin/users/${username}/totp`);
       notice(t('AdminPage.OperationFailed'));
@@ -816,7 +817,7 @@ export function AdminPage() {
   }
 
   async function deleteKeychip(id: number) {
-    if (!(await confirm('确定要删除这个 Keychip 吗？'))) return;
+    if (!(await confirm(t('AdminPage.Confirm.DeleteKeychip')))) return;
     try {
       await api.delete(`api/admin/keychip/${id}`);
       await loadKeychips(keychipPage - 1, keychipPattern);
@@ -838,11 +839,11 @@ export function AdminPage() {
 
   return (
     <div className="admin-page">
-      <h1 className="page-heading">管理员</h1>
+      <h1 className="page-heading">{t('AdminPage.Title')}</h1>
 
       <div className="row justify-content-start align-items-center g-1 mb-2">
         <div className="col-auto">
-          <button type="button" className={`tab-selector${tab === 'users' ? ' tab-selector-active' : ''}`} onClick={() => setTab('users')}>用户</button>
+          <button type="button" className={`tab-selector${tab === 'users' ? ' tab-selector-active' : ''}`} onClick={() => setTab('users')}>{t('AdminPage.Tab.Users')}</button>
         </div>
         <div className="col-auto">
           <button type="button" className={`tab-selector${tab === 'keychips' ? ' tab-selector-active' : ''}`} onClick={() => setTab('keychips')}>Keychip</button>
@@ -855,18 +856,18 @@ export function AdminPage() {
             <div className="col-12 p-0">
               <div className="input-group input-group-sm">
                 <select className="form-select flex-grow-0 w-auto" value={field} onChange={(event) => setField(event.target.value)}>
-                  <option value="all">全部</option>
-                  <option value="username">登录名</option>
-                  <option value="name">昵称</option>
-                  <option value="email">邮箱</option>
-                  <option value="game">游戏昵称</option>
-                  <option value="card">卡号</option>
+                  <option value="all">{t('AdminPage.Field.All')}</option>
+                  <option value="username">{t('AdminPage.Field.Username')}</option>
+                  <option value="name">{t('AdminPage.Field.Name')}</option>
+                  <option value="email">{t('AdminPage.Field.Email')}</option>
+                  <option value="game">{t('AdminPage.Field.GameName')}</option>
+                  <option value="card">{t('AdminPage.Field.Card')}</option>
                   <option value="extId">ExtId</option>
                 </select>
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="搜索内容"
+                  placeholder={t('AdminPage.Placeholder.Search')}
                   value={pattern}
                   onChange={(event) => setPattern(event.target.value)}
                   onKeyUp={(event) => event.key === 'Enter' && void loadUsers(0, pattern, field)}
@@ -876,12 +877,12 @@ export function AdminPage() {
           </div>
           <div className="row mb-2 g-1">
             <div className="col-12 p-0">
-              <button type="button" className="btn btn-primary btn-sm w-100" onClick={() => void loadUsers(0, pattern, field)}>搜索</button>
+              <button type="button" className="btn btn-primary btn-sm w-100" onClick={() => void loadUsers(0, pattern, field)}>{t('AdminPage.Search')}</button>
             </div>
           </div>
           <div className="row mb-2 g-1">
             <div className="col-12 p-0">
-              <button type="button" className="btn btn-outline-primary btn-sm w-100" onClick={() => setCreateUserOpen(true)}>创建用户</button>
+              <button type="button" className="btn btn-outline-primary btn-sm w-100" onClick={() => setCreateUserOpen(true)}>{t('AdminPage.CreateUser')}</button>
             </div>
           </div>
           {!loading && <Pagination currentPage={currentPage} totalElements={totalElements} onChange={(page) => void loadUsers(page - 1, pattern, field)} />}
@@ -893,7 +894,7 @@ export function AdminPage() {
                     <div className="card-header fw-bold">{item.user.id}.{item.user.username}</div>
                     <div className="card-body small">
                       <span className={`badge mb-1 ${isBanned(item) ? 'bg-danger' : 'bg-success'}`}>
-                        {isBanned(item) ? '已封禁' : '正常'}
+                        {isBanned(item) ? t('AdminPage.Banned') : t('AdminPage.Normal')}
                       </span>
                       <div>{item.user.name}</div>
                       <div>{item.user.email}</div>
@@ -921,23 +922,23 @@ export function AdminPage() {
             <input
               type="text"
               className="form-control"
-              placeholder="按 Keychip ID 搜索"
+              placeholder={t('AdminPage.Placeholder.KeychipSearch')}
               value={keychipPattern}
               onChange={(event) => setKeychipPattern(event.target.value)}
               onKeyUp={(event) => event.key === 'Enter' && void loadKeychips(0, keychipPattern)}
             />
-            <button type="button" className="btn btn-primary" onClick={() => void loadKeychips(0, keychipPattern)}>搜索</button>
+            <button type="button" className="btn btn-primary" onClick={() => void loadKeychips(0, keychipPattern)}>{t('AdminPage.Search')}</button>
           </div>
           <div className="input-group input-group-sm mb-2">
             <input type="text" className="form-control" placeholder="Keychip ID" value={newKeychipId} onChange={(event) => setNewKeychipId(event.target.value)} />
-            <input type="text" className="form-control" placeholder="店铺名 (可选)" value={newKeychipPlace} onChange={(event) => setNewKeychipPlace(event.target.value)} />
-            <button type="button" className="btn btn-primary" onClick={() => void addKeychip()}>添加</button>
+            <input type="text" className="form-control" placeholder={t('AdminPage.Placeholder.PlaceName')} value={newKeychipPlace} onChange={(event) => setNewKeychipPlace(event.target.value)} />
+            <button type="button" className="btn btn-primary" onClick={() => void addKeychip()}>{t('AdminPage.Add')}</button>
           </div>
           {keychips && (
             <div className="card mb-4">
               <div className="table-responsive">
                 <table className="table table-sm table-hover small mb-0 align-middle">
-                  <thead><tr><th>ID</th><th>Keychip</th><th>用户</th><th>店铺名</th><th>白名单</th><th /></tr></thead>
+                  <thead><tr><th>ID</th><th>Keychip</th><th>{t('AdminPage.KeychipTable.User')}</th><th>{t('AdminPage.KeychipTable.Place')}</th><th>{t('AdminPage.KeychipTable.WhiteList')}</th><th /></tr></thead>
                   <tbody>
                     {keychips.map((keychip) => (
                       <tr key={keychip.id}>
@@ -947,16 +948,16 @@ export function AdminPage() {
                         <td>{keychip.placeName}</td>
                         <td>
                           <span className={`badge rounded-pill ${keychip.whiteListed ? 'bg-success' : 'bg-secondary'}`}>
-                            {keychip.whiteListed ? '已加白' : '未加白'}
+                            {keychip.whiteListed ? t('AdminPage.WhiteListed') : t('AdminPage.NotWhiteListed')}
                           </span>
                         </td>
                         <td className="text-end">
-                          <button type="button" className="btn btn-outline-primary btn-sm me-1" onClick={() => void toggleWhiteList(keychip.keychipId)}>切换白名单</button>
-                          <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => void deleteKeychip(keychip.id)}>删除</button>
+                          <button type="button" className="btn btn-outline-primary btn-sm me-1" onClick={() => void toggleWhiteList(keychip.keychipId)}>{t('AdminPage.ToggleWhiteList')}</button>
+                          <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => void deleteKeychip(keychip.id)}>{t('AdminPage.Delete')}</button>
                         </td>
                       </tr>
                     ))}
-                    {keychips.length === 0 && <tr><td colSpan={6} className="text-center text-secondary">暂无数据</td></tr>}
+                    {keychips.length === 0 && <tr><td colSpan={6} className="text-center text-secondary">{t('AdminPage.NoData')}</td></tr>}
                   </tbody>
                 </table>
               </div>
@@ -966,12 +967,12 @@ export function AdminPage() {
         </div>
       )}
 
-      <AdminDialog open={createUserOpen} onClose={() => setCreateUserOpen(false)} title="创建用户">
+      <AdminDialog open={createUserOpen} onClose={() => setCreateUserOpen(false)} title={t('AdminPage.CreateUser')}>
         <div className="d-grid gap-2">
-          <input type="text" className="form-control form-control-sm" placeholder="登录名" value={createUsername} onChange={(event) => setCreateUsername(event.target.value)} />
-          <input type="text" className="form-control form-control-sm" placeholder="昵称" value={createName} onChange={(event) => setCreateName(event.target.value)} />
-          <input type="email" className="form-control form-control-sm" placeholder="电子邮箱" value={createEmail} onChange={(event) => setCreateEmail(event.target.value)} />
-          <input type="password" className="form-control form-control-sm" placeholder="密码" value={createPassword} onChange={(event) => setCreatePassword(event.target.value)} />
+          <input type="text" className="form-control form-control-sm" placeholder={t('AdminPage.Placeholder.Username')} value={createUsername} onChange={(event) => setCreateUsername(event.target.value)} />
+          <input type="text" className="form-control form-control-sm" placeholder={t('AdminPage.Placeholder.Name')} value={createName} onChange={(event) => setCreateName(event.target.value)} />
+          <input type="email" className="form-control form-control-sm" placeholder={t('AdminPage.Placeholder.Email')} value={createEmail} onChange={(event) => setCreateEmail(event.target.value)} />
+          <input type="password" className="form-control form-control-sm" placeholder={t('AdminPage.Placeholder.Password')} value={createPassword} onChange={(event) => setCreatePassword(event.target.value)} />
           <button
             type="button"
             className={`btn btn-primary btn-sm${creatingUser ? ' disabled' : ''}`}
@@ -979,7 +980,7 @@ export function AdminPage() {
               void createUser();
               setCreateUserOpen(false);
             }}
-          >创建</button>
+          >{t('AdminPage.Create')}</button>
         </div>
       </AdminDialog>
 
@@ -990,33 +991,33 @@ export function AdminPage() {
               <table className="table table-sm small mb-0 align-middle"><tbody>
                 <tr>
                   <th className="text-nowrap text-secondary fw-normal">ID</th><td>{selectedItem.user.id}</td>
-                  <th className="text-nowrap text-secondary fw-normal">登录名</th><td>{selectedItem.user.username}</td>
+                  <th className="text-nowrap text-secondary fw-normal">{t('AdminPage.Field.Username')}</th><td>{selectedItem.user.username}</td>
                 </tr>
                 <tr>
-                  <th className="text-nowrap text-secondary fw-normal">昵称</th><td>{selectedItem.user.name}</td>
-                  <th className="text-nowrap text-secondary fw-normal">邮箱</th><td className="text-break">{selectedItem.user.email}</td>
+                  <th className="text-nowrap text-secondary fw-normal">{t('AdminPage.Field.Name')}</th><td>{selectedItem.user.name}</td>
+                  <th className="text-nowrap text-secondary fw-normal">{t('AdminPage.Field.Email')}</th><td className="text-break">{selectedItem.user.email}</td>
                 </tr>
                 <tr>
-                  <th className="text-nowrap text-secondary fw-normal">注册时间</th><td>{formatJoinedAt(selectedProfile?.joinedAt)}</td>
-                  <th className="text-nowrap text-secondary fw-normal">两步验证</th>
-                  <td><span className={`badge rounded-pill ${selectedProfile?.totpEnabled ? 'bg-success' : 'bg-secondary'}`}>{selectedProfile?.totpEnabled ? '已启用' : '未启用'}</span></td>
+                  <th className="text-nowrap text-secondary fw-normal">{t('AdminPage.RegisteredAt')}</th><td>{formatJoinedAt(selectedProfile?.joinedAt)}</td>
+                  <th className="text-nowrap text-secondary fw-normal">{t('AdminPage.TwoFactor')}</th>
+                  <td><span className={`badge rounded-pill ${selectedProfile?.totpEnabled ? 'bg-success' : 'bg-secondary'}`}>{selectedProfile?.totpEnabled ? t('AdminPage.Enabled') : t('AdminPage.Disabled')}</span></td>
                 </tr>
                 <tr>
-                  <th className="text-nowrap text-secondary fw-normal">角色</th>
-                  <td>{selectedItem.user.roles?.length ? selectedItem.user.roles.map((role) => role.name).join('、') : '—'}</td>
-                  <th className="text-nowrap text-secondary fw-normal">关联账户</th>
+                  <th className="text-nowrap text-secondary fw-normal">{t('AdminPage.Roles')}</th>
+                  <td>{selectedItem.user.roles?.length ? selectedItem.user.roles.map((role) => role.name).join(t('Common.ListSeparator')) : '—'}</td>
+                  <th className="text-nowrap text-secondary fw-normal">{t('AdminPage.LinkedAccounts')}</th>
                   <td>
                     {selectedItem.user.oauth2s?.length
-                      ? selectedItem.user.oauth2s.map((oauth) => <div className="text-break" key={oauth.id}>{oauth.provider}：{oauth.email}</div>)
+                      ? selectedItem.user.oauth2s.map((oauth) => <div className="text-break" key={oauth.id}>{oauth.provider}{t('Common.Colon')}{oauth.email}</div>)
                       : '—'}
                   </td>
                 </tr>
               </tbody></table>
             </div>
-            <div className="fw-bold small mb-1">卡片与游戏档案</div>
+            <div className="fw-bold small mb-1">{t('AdminPage.CardsAndProfiles')}</div>
             <div className="table-responsive mb-3">
               <table className="table table-sm small mb-0 align-middle">
-                <thead><tr><th className="text-nowrap">ExtId</th><th className="text-nowrap">Access Code</th><th className="text-nowrap">关联 Access Code</th><th className="text-nowrap">默认</th><th className="text-nowrap">CHUNITHM</th><th className="text-nowrap">O.N.G.E.K.I.</th><th className="text-nowrap">maimai DX</th></tr></thead>
+                <thead><tr><th className="text-nowrap">ExtId</th><th className="text-nowrap">Access Code</th><th className="text-nowrap">{t('AdminPage.LinkedAccessCode')}</th><th className="text-nowrap">{t('AdminPage.Default')}</th><th className="text-nowrap">CHUNITHM</th><th className="text-nowrap">O.N.G.E.K.I.</th><th className="text-nowrap">maimai DX</th></tr></thead>
                 <tbody>
                   {selectedItem.gameProfiles.map((profile, index) => (
                     <tr key={`${profile.card?.extId ?? 'card'}-${index}`}>
@@ -1033,7 +1034,7 @@ export function AdminPage() {
                       <td>{profile.maimai2 ? <>{profile.maimai2.userName} <span className="text-secondary">({profile.maimai2.playerRating})</span></> : <span className="text-secondary">—</span>}</td>
                     </tr>
                   ))}
-                  {!selectedItem.gameProfiles.length && <tr><td colSpan={7} className="text-center text-secondary">未绑定卡片</td></tr>}
+                  {!selectedItem.gameProfiles.length && <tr><td colSpan={7} className="text-center text-secondary">{t('AdminPage.NoCards')}</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -1043,17 +1044,17 @@ export function AdminPage() {
               disabled={loginAsPending || impersonation !== null}
               aria-busy={loginAsPending}
               onClick={() => loginAs(selectedUsername)}
-            >夺舍</button>
+            >{t('AdminPage.Impersonate')}</button>
             {!isAdminTarget(selectedItem) && (
               <button type="button" className={`btn btn-sm mb-2 me-1 ${isBanned(selectedItem) ? 'btn-success' : 'btn-danger'}`} onClick={() => void setAccountBan(selectedItem, !isBanned(selectedItem))}>
-                {isBanned(selectedItem) ? '解除封禁' : '封禁账户'}
+                {isBanned(selectedItem) ? t('AdminPage.UnbanAccount') : t('AdminPage.BanAccount')}
               </button>
             )}
-            <button type="button" className="btn btn-outline-warning btn-sm mb-2 me-1" onClick={() => void revokeSessions(selectedUsername)}>撤销全部会话</button>
-            {selectedProfile?.totpEnabled && <button type="button" className="btn btn-outline-danger btn-sm mb-2 me-1" onClick={() => void resetTotp(selectedUsername)}>重置两步验证</button>}
-            <button type="button" className="btn btn-outline-secondary btn-sm mb-2" onClick={() => openRawJson(selectedItem)}>原始 JSON</button>
+            <button type="button" className="btn btn-outline-warning btn-sm mb-2 me-1" onClick={() => void revokeSessions(selectedUsername)}>{t('AdminPage.RevokeAllSessions')}</button>
+            {selectedProfile?.totpEnabled && <button type="button" className="btn btn-outline-danger btn-sm mb-2 me-1" onClick={() => void resetTotp(selectedUsername)}>{t('AdminPage.ResetTwoFactor')}</button>}
+            <button type="button" className="btn btn-outline-secondary btn-sm mb-2" onClick={() => openRawJson(selectedItem)}>{t('AdminPage.RawJson')}</button>
             <hr className="my-2" />
-            <div className="fw-bold small mb-1">游戏封禁与删档</div>
+            <div className="fw-bold small mb-1">{t('AdminPage.GameBanSection')}</div>
             {selectedItem.gameProfiles.map((profile, index) => (
               <div className="border rounded p-2 mb-2" key={`ops-${profile.card.extId}-${index}`}>
                 <div className="small fw-bold mb-1">ExtId {profile.card.extId}</div>
@@ -1064,33 +1065,33 @@ export function AdminPage() {
             ))}
             {Boolean(selectedProfile?.passkeys?.length || selectedProfile?.oauthIdentities?.length) && (
               <>
-                <div className="fw-bold small mb-1">凭据恢复</div>
-                {selectedProfile?.passkeys?.map((passkey) => <button type="button" className="btn btn-outline-danger btn-sm me-1 mb-1" key={passkey.id} onClick={() => void deletePasskey(selectedUsername, passkey.id)}>删除 Passkey：{passkey.nick}</button>)}
-                {selectedProfile?.oauthIdentities?.map((oauth) => <button type="button" className="btn btn-outline-danger btn-sm me-1 mb-1" key={oauth.id} onClick={() => void deleteOauth(selectedUsername, oauth.id)}>解绑 {oauth.provider}：{oauth.email}</button>)}
+                <div className="fw-bold small mb-1">{t('AdminPage.CredentialRecovery')}</div>
+                {selectedProfile?.passkeys?.map((passkey) => <button type="button" className="btn btn-outline-danger btn-sm me-1 mb-1" key={passkey.id} onClick={() => void deletePasskey(selectedUsername, passkey.id)}>{t('AdminPage.DeletePasskeyButton', { nick: passkey.nick })}</button>)}
+                {selectedProfile?.oauthIdentities?.map((oauth) => <button type="button" className="btn btn-outline-danger btn-sm me-1 mb-1" key={oauth.id} onClick={() => void deleteOauth(selectedUsername, oauth.id)}>{t('AdminPage.UnlinkOauthButton', { provider: oauth.provider, email: oauth.email })}</button>)}
               </>
             )}
             <hr className="my-2" />
-            <div className="fw-bold small mb-1">卡片操作</div>
+            <div className="fw-bold small mb-1">{t('AdminPage.CardOperations')}</div>
             <div className="input-group input-group-sm mb-2">
-              <input type="text" className="form-control" placeholder="卡号 (Access Code)" value={cardAccessCode} onChange={(event) => setCardAccessCode(event.target.value)} />
-              <button type="button" className="btn btn-outline-primary" onClick={() => void cardOperation('api/admin/bindCard', { userName: selectedUsername, accessCode: cardAccessCode })}>绑定</button>
-              <button type="button" className="btn btn-outline-danger" onClick={() => void cardOperation('api/admin/unbindCard', { userName: selectedUsername, accessCode: cardAccessCode })}>解绑</button>
+              <input type="text" className="form-control" placeholder={t('AdminPage.Placeholder.AccessCode')} value={cardAccessCode} onChange={(event) => setCardAccessCode(event.target.value)} />
+              <button type="button" className="btn btn-outline-primary" onClick={() => void cardOperation('api/admin/bindCard', { userName: selectedUsername, accessCode: cardAccessCode })}>{t('AdminPage.Bind')}</button>
+              <button type="button" className="btn btn-outline-danger" onClick={() => void cardOperation('api/admin/unbindCard', { userName: selectedUsername, accessCode: cardAccessCode })}>{t('AdminPage.Unbind')}</button>
             </div>
             <div className="input-group input-group-sm mb-2">
               <input type="text" className="form-control" placeholder={t('AdminPage.ExtIdPlaceholder')} value={cardExtId} onChange={(event) => setCardExtId(event.target.value)} />
-              <button type="button" className="btn btn-outline-primary" onClick={() => void bindCardViaExtId(selectedUsername)}>通过ExtId绑定</button>
+              <button type="button" className="btn btn-outline-primary" onClick={() => void bindCardViaExtId(selectedUsername)}>{t('AdminPage.BindViaExtId')}</button>
             </div>
             <div className="input-group input-group-sm mb-2">
-              <input type="text" className="form-control" placeholder="旧卡号" value={oldAccessCode} onChange={(event) => setOldAccessCode(event.target.value)} />
-              <input type="text" className="form-control" placeholder="新卡号" value={newAccessCode} onChange={(event) => setNewAccessCode(event.target.value)} />
-              <button type="button" className="btn btn-outline-primary" onClick={() => void cardOperation('api/admin/changeAccessCode', { userName: selectedUsername, accessCode: oldAccessCode, newAccessCode })}>变更卡号</button>
+              <input type="text" className="form-control" placeholder={t('AdminPage.Placeholder.OldAccessCode')} value={oldAccessCode} onChange={(event) => setOldAccessCode(event.target.value)} />
+              <input type="text" className="form-control" placeholder={t('AdminPage.Placeholder.NewAccessCode')} value={newAccessCode} onChange={(event) => setNewAccessCode(event.target.value)} />
+              <button type="button" className="btn btn-outline-primary" onClick={() => void cardOperation('api/admin/changeAccessCode', { userName: selectedUsername, accessCode: oldAccessCode, newAccessCode })}>{t('AdminPage.ChangeAccessCode')}</button>
             </div>
             {(selectedProfile?.cards ?? []).map((card) => (
               <div className="border rounded p-2 mb-2 small" key={card.extId}>
-                <div className="fw-bold">ExtId {card.extId} {card.defaultCard ? '（默认）' : ''}</div>
-                <button type="button" className="btn btn-outline-primary btn-sm me-1" onClick={() => void setDefaultCard(selectedUsername, card.extId)}>设为默认</button>
-                <button type="button" className="btn btn-outline-danger btn-sm me-1" onClick={() => void unbindCardByExtId(selectedUsername, card.extId)}>按 ExtId 解绑</button>
-                {(card.externalLuids ?? []).map((luid) => <button type="button" className="btn btn-outline-danger btn-sm me-1" key={luid} onClick={() => void removeExternal(selectedUsername, card.extId, luid)}>删除 {luid}</button>)}
+                <div className="fw-bold">ExtId {card.extId} {card.defaultCard ? t('AdminPage.DefaultMark') : ''}</div>
+                <button type="button" className="btn btn-outline-primary btn-sm me-1" onClick={() => void setDefaultCard(selectedUsername, card.extId)}>{t('AdminPage.SetDefault')}</button>
+                <button type="button" className="btn btn-outline-danger btn-sm me-1" onClick={() => void unbindCardByExtId(selectedUsername, card.extId)}>{t('AdminPage.UnbindByExtId')}</button>
+                {(card.externalLuids ?? []).map((luid) => <button type="button" className="btn btn-outline-danger btn-sm me-1" key={luid} onClick={() => void removeExternal(selectedUsername, card.extId, luid)}>{t('AdminPage.DeleteLuid', { luid })}</button>)}
               </div>
             ))}
           </>
@@ -1103,7 +1104,7 @@ export function AdminPage() {
           setRawJson(null);
           setRawJsonUsername('');
         }}
-        title={`原始 JSON — ${rawJsonUsername}`}
+        title={t('AdminPage.RawJsonTitle', { username: rawJsonUsername })}
         scrollable
         size="lg"
         nested
@@ -1120,14 +1121,14 @@ export function AdminPage() {
             type="button"
             className="btn btn-sm btn-outline-danger"
             onClick={closeImpersonation}
-          >返回管理员账户</button>
+          >{t('AdminPage.ReturnToAdmin')}</button>
         )}
         headerClassName="py-2 d-flex align-items-center"
         initialFocusRef={impersonationCloseButtonRef}
         onClose={closeImpersonation}
         open={impersonation !== null}
         staticBackdrop
-        title={`正在以 ${impersonation?.username ?? ''} 的身份操作`}
+        title={t('AdminPage.ImpersonationTitle', { username: impersonation?.username ?? '' })}
         titleClassName="me-auto"
       >
         {impersonation && <iframe ref={impersonationFrame} className="impersonation-frame" src={impersonation.url} title={`Impersonating ${impersonation.username}`} />}
