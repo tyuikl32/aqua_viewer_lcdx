@@ -8,12 +8,17 @@ import { maiAssetsHost, enableImages } from '@/lib/utils';
 import type { Maimai2Rival } from './models';
 import './Maimai2RivalPage.css';
 
+/** 对手 ID 展示混淆（自逆运算）：显示值 = 60001233 − 真实值，回传前再算一次即还原。 */
+function transformRivalId(src: string): string {
+  return (60_001_233 - Number.parseInt(src, 10)).toString();
+}
+
 /** Equivalent to the legacy Maimai DX rival component. */
 export function Maimai2RivalPage() {
   const { t } = useTranslation();
   const [rivals, setRivals] = useState<Maimai2Rival[]>([]);
   const [aimeId, setAimeId] = useState('');
-  const [ownRivalId, setOwnRivalId] = useState(10_000_000);
+  const [ownRivalId, setOwnRivalId] = useState(transformRivalId('10000000'));
   const [rivalInput, setRivalInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
@@ -21,7 +26,8 @@ export function Maimai2RivalPage() {
   const loadRivals = async (id: string) => {
     setLoading(true);
     try {
-      setRivals((await api.get('api/game/maimai2/rival', { aimeId: id })) as Maimai2Rival[]);
+      const list = (await api.get('api/game/maimai2/rival', { aimeId: id })) as Maimai2Rival[];
+      setRivals(list.map((rival) => ({ ...rival, rivalId: transformRivalId(rival.rivalId) })));
     } catch {
       notice(t('Maimai2.RivalPage.LoadFailed'));
     } finally {
@@ -36,7 +42,7 @@ export function Maimai2RivalPage() {
         const card = getCurrentUser()?.defaultCard;
         const id = String(card?.extId ?? '');
         setAimeId(id);
-        setOwnRivalId(10_000_000 + Number(card?.id ?? 0));
+        setOwnRivalId(transformRivalId(String(10_000_000 + Number(card?.id ?? 0))));
         await loadRivals(id);
       } catch {
         setLoading(false);
@@ -49,7 +55,10 @@ export function Maimai2RivalPage() {
     if (!rivalInput || rivals.length > 2) return;
     setAdding(true);
     try {
-      const result = await api.post('api/game/maimai2/rival', { rivalId: rivalInput, aimeId });
+      const result = await api.post('api/game/maimai2/rival', {
+        rivalId: transformRivalId(rivalInput),
+        aimeId,
+      });
       if (result) {
         notice(t('Maimai2.RivalPage.AddSuccess'));
         await loadRivals(aimeId);
@@ -63,7 +72,10 @@ export function Maimai2RivalPage() {
 
   const removeRival = async (rivalId: string) => {
     try {
-      await api.delete('api/game/maimai2/rival', { rivalId: Number.parseInt(rivalId, 10), aimeId });
+      await api.delete('api/game/maimai2/rival', {
+        rivalId: Number.parseInt(transformRivalId(rivalId), 10),
+        aimeId,
+      });
       setRivals((items) => items.filter((item) => item.rivalId !== rivalId));
       notice(t('Maimai2.RivalPage.DeleteSuccess', { id: rivalId }));
     } catch {

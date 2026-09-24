@@ -47,6 +47,8 @@ const VERSIONS = [
   'BUDDiES',
   'BUDDiES+',
   'PRiSM',
+  'PRiSM+',
+  'CiRCLE',
 ] as const;
 
 const SORT_OPTIONS = ['Add Version', 'Re:Master', 'Master', 'Expert', 'Advanced', 'Basic', 'ID'] as const;

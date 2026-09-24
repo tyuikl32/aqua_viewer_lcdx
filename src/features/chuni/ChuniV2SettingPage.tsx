@@ -188,7 +188,7 @@ export function ChuniV2SettingPage() {
               onChange={(event) => setNameInput(event.target.value)}
               type="text"
               className="form-control"
-              placeholder="Username"
+              placeholder={t('ChuniV2.SettingPage.UsernamePlaceholder')}
               aria-label="Username"
             />
           </div>

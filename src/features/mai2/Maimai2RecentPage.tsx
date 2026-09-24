@@ -233,7 +233,7 @@ export function Maimai2RecentPage() {
                               <img className="honor-img" src={`${maiAssetsHost}assets/mai2/common/${syncIcon(item.syncStatus)}.webp`} alt="" />
                             </div>
                             <div className="col">
-                              <img className="rival-img" src={`${maiAssetsHost}assets/mai2/common/${item.vsRank === 0 ? '1st' : '2nd'}.webp`} alt="" />
+                              <img className="rival-img" src={`${maiAssetsHost}assets/mai2/common/${item.vsRank === 1 ? '1st' : '2nd'}.webp`} alt="" />
                             </div>
                           </>
                         )}
