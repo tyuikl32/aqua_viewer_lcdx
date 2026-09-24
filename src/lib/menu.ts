@@ -20,49 +20,27 @@ export interface Menu {
   requiredBotPermission?: number;
 }
 
+/**
+ * 侧栏菜单分组（等价旧版 menu.service.ts）。
+ * LCDX 为 mai2-only 部署：旧版已删除 ongeki/chusan 两组，这里保持一致 ——
+ * 页面、路由与 i18n 文案都保留，只是不再从侧栏暴露入口。
+ */
 export const menu = new Map<string, Menu[]>([
-  [
-    'ongeki',
-    [
-      { id: 0, name: 'Profile', url: 'ongeki/profile', displayCondition: DisplayCondition.HasProfile },
-      { id: 1, name: 'BattlePoint', url: 'ongeki/battle', displayCondition: DisplayCondition.HasProfile },
-      { id: 2, name: 'Rating', url: 'ongeki/rating', displayCondition: DisplayCondition.HasProfile },
-      { id: 3, name: 'PlayRecord', url: 'ongeki/recent', displayCondition: DisplayCondition.HasProfile },
-      { id: 4, name: 'MusicList', url: 'ongeki/song', displayCondition: DisplayCondition.Always },
-      { id: 5, name: 'Card', url: 'ongeki/card', displayCondition: DisplayCondition.HasProfile },
-      { id: 6, name: 'Rival', url: 'ongeki/rival', displayCondition: DisplayCondition.HasProfile },
-      { id: 7, name: 'MusicRanking', url: 'ongeki/musicRanking', displayCondition: DisplayCondition.Always },
-      { id: 8, name: 'UserRanking', url: 'ongeki/userRanking', displayCondition: DisplayCondition.Always },
-      { id: 9, name: 'Setting', url: 'ongeki/settings', displayCondition: DisplayCondition.HasProfile },
-    ],
-  ],
-  [
-    'chusan',
-    [
-      { id: 0, name: 'Profile', url: 'chuni/v2/profile', displayCondition: DisplayCondition.HasProfile },
-      { id: 1, name: 'Rating', url: 'chuni/v2/rating', displayCondition: DisplayCondition.HasProfile },
-      { id: 2, name: 'PlayRecord', url: 'chuni/v2/recent', displayCondition: DisplayCondition.HasProfile },
-      { id: 3, name: 'MusicList', url: 'chuni/v2/song', displayCondition: DisplayCondition.Always },
-      { id: 4, name: 'Character', url: 'chuni/v2/character', displayCondition: DisplayCondition.HasProfile },
-      { id: 5, name: 'Rival', url: 'chuni/v2/rival', displayCondition: DisplayCondition.HasProfile },
-      { id: 6, name: 'UserBox', url: 'chuni/v2/userbox', displayCondition: DisplayCondition.HasProfile },
-      { id: 7, name: 'UserRanking', url: 'chuni/v2/userRanking', displayCondition: DisplayCondition.Always },
-      { id: 8, name: 'Setting', url: 'chuni/v2/setting', displayCondition: DisplayCondition.HasProfile },
-    ],
-  ],
   [
     'maimai2',
     [
       { id: 0, name: 'Profile', url: 'mai2/profile', displayCondition: DisplayCondition.HasProfile },
       { id: 2, name: 'Rating', url: 'mai2/rating', displayCondition: DisplayCondition.HasProfile },
       { id: 3, name: 'PlayRecord', url: 'mai2/recent', displayCondition: DisplayCondition.HasProfile },
+      // 顺序与旧版一致（KOP 紧随 PlayRecord）。旧版 KOP 与 MusicList 同为 id 6，
+      // React 以 id 作 key 会撞键，故这里保留 15。
+      { id: 15, name: 'KOP', url: 'mai2/kop', displayCondition: DisplayCondition.HasProfile },
       { id: 4, name: 'Photos', url: 'mai2/photos', displayCondition: DisplayCondition.HasProfile },
       { id: 5, name: 'Dxpass', url: 'mai2/dxpass', displayCondition: DisplayCondition.HasProfile },
       { id: 8, name: 'Circle', url: 'mai2/circle', displayCondition: DisplayCondition.HasProfile },
       { id: 9, name: 'Festa', url: 'mai2/festa', displayCondition: DisplayCondition.HasProfile },
       { id: 10, name: 'ServerMissions', url: 'mai2/servermissions', displayCondition: DisplayCondition.HasProfile },
       { id: 7, name: 'Rival', url: 'mai2/rival', displayCondition: DisplayCondition.HasProfile },
-      { id: 15, name: 'KOP', url: 'mai2/kop', displayCondition: DisplayCondition.HasProfile },
       // LCDX 机台管理（等价旧版 menu.service：AfterLogin + requiredBotPermission 门控）
       { id: 11, name: 'Cabinets', url: 'mai2/cabinets', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },
       { id: 12, name: 'CabinetControl', url: 'mai2/cabmode', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },

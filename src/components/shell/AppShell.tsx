@@ -90,7 +90,7 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
   const admin = user?.roles?.some((r) => r.name === 'ROLE_ADMIN') ?? false;
 
-  const section = (game: string, icon: string, label: string, extra?: ReactNode): ReactNode =>
+  const section = (game: string, icon: string, label: string): ReactNode =>
     showMenu(game, user) && (
       <li key={game}>
         <div className="d-flex mb-2 ps-1 gap-2">
@@ -114,7 +114,6 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
               </li>
             ) : null,
           )}
-          {extra}
         </ul>
       </li>
     );
@@ -151,14 +150,6 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
             )}
           </ul>
         </li>
-        {section('ongeki', 'ongeki', 'Common.Ongeki')}
-        {section('chusan', 'chunithm', 'Common.ChuniV2', (
-          <li className="pb-2">
-            <a className="link-btn rounded" href="https://chu3-match.sega.ink/rooms" target="_blank" rel="noreferrer">
-              {t('App.Sidebar.OnlineBattle')}
-            </a>
-          </li>
-        ))}
         {section('maimai2', 'mai2', 'Common.Mai2')}
       </ul>
     </nav>
