@@ -187,7 +187,7 @@ export function Maimai2CirclePage() {
   async function loadCircleInfo(id: string) {
     const response = (await api.get('api/game/maimai2/userCircleInfo', { aimeId: id })) as ApiResponse<Maimai2UserCircleInfo>;
     if (!responseOk(response)) {
-      notice(`${t('Maimai2.CirclePage.LoadUserCircleInfoFailed')}: [${response?.status?.code}] ${response?.status?.message}`);
+      notice(t('Maimai2.CirclePage.LoadUserCircleInfoFailed'));
       return;
     }
     const info = response.data ?? (response as unknown as Maimai2UserCircleInfo);
@@ -234,7 +234,7 @@ export function Maimai2CirclePage() {
         notice(t(`Maimai2.CirclePage.${successKey}`), 'success');
         return true;
       }
-      notice(`${t(`Maimai2.CirclePage.${failureKey}`)}: [${response?.status?.code}] ${response?.status?.message}`);
+      notice(t(`Maimai2.CirclePage.${failureKey}`));
     } catch (error) {
       notice(t('Common.OperationFailed'));
     }

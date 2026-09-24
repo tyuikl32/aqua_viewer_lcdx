@@ -208,7 +208,10 @@ export function Maimai2FestaPage() {
   async function vote(openEventId: string, festaSideId: number) {
     try {
       const response = (await api.get('api/game/maimai2/voteSide', { aimeId, openEventId, festaSideId })) as ApiResponse<boolean>;
-      notice(response.data ? '队伍投票成功' : '队伍投票失败', response.data ? 'success' : 'danger');
+      notice(
+        t(response.data ? 'Maimai2.FestaPage.VoteTeamSuccess' : 'Maimai2.FestaPage.VoteTeamFailed'),
+        response.data ? 'success' : 'danger',
+      );
       if (response.data && gameFestaInfo?.gameFesta) setUserFestaInfo(await loadUserFesta(aimeId, gameFestaInfo.gameFesta));
     } catch (error) {
       notice(t('Common.OperationFailed'));

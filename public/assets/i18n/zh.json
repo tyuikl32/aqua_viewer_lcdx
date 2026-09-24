@@ -613,7 +613,9 @@
       "Title": "DX通行证"
     },
     "FestaPage": {
-      "Title": "Festa活动"
+      "Title": "Festa活动",
+      "VoteTeamSuccess": "队伍投票成功",
+      "VoteTeamFailed": "队伍投票失败"
     },
     "LocksPage": {
       "AddGrant": "新增授权",
@@ -671,6 +673,9 @@
       "NotOpened": "该功能尚未开放",
       "NotOwned": "你暂未在游戏中上传任何照片。",
       "Title": "相册"
+    },
+    "PointExchangesPage": {
+      "ExchangeSuccess": "兑换 {{name}} 成功！"
     },
     "ProfilePage": {
       "AwakenedCharacter": "角色觉醒★数",

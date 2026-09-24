@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/api/client';
 import { notice } from '@/lib/message';
+import { translate } from '@/lib/i18n';
 import { getCurrentUser, loadUser } from '@/lib/user';
 import { Maimai2PointExchangesDialog } from './Maimai2PointExchangesPage';
 import type {
@@ -17,9 +18,9 @@ import './Maimai2ServerMissionsPage.css';
 
 const PAGE_SIZE = 10;
 
-function responseData<T>(response: ApiResponse<T>, failurePrefix: string): T | null {
+function responseData<T>(response: ApiResponse<T>): T | null {
   if (response?.status?.code === 92001 && response.data) return response.data;
-  notice(`${failurePrefix}: [${response?.status?.code}] ${response?.status?.message}`);
+  notice(translate('Common.OperationFailed'));
   return null;
 }
 
@@ -74,7 +75,7 @@ export function Maimai2ServerMissionsPage() {
         page,
         size: PAGE_SIZE,
       })) as ApiResponse<Maimai2ServerMissionPointInfo>;
-      const data = responseData(response, '获取玩家任务点数信息失败');
+      const data = responseData(response);
       if (data) {
         setPointLogs(data.filterPointChangelogs);
         setPointLogPage(page);
@@ -91,7 +92,7 @@ export function Maimai2ServerMissionsPage() {
       const response = (await api.get('api/game/maimai2/userServerMissionInfo', {
         aimeId: id,
       })) as ApiResponse<Maimai2ServerMissionInfo>;
-      const data = responseData(response, '获取玩家任务列表失败');
+      const data = responseData(response);
       if (data) setMissions(data.serverMissionUserInfos);
     } catch (error) {
       notice(t('Common.OperationFailed'));

@@ -613,7 +613,9 @@
       "Title": "Deluxe Pass Info"
     },
     "FestaPage": {
-      "Title": "Festa"
+      "Title": "Festa",
+      "VoteTeamSuccess": "Team vote succeeded",
+      "VoteTeamFailed": "Team vote failed"
     },
     "LocksPage": {
       "AddGrant": "Add Grant",
@@ -671,6 +673,9 @@
       "NotOpened": "The function isn't yet opened",
       "NotOwned": "You have not upload any game photo.",
       "Title": "Game Gallery"
+    },
+    "PointExchangesPage": {
+      "ExchangeSuccess": "Exchanged {{name}} successfully!"
     },
     "ProfilePage": {
       "AwakenedCharacter": "Awakened character★",

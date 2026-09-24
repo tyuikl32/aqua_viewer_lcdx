@@ -134,13 +134,13 @@ export function ChuniV2RatingPage() {
     try {
       const music = await dbGetByKey<ChuniV2Song>('chusanMusic', item.musicId);
       if (!music) {
-        notice(`找不到乐曲数据: ${item.musicId}`);
+        notice(t('ChuniV2.RatingPage.NoData'));
         return;
       }
       setDetailLevel(item.level);
       setDetailMusic(music);
-    } catch (error) {
-      notice(`乐曲详情加载失败: ${String(error)}`);
+    } catch {
+      notice(t('Common.OperationFailed'));
     }
   }
 

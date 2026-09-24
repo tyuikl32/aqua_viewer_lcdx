@@ -22,9 +22,9 @@ import { translate } from '@/lib/i18n';
 const PAGE_SIZE = 20;
 const EMPTY_POINTS: Maimai2ServerMissionPointData = { totalPoints: 0, availablePoints: 0 };
 
-function responseData<T>(response: ApiResponse<T>, failurePrefix: string): T | null {
+function responseData<T>(response: ApiResponse<T>): T | null {
   if (response?.status?.code === 92001 && response.data) return response.data;
-  notice(`${failurePrefix}: [${response?.status?.code}] ${response?.status?.message}`);
+  notice(translate('Common.OperationFailed'));
   return null;
 }
 
@@ -205,7 +205,7 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
         page: 0,
         size: 1,
       })) as ApiResponse<Maimai2ServerMissionPointInfo>;
-      const data = responseData(response, '获取玩家任务点数信息失败');
+      const data = responseData(response);
       if (data) setPoints(data.userPointData);
     } catch (error) {
       notice(translate('Common.OperationFailed'));
@@ -217,7 +217,7 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
       const response = (await api.get('api/game/maimai2/userExchangeItemDataInfo', {
         aimeId: id,
       })) as ApiResponse<Maimai2UserExchangeInfo>;
-      const data = responseData(response, '获取玩家兑换物品信息失败');
+      const data = responseData(response);
       if (data) {
         setUserExchangeInfo(new Map(data.exchangeItemDataList.map((entry) => [entry.exchangedItemDataId, entry])));
       }
@@ -243,7 +243,7 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
         filterItemType: type ?? 0,
         searchPattern: search,
       })) as ApiResponse<Maimai2ExchangeItemList>;
-      const data = responseData(response, '获取兑换物品列表失败');
+      const data = responseData(response);
       if (data) {
         setItems(data.filterExchangeItemDataList);
         setPage(requestedPage);
@@ -324,10 +324,10 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
         exchangeId: exchanged.id,
       })) as ApiResponse<boolean>;
       if (response?.status?.code === 92001) {
-        notice(`兑换 ${exchanged.name} 成功！`, 'success');
+        notice(translate('Maimai2.PointExchangesPage.ExchangeSuccess', { name: exchanged.name }), 'success');
         await loadAll(aimeId, page);
       } else {
-        responseData(response, '获取玩家兑换物品信息失败');
+        responseData(response);
       }
     } catch (error) {
       notice(translate('Common.OperationFailed'));

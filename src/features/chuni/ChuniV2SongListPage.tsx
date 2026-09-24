@@ -104,7 +104,7 @@ export function ChuniV2SongListPage() {
     let active = true;
     void dbGetAll<ChuniV2Song>('chusanMusic')
       .then((items) => active && setSongs(items))
-      .catch((error) => active && notice(`数据加载失败: ${String(error)}`));
+      .catch(() => active && notice(t('Common.OperationFailed')));
     return () => {
       active = false;
     };
