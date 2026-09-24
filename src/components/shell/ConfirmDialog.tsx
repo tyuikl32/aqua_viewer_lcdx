@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
+import { useTranslation } from 'react-i18next';
 import { LiquidButton, LiquidDialog, LiquefyProvider } from '@liquefy-ui/react';
 import { Button as AnimalButton, Modal as AnimalModal } from 'animal-island-ui';
 import { Dialog, DialogContent, DialogFooter, DialogTitle } from '@/components/ui/dialog';
@@ -43,6 +44,7 @@ function ConfirmDialogRoot({
   onDone: (result: boolean) => void;
 }) {
   const theme = useTheme();
+  const { t } = useTranslation();
   const completed = useRef(false);
   const finish = useCallback(
     (result: boolean) => {
@@ -73,14 +75,14 @@ function ConfirmDialogRoot({
             if (!nextOpen) finish(false);
           }}
           onPointerDown={(event) => event.stopPropagation()}
-          title={opts.title ?? '确认'}
+          title={opts.title ?? t('Common.ConfirmTitle')}
           className="liquefy-confirm-dialog"
         >
           <p>{opts.message}</p>
           <div className="mt-5 flex justify-end gap-2">
-            <LiquidButton onClick={() => finish(false)}>{opts.noText ?? '取消'}</LiquidButton>
+            <LiquidButton onClick={() => finish(false)}>{opts.noText ?? t('Common.Cancel')}</LiquidButton>
             <LiquidButton tint={tint} onClick={() => finish(true)}>
-              {opts.yesText ?? '确定'}
+              {opts.yesText ?? t('Common.OK')}
             </LiquidButton>
           </div>
         </LiquidDialog>
@@ -93,17 +95,17 @@ function ConfirmDialogRoot({
       <AnimalModal
         open
         onClose={() => finish(false)}
-        title={opts.title ?? '确认'}
+        title={opts.title ?? t('Common.ConfirmTitle')}
         width="min(460px, calc(100vw - 2rem))"
         typewriter={false}
         className="animal-island-confirm-dialog"
         footer={
           <div className="flex justify-end gap-3">
             <AnimalButton type="default" onClick={() => finish(false)}>
-              {opts.noText ?? '取消'}
+              {opts.noText ?? t('Common.Cancel')}
             </AnimalButton>
             <AnimalButton type="primary" onClick={() => finish(true)}>
-              {opts.yesText ?? '确定'}
+              {opts.yesText ?? t('Common.OK')}
             </AnimalButton>
           </div>
         }
@@ -121,13 +123,13 @@ function ConfirmDialogRoot({
       }}
     >
       <DialogContent className="max-w-md">
-        <DialogTitle>{opts.title ?? '确认'}</DialogTitle>
+        <DialogTitle>{opts.title ?? t('Common.ConfirmTitle')}</DialogTitle>
         <p className="text-[var(--bs-body-color)]">{opts.message}</p>
         <DialogFooter>
           <Button variant="outline" onClick={() => finish(false)}>
-            {opts.noText ?? '取消'}
+            {opts.noText ?? t('Common.Cancel')}
           </Button>
-          <Button onClick={() => finish(true)}>{opts.yesText ?? '确定'}</Button>
+          <Button onClick={() => finish(true)}>{opts.yesText ?? t('Common.OK')}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
