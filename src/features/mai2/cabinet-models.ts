@@ -244,8 +244,19 @@ export function formatClock(value: string | null | undefined): string {
   return `${twoDigits(date.getHours())}:${twoDigits(date.getMinutes())}:${twoDigits(date.getSeconds())}`;
 }
 
-/** MM-dd HH:mm（等价 `| date: 'MM-dd HH:mm'`） */
-export function formatShortDateTime(value: string | null | undefined): string {
+/** yyyy-MM-dd HH:mm（等价 `| date: 'yyyy-MM-dd HH:mm'`；授权/加入时间列） */
+export function formatMinutesDateTime(value: string | null | undefined): string {
+  if (!value) {
+    return '';
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+  return `${date.getFullYear()}-${twoDigits(date.getMonth() + 1)}-${twoDigits(date.getDate())} ${twoDigits(date.getHours())}:${twoDigits(date.getMinutes())}`;
+}
+
+/** MM-dd HH:mm（等价 `| date: 'MM-dd HH:mm'`） */export function formatShortDateTime(value: string | null | undefined): string {
   if (!value) {
     return '';
   }
