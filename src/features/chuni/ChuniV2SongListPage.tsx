@@ -34,6 +34,9 @@ const RELEASES = [
   ['v2 2.20.00', 'LUMINOUS'],
   ['v2 2.25.00', 'LUMINOUS PLUS'],
   ['v2 2.30.00', 'VERSE'],
+  ['v2 2.40.00', 'X-VERSE'],
+  ['v2 2.45.00', 'X-VERSE-X'],
+  ['v2 2.50.00', 'MATE'],
 ] as const;
 
 const GENRES = [
