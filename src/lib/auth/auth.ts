@@ -73,6 +73,24 @@ export function signUp(
   return api.post('api/auth/signup', params).then(procLoginResp);
 }
 
+/** LCDX 注册验证码（等价旧版 getVerifyCode_lcdx：GET lcdx/register_start/{qqNumber}，验证码发往 QQ 邮箱） */
+export function getVerifyCodeLcdx(qqNumber: string): Promise<any> {
+  return lcdx.get(`lcdx/register_start/${encodeURIComponent(qqNumber)}`);
+}
+
+/**
+ * LCDX 注册或重设密码（等价旧版 signUp_lcdx：POST lcdx/register_confirm/{qqNumber}）。
+ * 后端语义：该 QQ 号无账号则注册，已有账号则重设密码，随后直接签发登录态（故需 procLoginResp）。
+ */
+export function signUpLcdx(qqNumber: string, code: string, password: string): Promise<any> {
+  return lcdx.post(`lcdx/register_confirm/${encodeURIComponent(qqNumber)}`, { code, password }).then(procLoginResp);
+}
+
+/** LCDX 密码登录（等价旧版 login_lcdx_common：POST lcdx/login，账号为 QQ 号） */
+export function loginLcdx(qqNumber: string, password: string): Promise<any> {
+  return lcdx.post('lcdx/login', { usernameOrEmail: qqNumber, password }).then(procLoginResp);
+}
+
 export function resetPassword(emailAddress: string, verifyCode: string, password: string): Promise<any> {
   return api.post('api/auth/resetPassword', { emailAddress, verifyCode, password });
 }

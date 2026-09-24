@@ -1,322 +1,154 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
 import './auth.css';
-import { signUp, getVerifyCode, checkUsernameAvailability, checkEmailAvailability } from '@/lib/auth/auth';
-import { tokenTypes, getSignInUrl } from '@/lib/auth/oauth';
-import { currentEula, type EulaDocument } from '@/lib/auth/access';
+import { getVerifyCodeLcdx, signUpLcdx } from '@/lib/auth/auth';
 import { StatusCode } from '@/lib/models';
 import { notice } from '@/lib/message';
 
-const EMAIL_PATTERN = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
-const USERNAME_PATTERN = /^[a-zA-Z0-9_]+$/;
+const QQ_PATTERN = /^\d{5,12}$/;
+const CODE_PATTERN = /^\d{4}$/;
 
 interface AuthNavState {
-  token?: string;
-  type?: string;
-  name?: string;
-  username?: string;
-  email?: string;
+  qqNumber?: string;
 }
 
-/** 等价旧版 sign-up.component */
+/**
+ * 等价旧版 sign-up.component（LCDX：QQ 号 + 4 位验证码 → 注册或重设密码）。
+ * 与上游邮箱注册流的差异（LCDX 有意为之，勿合并回去）：
+ * - 无昵称/用户名/邮箱字段，无 EULA 勾选、无 OAuth 入口（账号由后端以 QQ 号派生，
+ *   EULA 由后端在登录/注册成功时自动接受当前版本）。
+ * - 该 QQ 号无账号则注册、已有账号则重设密码，成功后直接签发登录态（lcdx/register_confirm）。
+ */
 export function SignUpPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const state = (location.state ?? null) as AuthNavState | null;
 
-  const [token, setToken] = useState<string | undefined>();
-  const [type, setType] = useState<string | undefined>();
-
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [emailLocked, setEmailLocked] = useState(false);
+  const [qqNumber, setQqNumber] = useState(() => state?.qqNumber ?? '');
   const [verifyCode, setVerifyCode] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [acceptEula, setAcceptEula] = useState(false);
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [touched, setTouched] = useState({
+    qqNumber: false,
+    verifyCode: false,
+    password: false,
+    confirmPassword: false,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [cooldown, setCooldown] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const [eula, setEula] = useState<EulaDocument | null>(null);
-  const [eulaHtml, setEulaHtml] = useState('');
-  const [eulaLoading, setEulaLoading] = useState(true);
-  const [eulaLoadError, setEulaLoadError] = useState(false);
+  // 等价旧版 history.replaceState：清掉 nav state，避免刷新重复消费
+  useState(() => {
+    if (state) window.history.replaceState({}, document.title);
+    return null;
+  });
 
-  const providers = [...tokenTypes.keys()];
-
-  const touch = (field: string) => setTouched((s) => ({ ...s, [field]: true }));
-  const markAll = () => setTouched({ name: true, username: true, email: true, verifyCode: true, password: true, confirmPassword: true });
-
+  // 等价旧版 disableButtonForInterval(60)：每秒递减，归零后恢复可点
   useEffect(() => {
-    if (state) {
-      if (tokenTypes.has(state.type ?? '') && state.token?.length === 32) {
-        setToken(state.token);
-        setType(state.type);
-      }
-      if (state.name) setName(state.name);
-      if (state.username) setUsername(state.username);
-      if (state.email) setEmail(state.email);
-      window.history.replaceState({}, document.title);
-    }
-    // 一次性注册邮箱预填（旧版 localStorage['email'] 流程）
-    const storedEmail = localStorage.getItem('email');
-    if (storedEmail) {
-      localStorage.removeItem('email');
-      setEmail(storedEmail);
-      setEmailLocked(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    void loadEula();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (cooldown > 0) {
-      timerRef.current = setInterval(() => setCooldown((n) => n - 1), 1000);
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => setCooldown((n) => Math.max(0, n - 1)), 1000);
+    return () => clearInterval(timer);
   }, [cooldown > 0]);
 
-  async function loadEula() {
-    setEulaLoading(true);
-    setEulaLoadError(false);
-    try {
-      const doc = await currentEula();
-      setEula(doc);
-      setEulaHtml(DOMPurify.sanitize(marked.parse(doc.content) as string));
-    } catch {
-      setEula(null);
-      setEulaHtml('');
-      setEulaLoadError(true);
-    } finally {
-      setEulaLoading(false);
-    }
-  }
-
-  const nameValid = name.length >= 4 && name.length <= 40;
-  const usernameValid = USERNAME_PATTERN.test(username) && username.length >= 3 && username.length <= 15;
-  const emailValid = EMAIL_PATTERN.test(email) && email.length <= 40;
-  const codeValid = verifyCode.length === 8;
+  const qqNumberValid = QQ_PATTERN.test(qqNumber);
+  const verifyCodeValid = CODE_PATTERN.test(verifyCode);
   const passwordValid = password.length >= 8 && password.length <= 100;
-  const confirmValid = confirmPassword === password && !(!passwordValid && password !== '');
+  const confirmValid = confirmPassword === password;
+  const formValid = qqNumberValid && verifyCodeValid && passwordValid && confirmValid;
 
-  async function doCheckUsername() {
-    if (!username) return;
-    try {
-      const resp = await checkUsernameAvailability(username);
-      const statusCode = resp?.status?.code;
-      if (statusCode === StatusCode.OK) notice(t('SignUpPage.Messages.UsernameAvailable'), 'success');
-      else if (statusCode === StatusCode.USERNAME_ALREADY_TAKEN) notice(t('SignUpPage.Messages.UsernameAlreadyTaken'), 'danger');
-      else notice(resp?.status?.message);
-    } catch (error) {
-      notice('Error checking username availability.');
-      console.error('Error checking username', error);
-    }
-  }
+  const touch = (field: keyof typeof touched) => setTouched((s) => ({ ...s, [field]: true }));
 
-  async function doCheckEmail() {
-    if (!email) return;
-    try {
-      const resp = await checkEmailAvailability(email);
-      const statusCode = resp?.status?.code;
-      if (statusCode === StatusCode.OK) notice(t('SignUpPage.Messages.EmailAvailable'), 'success');
-      else if (statusCode === StatusCode.EMAIL_ALREADY_IN_USE) notice(t('SignUpPage.Messages.EmailInvailable'), 'danger');
-      else notice(resp?.status?.message);
-    } catch (error) {
-      notice('Error checking email availability.');
-      console.error('Error checking email', error);
-    }
-  }
-
-  async function sendCode() {
-    if (!emailValid) {
-      touch('email');
+  async function sendVerifyCode() {
+    if (!qqNumberValid) {
+      touch('qqNumber');
       return;
     }
     try {
-      const resp = await getVerifyCode(email);
-      const statusCode = resp?.status?.code;
+      const resp = await getVerifyCodeLcdx(qqNumber);
+      const statusCode: number = resp?.status?.code;
       if (statusCode === StatusCode.OK) {
         notice(t('SignUpPage.Messages.SendCodeSuccess'), 'success');
         setCooldown(60);
-      } else if (statusCode === StatusCode.EMAIL_ALREADY_IN_USE) {
-        notice(t('SignUpPage.Messages.EmailInvailable'), 'danger');
       } else if (statusCode === StatusCode.VERIFY_CODE_SEND_TOO_FAST) {
         notice(t('SignUpPage.Messages.SendCodeTooFast'), 'warning');
       } else {
-        notice(resp?.status?.message);
+        notice(t('SignUpPage.OperationFailed'));
       }
-    } catch (error) {
-      console.warn('Send verify code fail.', error);
-      notice(String(error));
+    } catch {
+      notice(t('Common.OperationFailed'));
     }
   }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!eula) {
-      notice('协议尚未加载，请重新加载后再试。', 'warning');
-      return;
-    }
-    if (!nameValid || !usernameValid || !emailValid || !codeValid || !passwordValid || !confirmValid || !acceptEula) {
-      markAll();
+    if (!formValid) {
+      setTouched({ qqNumber: true, verifyCode: true, password: true, confirmPassword: true });
       return;
     }
     setSubmitting(true);
     try {
-      const resp = await signUp(name, username, email, verifyCode, password, token, eula.version);
-      if (resp?.status) {
-        const statusCode = resp.status.code;
-        if (statusCode === StatusCode.OK) {
-          notice('Sign up success.');
-          window.location.reload();
-        } else if (statusCode === StatusCode.EMAIL_ALREADY_IN_USE) {
-          notice(t('SignUpPage.Messages.EmailInvailable'), 'danger');
-        } else if (statusCode === StatusCode.USERNAME_ALREADY_TAKEN) {
-          notice(t('SignUpPage.Messages.UsernameAlreadyTaken'), 'danger');
-        } else if (statusCode === StatusCode.VERIFY_CODE_NOT_CORRECT) {
-          notice(t('SignUpPage.Messages.CodeIncorrect'), 'danger');
-        } else if (statusCode === StatusCode.EULA_VERSION_INVALID) {
-          await loadEula();
-          setAcceptEula(false);
-          notice('协议已更新，请阅读并重新勾选同意。', 'warning');
-        } else {
-          notice(resp.status.message);
+      const resp = await signUpLcdx(qqNumber, verifyCode, password);
+      const statusCode: number = resp?.status?.code;
+      if (statusCode === StatusCode.OK && resp.data) {
+        // 后端以 status.message 区分「注册成功 / 密码重设成功」
+        const messageKey = String(resp.status?.message ?? '').toLowerCase().includes('reset')
+          ? 'SignUpPage.Messages.ResetSuccess'
+          : 'SignUpPage.Messages.RegisterSuccess';
+        notice(t(messageKey), 'success');
+        // 等价旧版 `if (router.url.startsWith('/sign-up'))`：无卡新用户已被 procLoginResp
+        // 送去 /netcode-bind，此处不得覆盖
+        if (window.location.pathname.startsWith('/sign-up')) {
+          await navigate('/dashboard');
         }
+        return;
       }
-    } catch (error) {
-      console.warn('Sign up failed.', error);
-      notice(String(error));
+      if (statusCode === StatusCode.VERIFY_CODE_NOT_CORRECT) {
+        notice(t('SignUpPage.Messages.CodeIncorrect'), 'danger');
+      } else {
+        notice(t('SignUpPage.OperationFailed'));
+      }
+    } catch {
+      notice(t('Common.OperationFailed'));
     } finally {
       setSubmitting(false);
     }
   }
 
   function navigateToSignIn() {
-    const navState: AuthNavState = {};
-    if (emailValid) navState.email = email;
-    if (usernameValid) navState.username = username;
-    if (nameValid) navState.name = name;
-    if (token && type) {
-      navState.token = token;
-      navState.type = type;
-    }
-    void navigate('/sign-in', { state: navState });
+    void navigate('/sign-in', { state: { qqNumber } });
   }
 
   return (
-    <div className="d-flex justify-content-center">
+    <div className="d-flex justify-content-center px-2">
       <div className="card authorization-card col-12 mb-5">
-        <div className="pt-2 pt-lg-4 px-3 px-sm-5 mb-3">
+        <div className="pt-3 pt-lg-4 px-3 px-sm-5 mb-3">
           <div className="mb-4">
-            <div className="fs-1 fw-bold">RinNET</div>
+            <div className="fs-1 fw-bold">NET</div>
             <div className="fs-5 fw-bold">{t('SignUpPage.Title')}</div>
           </div>
-          {type && token && (
-            <div className="callout callout-info py-3" role="alert">
-              {t('SignUpPage.BindTip', { type: tokenTypes.get(type) })}
-            </div>
-          )}
+
           <form onSubmit={(e) => void onSubmit(e)}>
-            <div className="d-grid gap-1 small fw-bold mb-3">
-              <div className="position-relative">
-                <label htmlFor="name" className="form-label small">
-                  {t('SignUpPage.Nickname')}
+            <div className="d-grid gap-2 small fw-bold mb-3">
+              <div>
+                <label htmlFor="qqNumber" className="form-label small">
+                  {t('SignUpPage.QQNumber')}
                 </label>
                 <input
                   type="text"
-                  className={'form-control form-control-sm' + (touched.name && !nameValid ? ' is-invalid' : '')}
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onBlur={() => touch('name')}
+                  inputMode="numeric"
+                  autoComplete="username"
+                  className={'form-control form-control-sm' + (touched.qqNumber && !qqNumberValid ? ' is-invalid' : '')}
+                  id="qqNumber"
+                  value={qqNumber}
+                  onChange={(e) => setQqNumber(e.target.value)}
+                  onBlur={() => touch('qqNumber')}
                 />
-                {touched.name && !nameValid && (
-                  <div className="invalid-tooltip d-block">
-                    {!name ? (
-                      <div>{t('SignUpPage.NicknameErrors.Required')}</div>
-                    ) : name.length < 4 ? (
-                      <div>{t('SignUpPage.NicknameErrors.Minlength')}</div>
-                    ) : (
-                      <div>{t('SignUpPage.NicknameErrors.Maxlength')}</div>
-                    )}
-                  </div>
+                {touched.qqNumber && !qqNumberValid && (
+                  <div className="invalid-feedback">{t('SignUpPage.QQNumberInvalid')}</div>
                 )}
-              </div>
-
-              <div>
-                <label htmlFor="userName" className="form-label small">
-                  {t('SignUpPage.Username')}
-                </label>
-                <div className="input-group input-group-sm has-validation">
-                  <input
-                    type="text"
-                    className={'form-control form-control-sm' + (touched.username && !usernameValid ? ' is-invalid' : '')}
-                    id="userName"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    onBlur={() => touch('username')}
-                  />
-                  {touched.username && !usernameValid && (
-                    <div className="invalid-tooltip d-block">
-                      {!username ? (
-                        <div>{t('SignUpPage.UsernameErrors.Required')}</div>
-                      ) : username.length < 3 ? (
-                        <div>{t('SignUpPage.UsernameErrors.Minlength')}</div>
-                      ) : username.length > 15 ? (
-                        <div>{t('SignUpPage.UsernameErrors.Maxlength')}</div>
-                      ) : (
-                        <div>{t('SignUpPage.UsernameErrors.Pattern')}</div>
-                      )}
-                    </div>
-                  )}
-                  <button className="input-group-btn btn btn-primary" type="button" onClick={() => void doCheckUsername()}>
-                    {t('SignUpPage.Check')}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="email" className="form-label small">
-                  {t('SignUpPage.EmailAddress')}
-                </label>
-                <div className="input-group input-group-sm has-validation">
-                  <input
-                    type="email"
-                    className={'form-control form-control-sm' + (touched.email && !emailValid ? ' is-invalid' : '')}
-                    id="email"
-                    value={email}
-                    disabled={emailLocked}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onBlur={() => touch('email')}
-                  />
-                  {touched.email && !emailValid && (
-                    <div className="invalid-tooltip d-block">
-                      {!email ? (
-                        <div>{t('SignUpPage.EmailErrors.Required')}</div>
-                      ) : email.length > 40 ? (
-                        <div>{t('SignUpPage.EmailErrors.Maxlength')}</div>
-                      ) : (
-                        <div>{t('SignUpPage.EmailErrors.Email')}</div>
-                      )}
-                    </div>
-                  )}
-                  <button className="input-group-btn btn btn-primary" type="button" disabled={emailLocked} onClick={() => void doCheckEmail()}>
-                    {t('SignUpPage.Check')}
-                  </button>
-                </div>
+                <div className="form-text">{t('SignUpPage.QQMailTip')}</div>
               </div>
 
               <div>
@@ -326,21 +158,21 @@ export function SignUpPage() {
                 <div className="input-group input-group-sm has-validation">
                   <input
                     type="text"
-                    className={'form-control form-control-sm' + (touched.verifyCode && !codeValid ? ' is-invalid' : '')}
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={4}
+                    className={'form-control' + (touched.verifyCode && !verifyCodeValid ? ' is-invalid' : '')}
                     id="verifyCode"
                     value={verifyCode}
-                    maxLength={8}
                     onChange={(e) => setVerifyCode(e.target.value)}
                     onBlur={() => touch('verifyCode')}
                   />
-                  {touched.verifyCode && !codeValid && (
-                    <div className="invalid-tooltip d-block">
-                      <div>{t('SignUpPage.VerificationCodeErrors.Length')}</div>
-                    </div>
-                  )}
-                  <button className="input-group-btn btn btn-primary" type="button" onClick={() => void sendCode()} disabled={cooldown > 0}>
+                  <button className="btn btn-primary" type="button" onClick={() => void sendVerifyCode()} disabled={cooldown > 0}>
                     {cooldown > 0 ? cooldown : t('SignUpPage.Send')}
                   </button>
+                  {touched.verifyCode && !verifyCodeValid && (
+                    <div className="invalid-feedback">{t('SignUpPage.VerificationCodeErrors.Length')}</div>
+                  )}
                 </div>
               </div>
 
@@ -348,111 +180,47 @@ export function SignUpPage() {
                 <label htmlFor="password" className="form-label small">
                   {t('SignUpPage.Password')}
                 </label>
-                <div className="input-group input-group-sm has-validation">
-                  <input
-                    type="password"
-                    className={'form-control form-control-sm' + (touched.password && !passwordValid ? ' is-invalid' : '')}
-                    id="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onBlur={() => touch('password')}
-                  />
-                  {touched.password && !passwordValid && (
-                    <div className="invalid-tooltip d-block">
-                      {!password ? (
-                        <div>{t('SignUpPage.PasswordErrors.Required')}</div>
-                      ) : password.length < 8 ? (
-                        <div>{t('SignUpPage.PasswordErrors.Minlength')}</div>
-                      ) : (
-                        <div>{t('SignUpPage.PasswordErrors.Maxlength')}</div>
-                      )}
-                    </div>
-                  )}
-                </div>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  className={'form-control form-control-sm' + (touched.password && !passwordValid ? ' is-invalid' : '')}
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onBlur={() => touch('password')}
+                />
+                {touched.password && !passwordValid && (
+                  <div className="invalid-feedback">{t('SignUpPage.PasswordErrors.Minlength')}</div>
+                )}
               </div>
+
               <div>
                 <label htmlFor="confirmPassword" className="form-label small">
                   {t('SignUpPage.ConfirmPassword')}
                 </label>
-                <div className="input-group input-group-sm has-validation">
-                  <input
-                    type="password"
-                    className={
-                      'form-control form-control-sm' +
-                      (touched.confirmPassword && confirmPassword !== password && passwordValid ? ' is-invalid' : '')
-                    }
-                    id="confirmPassword"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    onBlur={() => touch('confirmPassword')}
-                  />
-                  {touched.confirmPassword && confirmPassword !== password && passwordValid && (
-                    <div className="invalid-tooltip d-block">
-                      <div>{t('SignUpPage.PasswordErrors.Confirm')}</div>
-                    </div>
-                  )}
-                </div>
+                <input
+                  type="password"
+                  autoComplete="new-password"
+                  className={'form-control form-control-sm' + (touched.confirmPassword && !confirmValid ? ' is-invalid' : '')}
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onBlur={() => touch('confirmPassword')}
+                />
+                {touched.confirmPassword && !confirmValid && (
+                  <div className="invalid-feedback">{t('SignUpPage.PasswordErrors.Confirm')}</div>
+                )}
               </div>
 
-              {eulaLoading ? (
-                <div className="alert alert-secondary py-2 my-2 fw-normal" role="status">
-                  正在加载最终用户许可协议…
-                </div>
-              ) : eulaLoadError ? (
-                <div className="alert alert-danger py-2 my-2 fw-normal" role="alert">
-                  <div>无法加载最终用户许可协议，暂时无法注册。</div>
-                  <button className="btn btn-sm btn-outline-danger mt-2" type="button" onClick={() => void loadEula()}>
-                    重新加载
-                  </button>
-                </div>
-              ) : eula ? (
-                <div className="border rounded p-2 my-2 fw-normal">
-                  <div className="fw-bold">{eula.title}（版本 {eula.version}）</div>
-                  <details className="my-2">
-                    <summary className="text-primary">查看协议正文</summary>
-                    <article className="p-2 small" dangerouslySetInnerHTML={{ __html: eulaHtml }} />
-                  </details>
-                  <label className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      checked={acceptEula}
-                      onChange={(e) => setAcceptEula(e.target.checked)}
-                    />
-                    <span className="form-check-label">我已阅读并同意当前版本的最终用户许可协议</span>
-                  </label>
-                </div>
-              ) : null}
-              <button
-                type="submit"
-                className="btn btn-primary btn-sm my-2"
-                disabled={eulaLoading || eulaLoadError || submitting}
-              >
-                {t('SignUpPage.SignUp')}
+              <button type="submit" className="btn btn-primary btn-sm my-2" disabled={submitting}>
+                {t('SignUpPage.Submit')}
               </button>
-              <div className="fw-normal d-flex align-items-center justify-content-center">
+              <div className="fw-normal d-flex align-items-center justify-content-center gap-1">
                 {t('SignUpPage.SignInTip')}
                 <button type="button" className="btn btn-link btn-sm text-decoration-none p-0" onClick={navigateToSignIn}>
                   {t('SignUpPage.SignIn')}
                 </button>
               </div>
-              {(!type || !token) && (
-                <>
-                  <div className="row justify-content-center align-items-center m-0 mb-2">
-                    <hr className="col m-0" />
-                    <div className="col-auto">{t('SignInPage.Or')}</div>
-                    <hr className="col m-0" />
-                  </div>
-                  {providers.map((provider) => (
-                    <button type="button" key={provider} className="btn btn-theme" onClick={() => getSignInUrl(provider)}>
-                      <svg className="oauth-icon" viewBox="0 0 16 16">
-                        <use href={`assets/${provider}.svg#icon`} />
-                      </svg>
-                      {t('OAuth.ContinueWith', { type: tokenTypes.get(provider) })}
-                    </button>
-                  ))}
-                </>
-              )}
             </div>
           </form>
         </div>
