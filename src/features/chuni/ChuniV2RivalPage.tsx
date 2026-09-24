@@ -30,7 +30,7 @@ export function ChuniV2RivalPage() {
     void api
       .get('api/game/chuni/v2/friend', { aimeId })
       .then((data) => setFriendList((data ?? []) as ChuniV2Rival[]))
-      .catch((error) => notice(`get friend list failed: ${String(error)}`))
+      .catch(() => notice(t('ChuniV2.RivalListPage.LoadFailed')))
       .finally(() => setLoadingRival(false));
   }, [aimeId]);
 
@@ -42,7 +42,7 @@ export function ChuniV2RivalPage() {
         if (response?.status?.code === StatusCode.OK && response.data?.chusan) {
           setProfile(response.data.chusan as ChuniV2RivalProfile);
         } else if (response?.status?.message) {
-          notice(response.status.message);
+          notice(t('ChuniV2.RivalListPage.OperationFailed'));
         }
       })
       .catch(() => notice(t('Common.OperationFailed')))
@@ -60,11 +60,11 @@ export function ChuniV2RivalPage() {
       .post('api/game/chuni/v2/friend', undefined, { friendId, aimeId })
       .then((data) => {
         if (data) {
-          notice(`(id:${inputAddRivalUserId}) addition successfully`);
+          notice(t('ChuniV2.RivalListPage.AddSuccess', { id: inputAddRivalUserId }));
           refreshFriends();
         }
       })
-      .catch((error) => notice(`add rival failed: ${String(error)}`));
+      .catch(() => notice(t('ChuniV2.RivalListPage.AddFailed')));
   }
 
   function removeFriend(friendId: string) {
@@ -72,15 +72,15 @@ export function ChuniV2RivalPage() {
       .delete('api/game/chuni/v2/friend', { friendId: Number.parseInt(friendId, 10), aimeId })
       .then(() => {
         setFriendList((items) => items.filter((item) => item.rivalId !== friendId));
-        notice(`(id:${friendId}) delete successfully.`);
+        notice(t('ChuniV2.RivalListPage.DeleteSuccess', { id: friendId }));
       })
-      .catch((error) => notice(`remove rival failed: ${String(error)}`));
+      .catch(() => notice(t('ChuniV2.RivalListPage.DeleteFailed')));
   }
 
   function toggleFavorite(item: ChuniV2Rival) {
     const favoriteCount = friendList.filter((friend) => friend.isFavorite).length;
     if (!item.isFavorite && favoriteCount >= 3) {
-      notice(`(id:${item.rivalId}) You can't add more than 3 favorites.`, 'danger');
+      notice(t('ChuniV2.RivalListPage.FavoriteLimitReached', { id: item.rivalId }), 'danger');
       refreshFriends();
       return;
     }
@@ -98,7 +98,7 @@ export function ChuniV2RivalPage() {
           aimeId,
         })
         .then(() => {
-          notice(`(id:${item.rivalId}) toggle Favorite Over!`);
+          notice(t('ChuniV2.RivalListPage.ToggleFavoriteSuccess', { id: item.rivalId }));
           refreshFriends();
         })
         .catch(() => notice(t('Common.OperationFailed')));

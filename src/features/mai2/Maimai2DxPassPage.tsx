@@ -95,7 +95,7 @@ export function Maimai2DxPassPage() {
       const aimeId = String(getCurrentUser()?.defaultCard?.extId ?? '');
       const data = await api.get('api/game/maimai2/setCardType', { aimeId, cardType });
       setDefaultCardType(Number(data?.data ?? cardType));
-      if (data?.status?.code === 92001) notice('Success');
+      if (data?.status?.code === 92001) notice(t('Maimai2.DxpassPage.Success'));
     } catch (error) {
       notice(t('Common.OperationFailed'));
     }

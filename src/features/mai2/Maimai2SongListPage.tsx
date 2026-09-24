@@ -101,7 +101,7 @@ export function Maimai2SongListPage() {
         artistName: typeof song.artistName === 'string' ? song.artistName : '',
         details: Array.isArray(song.details) ? song.details : [],
       }))))
-      .catch((error) => active && notice(`数据加载失败: ${String(error)}`));
+      .catch(() => active && notice(t('Maimai2.SongListPage.LoadFailed')));
     return () => {
       active = false;
     };
@@ -143,8 +143,8 @@ export function Maimai2SongListPage() {
   function copySongName(songName: string) {
     void navigator.clipboard
       .writeText(songName)
-      .then(() => notice(`已复制 ${songName}`))
-      .catch(() => notice('复制失败，请手动选择文字'));
+      .then(() => notice(t('Maimai2.SongListPage.Copied', { text: songName })))
+      .catch(() => notice(t('Maimai2.SongListPage.CopyFailed')));
   }
 
   function stopCopyTimer() {

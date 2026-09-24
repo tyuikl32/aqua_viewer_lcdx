@@ -22,8 +22,8 @@ export function Maimai2RivalPage() {
     setLoading(true);
     try {
       setRivals((await api.get('api/game/maimai2/rival', { aimeId: id })) as Maimai2Rival[]);
-    } catch (error) {
-      notice(`Cannot get rival list: ${String(error)}`);
+    } catch {
+      notice(t('Maimai2.RivalPage.LoadFailed'));
     } finally {
       setLoading(false);
     }
@@ -38,9 +38,9 @@ export function Maimai2RivalPage() {
         setAimeId(id);
         setOwnRivalId(10_000_000 + Number(card?.id ?? 0));
         await loadRivals(id);
-      } catch (error) {
+      } catch {
         setLoading(false);
-        notice(`Cannot get rival list: ${String(error)}`);
+        notice(t('Maimai2.RivalPage.LoadFailed'));
       }
     })();
   }, []);
@@ -51,11 +51,11 @@ export function Maimai2RivalPage() {
     try {
       const result = await api.post('api/game/maimai2/rival', { rivalId: rivalInput, aimeId });
       if (result) {
-        notice('Add rival success!');
+        notice(t('Maimai2.RivalPage.AddSuccess'));
         await loadRivals(aimeId);
       }
-    } catch (error) {
-      notice(`add rival failed: ${String(error)}`);
+    } catch {
+      notice(t('Maimai2.RivalPage.AddFailed'));
     } finally {
       setAdding(false);
     }
@@ -65,9 +65,9 @@ export function Maimai2RivalPage() {
     try {
       await api.delete('api/game/maimai2/rival', { rivalId: Number.parseInt(rivalId, 10), aimeId });
       setRivals((items) => items.filter((item) => item.rivalId !== rivalId));
-      notice(`(id:${rivalId}) delete successfully.`);
-    } catch (error) {
-      notice(`remove rival failed: ${String(error)}`);
+      notice(t('Maimai2.RivalPage.DeleteSuccess', { id: rivalId }));
+    } catch {
+      notice(t('Maimai2.RivalPage.DeleteFailed'));
     }
   };
 

@@ -186,7 +186,7 @@ export function OngekiRatingPage() {
   ): Promise<string> {
     const data = await api.get('api/game/ongeki/general', { key });
     if (!data?.propertyValue || data.propertyValue.indexOf(',') < 0) {
-      notice("Can't read battle data. Please save again in-game");
+      notice(t('Ongeki.RatingPage.ReadFailed'));
     } else {
       const records = data.propertyValue.split(',');
       for (const record of records) {

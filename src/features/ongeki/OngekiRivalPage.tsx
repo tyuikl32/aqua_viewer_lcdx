@@ -30,8 +30,8 @@ export function OngekiRivalPage() {
         setRivalList(rivalList ?? []);
         setLoadingRival(false);
       })
-      .catch((error) => {
-        notice(`get rival list failed : ${error}`);
+      .catch(() => {
+        notice(t('Ongeki.RivalListPage.LoadFailed'));
         setLoadingRival(false);
       });
 
@@ -52,10 +52,10 @@ export function OngekiRivalPage() {
     void api
       .delete('api/game/ongeki/rival', { rivalUserId })
       .then(() => {
-        notice(`(id:${rivalUserId}) delete successfully.`);
+        notice(t('Ongeki.RivalListPage.DeleteSuccess', { id: rivalUserId }));
         setRivalList((list) => list.filter((item) => item.rivalUserId !== rivalUserId));
       })
-      .catch((error) => notice(`remove rival failed : ${error}`));
+      .catch(() => notice(t('Ongeki.RivalListPage.DeleteFailed')));
   }
 
   function addRival() {
@@ -66,19 +66,19 @@ export function OngekiRivalPage() {
           const statusCode: number = data.status.code;
           if (statusCode === StatusCode.OK && data.data) {
             setRivalList((list) => [...list, data.data]);
-            notice(`Add rival (id:${data.data.rivalUserId}) successfully.`);
+            notice(t('Ongeki.RivalListPage.AddSuccess', { id: data.data.rivalUserId }));
           } else if (statusCode === StatusCode.RIVAL_SELF) {
-            notice(`Can't add your self as an rival`, 'danger');
+            notice(t('Ongeki.RivalListPage.CannotAddSelf'), 'danger');
           } else if (statusCode === StatusCode.RIVAL_ALREADY_ADDED) {
-            notice(`Rival already added`, 'danger');
+            notice(t('Ongeki.RivalListPage.AlreadyAdded'), 'danger');
           } else if (statusCode === StatusCode.RIVAL_NOTFOUND) {
-            notice(`Rival not found`, 'danger');
+            notice(t('Ongeki.RivalListPage.NotFound'), 'danger');
           } else {
-            notice(data.status.message, 'danger');
+            notice(t('Ongeki.RivalListPage.AddFailed'), 'danger');
           }
         }
       })
-      .catch((error) => notice(`add rival failed : ${error}`));
+      .catch(() => notice(t('Ongeki.RivalListPage.AddFailed')));
   }
 
   const rivalCard = (item: OngekiRival, isMe: boolean) => (

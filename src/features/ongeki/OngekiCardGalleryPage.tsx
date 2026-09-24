@@ -416,7 +416,7 @@ export function OngekiCardGalleryPage() {
     void api
       .post(`api/game/ongeki/card/${cardId}/${type}`, undefined, { aimeId })
       .then(() => {
-        notice('Kaika success');
+        notice(t('Ongeki.CardGalleryPage.KaikaSuccess'));
         void loadPage(currentPage);
       })
       .catch(() => notice(t('Common.OperationFailed')));
@@ -427,7 +427,7 @@ export function OngekiCardGalleryPage() {
     void api
       .post('api/game/ongeki/card', { aimeId, cardId })
       .then(() => {
-        notice('Successful, go to check your card list');
+        notice(t('Ongeki.CardGalleryPage.PurchaseSuccess'));
         setCardIds((ids) => [cardId, ...ids]);
         void loadPage(currentPage);
       })

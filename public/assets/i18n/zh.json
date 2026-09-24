@@ -601,9 +601,6 @@
       "Yes": "是",
       "YourChallenge": "你的挑战"
     },
-    "DxPassPage": {
-      "Success": "操作成功"
-    },
     "DxpassPage": {
       "BuyDate": "获得时间",
       "DefaultInfo": "当前设定的默认DX Pass类型",
@@ -612,6 +609,7 @@
       "NotOwned": "你暂未拥有任何DX通行证。",
       "Remaining": "剩余",
       "SetDefault": "设为默认类型",
+      "Success": "操作成功",
       "Title": "DX通行证"
     },
     "FestaPage": {

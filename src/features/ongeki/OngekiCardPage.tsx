@@ -232,7 +232,7 @@ export function OngekiCardPage() {
           ids = deckList.flatMap((deck) => [deck.cardId1, deck.cardId2, deck.cardId3]);
           setCardIDs(ids);
         } else {
-          notice(resp.status.message);
+          notice(t('Ongeki.CardPage.OperationFailed'));
           return;
         }
       }
@@ -336,7 +336,7 @@ export function OngekiCardPage() {
           });
           await getCardInfo();
         } else {
-          notice(resp.status.message);
+          notice(t('Ongeki.CardPage.OperationFailed'));
         }
       }
     } catch (err) {

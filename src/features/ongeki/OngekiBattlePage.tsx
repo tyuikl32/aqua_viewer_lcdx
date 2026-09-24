@@ -27,7 +27,7 @@ export function OngekiBattlePage() {
       .then(async (data) => {
         const propertyValue = data?.propertyValue as string;
         if (!propertyValue || propertyValue.indexOf(',') < 0) {
-          notice("Can't read battle data. Please save again in-game");
+          notice(t('Ongeki.BattlePointPage.ReadFailed'));
           return;
         }
         const records = propertyValue.split(',');

@@ -601,9 +601,6 @@
       "Yes": "Yes",
       "YourChallenge": "Your Challenge"
     },
-    "DxPassPage": {
-      "Success": "Success"
-    },
     "DxpassPage": {
       "BuyDate": "Buy-In Date",
       "DefaultInfo": "Default DX Pass kind currently",
@@ -612,6 +609,7 @@
       "NotOwned": "You do not own any deluxe pass.",
       "Remaining": "remaining",
       "SetDefault": "Set type as default",
+      "Success": "Success",
       "Title": "Deluxe Pass Info"
     },
     "FestaPage": {

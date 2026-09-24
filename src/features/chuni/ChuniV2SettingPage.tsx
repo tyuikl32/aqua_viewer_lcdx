@@ -80,7 +80,7 @@ export function ChuniV2SettingPage() {
         userName: nameInput,
       });
       setProfile(updated as ChuniV2Profile);
-      notice('Successfully changed');
+      notice(t('ChuniV2.SettingPage.ChangeSuccess'));
       setNameOpen(false);
     } catch (error) {
       notice(t('Common.OperationFailed'));
@@ -97,7 +97,7 @@ export function ChuniV2SettingPage() {
     try {
       const updated = await api.put(path, { aimeId, [key]: versionInput });
       setProfile(updated as ChuniV2Profile);
-      notice('Successfully changed');
+      notice(t('ChuniV2.SettingPage.ChangeSuccess'));
       setVersionKind(null);
     } catch (error) {
       notice(t('Common.OperationFailed'));
@@ -113,7 +113,7 @@ export function ChuniV2SettingPage() {
       anchor.download = `chusan_${aimeId}_exported.json`;
       anchor.click();
       URL.revokeObjectURL(url);
-      notice('Chunithm Download Over');
+      notice(t('ChuniV2.SettingPage.DownloadComplete'));
     } catch (error) {
       notice(t('Common.OperationFailed'));
     }

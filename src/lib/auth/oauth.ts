@@ -1,5 +1,6 @@
 import { api } from '@/lib/api/client';
 import { notice } from '@/lib/message';
+import { translate } from '@/lib/i18n';
 
 /** 等价旧版 oauth.service.ts */
 
@@ -21,12 +22,12 @@ export function getSignInUrl(type: string): void {
         window.location.href = `${response.data}&state=${state}`;
       } else {
         console.error('Failed to get OAuth2 response data');
-        notice('Failed to get OAuth2 response data');
+        notice(translate('OAuthPage.GetResponseFailed'));
       }
     })
     .catch((error) => {
       console.error('OAuth Sign In Error:', error);
-      notice('OAuth2 Sign In Error');
+      notice(translate('OAuthPage.SignInFailed'));
     });
 }
 
