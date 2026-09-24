@@ -27,7 +27,6 @@ import { useStore } from '@/lib/store';
 import { menu, showItem, showMenu } from '@/lib/menu';
 import { useBotPermission } from '@/lib/botPermission';
 import { languages, languageKeys, langStore, setLang } from '@/lib/i18n';
-import { assetsHost } from '@/lib/utils';
 import { setNavigator } from '@/lib/nav';
 import { useTheme } from '@/lib/theme';
 
@@ -60,14 +59,14 @@ function BootEffects() {
     setNavigator(routerNavigate);
   }, [routerNavigate]);
 
-  // 等价：标题拼接 "child - parent | RinNET"
+  // 等价：标题拼接 "child - parent | NET"（LCDX 品牌后缀，上游为 RinNET）
   useEffect(() => {
     const titles = matches
       .map((m) => m.handle?.title)
       .filter((t): t is string => Boolean(t))
       .reverse();
     if (titles.length > 0) {
-      document.title = titles.join(' - ') + ' | RinNET';
+      document.title = titles.join(' - ') + ' | NET';
     }
   }, [matches]);
 
@@ -87,8 +86,6 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
     navigate('/' + url);
     onNavigate?.();
   };
-
-  const admin = user?.roles?.some((r) => r.name === 'ROLE_ADMIN') ?? false;
 
   const section = (game: string, icon: string, label: string): ReactNode =>
     showMenu(game, user) && (
@@ -136,18 +133,6 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
                 {t('App.Sidebar.Announcements')}
               </a>
             </li>
-            <li className="pb-2">
-              <a className={'link-btn rounded' + (isActive('import') ? ' active' : '')} onClick={() => go('import')}>
-                {t('App.Sidebar.Import')}
-              </a>
-            </li>
-            {admin && (
-              <li className="pb-2">
-                <a className={'link-btn rounded' + (isActive('admin') ? ' active' : '')} onClick={() => go('admin')}>
-                  {t('App.Sidebar.Admin')}
-                </a>
-              </li>
-            )}
           </ul>
         </li>
         {section('maimai2', 'mai2', 'Common.Mai2')}
@@ -160,7 +145,6 @@ function UserPopover() {
   const { t } = useTranslation();
   const { family } = useTheme();
   const user = useStore(userStore);
-  const isActive = useIsActive();
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
@@ -177,11 +161,11 @@ function UserPopover() {
           <AnimalButton
             className="animal-island-user-trigger"
             type="primary"
-            aria-label={t('App.UserPopup.Profile')}
+            aria-label={user.name}
             icon={<Person size="1.35rem" />}
           />
         ) : (
-          <button className="btn btn-icon d-flex align-items-center" type="button">
+          <button className="btn btn-icon d-flex align-items-center" type="button" aria-label={user.name}>
             <Person size="1.4rem" />
           </button>
         )}
@@ -190,15 +174,6 @@ function UserPopover() {
         <div className="vstack user-popover">
           <label className="text-start mx-2 h5">{user.name}</label>
           <hr className="my-2 border" />
-          <Link to="/profile" className={'link-btn rounded mb-2' + (isActive('profile') ? ' active' : '')} onClick={close}>
-            {t('App.UserPopup.Profile')}
-          </Link>
-          <Link to="/cards" className={'link-btn rounded mb-2' + (isActive('cards') ? ' active' : '')} onClick={close}>
-            {t('App.UserPopup.MyCards')}
-          </Link>
-          <Link to="/keychip" className={'link-btn rounded mb-2' + (isActive('keychip') ? ' active' : '')} onClick={close}>
-            {t('App.UserPopup.Keychip')}
-          </Link>
           <a
             className="link-btn link-btn-danger rounded"
             onClick={() => {
@@ -215,7 +190,6 @@ function UserPopover() {
 }
 
 function Footer() {
-  const { t } = useTranslation();
   const currentLang = useStore(langStore);
   const { family } = useTheme();
   const location = useLocation();
@@ -266,18 +240,7 @@ function Footer() {
           </div>
         </div>
         <div className="shell-footer-details row my-2" inert={compact} aria-hidden={compact || undefined}>
-          <div className="col-auto">
-            <a target="_blank" rel="noreferrer" href="https://status.naominet.live/status/aquaserver">
-              {t('App.Footer.Status')}
-            </a>
-            <a className="ms-4" target="_blank" rel="noreferrer" href="https://github.com/RinNET-OpenSource/aqua_viewer">
-              Github
-            </a>
-          </div>
-          <div className="col-auto" dangerouslySetInnerHTML={{ __html: t('App.Footer.Licence') }} />
-          <div className="col-auto">
-            <Link to="/contributors">{t('App.Footer.Contributors')}</Link>
-          </div>
+          <div className="col-auto">Forked &amp; Powered on ©2026 RinNET</div>
           {family === 'animal-island' && (
             <div className="col-auto">
               <a
@@ -289,7 +252,6 @@ function Footer() {
               </a>
             </div>
           )}
-          <div className="col-auto">{t('App.Footer.Copyright')}</div>
         </div>
       </div>
     </footer>
@@ -382,13 +344,13 @@ export function AppShell() {
                 ))}
                 <Link to="/" className="navbar-brand sm-center">
                   <img
-                    src={assetsHost + 'assets/turtle.svg'}
-                    alt="turtle"
+                    src="/assets/laochan.svg"
+                    alt="NET"
                     width="30"
                     height="24"
                     className="d-inline-block align-text-top"
                   />
-                  RinNET
+                  NET
                 </Link>
                 <div className="hstack gap-1 ms-auto">
                   {account && <LoadingBar inNavbar />}
