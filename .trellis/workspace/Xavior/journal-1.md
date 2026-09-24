@@ -457,3 +457,39 @@ Remotecontrol and locks cabinet selects now show nickName (locationName); shared
 ### Status
 
 [OK] **Completed**
+
+
+## Session 15: upstream React rewrite — LCDX feature port (Phases 0–3)
+
+**Date**: 2026-09-24 / 09-25
+**Task**: react-upstream-merge (`.trellis/tasks/09-24-react-upstream-merge`)
+**Branch**: `migrate/react-port` (from `backup` = upstream main mirror; `legacy-angular` keeps old Angular master; **not pushed**)
+
+### Summary
+
+Upstream RinNET_frontend rewrote the whole portal from Angular 16 to **React 19 + Vite 8 + TS 7 + Tailwind v4 + shadcn/ui + i18next** (690 files, +56.8k/−43.3k). A git merge is impossible (no common file language), so the strategy is **intent-level port onto the upstream baseline**:
+
+- **Phase 0** — `legacy-angular` safety branch, `migrate/react-port` from `backup`, `.trellis` restored, `npm ci` + build green.
+- **Phase 1** — i18n merged to **993 keys** zh/en-synced in BOTH `src/i18n/` and `public/assets/i18n/` (master values won all 6 conflicts — QQ-login/4-digit-code semantics); fixed upstream dead `Ongeki.RecentPage.UnknownArtist` key; LCDX API client (`lcdx.get/post/delete` on the shared auth pipeline); `botPermission.ts` five-tier model wired into `user.ts`.
+- **Phase 2** — all four cabinet pages ported: **cabinets / cabmode / remote-control / locks** (+ `cabinet-models.ts`), with `RequireCabinetManage`/`RequireCabinetAdmin` guards and `Menu.requiredBotPermission` gating.
+- **Phase 3** — **setting** page spliced (LCDX bind-card + 国服数据引继 merge block; portrait upload kept disabled), **netcode-bind**, **onetime-sign-in** (+ `loginLcdxOnetime`, shared `procLoginResp` gains the no-card → `/netcode-bind` branch), **kop-ranking**.
+
+Key convention: upstream keeps **Bootstrap class names** (`globals.css` rebuilds `--bs-*`), so LCDX Angular templates translate nearly 1:1 into JSX — do not rewrite them into shadcn/Tailwind.
+
+### Git Commits (14 ahead of `backup`, unpushed)
+
+| Hash | Message |
+|------|---------|
+| `e1d92ae` | restore .trellis onto React baseline |
+| `221ebb6` | i18n merge (993 keys) + env scaffolding + task docs |
+| `0968738` | LCDX API client + botPermission + mai asset host + laochan.svg |
+| `2c06ff2` `2ed986d` `7bda5be` `e0db341` | cabinets / remote-control / locks / cabmode |
+| `cfe5b9e` `38f8c00` `d825a98` `d4b0ab9` | setting 引继 / netcode-bind / onetime-sign-in / kop |
+
+### Testing
+
+`npm run build` (tsc -b && vite build) green after every commit. Known non-blocking: vite-plugin-pwa `closeBundle` → `MODULE_NOT_FOUND: @rollup/plugin-babel`, so `dist/sw.js` is missing (manifest emitted). **No browser/runtime verification yet** — needs cert + hosts + dev backend.
+
+### Status
+
+[WIP] Phases 0–3 complete; **Phase 4 (shared-page replay, ~14 files incl. dashboard + sign-up) and Phase 5 (Liquefy default, spec rewrite, `master reset --hard`) remain**. Full handoff in `implement.md` → HANDOFF NOTES.
