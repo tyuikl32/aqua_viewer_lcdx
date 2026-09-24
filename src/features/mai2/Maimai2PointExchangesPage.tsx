@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { api } from '@/lib/api/client';
 import { notice } from '@/lib/message';
 import { getCurrentUser, loadUser } from '@/lib/user';
-import { assetsHost, enableImages } from '@/lib/utils';
+import { maiAssetsHost, enableImages } from '@/lib/utils';
 import {
   MAIMAI2_EXCHANGE_TYPES,
   exchangeTypeKey,
@@ -83,8 +83,8 @@ function exchangeImage(item: Maimai2ExchangeItem): string {
       break;
   }
 
-  if (specialPath) return `${assetsHost}${specialPath}`;
-  return `${assetsHost}assets/mai2/${directory}/${prefix}${String(item.itemId).padStart(6, '0')}.webp`;
+  if (specialPath) return `${maiAssetsHost}${specialPath}`;
+  return `${maiAssetsHost}assets/mai2/${directory}/${prefix}${String(item.itemId).padStart(6, '0')}.webp`;
 }
 
 function ExchangeConfirmDialog({

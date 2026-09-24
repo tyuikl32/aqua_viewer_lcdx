@@ -7,7 +7,7 @@ import { formatNumber } from '@/lib/format';
 import { notice } from '@/lib/message';
 import { useStore } from '@/lib/store';
 import { getCurrentUser, loadUser } from '@/lib/user';
-import { assetsHost } from '@/lib/utils';
+import { maiAssetsHost } from '@/lib/utils';
 import { Maimai2SongDetail } from './Maimai2SongDetail';
 import type { Maimai2Music, Maimai2RatingItem } from './models';
 import './Maimai2RatingPage.css';
@@ -19,7 +19,7 @@ function jacketId(input: number): string {
 }
 
 function imageFallback(event: React.SyntheticEvent<HTMLImageElement>) {
-  const fallback = `${assetsHost}assets/mai2/jacket/UI_Jacket_000000.webp`;
+  const fallback = `${maiAssetsHost}assets/mai2/jacket/UI_Jacket_000000.webp`;
   if (event.currentTarget.src !== fallback) event.currentTarget.src = fallback;
 }
 
@@ -106,7 +106,7 @@ function RatingRecord({ item, index, onOpen }: {
         <div className="hstack">
           <img
             className="jacket rounded-start"
-            src={`${assetsHost}assets/mai2/jacket/UI_Jacket_${jacketId(item.musicId)}.webp`}
+            src={`${maiAssetsHost}assets/mai2/jacket/UI_Jacket_${jacketId(item.musicId)}.webp`}
             onError={imageFallback}
             alt=""
           />
@@ -230,7 +230,7 @@ export function Maimai2RatingPage() {
               <tbody>
                 {rankIcons.map((icon, rowIndex) => (
                   <tr key={icon}>
-                    <td><img className="rank-icon" src={`${assetsHost}assets/mai2/common/music_icon_${icon}.webp`} alt="" /></td>
+                    <td><img className="rank-icon" src={`${maiAssetsHost}assets/mai2/common/music_icon_${icon}.webp`} alt="" /></td>
                     {recommendation.headers.map((header, index) => (
                       <td key={index}>{recommendationValue(header, rowIndex)}</td>
                     ))}
@@ -246,7 +246,7 @@ export function Maimai2RatingPage() {
                 <tr>
                   <th />
                   {rankIcons.map((icon) => (
-                    <th key={icon}><img className="rank-icon" src={`${assetsHost}assets/mai2/common/music_icon_${icon}.webp`} alt="" /></th>
+                    <th key={icon}><img className="rank-icon" src={`${maiAssetsHost}assets/mai2/common/music_icon_${icon}.webp`} alt="" /></th>
                   ))}
                 </tr>
               </thead>

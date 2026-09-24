@@ -5,7 +5,7 @@ import { confirm } from '@/components/shell/ConfirmDialog';
 import { api } from '@/lib/api/client';
 import { notice } from '@/lib/message';
 import { getCurrentUser, loadUser } from '@/lib/user';
-import { assetsHost, enableImages } from '@/lib/utils';
+import { maiAssetsHost, enableImages } from '@/lib/utils';
 import type { Maimai2Music } from './models';
 import type {
   ApiResponse,
@@ -36,7 +36,7 @@ function responseOk(response: ApiResponse<unknown>): boolean {
 }
 
 function imageFallback(event: React.SyntheticEvent<HTMLImageElement>) {
-  const fallback = `${assetsHost}assets/mai2/jacket/UI_Jacket_000000.webp`;
+  const fallback = `${maiAssetsHost}assets/mai2/jacket/UI_Jacket_000000.webp`;
   if (event.currentTarget.src !== fallback) event.currentTarget.src = fallback;
 }
 
@@ -351,7 +351,7 @@ export function Maimai2CirclePage() {
               <div className="row g-3 align-items-start">
                 {enableImages && challengeId !== 0 && (
                   <div className="col-12 col-md-auto">
-                    <img className="challenge-jacket rounded" src={`${assetsHost}assets/mai2/jacket/UI_Jacket_${jacketId(challengeId)}.webp`} onError={imageFallback} alt="" />
+                    <img className="challenge-jacket rounded" src={`${maiAssetsHost}assets/mai2/jacket/UI_Jacket_${jacketId(challengeId)}.webp`} onError={imageFallback} alt="" />
                   </div>
                 )}
                 <div className="col">

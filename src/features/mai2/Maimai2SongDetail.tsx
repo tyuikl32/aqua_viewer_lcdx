@@ -4,7 +4,7 @@ import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
 import { api } from '@/lib/api/client';
 import { notice } from '@/lib/message';
 import { getCurrentUser } from '@/lib/user';
-import { assetsHost, enableImages } from '@/lib/utils';
+import { maiAssetsHost, enableImages } from '@/lib/utils';
 import type {
   Maimai2Music,
   Maimai2SongRanking,
@@ -37,7 +37,7 @@ function totalCombo(detail: Maimai2Music['details'][number]): number {
 }
 
 function imageFallback(event: React.SyntheticEvent<HTMLImageElement>) {
-  const fallback = `${assetsHost}assets/mai2/jacket/UI_Jacket_000000.webp`;
+  const fallback = `${maiAssetsHost}assets/mai2/jacket/UI_Jacket_000000.webp`;
   if (event.currentTarget.src !== fallback) event.currentTarget.src = fallback;
 }
 
@@ -160,7 +160,7 @@ export function Maimai2SongDetail({
         ...(music.details[4] ? [{ label: 'Re:M', level: 4 }] : []),
       ];
   const selectedDetail = music.details[currentDiffTab];
-  const jacket = `${assetsHost}assets/mai2/jacket/UI_Jacket_${jacketId(music.musicId)}.webp`;
+  const jacket = `${maiAssetsHost}assets/mai2/jacket/UI_Jacket_${jacketId(music.musicId)}.webp`;
 
   function selectDifficulty(level: number) {
     setCurrentDiffTab(level);
@@ -368,7 +368,7 @@ export function Maimai2SongDetail({
                             {index < 3 ? (
                               <img
                                 className="medal"
-                                src={`${assetsHost}assets/${['gold', 'silver', 'bronze'][index]}-medal.svg`}
+                                src={`${maiAssetsHost}assets/${['gold', 'silver', 'bronze'][index]}-medal.svg`}
                                 alt=""
                               />
                             ) : (

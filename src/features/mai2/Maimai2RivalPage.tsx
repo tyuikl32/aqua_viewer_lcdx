@@ -4,7 +4,7 @@ import { api } from '@/lib/api/client';
 import { fullWidth, padDigits } from '@/lib/format';
 import { notice } from '@/lib/message';
 import { getCurrentUser, loadUser } from '@/lib/user';
-import { assetsHost, enableImages } from '@/lib/utils';
+import { maiAssetsHost, enableImages } from '@/lib/utils';
 import type { Maimai2Rival } from './models';
 import './Maimai2RivalPage.css';
 
@@ -121,7 +121,7 @@ export function Maimai2RivalPage() {
                 {enableImages && (
                   <img
                     className="profile-icon"
-                    src={`${assetsHost}assets/mai2/icon/UI_Icon_${padDigits(item.iconId, 6)}.webp`}
+                    src={`${maiAssetsHost}assets/mai2/icon/UI_Icon_${padDigits(item.iconId, 6)}.webp`}
                     alt=""
                   />
                 )}

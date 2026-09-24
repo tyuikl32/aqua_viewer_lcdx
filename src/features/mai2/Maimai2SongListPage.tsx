@@ -4,7 +4,7 @@ import { dbGetAll } from '@/lib/db/db';
 import { preloadStates } from '@/lib/db/preload';
 import { notice } from '@/lib/message';
 import { useStore } from '@/lib/store';
-import { assetsHost, enableImages } from '@/lib/utils';
+import { maiAssetsHost, enableImages } from '@/lib/utils';
 import { Maimai2Pagination } from './Maimai2Pagination';
 import { Maimai2SongDetail } from './Maimai2SongDetail';
 import type { Maimai2Music } from './models';
@@ -70,7 +70,7 @@ function compareLevel(index: number, descending: boolean) {
 }
 
 function imageFallback(event: React.SyntheticEvent<HTMLImageElement>) {
-  const fallback = `${assetsHost}assets/mai2/jacket/UI_Jacket_000000.webp`;
+  const fallback = `${maiAssetsHost}assets/mai2/jacket/UI_Jacket_000000.webp`;
   if (event.currentTarget.src !== fallback) event.currentTarget.src = fallback;
 }
 
@@ -328,7 +328,7 @@ export function Maimai2SongListPage() {
                 {enableImages && (
                   <img
                     className="position-absolute rounded-start"
-                    src={`${assetsHost}assets/mai2/jacket/UI_Jacket_${jacketId(song.musicId)}.webp`}
+                    src={`${maiAssetsHost}assets/mai2/jacket/UI_Jacket_${jacketId(song.musicId)}.webp`}
                     onError={imageFallback}
                     alt={song.name}
                   />

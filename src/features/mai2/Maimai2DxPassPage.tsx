@@ -4,7 +4,7 @@ import { api } from '@/lib/api/client';
 import { notice } from '@/lib/message';
 import type { Page } from '@/lib/models';
 import { getCurrentUser, loadUser } from '@/lib/user';
-import { assetsHost } from '@/lib/utils';
+import { maiAssetsHost } from '@/lib/utils';
 import type { Maimai2DxPass } from './models';
 import { Maimai2Pagination } from './Maimai2Pagination';
 import './Maimai2DxPassPage.css';
@@ -130,19 +130,19 @@ export function Maimai2DxPassPage() {
               <div className="col-12 col-xl-3 col-md-4 col-sm-6" key={item.cardId}>
                 <div className="card position-relative">
                   <img
-                    src={`${assetsHost}assets/mai2/dxpass/base/UI_CardBase_000000${item.cardTypeId}_${sixDigits(item.mapId)}_S.webp`}
+                    src={`${maiAssetsHost}assets/mai2/dxpass/base/UI_CardBase_000000${item.cardTypeId}_${sixDigits(item.mapId)}_S.webp`}
                     className="card-img-top img-fluid"
                     alt=""
                     onClick={() => setDetails((value) => ({ ...value, [index]: !value[index] }))}
                   />
                   <img
-                    src={`${assetsHost}assets/mai2/dxpass/chara/UI_CardChara_${sixDigits(item.charaId)}_S.webp`}
+                    src={`${maiAssetsHost}assets/mai2/dxpass/chara/UI_CardChara_${sixDigits(item.charaId)}_S.webp`}
                     className="card-img-top img-fluid maimai2-dxpass-overlay"
                     alt=""
                     onClick={() => setDetails((value) => ({ ...value, [index]: !value[index] }))}
                   />
                   <img
-                    src={`${assetsHost}assets/mai2/dxpass/frame/UI_CardFrame_000000${item.cardTypeId}_S.webp`}
+                    src={`${maiAssetsHost}assets/mai2/dxpass/frame/UI_CardFrame_000000${item.cardTypeId}_S.webp`}
                     className="card-img-top img-fluid maimai2-dxpass-overlay"
                     alt=""
                     onClick={() => setDetails((value) => ({ ...value, [index]: !value[index] }))}

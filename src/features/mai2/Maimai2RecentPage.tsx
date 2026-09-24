@@ -6,7 +6,7 @@ import { preloadStates } from '@/lib/db/preload';
 import { notice } from '@/lib/message';
 import { useStore } from '@/lib/store';
 import { getCurrentUser, loadUser } from '@/lib/user';
-import { assetsHost, enableImages } from '@/lib/utils';
+import { maiAssetsHost, enableImages } from '@/lib/utils';
 import { Maimai2Pagination } from './Maimai2Pagination';
 import { Maimai2SongDetail } from './Maimai2SongDetail';
 import type { Maimai2Music, Maimai2Playlog } from './models';
@@ -32,7 +32,7 @@ function jacketId(input: number): string {
 }
 
 function imageFallback(event: React.SyntheticEvent<HTMLImageElement>) {
-  const fallback = `${assetsHost}assets/mai2/jacket/UI_Jacket_000000.webp`;
+  const fallback = `${maiAssetsHost}assets/mai2/jacket/UI_Jacket_000000.webp`;
   if (event.currentTarget.src !== fallback) event.currentTarget.src = fallback;
 }
 
@@ -183,7 +183,7 @@ export function Maimai2RecentPage() {
                     {enableImages && (
                       <img
                         className="song-jacket cover-full"
-                        src={`${assetsHost}assets/mai2/jacket/UI_Jacket_${jacketId(item.musicId)}.webp`}
+                        src={`${maiAssetsHost}assets/mai2/jacket/UI_Jacket_${jacketId(item.musicId)}.webp`}
                         onError={imageFallback}
                         alt=""
                       />
@@ -208,7 +208,7 @@ export function Maimai2RecentPage() {
                           <div className="recent-rank-icon position-absolute">
                             <img
                               className="rank-icon"
-                              src={`${assetsHost}assets/mai2/common/${rankIcon(item.scoreRank)}.webp`}
+                              src={`${maiAssetsHost}assets/mai2/common/${rankIcon(item.scoreRank)}.webp`}
                               alt=""
                             />
                           </div>
@@ -224,22 +224,22 @@ export function Maimai2RecentPage() {
                       <div className="d-flex flex-row gap-2" style={{ alignItems: 'center' }}>
                         {hasCombo && (
                           <div className="col ms-1">
-                            <img className="honor-img" src={`${assetsHost}assets/mai2/common/${comboIcon(item.comboStatus)}.webp`} alt="" />
+                            <img className="honor-img" src={`${maiAssetsHost}assets/mai2/common/${comboIcon(item.comboStatus)}.webp`} alt="" />
                           </div>
                         )}
                         {hasMultiplayer && (
                           <>
                             <div className="col">
-                              <img className="honor-img" src={`${assetsHost}assets/mai2/common/${syncIcon(item.syncStatus)}.webp`} alt="" />
+                              <img className="honor-img" src={`${maiAssetsHost}assets/mai2/common/${syncIcon(item.syncStatus)}.webp`} alt="" />
                             </div>
                             <div className="col">
-                              <img className="rival-img" src={`${assetsHost}assets/mai2/common/${item.vsRank === 0 ? '1st' : '2nd'}.webp`} alt="" />
+                              <img className="rival-img" src={`${maiAssetsHost}assets/mai2/common/${item.vsRank === 0 ? '1st' : '2nd'}.webp`} alt="" />
                             </div>
                           </>
                         )}
                         {showClear && (
                           <div className="col ms-2">
-                            <img className="clear-img" src={`${assetsHost}assets/mai2/common/clear.webp`} alt="" />
+                            <img className="clear-img" src={`${maiAssetsHost}assets/mai2/common/clear.webp`} alt="" />
                           </div>
                         )}
                       </div>
