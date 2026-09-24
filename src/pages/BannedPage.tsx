@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './BannedPage.css';
 import { restoreAccess } from '@/lib/auth/access';
 import { logout } from '@/lib/auth/auth';
 
 /** 等价旧版 banned.component */
 export function BannedPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const appealGroup = '295954906';
@@ -31,15 +33,15 @@ export function BannedPage() {
     <main className="ban-page d-flex align-items-center justify-content-center text-center p-4">
       <div>
         <div className="ban-title">YOU ARE BANNED</div>
-        <div className="ban-title chinese">你被封禁了</div>
-        <p className="lead mt-4">当前账号无法使用 RinNET 网页服务。</p>
-        <p>如需申诉，请加入 QQ 群并联系群主：</p>
+        <div className="ban-title chinese">{t('BannedPage.Title')}</div>
+        <p className="lead mt-4">{t('BannedPage.Lead')}</p>
+        <p>{t('BannedPage.AppealHint')}</p>
         <button className="btn btn-lg btn-outline-light appeal" onClick={() => void copy()}>
-          {appealGroup} · {copied ? '已复制' : '复制群号'}
+          {appealGroup} · {copied ? t('BannedPage.Copied') : t('BannedPage.CopyGroup')}
         </button>
         <div className="mt-4">
           <button className="btn btn-light" onClick={doLogout}>
-            退出登录
+            {t('BannedPage.Logout')}
           </button>
         </div>
       </div>

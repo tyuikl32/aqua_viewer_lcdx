@@ -299,7 +299,7 @@ export function Maimai2SongListPage() {
 
       <div className="my-2 justify-content-end d-flex">
         <div className="text-nowrap d-flex" style={{ fontSize: '0.9rem' }}>
-          <span className="text-muted">{t('Maimai2.SongList.MatchingSongs')}：</span>
+          <span className="text-muted">{t('Maimai2.SongList.MatchingSongs')}{t('Common.Colon')}</span>
           <strong>{filteredSongs.length}</strong>
         </div>
       </div>

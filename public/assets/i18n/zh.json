@@ -185,6 +185,14 @@
       "SignOut": "登出"
     }
   },
+  "BannedPage": {
+    "AppealHint": "如需申诉，请加入 QQ 群并联系群主：",
+    "Copied": "已复制",
+    "CopyGroup": "复制群号",
+    "Lead": "当前账号无法使用 RinNET 网页服务。",
+    "Logout": "退出登录",
+    "Title": "你被封禁了"
+  },
   "CardsPage": {
     "AccessCode": "卡号",
     "AddAlias": "添加",
@@ -393,12 +401,14 @@
     "Colon": "：",
     "ConfirmTitle": "确认",
     "FailedToLoad": "加载失败",
+    "ImpersonationFailed": "无法建立夺舍会话，请关闭此窗口后重试。",
     "ListSeparator": "、",
     "Mai2": "舞萌DX",
     "NoCabinetPermission": "没有机台管理权限",
     "OK": "确定",
     "Ongeki": "音击",
-    "OperationFailed": "操作失败，请稍后重试"
+    "OperationFailed": "操作失败，请稍后重试",
+    "PageNotMigrated": "此页面尚未迁移到新版前端。"
   },
   "ContributorsPage": {
     "CDNProvider": "CDN提供",
@@ -523,6 +533,7 @@
     "RemoveMessage": "确定要删除这个机台吗？",
     "Rename": "重命名",
     "RenameFailed": "备注修改失败",
+    "RenamePlaceholder": "机台名",
     "RenameSuccess": "备注修改成功",
     "Title": "机台",
     "TrustFailed": "添加信任失败",
@@ -1226,6 +1237,7 @@
     },
     "UserRankingPage": {
       "Activity": "活跃度",
+      "DailyNote": "每天24:00统计当天游玩乐曲数。",
       "Rating": "评级",
       "Title": "玩家排行"
     }

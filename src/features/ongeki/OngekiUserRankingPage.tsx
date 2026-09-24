@@ -123,7 +123,7 @@ export function OngekiUserRankingPage() {
         <>
           <div className="hstack alert alert-info" role="alert">
             <InfoCircleFill className="me-2" />
-            每天24:00统计当天游玩乐曲数。
+            {t('Ongeki.UserRankingPage.DailyNote')}
           </div>
           <table className="table table-hover">
             <colgroup>

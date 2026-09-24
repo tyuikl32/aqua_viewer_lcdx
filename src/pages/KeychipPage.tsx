@@ -555,7 +555,7 @@ export function KeychipPage() {
             <input
               type="text"
               className="form-control mb-3"
-              placeholder="机台名"
+              placeholder={t('KeychipPage.RenamePlaceholder')}
               value={renameInput}
               onChange={(e) => setRenameInput(e.target.value)}
             />

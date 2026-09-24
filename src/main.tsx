@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@/styles/globals.css';
 import App from './app';
+import { translate } from '@/lib/i18n';
 import { installTheme } from '@/lib/theme';
 import { bootstrapImpersonation } from '@/lib/auth/impersonation';
 
@@ -12,7 +13,7 @@ async function start() {
   if (bootstrapResult === 'redirecting') return;
   if (bootstrapResult === 'failed') {
     const root = document.getElementById('root');
-    if (root) root.textContent = '无法建立夺舍会话，请关闭此窗口后重试。';
+    if (root) root.textContent = translate('Common.ImpersonationFailed');
     return;
   }
 

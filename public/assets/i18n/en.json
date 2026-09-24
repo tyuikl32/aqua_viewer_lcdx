@@ -185,6 +185,14 @@
       "SignOut": "Sign out"
     }
   },
+  "BannedPage": {
+    "AppealHint": "To appeal, join the QQ group and contact the group owner:",
+    "Copied": "Copied",
+    "CopyGroup": "Copy group number",
+    "Lead": "This account cannot use RinNET web services.",
+    "Logout": "Log out",
+    "Title": "You are banned"
+  },
   "CardsPage": {
     "AccessCode": "Access code",
     "AddAlias": "Add Alias",
@@ -393,12 +401,14 @@
     "Colon": ": ",
     "ConfirmTitle": "Confirm",
     "FailedToLoad": "Failed to load",
+    "ImpersonationFailed": "Could not start the impersonation session. Close this window and try again.",
     "ListSeparator": ", ",
     "Mai2": "Maimai DX",
     "NoCabinetPermission": "No permission for cabinet management",
     "OK": "OK",
     "Ongeki": "O.N.G.E.K.I.",
-    "OperationFailed": "Operation failed, please try again later"
+    "OperationFailed": "Operation failed, please try again later",
+    "PageNotMigrated": "This page has not been migrated to the new frontend yet."
   },
   "ContributorsPage": {
     "CDNProvider": "CDN Provider",
@@ -523,6 +533,7 @@
     "RemoveMessage": "Are you certain you wish to remove this keychip?",
     "Rename": "Rename",
     "RenameFailed": "Failed to update place name",
+    "RenamePlaceholder": "Cabinet name",
     "RenameSuccess": "Place name updated",
     "Title": "Keychip",
     "TrustFailed": "Failed to trust keychip",
@@ -1226,6 +1237,7 @@
     },
     "UserRankingPage": {
       "Activity": "Activity",
+      "DailyNote": "Play counts are tallied daily at 24:00.",
       "Rating": "Rating",
       "Title": "User Ranking"
     }
