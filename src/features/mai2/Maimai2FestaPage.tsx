@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/api/client';
 import { notice } from '@/lib/message';
+import { translate } from '@/lib/i18n';
 import { getCurrentUser, loadUser } from '@/lib/user';
 import type {
   ApiResponse,
@@ -49,10 +50,10 @@ function phaseColor(phase: string): string | undefined {
 }
 
 function phaseName(phase: string): string | undefined {
-  if (phase.toLowerCase() === 'init') return '未开催';
-  if (phase.toLowerCase() === 'voteteam') return '投票选队中';
-  if (phase.toLowerCase() === 'started') return '已开始';
-  if (phase.toLowerCase() === 'finished') return '已结束';
+  if (phase.toLowerCase() === 'init') return translate('Maimai2.FestaPage.Phase.Init');
+  if (phase.toLowerCase() === 'voteteam') return translate('Maimai2.FestaPage.Phase.VoteTeam');
+  if (phase.toLowerCase() === 'started') return translate('Maimai2.FestaPage.Phase.Started');
+  if (phase.toLowerCase() === 'finished') return translate('Maimai2.FestaPage.Phase.Finished');
   return undefined;
 }
 
@@ -105,6 +106,7 @@ function CircleRanking({
   checkboxId: string;
   onGlobalChange: (value: boolean) => void;
 }) {
+  const { t } = useTranslation();
   if (!items || items.length === 0) return null;
   return (
     <div className="card festa-ranking-card">
@@ -118,7 +120,7 @@ function CircleRanking({
             onChange={(event) => onGlobalChange(event.target.checked)}
             id={checkboxId}
           />
-          <label className="form-check-label small mb-0 mt-0" htmlFor={checkboxId}>全服</label>
+          <label className="form-check-label small mb-0 mt-0" htmlFor={checkboxId}>{t('Maimai2.FestaPage.Global')}</label>
         </div>
       </div>
       <div className="card-body">
@@ -228,13 +230,13 @@ export function Maimai2FestaPage() {
     <div className="maimai2-festa-page">
       <h1 className="page-heading">{t('Maimai2.FestaPage.Title')}</h1>
 
-      {!userCircleInfo?.joinedCircle && <div className="alert alert-info">你目前还没有加入任何Circle, 无法查看和参与当前Festa活动</div>}
+      {!userCircleInfo?.joinedCircle && <div className="alert alert-info">{t('Maimai2.FestaPage.NotInCircle')}</div>}
 
       {userCircleInfo?.joinedCircle && (
         <div>
           {current && currentData && (
             <h3 className="page-heading festa-current-section">
-              <span>当前进行的Festa活动 <small style={{ color: 'gray' }}>*每天7点更新</small></span>
+              <span>{t('Maimai2.FestaPage.CurrentSection')} <small style={{ color: 'gray' }}>{t('Maimai2.FestaPage.DailyUpdateHint')}</small></span>
               <div className="card shadow mb-4 mt-4">
                 <div className="card-header d-flex justify-content-between align-items-center">
                   <h5 className="mb-0">{current.name} - {current.festaTitle}</h5>
@@ -243,38 +245,38 @@ export function Maimai2FestaPage() {
                 <div className="card-body">
                   <div className="row">
                     <div className="col-md-6">
-                      <p><strong>版本:</strong> {current.releaseTagName}</p>
-                      <p><strong>报名选队时间:</strong> {eventTime(current.openEventId)}</p>
-                      <p><strong>正式开始时间:</strong> {eventStart(current.openEventId)}</p>
-                      <p><strong>结束结算时间:</strong> {eventTime(current.resultEventId)}</p>
-                      <p><strong>奖励边界:</strong> {current.rewardBorder} fp</p>
+                      <p><strong>{t('Maimai2.FestaPage.ReleaseTag')}</strong> {current.releaseTagName}</p>
+                      <p><strong>{t('Maimai2.FestaPage.EntryPeriod')}</strong> {eventTime(current.openEventId)}</p>
+                      <p><strong>{t('Maimai2.FestaPage.StartTime')}</strong> {eventStart(current.openEventId)}</p>
+                      <p><strong>{t('Maimai2.FestaPage.ResultTime')}</strong> {eventTime(current.resultEventId)}</p>
+                      <p><strong>{t('Maimai2.FestaPage.RewardBorder')}</strong> {current.rewardBorder} fp</p>
                     </div>
                     <div className="col-md-6">
-                      <p><strong>目前是否能报名:</strong> {String(!currentData.isCircleJoinNotAllowed)}</p>
-                      <p><strong>目前是否为拉力阶段:</strong> {String(currentData.isRallyPeriod)}</p>
+                      <p><strong>{t('Maimai2.FestaPage.CanEnter')}</strong> {String(!currentData.isCircleJoinNotAllowed)}</p>
+                      <p><strong>{t('Maimai2.FestaPage.IsRallyPeriod')}</strong> {String(currentData.isRallyPeriod)}</p>
                     </div>
                   </div>
                   <hr />
 
                   {current.festaPhaseState.toLowerCase() === 'voteteam' && (
                     <div>
-                      <strong>队伍投票</strong>
+                      <strong>{t('Maimai2.FestaPage.TeamVote')}</strong>
                       <ul className="list-group mt-2">
                         {currentData.festaSideDataList.map((side) => (
                           <li className="list-group-item d-flex justify-content-between align-items-center" key={side.festaSideId}>
                             <span style={{ color: sideColor(side.festaSideId) }}>{sideName(current, side.festaSideId)}</span>
-                            <button onClick={() => void vote(current.openEventId, side.festaSideId)} className="btn btn-sm btn-primary">投票</button>
+                            <button onClick={() => void vote(current.openEventId, side.festaSideId)} className="btn btn-sm btn-primary">{t('Maimai2.FestaPage.Vote')}</button>
                           </li>
                         ))}
                       </ul>
                       {votedSide > 0
-                        ? <p className="mt-2">你已选择队伍: <span style={{ color: sideColor(votedSide) }}>{sideName(current, votedSide)}</span></p>
-                        : <p style={{ color: 'red' }} className="mt-2">你目前还没投票选择队伍，请先投票，否则无法参与活动后续内容</p>}
+                        ? <p className="mt-2">{t('Maimai2.FestaPage.VotedTeam')} <span style={{ color: sideColor(votedSide) }}>{sideName(current, votedSide)}</span></p>
+                        : <p style={{ color: 'red' }} className="mt-2">{t('Maimai2.FestaPage.NotVotedWarning')}</p>}
                     </div>
                   )}
 
                   <div className="mt-2">
-                    <h6>队伍排名</h6>
+                    <h6>{t('Maimai2.FestaPage.TeamRanking')}</h6>
                     <FestaProgress sides={currentData.festaSideDataList} />
                     <ul className="list-group mt-2">
                       {currentData.festaSideDataList.map((side) => (
@@ -288,18 +290,18 @@ export function Maimai2FestaPage() {
 
                   {userFestaInfo?.userFestaData && (
                     <div className="card mt-4">
-                      <div className="card-header"><span>玩家与Circle情况 - {userFestaInfo.userFestaData.circleName}</span></div>
+                      <div className="card-header"><span>{t('Maimai2.FestaPage.PlayerAndCircle', { circleName: userFestaInfo.userFestaData.circleName })}</span></div>
                       <div className="card-body">
                         <div className="row">
                           <div className="col-md-6">
                             <p><strong>placeId:</strong> {userFestaInfo.userFestaData.placeId}</p>
-                            <p><strong>所属队伍与同队排名:</strong> <span style={{ color: sideColor(userFestaInfo.userFestaData.festaSideId) }}>{sideName(current, userFestaInfo.userFestaData.festaSideId)} {userFestaInfo.userFestaData.circleRankInFestaSide === 0 ? '' : formatRank(userFestaInfo.userFestaData.circleRankInFestaSide)}</span></p>
-                            <p><strong>Circle总分数:</strong> {userFestaInfo.userFestaData.circleTotalFestaPoint} fp</p>
+                            <p><strong>{t('Maimai2.FestaPage.SideAndRank')}</strong> <span style={{ color: sideColor(userFestaInfo.userFestaData.festaSideId) }}>{sideName(current, userFestaInfo.userFestaData.festaSideId)} {userFestaInfo.userFestaData.circleRankInFestaSide === 0 ? '' : formatRank(userFestaInfo.userFestaData.circleRankInFestaSide)}</span></p>
+                            <p><strong>{t('Maimai2.FestaPage.CircleTotalPoints')}</strong> {userFestaInfo.userFestaData.circleTotalFestaPoint} fp</p>
                           </div>
                           <div className="col-md-6">
-                            <p><strong>玩家分数:</strong> {userFestaInfo.userFestaData.currentTotalFestaPoint} fp</p>
-                            <p><strong>奖励还需分数:</strong> {userFestaInfo.userFestaData.receivedRewardBorder} fp</p>
-                            <p><strong>已领奖励:</strong> {String(userFestaInfo.userFestaData.participationRewardGet)}</p>
+                            <p><strong>{t('Maimai2.FestaPage.PlayerPoints')}</strong> {userFestaInfo.userFestaData.currentTotalFestaPoint} fp</p>
+                            <p><strong>{t('Maimai2.FestaPage.RewardPointsNeeded')}</strong> {userFestaInfo.userFestaData.receivedRewardBorder} fp</p>
+                            <p><strong>{t('Maimai2.FestaPage.RewardClaimed')}</strong> {String(userFestaInfo.userFestaData.participationRewardGet)}</p>
                           </div>
                         </div>
                       </div>
@@ -309,7 +311,7 @@ export function Maimai2FestaPage() {
                   <div className="row mt-4">
                     <div className="col-md-6">
                       <CircleRanking
-                        title="同队排行榜"
+                        title={t('Maimai2.FestaPage.SameSideRanking')}
                         items={sameSideRanks}
                         global={sameGlobal}
                         checkboxId="checkDefault"
@@ -321,7 +323,7 @@ export function Maimai2FestaPage() {
                     </div>
                     <div className="col-md-6">
                       <CircleRanking
-                        title="总排行榜"
+                        title={t('Maimai2.FestaPage.OverallRanking')}
                         items={allSideRanks}
                         global={allGlobal}
                         checkboxId="checkDefault2"
@@ -339,7 +341,7 @@ export function Maimai2FestaPage() {
 
           {result && resultData && (
             <div className="festa-result-section">
-              <h3 className="page-heading">最近结束的Festa活动</h3>
+              <h3 className="page-heading">{t('Maimai2.FestaPage.RecentSection')}</h3>
               <div className="card shadow mb-4">
                 <div className="card-header d-flex justify-content-between align-items-center">
                   <h5 className="mb-0">{result.name} - {result.festaTitle}</h5>
@@ -347,15 +349,15 @@ export function Maimai2FestaPage() {
                 </div>
                 <div className="card-body">
                   <div className="row"><div className="col-md-6">
-                    <p><strong>版本:</strong> {result.releaseTagName}</p>
-                    <p><strong>报名选队时间:</strong> {eventTime(result.openEventId)}</p>
-                    <p><strong>正式开始时间:</strong> {eventStart(current?.openEventId ?? result.openEventId)}</p>
-                    <p><strong>结束结算时间:</strong> {eventTime(result.resultEventId)}</p>
-                    <p><strong>奖励边界:</strong> {result.rewardBorder}</p>
+                    <p><strong>{t('Maimai2.FestaPage.ReleaseTag')}</strong> {result.releaseTagName}</p>
+                    <p><strong>{t('Maimai2.FestaPage.EntryPeriod')}</strong> {eventTime(result.openEventId)}</p>
+                    <p><strong>{t('Maimai2.FestaPage.StartTime')}</strong> {eventStart(current?.openEventId ?? result.openEventId)}</p>
+                    <p><strong>{t('Maimai2.FestaPage.ResultTime')}</strong> {eventTime(result.resultEventId)}</p>
+                    <p><strong>{t('Maimai2.FestaPage.RewardBorder')}</strong> {result.rewardBorder}</p>
                   </div></div>
                   <hr />
                   <div>
-                    <h6>最终队伍排名</h6>
+                    <h6>{t('Maimai2.FestaPage.FinalTeamRanking')}</h6>
                     <FestaProgress sides={resultData.resultFestaSideDataList} />
                     <ul className="list-group mt-2">
                       {resultData.resultFestaSideDataList.map((side) => (
@@ -368,13 +370,13 @@ export function Maimai2FestaPage() {
                   </div>
                   <hr />
                   <div className="card">
-                    <div className="card-header"><span>Circle情况 - {userResultFestaInfo?.circle?.circleName}</span></div>
+                    <div className="card-header"><span>{t('Maimai2.FestaPage.CircleStatus', { circleName: userResultFestaInfo?.circle?.circleName })}</span></div>
                     <div className="card-body"><div className="row">
                       <div className="col-md-6">
-                        <p><strong>所属队伍与排名:</strong> {userResultFestaInfo?.userResultFestaData && <span style={{ color: sideColor(userResultFestaInfo.userResultFestaData.festaSideId) }}>{sideName(result, userResultFestaInfo.userResultFestaData.festaSideId)} {userResultFestaInfo.userResultFestaData.circleRankInFestaSide === 0 ? '' : formatRank(userResultFestaInfo.userResultFestaData.circleRankInFestaSide)}</span>}</p>
-                        <p><strong>队伍总分数:</strong> {userResultFestaInfo?.userResultFestaData?.circleTotalFestaPoint}</p>
+                        <p><strong>{t('Maimai2.FestaPage.SideAndOverallRank')}</strong> {userResultFestaInfo?.userResultFestaData && <span style={{ color: sideColor(userResultFestaInfo.userResultFestaData.festaSideId) }}>{sideName(result, userResultFestaInfo.userResultFestaData.festaSideId)} {userResultFestaInfo.userResultFestaData.circleRankInFestaSide === 0 ? '' : formatRank(userResultFestaInfo.userResultFestaData.circleRankInFestaSide)}</span>}</p>
+                        <p><strong>{t('Maimai2.FestaPage.TeamTotalPoints')}</strong> {userResultFestaInfo?.userResultFestaData?.circleTotalFestaPoint}</p>
                       </div>
-                      <div className="col-md-6"><p><strong>玩家分数:</strong> {userResultFestaInfo?.userFestaData?.currentTotalFestaPoint}</p></div>
+                      <div className="col-md-6"><p><strong>{t('Maimai2.FestaPage.PlayerPoints')}</strong> {userResultFestaInfo?.userFestaData?.currentTotalFestaPoint}</p></div>
                     </div></div>
                   </div>
                 </div>
