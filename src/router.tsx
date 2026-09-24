@@ -41,6 +41,7 @@ import { Maimai2PhotosPage } from '@/features/mai2/Maimai2PhotosPage';
 import { Maimai2DxPassPage } from '@/features/mai2/Maimai2DxPassPage';
 import { Maimai2RivalPage } from '@/features/mai2/Maimai2RivalPage';
 import { Maimai2CabinetsPage } from '@/features/mai2/Maimai2CabinetsPage';
+import { Maimai2RemoteControlPage } from '@/features/mai2/Maimai2RemoteControlPage';
 import { Maimai2SettingPage } from '@/features/mai2/Maimai2SettingPage';
 import { Maimai2SongListPage } from '@/features/mai2/Maimai2SongListPage';
 import { Maimai2RecentPage } from '@/features/mai2/Maimai2RecentPage';
@@ -234,6 +235,15 @@ export const router = createBrowserRouter([
               </RequireCabinetManage>
             ),
             handle: { title: 'Cabinets' },
+          },
+          {
+            path: 'remotecontrol',
+            element: (
+              <RequireCabinetManage>
+                <Maimai2RemoteControlPage />
+              </RequireCabinetManage>
+            ),
+            handle: { title: 'RemoteControl' },
           },
         ],
       },

@@ -64,6 +64,7 @@ export const menu = new Map<string, Menu[]>([
       { id: 7, name: 'Rival', url: 'mai2/rival', displayCondition: DisplayCondition.HasProfile },
       // LCDX 机台管理（等价旧版 menu.service：AfterLogin + requiredBotPermission 门控）
       { id: 11, name: 'Cabinets', url: 'mai2/cabinets', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },
+      { id: 13, name: 'RemoteControl', url: 'mai2/remotecontrol', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },
       { id: 6, name: 'MusicList', url: 'mai2/songlist', displayCondition: DisplayCondition.Always },
       { id: 1, name: 'Setting', url: 'mai2/setting', displayCondition: DisplayCondition.HasProfile },
     ],
