@@ -1,4 +1,10 @@
 /* 等价旧版 ongeki-song-list.component.css */
+.ongeki-song-list-page .input-container {
+  /* Liquefy's backdrop-filter creates a stacking context on both the input
+     container and cards. Lift the container so its suggestions cover cards. */
+  z-index: 3;
+}
+
 .ongeki-song-list-page .input-container:focus-within{
   color: var(--bs-body-color);
   background-color: var(--bs-body-bg);
