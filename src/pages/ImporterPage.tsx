@@ -3,6 +3,7 @@ import { LiquidAlert, LiquidButton, LiquidSurface } from '@liquefy-ui/react';
 import { Button as AnimalButton, Card as AnimalCard } from 'animal-island-ui';
 import { useId, useRef, type RefObject } from 'react';
 import { api } from '@/lib/api/client';
+import { translate } from '@/lib/i18n';
 import { notice } from '@/lib/message';
 import { useTheme } from '@/lib/theme';
 
@@ -14,18 +15,18 @@ function uploadDocument(file: File, path: string, type: string) {
       if (j.gameId === type) {
         void api
           .post(path, j)
-          .then(() => notice('OK'))
-          .catch((error) => notice(String(error)));
+          .then(() => notice(translate('ImporterPage.Success')))
+          .catch(() => notice(translate('Common.OperationFailed')));
       } else {
-        notice('Wrong Game ID, please check you have select the correct file.');
+        notice(translate('ImporterPage.WrongGameId'));
       }
     } catch (e) {
       console.log(e);
-      notice('Wrong Game ID, please check you have select the correct file.');
+      notice(translate('ImporterPage.WrongGameId'));
     }
   };
   fileReader.readAsText(file);
-  notice('Uploading...');
+  notice(translate('ImporterPage.Uploading'));
 }
 
 function ImportWarning() {

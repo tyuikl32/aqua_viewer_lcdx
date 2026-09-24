@@ -151,8 +151,8 @@ export function Maimai2RecentPage() {
         if (!active) return;
         setRecent(rows);
         setTotalElements(data.totalElements ?? rows.length);
-      } catch (error) {
-        if (active) notice(String(error));
+      } catch {
+        if (active) notice(t('Common.OperationFailed'));
       }
     })();
     return () => { active = false; };

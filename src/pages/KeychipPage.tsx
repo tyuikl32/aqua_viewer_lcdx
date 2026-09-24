@@ -118,14 +118,14 @@ export function KeychipPage() {
           if (resp.status.code === StatusCode.OK && resp.data) {
             setKeychips(resp.data.map(mapKeychip));
           } else {
-            notice(resp.status.message);
+            notice(t('KeychipPage.LoadFailed'));
           }
         } else {
-          notice('Load keychips failed.');
+          notice(t('KeychipPage.LoadFailed'));
         }
         setKeychipLoaded(true);
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('KeychipPage.LoadFailed')));
 
     void api
       .get('api/user/keychip/trustKeychip')
@@ -134,14 +134,15 @@ export function KeychipPage() {
           if (resp.status.code === StatusCode.OK && resp.data) {
             setTrustKeychips(resp.data.map((d: any) => mapKeychip(d.keychip)));
           } else {
-            notice(resp.status.message);
+            notice(t('KeychipPage.LoadFailed'));
           }
         } else {
-          notice('Load keychips failed.');
+          notice(t('KeychipPage.LoadFailed'));
         }
         setTrustKeychipLoaded(true);
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('KeychipPage.LoadFailed')));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function genKeychip() {
@@ -152,13 +153,13 @@ export function KeychipPage() {
           if (resp.status.code === StatusCode.OK) {
             setKeychips((list) => [...list, mapKeychip(resp.data)]);
           } else {
-            notice(resp.status.message);
+            notice(t('KeychipPage.GenerateFailed'));
           }
         } else {
-          notice('Gen keychip failed.');
+          notice(t('KeychipPage.GenerateFailed'));
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('KeychipPage.GenerateFailed')));
   }
 
   function onTrustKeychipSubmit() {
@@ -172,13 +173,13 @@ export function KeychipPage() {
             setTrustKeychips((list) => [...list, mapKeychip(resp.data.keychip)]);
             setTrustIdInput('');
           } else {
-            notice(resp.status.message);
+            notice(t('KeychipPage.TrustFailed'));
           }
         } else {
-          notice('Trust keychip failed.');
+          notice(t('KeychipPage.TrustFailed'));
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('KeychipPage.TrustFailed')));
     setTrustModalOpen(false);
   }
 
@@ -193,15 +194,15 @@ export function KeychipPage() {
             setKeychips((list) =>
               list.map((k) => (k.id === renaming.id ? { ...k, placeName: renameInput } : k)),
             );
-            notice('Modify place name success.', 'success');
+            notice(t('KeychipPage.RenameSuccess'), 'success');
           } else {
-            notice(resp.status.message);
+            notice(t('KeychipPage.RenameFailed'));
           }
         } else {
-          notice('Modify place name failed.', 'danger');
+          notice(t('KeychipPage.RenameFailed'), 'danger');
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('KeychipPage.RenameFailed')));
     setRenaming(null);
   }
 
@@ -213,13 +214,13 @@ export function KeychipPage() {
           if (resp.status.code === StatusCode.OK) {
             setKeychips((list) => list.filter((k) => k !== keychip));
           } else {
-            notice(resp.status.message);
+            notice(t('KeychipPage.RemoveFailed'));
           }
         } else {
-          notice('Remove keychip failed.');
+          notice(t('KeychipPage.RemoveFailed'));
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('KeychipPage.RemoveFailed')));
     setRemoving(null);
   }
 
@@ -232,13 +233,13 @@ export function KeychipPage() {
           if (resp.status.code === StatusCode.OK) {
             setTrustKeychips((list) => list.filter((k) => k !== keychip));
           } else {
-            notice(resp.status.message);
+            notice(t('KeychipPage.UntrustFailed'));
           }
         } else {
-          notice('Untrust keychip failed.');
+          notice(t('KeychipPage.UntrustFailed'));
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('KeychipPage.UntrustFailed')));
     setUntrusting(null);
   }
 
@@ -318,8 +319,8 @@ export function KeychipPage() {
   }
 
   function copyKeychip(keychip: UiKeychip) {
-    const ok = () => notice('Value has been copied.', 'success');
-    const fail = () => notice('Copying failed.', 'danger');
+    const ok = () => notice(t('KeychipPage.CopySuccess'), 'success');
+    const fail = () => notice(t('KeychipPage.CopyFailed'), 'danger');
     if (navigator.clipboard) {
       navigator.clipboard.writeText(keychip.keychipId.fullValue).then(ok, fail);
     } else {
@@ -589,7 +590,7 @@ export function KeychipPage() {
             <input
               type="text"
               className="form-control mb-3"
-              placeholder="KeychipId"
+              placeholder={t('KeychipPage.KeychipIdPlaceholder')}
               value={trustIdInput}
               onChange={(e) => setTrustIdInput(e.target.value)}
             />

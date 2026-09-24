@@ -26,7 +26,7 @@ export function Maimai2ProfilePage() {
         return api.get('api/game/maimai2/profile', { aimeId });
       })
       .then((data) => setProfile(data as DisplayMaimai2Profile))
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }, []);
 
   return (

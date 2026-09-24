@@ -96,13 +96,13 @@ export function CardsPage() {
           reload();
           notice(t('CardsPage.SetDefaultSuccessMessage'), 'success');
         } else {
-          notice(resp.status.message);
+          notice(t('CardsPage.SetDefaultFailed'));
         }
       } else {
-        notice('Set default card failed.');
+        notice(t('CardsPage.SetDefaultFailed'));
       }
-    } catch (error) {
-      notice(String(error));
+    } catch {
+      notice(t('Common.OperationFailed'));
     }
   }
 
@@ -111,10 +111,10 @@ export function CardsPage() {
       const resp = await api.post('api/user/unbindCard/', { accessCode: card.luid });
       if (resp?.status) {
         if (resp.status.code === StatusCode.OK) reload();
-        else notice(resp.status.message);
-      } else notice('Unbind card failed.');
-    } catch (error) {
-      notice(String(error));
+        else notice(t('CardsPage.UnbindFailed'));
+      } else notice(t('CardsPage.UnbindFailed'));
+    } catch {
+      notice(t('Common.OperationFailed'));
     }
     setModal({ kind: 'none' });
   }
@@ -124,10 +124,10 @@ export function CardsPage() {
       const resp = await api.delete('api/user/removeCardExternal', undefined, { accessCode: external.luid });
       if (resp?.status) {
         if (resp.status.code === StatusCode.OK) reload();
-        else notice(resp.status.message);
-      } else notice('Remove alias failed.');
-    } catch (error) {
-      notice(String(error));
+        else notice(t('CardsPage.RemoveAliasFailed'));
+      } else notice(t('CardsPage.RemoveAliasFailed'));
+    } catch {
+      notice(t('Common.OperationFailed'));
     }
     setModal({ kind: 'none' });
   }
@@ -149,11 +149,11 @@ export function CardsPage() {
         } else if (statusCode === StatusCode.CARD_ALREADY_LINKED_BY_OTHERS) {
           notice(t('CardsPage.AlreadyBoundToOthersMessage'), 'danger');
         } else {
-          notice(resp.status.message);
+          notice(t('CardsPage.BindFailed'));
         }
-      } else notice('Bind card failed.');
-    } catch (error) {
-      notice(String(error));
+      } else notice(t('CardsPage.BindFailed'));
+    } catch {
+      notice(t('Common.OperationFailed'));
     }
     setModal({ kind: 'none' });
   }
@@ -170,11 +170,11 @@ export function CardsPage() {
         } else if (statusCode === StatusCode.ADD_ACCESS_CODE_ERROR) {
           notice(t('CardsPage.AddAliasErrorMessage'), 'danger');
         } else {
-          notice(resp.status.message);
+          notice(t('CardsPage.AddAliasFailed'));
         }
-      } else notice('Add alias failed.');
-    } catch (error) {
-      notice(String(error));
+      } else notice(t('CardsPage.AddAliasFailed'));
+    } catch {
+      notice(t('Common.OperationFailed'));
     }
     setModal({ kind: 'none' });
   }
@@ -192,11 +192,11 @@ export function CardsPage() {
         } else if (statusCode === StatusCode.CHANGE_ACCESS_CODE_ERROR) {
           notice(t('CardsPage.ChangeAccessCodeErrorMessage'), 'danger');
         } else {
-          notice(resp.status.message);
+          notice(t('CardsPage.ChangeAccessCodeFailed'));
         }
-      } else notice('Change access code failed.');
-    } catch (error) {
-      notice(String(error));
+      } else notice(t('CardsPage.ChangeAccessCodeFailed'));
+    } catch {
+      notice(t('Common.OperationFailed'));
     }
     setModal({ kind: 'none' });
   }

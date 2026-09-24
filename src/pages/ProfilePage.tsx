@@ -152,16 +152,16 @@ export function ProfilePage() {
           ) {
             notifyTotpCodeError(resp);
           } else {
-            notice(resp.status.message);
+            notice(t('ProfilePage.LinkFailed'));
             setLinkModalOpen(false);
           }
         } else {
-          notice('Link failed.');
+          notice(t('ProfilePage.LinkFailed'));
           setLinkModalOpen(false);
         }
       })
-      .catch((error) => {
-        notice(String(error));
+      .catch(() => {
+        notice(t('Common.OperationFailed'));
         setLinkModalOpen(false);
       });
   }
@@ -174,13 +174,13 @@ export function ProfilePage() {
           if (resp.status.code === StatusCode.OK) {
             void loadUser(true);
           } else {
-            notice(resp.status.message);
+            notice(t('ProfilePage.UnlinkFailed'));
           }
         } else {
-          notice('Unlink failed.');
+          notice(t('ProfilePage.UnlinkFailed'));
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }
 
   function loadPasskeys() {
@@ -234,10 +234,10 @@ export function ProfilePage() {
         if (resp?.status?.code === StatusCode.OK) {
           loadPasskeys();
         } else {
-          notice(resp?.status?.message);
+          notice(t('ProfilePage.OperationFailed'));
         }
       })
-      .catch((error) => notice(String(error)));
+      .catch(() => notice(t('Common.OperationFailed')));
   }
 
   function notifyPasskeyError() {
@@ -267,7 +267,7 @@ export function ProfilePage() {
           return;
         }
         if (resp?.status?.code !== StatusCode.OK || !resp.data) {
-          notice(resp?.status?.message);
+          notice(t('ProfilePage.OperationFailed'));
           setPasswordModalOpen(false);
           return;
         }
@@ -284,9 +284,9 @@ export function ProfilePage() {
             setSetupModalOpen(true);
           });
       })
-      .catch((error) => {
+      .catch(() => {
         setTotpBusy(false);
-        notice(String(error));
+        notice(t('Common.OperationFailed'));
       });
   }
 
@@ -308,9 +308,9 @@ export function ProfilePage() {
           notifyTotpCodeError(resp);
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setTotpBusy(false);
-        notice(String(error));
+        notice(t('Common.OperationFailed'));
       });
   }
 
@@ -327,9 +327,9 @@ export function ProfilePage() {
           notifyTotpCodeError(resp);
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setTotpBusy(false);
-        notice(String(error));
+        notice(t('Common.OperationFailed'));
       });
   }
 
@@ -380,9 +380,9 @@ export function ProfilePage() {
           notifyTotpCodeError(resp);
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setTotpBusy(false);
-        notice(String(error));
+        notice(t('Common.OperationFailed'));
       });
   }
 
@@ -398,7 +398,7 @@ export function ProfilePage() {
     if (key) {
       notice(t(key), 'danger');
     } else {
-      notice(resp?.status?.message);
+      notice(t('ProfilePage.OperationFailed'));
     }
   }
 
