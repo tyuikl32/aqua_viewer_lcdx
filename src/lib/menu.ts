@@ -62,6 +62,7 @@ export const menu = new Map<string, Menu[]>([
       { id: 9, name: 'Festa', url: 'mai2/festa', displayCondition: DisplayCondition.HasProfile },
       { id: 10, name: 'ServerMissions', url: 'mai2/servermissions', displayCondition: DisplayCondition.HasProfile },
       { id: 7, name: 'Rival', url: 'mai2/rival', displayCondition: DisplayCondition.HasProfile },
+      { id: 15, name: 'KOP', url: 'mai2/kop', displayCondition: DisplayCondition.HasProfile },
       // LCDX 机台管理（等价旧版 menu.service：AfterLogin + requiredBotPermission 门控）
       { id: 11, name: 'Cabinets', url: 'mai2/cabinets', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },
       { id: 12, name: 'CabinetControl', url: 'mai2/cabmode', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },

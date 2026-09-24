@@ -1,0 +1,12 @@
+/* KOP 排行（等价旧版 maimai2-kop-ranking.component.scss + styles/public.ranking.scss 的表格部分）
+ * 注：旧版 th/td 规则是全局的（Angular 组件隔离 + 全局样式表），React 侧限定在页面容器内避免污染。 */
+
+.kop-ranking-page .medal {
+  width: 2em;
+}
+
+.kop-ranking-page th,
+.kop-ranking-page td {
+  display: table-cell;
+  vertical-align: middle;
+}

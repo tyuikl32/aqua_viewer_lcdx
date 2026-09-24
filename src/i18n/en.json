@@ -807,6 +807,13 @@
       "Copied": "Copied {{text}}",
       "CopyFailed": "Copy failed, please select the text manually",
       "LoadFailed": "Failed to load data"
+    },
+    "KopPage": {
+      "Date": "Date",
+      "Name": "Name",
+      "NoRanking": "No ranking in progress.",
+      "Rank": "Rank",
+      "Score": "Score"
     }
   },
   "NetCodeBindPage": {
