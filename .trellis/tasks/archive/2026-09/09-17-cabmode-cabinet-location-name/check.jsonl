@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Audit against quality guidelines (template/localization/testing baseline)"}
+{"file": "AGENTS.md", "reason": "Verify Angular/Bootstrap conventions and no backend contract drift"}

@@ -1,0 +1,103 @@
+# Quality Guidelines
+
+> Code quality standards for frontend development.
+
+---
+
+## Overview
+
+Standards distilled from the mai2 cabinet management work (2026-08). Scope: `aqua_viewer_lcdx` frontend and its integration with `LCDXNetApi`.
+
+---
+
+## Forbidden Patterns
+
+### HTTP DELETE with a request body (non-standard transport)
+
+- `ApiService.deleteLcdx(path, body)` sends a body via HttpClient's `{body}` option (see `api.service.ts`). ASP.NET Core accepts `[FromBody]` on DELETE, but some proxies/gateways strip DELETE bodies.
+- For **new** endpoints, prefer path/query parameters. The existing `deleteLcdx` variant is kept for already-settled cabinet endpoints — do not add new body-carrying DELETE calls.
+
+---
+
+## Required Patterns
+
+### Service stubbing in specs
+
+- `jasmine.createSpyObj` requires a **non-empty** method-name array; and its third-argument property object already installs property spies — calling `spyOnProperty` on the same property afterwards throws `currentValue#get has already been spied upon`.
+- For services consumed via getter properties (`currentValue`, `currentAccountValue`), stub with a plain object + closure-backed getter:
+
+```typescript
+let permState = {permission: 0, hasManage: false, loaded: true};
+botPermission = {get currentValue() { return permState; }} as unknown as BotPermissionService;
+```
+
+This allows re-stubbing per test case without spy bookkeeping.
+
+### Guards
+
+- Guard classes: `providedIn: 'root'`, synchronous `canActivate(): boolean | UrlTree` unless async work is genuinely required (sync exemplar: `cabinet-guards.service.ts`; justified-async case: `auth-guard.service.ts`).
+
+### ngx-pagination: `<pagination-controls>` must be paired with a `paginate` pipe (matching `id`)
+
+- In ngx-pagination 6.x, `pagination-controls` has **no** `totalItems` input. It renders page links only from the `PaginationInstance` that a `paginate` pipe registers in the shared `PaginationService` under a matching `id`.
+- A bare `<pagination-controls>` with no paired pipe computes `pages = []`; with `autoHide` it renders **nothing** — silently non-functional, no compile error.
+- Correct pairing (client-side slicing, exemplar: `maimai2-locks` 卡B grants table):
+
+```html
+@for (g of pagedGrants | paginate: {id: 'grants', itemsPerPage: grantPageSize, currentPage: grantPage, totalItems: filteredGrants.length}; ...) { ... }
+<pagination-controls id="grants" (pageChange)="grantPageChanged($event)" [maxSize]="5" [autoHide]="true"></pagination-controls>
+```
+
+- For server-side paging (EP-14 style), pipe the server-returned slice with `totalItems` set to the server-reported total; when `totalItems !== slice.length` the pipe passes the collection through unchanged while still registering the controls' state (exemplar: `maimai2-locks` 卡A audit table, fixed 2026-08-22 after shipping bare and rendering nothing).
+- `[rotate]` is not a real input of `pagination-controls` (harmless no-op; removed from both locks cards — do not reintroduce).
+
+### Cabinet selects: show alias (locationName) and never stretch the box
+
+- Cabinet dropdowns on cabmode / remotecontrol / locks must match cabinets page option text:
+  - `{{ cab.nickName || cab.fullKeychip }}@if (cab.locationName) {<text> ({{ cab.locationName }})</text>}`
+- Keep `[ngValue]="cab.nickName ?? cab.fullKeychip"` — backend locate contract (NickName exact → FullKeychip.Contains) must not change for display reasons.
+- Long option text must **not** widen the closed select or the Bootstrap grid column. Use the shared classes on the select and its wrapping column (see `maimai2-remote-control` / `maimai2-locks` / `maimai2-cabmode`):
+  - column: `cabinet-select-col` → `min-width: 0` (prevents flex/grid auto min-content from inflating the column)
+  - select: `form-select cabinet-select` → `width/max-width/min-width: 100%|0` + `text-overflow: ellipsis`
+- Do not widen `col-md-*` to fit longer names; truncation in the closed control is expected.
+
+### User-facing messages must be localized (no raw `status.message` passthrough)
+
+- Backend `status.message` is **English** (`"Login success"`, etc.). Displaying it directly to the user is a defect: `this.messageService.notice(resp.status.message)` produces English toasts on the Chinese-facing site.
+- Rule: any success/failure toast shown after a user action **must** resolve through `TranslateService` with a key in `src/assets/i18n/zh.json` **and** `en.json` (add both keys in the same change).
+- Exemplar (introduced 2026-08-22, login success localization):
+
+```typescript
+this.translate.get('SignInPage.LoginSuccessMessage').subscribe(message => {
+  this.messageService.notice(message);
+});
+```
+
+- Existing localized keys to reuse: `SignInPage.LoginSuccessMessage` / `LoginFailedMessage` / `TotpInvalidMessage` / `TotpLockedMessage`.
+- Known debt (do not extend it): ~40 call sites still pass `resp.status.message` straight to `messageService.notice` (dashboard, cards, keychip, announcements, profile, maimai2-setting, …). New code must not add to this list; migrating existing sites is tracked separately.
+
+---
+
+## Testing Requirements
+
+- `ng test` **baseline is NOT all-green**: 54 pre-existing failures from Ongeki/Chunithm legacy specs (missing providers) — unrelated to new work (session-observed count, 2026-08; re-count on the next full run). Run scoped specs instead and compare totals against this baseline:
+
+```powershell
+npx ng test --include "src/app/auth/*.spec.ts" --watch=false --browsers=ChromeHeadless
+```
+
+- Backend counterpart: `dotnet test LCDXNetApi.sln` (cwd = `LCDXNetApi`), expected 95/95 green; use `--filter` for scoped runs.
+
+---
+
+## Code Review Checklist
+
+- **IDE auto-revert hazard**: this workspace's IDE occasionally restores old buffer contents over just-edited files (hit ~10× during cabinet work). After each edit batch, re-verify the critical file state before building; if a change vanished, re-apply it via a one-shot script instead of repeating single edits.
+- New user-facing strings: prefer i18n keys unless the surrounding feature is deliberately single-language. Never render raw `resp.status.message` in a toast — see "User-facing messages must be localized" above.
+- Route-guard changes: confirm guard tier (`hasManage` vs `ADMIN_PERMISSION >= 10`) matches the page's permission tier in design §3.2.
+
+### Angular template expressions and numeric inputs
+
+- Do not call JavaScript global constructors or static methods such as `Number(...)`, `Number.parseInt(...)`, or `parseFloat(...)` from an Angular template event binding. Angular template expressions are evaluated against the component context, so a missing component member can fail only at runtime while the application still compiles.
+- For native numeric inputs, prefer `[(ngModel)]` with `type="number"`; Angular's `NumberValueAccessor` keeps the bound value numeric and handles the empty state as `null`. If custom conversion is required, put it in a component method or a typed value accessor and test the actual DOM event.
+- Add a component regression test that dispatches an input/change event and verifies both the bound value and any dependent `[disabled]` state. A TypeScript-only test is insufficient for template binding regressions.

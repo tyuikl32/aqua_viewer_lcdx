@@ -1,0 +1,54 @@
+# Workspace Index - Xavior
+
+> Journal tracking for AI development sessions.
+
+---
+
+## Current Status
+
+<!-- @@@auto:current-status -->
+- **Active File**: `journal-1.md`
+- **Total Sessions**: 14
+- **Last Active**: 2026-09-17
+<!-- @@@/auto:current-status -->
+
+---
+
+## Active Documents
+
+<!-- @@@auto:active-documents -->
+| File | Lines | Status |
+|------|-------|--------|
+| `journal-1.md` | ~459 | Active |
+<!-- @@@/auto:active-documents -->
+
+---
+
+## Session History
+
+<!-- @@@auto:session-history -->
+| # | Date | Title | Commits | Branch |
+|---|------|-------|---------|--------|
+| 14 | 2026-09-17 | remote/locks cabinet locationName no-stretch | `476884a` | `master` |
+| 13 | 2026-09-17 | cabmode cabinet list locationName | `2c38fee` | `master` |
+| 12 | 2026-08-24 | cabmode restore-default + cabinets daily column + audit spec repairs | `43c15cd` | `master` |
+| 11 | 2026-08-22 | Align merge date labels | - | `master` |
+| 10 | 2026-08-22 | Fix locks audit card pagination controls | `4380d32` | `master` |
+| 9 | 2026-08-22 | Three UI bugfixes: switch, column shift, merge cancel toast | `b2fb9dc` | `master` |
+| 8 | 2026-08-22 | Locks page grants card pagination | `307b42f` | `master` |
+| 7 | 2026-08-22 | Static audit closure of mai2 cabinet frontend | - | `master` |
+| 6 | 2026-08-22 | Trellis task audit and closure | - | `master` |
+| 5 | 2026-08-22 | Locks page permission tiers frontend | `b4e2aa4` | `master` |
+| 4 | 2026-08-20 | restore cabinet modes 0/4/10 and add mode 5 | `28c9905` | `master` |
+| 3 | 2026-08-20 | CiRCLE PLUS 机台模式调整 | `26b6acc` | `master` |
+| 2 | 2026-08-20 | 主页右栏全服游玩人数 | `c4ae972` | `master` |
+| 1 | 2026-08-18 | 机台管理实施完成 + 逐功能提交纪律落地 | `ec2e420`, `447af2b`, `0c06efd` | `master` |
+<!-- @@@/auto:session-history -->
+
+---
+
+## Notes
+
+- Sessions are appended to journal files
+- New journal file created when current exceeds 2000 lines
+- Use `add_session.py` to record sessions
