@@ -49,18 +49,19 @@ Commits so far on `migrate/react-port`:
 - [x] **`maiAssetsHost`** added to `src/lib/utils.ts`; **`public/assets/laochan.svg`** ported.
 - [ ] ⚠️ **Deferred to Phase 5 — PWA service worker not generated**: `vite build` exits 0 but `vite-plugin-pwa` `closeBundle` throws `MODULE_NOT_FOUND: @rollup/plugin-babel`, so `dist/sw.js` / `dist/registerSW.js` are missing (manifest.webmanifest IS emitted). Likely a vite-plugin-pwa↔vite-8 incompatibility or missing optional dep. Decide: add the dep, pin/patch the plugin, or drop PWA. Does not block feature work.
 
-### Phase 2 — Cabinet pages (IN PROGRESS — cabinets first)
+### Phase 2 — Cabinet pages (IN PROGRESS — 2 of 4 done: cabinets ✅, remote-control ✅; next: locks, then cabmode)
 
-Order (risk ascending): models+CabinetsPage → RemoteControlPage → LocksPage → CabmodePage. Each = route in `src/router.tsx` mai2 children + guards + menu entries in `src/lib/menu.ts` + i18n keys already present (Maimai2.* 168 keys).
+**Done (all committed):**
+- `src/features/mai2/cabinet-models.ts` — ALL cabinet DTOs + LC_MODES / CABINET_LEVELS / LCSET_KEYS / REMOTE_COMMANDS / `truncateFileName` + `formatFullDateTime|formatClock|formatShortDateTime` (Angular date-pipe equivalents).
+- `src/features/mai2/Maimai2CabinetsPage.tsx` (commit `2c06ff2`) — EP-19 selector, EP-04/05/06/07 cards, 30s auto-refresh, `progressBadgeClass`.
+- `src/features/mai2/Maimai2RemoteControlPage.tsx` + `.css` (commit `2ed986d`) — role-filtered commands, EP-13 send, 2s×30 polling by requestId, session log (printscr `<img>` / text `<pre>`).
+- `src/router.tsx` — `RequireCabinetManage` (EP-18) + `RequireCabinetAdmin` (P≥4), **both exported** (Admin is consumed by locks); routes `mai2/cabinets`, `mai2/remotecontrol`.
+- `src/lib/menu.ts` — `Menu.requiredBotPermission`; `showItem` AfterLogin honors it (0=hasManage, >0=min permission); Cabinets + RemoteControl entries.
+- `src/components/shell/AppShell.tsx` — `useBotPermission()` in `SidebarNav` so async permission load re-renders gated menu items.
 
-- Guard design (port of `master:src/app/auth/cabinet-guards.service.ts`): React components `RequireCabinetManage` (hasManage; !loaded → pass-through, page-level empty-list fallback) and `RequireCabinetAdmin` (permission≥4), pattern-copy `RequireAdmin` in router.tsx. Deny → `notice(t('Common.NoCabinetPermission'))` + Navigate /dashboard.
-- Menu gating (port of master menu.service): extend `Menu` interface with `requiredBotPermission?: number` (0=hasManage, >0=min permission); `showItem` checks it for AfterLogin items.
-- Angular sources to port (read intent, re-express in React/shadcn; upstream pattern references: `AdminPage.tsx` for authed data pages, `KeychipPage` etc.):
-  - `maimai2-cabinets.component.{ts,html,css}` — cabinet list cards, 4 player-count windows (incl. daily today count via `lcdx/cabinet/global-players`)
-  - `maimai2-remote-control.component.{ts,html,css}` — command select (permission-filtered), reboot, cabinet select w/ locationName
-  - `maimai2-locks.component.{ts,html,css}` + spec — three cards: member perms (inline note edit, P10 must-note, column sort, filter ≤ own), grants, admin perms (P≥7); pagination restyle
-  - `maimai2-cabmode.component.{ts,html,css}` — mode card (CabmodeList catalog-driven), LC settings card (9 keys + restore-default, P≥4; cc CustomCameraConfig editable, note = format hint), level card (P4-6 → 2-5, P7+ full), reboot card
-  - `sega/maimai2/model/CabinetModels.ts` → types into mai2 models
+**⭐ Key convention:** upstream React **keeps Bootstrap class names** (`card`, `row/col`, `form-select`, `badge text-bg-*`, `page-heading`) — `globals.css` rebuilds the `--bs-*` tokens. So LCDX Angular templates translate almost 1:1 into JSX; only @if/@for/ngModel/pipes become React state. **Do NOT rewrite these pages into shadcn/Tailwind** — Bootstrap keeps 1:1 visual parity.
+
+**Next — locks** (`master:src/app/sega/maimai2/maimai2-locks/`: 380 ts + 311 html + 13 css). Three cards + member-permission table:
 
 ### Phase 3 — Setting merge block + standalone pages (NOT STARTED)
 
