@@ -19,11 +19,11 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'assets/turtle.svg'],
+      includeAssets: ['favicon.ico', 'assets/laochan.svg'],
       manifest: {
-        name: 'RinNet',
-        short_name: 'RinNet',
-        description: 'RinNET portal',
+        name: 'LCDX - RinNet',
+        short_name: 'LCDX - RinNet',
+        description: 'LCDX - RinNet portal',
         theme_color: '#bdcf47',
         background_color: '#fafafa',
         display: 'standalone',
