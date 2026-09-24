@@ -49,7 +49,7 @@ Commits so far on `migrate/react-port`:
 - [x] **`maiAssetsHost`** added to `src/lib/utils.ts`; **`public/assets/laochan.svg`** ported.
 - [ ] ⚠️ **Deferred to Phase 5 — PWA service worker not generated**: `vite build` exits 0 but `vite-plugin-pwa` `closeBundle` throws `MODULE_NOT_FOUND: @rollup/plugin-babel`, so `dist/sw.js` / `dist/registerSW.js` are missing (manifest.webmanifest IS emitted). Likely a vite-plugin-pwa↔vite-8 incompatibility or missing optional dep. Decide: add the dep, pin/patch the plugin, or drop PWA. Does not block feature work.
 
-### Phase 2 — Cabinet pages (IN PROGRESS — 2 of 4 done: cabinets ✅, remote-control ✅; next: locks, then cabmode)
+### Phase 2 — Cabinet pages (IN PROGRESS — 3 of 4 done: cabinets ✅ remote-control ✅ locks ✅; **NEXT: cabmode**)
 
 **Done (all committed):**
 - `src/features/mai2/cabinet-models.ts` — ALL cabinet DTOs + LC_MODES / CABINET_LEVELS / LCSET_KEYS / REMOTE_COMMANDS / `truncateFileName` + `formatFullDateTime|formatClock|formatShortDateTime` (Angular date-pipe equivalents).
@@ -62,6 +62,28 @@ Commits so far on `migrate/react-port`:
 **⭐ Key convention:** upstream React **keeps Bootstrap class names** (`card`, `row/col`, `form-select`, `badge text-bg-*`, `page-heading`) — `globals.css` rebuilds the `--bs-*` tokens. So LCDX Angular templates translate almost 1:1 into JSX; only @if/@for/ngModel/pipes become React state. **Do NOT rewrite these pages into shadcn/Tailwind** — Bootstrap keeps 1:1 visual parity.
 
 **Next — locks** (`master:src/app/sega/maimai2/maimai2-locks/`: 380 ts + 311 html + 13 css). Three cards + member-permission table:
+
+- ✅ DONE (commit `7bda5be`) → `src/features/mai2/Maimai2LocksPage.tsx` (+ `.css`), route `mai2/locks` with `RequireCabinetAdmin`, menu entry `requiredBotPermission: 4`.
+  - Card A EP-14 `lcdx/cabinet/locks/{user}` (page/size=20 + targetQQ/fullKeychip/action/since/until, server paging), Card B EP-15 `grants/{user}` (QQ prefix filter, client paging 10/20/100, EP-16 POST `grants`, EP-17 DELETE + confirm), Card C P≥7: EP-20L `permissions/{user}`, EP-20 POST (0..own level only, P10 note required), EP-20D DELETE + confirm, 4-column sort, one-row-at-a-time inline note edit (reuses EP-20 upsert with original permission), client paging 20.
+  - `visibleMembers` keeps the display-layer `permission <= own` filter (second line of defense).
+  - Deviation from legacy (intentional, better): permission probing is async, so the page waits for `loaded` before judging `noPermission` — legacy could flash "no permission" on direct URL access before probes returned. Guards already pass through while `!loaded`.
+  - Reused `Maimai2Pagination` (ngx-pagination-compatible) for all three paging controls.
+  - `cabinet-models.ts` gained `formatMinutesDateTime` (`yyyy-MM-dd HH:mm` used by grantedAt/addedSince columns).
+
+### Phase 2 (final item) — cabmode page — **START HERE NEXT**
+
+Source: `master:src/app/sega/maimai2/maimai2-cabmode/` (`.ts` + `.html` + `.css`) — the largest of the four. Read the ts/html fully, then port.
+
+Known intent from master history + `cabinet-models.ts` (all i18n keys & constants already ported and present):
+
+- **4 cards**: mode card (options driven by the **CabmodeList catalog** — `lcdx/cabinet/modes` GET returns `{modes: [{id, name, level}]}` with `level` = minimum cabinet level), LC settings card, level card, reboot card.
+- **LC settings card** — `LCSET_KEYS` (9 entries, already in `cabinet-models.ts`): P≥4 only (`filterLcsetKeys`), each key can carry `default` (used by the **restore-defaults** button) and `note` = **format hint only, still editable/submittable** (the `cc`/`CustomCameraConfig` case — explicitly fixed in master commit b1c3fb4: do NOT make it readonly); submit disabled only for note-only semantics that must not be sent.
+- **Level card** — `CABINET_LEVELS` (8 levels, already ported, with `Maimai2.CabinetControl.Level*` desc keys): options **2–5 for P4-6, full range for P7+** (D13 tier gating); "level write" warns via `CabinetLevelResult.warning`.
+- **Mode card** — options from catalog; LC mode labels `LC_MODES` (0/4/5/10 → `Maimai2.Cabinets.Mode*`) when the catalog is unavailable; keep version suffix together when wrapping; responsive for mobile+desktop (master had several layout fixes: half-width 2-col cards, centered LC mode buttons, no label overflow).
+- **APIs**: `lcdx/cabinet/modes` (GET catalog), `lcdx/cabinet/mode` (POST), `lcdx/cabinet/lcset` (POST), `lcdx/cabinet/level` (POST), `lcdx/cabinet/reboot` (POST) — all with `{userName, nickName, ...}` bodies; verify exact payloads from the Angular `.ts`.
+- **Cabinet selector**: same `controllable/{user}` dropdown pattern **including `locationName` display** (master 2c38fee / 09-17-cabmode-cabinet-location-name) and the `.cabinet-select` CSS fix (copy from locks/remote-control CSS).
+- **Permission**: page + menu gated by `RequireCabinetManage` (`requiredBotPermission: 0`); LC/level sub-cards further gated by P≥4 per D13.
+- i18n groups: `Maimai2.CabinetControl.*` + `Maimai2.Cabinets.*` (already merged, verify with a key-existence script before build).
 
 ### Phase 3 — Setting merge block + standalone pages (NOT STARTED)
 
