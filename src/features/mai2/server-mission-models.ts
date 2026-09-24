@@ -1,3 +1,5 @@
+import { translate } from '@/lib/i18n';
+
 export interface ApiResponse<T> {
   data: T;
   status?: {
@@ -118,19 +120,18 @@ export interface Maimai2UserExchangeInfo {
 export const MAIMAI2_EXCHANGE_TYPES: ReadonlyArray<{
   value: number;
   key: Maimai2ExchangeItemTypeName;
-  label: string;
 }> = [
-  { value: 1, key: 'Plate', label: '姓名框' },
-  { value: 2, key: 'Title', label: '称号' },
-  { value: 3, key: 'Icon', label: '头像' },
-  { value: 4, key: 'Present', label: '礼物' },
-  { value: 9, key: 'Character', label: '角色' },
-  { value: 10, key: 'Partner', label: '伙伴' },
-  { value: 11, key: 'Frame', label: '背景图' },
-  { value: 12, key: 'Ticket', label: '功能卷' },
-  { value: 13, key: 'Mile', label: 'Mile' },
-  { value: 15, key: 'KaleidxScopeKey', label: '门钥匙' },
-  { value: 901, key: 'DXPass', label: 'DXPass' },
+  { value: 1, key: 'Plate' },
+  { value: 2, key: 'Title' },
+  { value: 3, key: 'Icon' },
+  { value: 4, key: 'Present' },
+  { value: 9, key: 'Character' },
+  { value: 10, key: 'Partner' },
+  { value: 11, key: 'Frame' },
+  { value: 12, key: 'Ticket' },
+  { value: 13, key: 'Mile' },
+  { value: 15, key: 'KaleidxScopeKey' },
+  { value: 901, key: 'DXPass' },
 ];
 
 export function exchangeTypeKey(type: Maimai2ExchangeItemType): Maimai2ExchangeItemTypeName | null {
@@ -142,5 +143,5 @@ export function exchangeTypeKey(type: Maimai2ExchangeItemType): Maimai2ExchangeI
 
 export function exchangeTypeLabel(type: Maimai2ExchangeItemType): string {
   const key = exchangeTypeKey(type);
-  return MAIMAI2_EXCHANGE_TYPES.find((entry) => entry.key === key)?.label ?? '未知';
+  return key ? translate(`Maimai2.PointExchangesPage.Type.${key}`) : translate('Maimai2.PointExchangesPage.Type.Unknown');
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { api } from '@/lib/api/client';
 import { notice } from '@/lib/message';
@@ -98,6 +99,7 @@ function ExchangeConfirmDialog({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Dialog open={item !== null} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent
@@ -114,7 +116,7 @@ function ExchangeConfirmDialog({
           <div className="modal-content">
             <div className="modal-header bg-dark text-light border-secondary">
               <DialogTitle asChild unstyled>
-                <h5 className="modal-title">确认兑换</h5>
+                <h5 className="modal-title">{t('Maimai2.PointExchangesPage.ConfirmExchange')}</h5>
               </DialogTitle>
               <button
                 type="button"
@@ -145,37 +147,37 @@ function ExchangeConfirmDialog({
                     </div>
                   </div>
                   <div className="info-row d-flex justify-content-between mb-2 p-2 bg-dark border-secondary rounded">
-                    <span>兑换数量:</span>
-                    <span className="fw-bold">{item.itemCount} 个</span>
+                    <span>{t('Maimai2.PointExchangesPage.ExchangeCount')}</span>
+                    <span className="fw-bold">{item.itemCount} {t('Maimai2.PointExchangesPage.ItemsSuffix')}</span>
                   </div>
                   <div className="info-row d-flex justify-content-between mb-2 p-2 bg-dark border-secondary rounded">
-                    <span>需要点数:</span>
-                    <span className="fw-bold text-warning">{item.costPoints} 点</span>
+                    <span>{t('Maimai2.PointExchangesPage.RequiredPoints')}</span>
+                    <span className="fw-bold text-warning">{item.costPoints} {t('Maimai2.PointExchangesPage.PointsSuffix')}</span>
                   </div>
                   {item.stockCount >= 0 && (
                     <div className="info-row d-flex justify-content-between mb-2 p-2 bg-dark border-secondary rounded">
-                      <span>库存:</span>
+                      <span>{t('Maimai2.PointExchangesPage.Stock')}</span>
                       <span className="fw-bold">{item.exchangedCount} / {item.stockCount}</span>
                     </div>
                   )}
                   <div className="info-row d-flex justify-content-between p-2 bg-dark border-secondary rounded">
-                    <span>兑换后剩余:</span>
-                    <span className="fw-bold text-danger">{points - item.costPoints} 点</span>
+                    <span>{t('Maimai2.PointExchangesPage.RemainingAfter')}</span>
+                    <span className="fw-bold text-danger">{points - item.costPoints} {t('Maimai2.PointExchangesPage.PointsSuffix')}</span>
                   </div>
                   <div className="alert alert-warning mt-3 mb-0" role="alert">
                     <i className="bi bi-exclamation-triangle-fill me-2" />
-                    确认使用 {item.costPoints} 任务点数兑换此物品吗？
+                    {t('Maimai2.PointExchangesPage.ConfirmUse', { points: item.costPoints })}
                   </div>
                 </div>
               )}
             </div>
             <div className="modal-footer bg-dark border-secondary">
               <button type="button" className="btn btn-outline-secondary" onClick={onCancel}>
-                取消
+                {t('Common.Cancel')}
               </button>
               {item && (
                 <button type="button" className="btn btn-success" onClick={onConfirm}>
-                  确认兑换
+                  {t('Maimai2.PointExchangesPage.ConfirmExchange')}
                 </button>
               )}
             </div>
@@ -187,6 +189,7 @@ function ExchangeConfirmDialog({
 }
 
 export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }) {
+  const { t } = useTranslation();
   const [aimeId, setAimeId] = useState('');
   const [items, setItems] = useState<Maimai2ExchangeItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -290,11 +293,11 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
   }
 
   function cannotExchangeReason(item: Maimai2ExchangeItem): string {
-    if (!item.enable) return '暂未开放';
-    if (item.limitCount >= 0 && userExchangeCount(item.id) >= item.limitCount) return '已达兑换上限';
-    if (item.stockCount >= 0 && item.exchangedCount >= item.stockCount) return '库存不足';
-    if (points.availablePoints < item.costPoints) return '点数不足';
-    return '无法兑换';
+    if (!item.enable) return t('Maimai2.PointExchangesPage.Reason.NotOpened');
+    if (item.limitCount >= 0 && userExchangeCount(item.id) >= item.limitCount) return t('Maimai2.PointExchangesPage.Reason.LimitReached');
+    if (item.stockCount >= 0 && item.exchangedCount >= item.stockCount) return t('Maimai2.PointExchangesPage.Reason.OutOfStock');
+    if (points.availablePoints < item.costPoints) return t('Maimai2.PointExchangesPage.Reason.NotEnoughPoints');
+    return t('Maimai2.PointExchangesPage.Reason.Unavailable');
   }
 
   const maxPage = Math.ceil(totalCount / PAGE_SIZE) - 1;
@@ -340,19 +343,19 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
         <div className="col-12">
           <div className="card bg-dark border-secondary">
             <div className="card-header bg-dark text-light border-secondary d-flex justify-content-between align-items-center">
-              <h4 className="mb-0">任务点数兑换 - 舞萌DX</h4>
+              <h4 className="mb-0">{t('Maimai2.PointExchangesPage.PageTitle')}</h4>
               <button
                 type="button"
                 className="btn btn-sm btn-outline-danger btn-outline-secondary"
                 onClick={() => onClose?.()}
               >
-                <i className="bi bi-x-lg" /> 关闭
+                <i className="bi bi-x-lg" /> {t('Maimai2.PointExchangesPage.Close')}
               </button>
             </div>
             <div className="card-body">
               <div className="row align-items-end">
                 <div className="col-md-6">
-                  <label className="form-label text-light fw-bold">物品类型筛选</label>
+                  <label className="form-label text-light fw-bold">{t('Maimai2.PointExchangesPage.TypeFilter')}</label>
                   <select
                     className="form-select bg-dark text-light border-secondary"
                     value={filterItemType ?? ''}
@@ -362,25 +365,25 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
                       void loadItems(aimeId, 0, { type });
                     }}
                   >
-                    <option value="">全部类型</option>
+                    <option value="">{t('Maimai2.PointExchangesPage.AllTypes')}</option>
                     {MAIMAI2_EXCHANGE_TYPES.map((type) => (
-                      <option value={type.value} key={type.value}>{type.label}</option>
+                      <option value={type.value} key={type.value}>{exchangeTypeLabel(type.key)}</option>
                     ))}
                   </select>
                 </div>
                 <div className="col-md-6 text-end text-light">
-                  <span className="me-3">我的可用任务点数: <span>{points.availablePoints}</span></span>
+                  <span className="me-3">{t('Maimai2.PointExchangesPage.MyPoints')} <span>{points.availablePoints}</span></span>
                 </div>
               </div>
               <div className="row align-items-end mt-2">
                 <div className="col-md-8">
-                  <label className="form-label text-light fw-bold">物品名称/描述搜索</label>
+                  <label className="form-label text-light fw-bold">{t('Maimai2.PointExchangesPage.SearchLabel')}</label>
                   <div className="input-group">
                     <span className="input-group-text bg-dark text-light border-secondary"><i className="bi bi-search" /></span>
                     <input
                       type="text"
                       className="form-control bg-dark text-light border-secondary"
-                      placeholder="输入物品名称或描述关键字..."
+                      placeholder={t('Maimai2.PointExchangesPage.SearchPlaceholder')}
                       value={searchKeyword}
                       onChange={(event) => setSearchKeyword(event.target.value)}
                       onKeyUp={handleSearchKey}
@@ -397,10 +400,10 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
                       checked={onlyEnable}
                       onChange={(event) => setOnlyEnable(event.target.checked)}
                     />
-                    <label className="form-check-label" htmlFor="onlyEnable">只显示允许兑换的</label>
+                    <label className="form-check-label" htmlFor="onlyEnable">{t('Maimai2.PointExchangesPage.OnlyExchangeable')}</label>
                   </div>
                   <button className="btn btn-outline-primary w-50" onClick={applyFilter}>
-                    <i className="bi bi-filter" /> 应用筛选
+                    <i className="bi bi-filter" /> {t('Maimai2.PointExchangesPage.ApplyFilter')}
                   </button>
                 </div>
               </div>
@@ -439,14 +442,14 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
                   <span className={`badge ${itemTypeClass(item)}`}>{exchangeTypeLabel(item.itemType)}</span>
                 </div>
                 <p className="card-text small text-secondary-emphasis text-truncate-2 mb-2" title={item.description}>
-                  {item.description || '暂无描述'}
+                  {item.description || t('Maimai2.PointExchangesPage.NoDescription')}
                 </p>
                 <div className="item-details small">
-                  <div className="d-flex justify-content-between mb-1"><span>兑换获得:</span><span className="fw-bold">{item.itemCount} 个</span></div>
-                  <div className="d-flex justify-content-between mb-1"><span>所需点数:</span><span className="fw-bold text-warning">{item.costPoints} 点</span></div>
+                  <div className="d-flex justify-content-between mb-1"><span>{t('Maimai2.PointExchangesPage.ExchangeObtained')}</span><span className="fw-bold">{item.itemCount} {t('Maimai2.PointExchangesPage.ItemsSuffix')}</span></div>
+                  <div className="d-flex justify-content-between mb-1"><span>{t('Maimai2.PointExchangesPage.PointsRequired')}</span><span className="fw-bold text-warning">{item.costPoints} {t('Maimai2.PointExchangesPage.PointsSuffix')}</span></div>
                   {item.limitCount >= 0 && (
                     <div className="d-flex justify-content-between mb-1">
-                      <span>个人已换:</span>
+                      <span>{t('Maimai2.PointExchangesPage.AlreadyExchanged')}</span>
                       <span className="fw-bold">{userExchangeCount(item.id)} / {item.limitCount === -1 ? '∞' : item.limitCount}</span>
                     </div>
                   )}
@@ -454,7 +457,7 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
               </div>
               <div className="card-footer bg-transparent border-secondary">
                 {canExchange(item) ? (
-                  <button className="btn btn-outline-success w-100 fw-bold" onClick={() => setSelectedItem(item)}>兑换</button>
+                  <button className="btn btn-outline-success w-100 fw-bold" onClick={() => setSelectedItem(item)}>{t('Maimai2.PointExchangesPage.Exchange')}</button>
                 ) : (
                   <button className="btn btn-secondary w-100" disabled>
                     <i className="bi bi-lock-fill me-2" />{cannotExchangeReason(item)}
@@ -470,8 +473,8 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
         <div className="row mt-5">
           <div className="col-12 text-center text-light py-5">
             <i className="bi bi-inbox fs-1 d-block mb-3" />
-            <h5>暂无兑换物品</h5>
-            <p className="text-secondary">当前筛选条件下没有可兑换的物品</p>
+            <h5>{t('Maimai2.PointExchangesPage.NoItems')}</h5>
+            <p className="text-secondary">{t('Maimai2.PointExchangesPage.NoItemsFiltered')}</p>
           </div>
         </div>
       )}
@@ -479,7 +482,7 @@ export function Maimai2PointExchangesPanel({ onClose }: { onClose?: () => void }
       {totalCount > PAGE_SIZE && (
         <div className="row mt-4">
           <div className="col-12">
-            <nav aria-label="兑换物品分页">
+            <nav aria-label={t('Maimai2.PointExchangesPage.PaginationLabel')}>
               <ul className="pagination justify-content-center">
                 <li className={`page-item${page === 0 ? ' disabled' : ''}`}>
                   <a className="page-link bg-dark text-light border-secondary" onClick={() => page > 0 && void loadItems(aimeId, page - 1)}>
@@ -524,6 +527,7 @@ export function Maimai2PointExchangesDialog({
   open: boolean;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
       <DialogContent
@@ -535,7 +539,7 @@ export function Maimai2PointExchangesDialog({
         showCloseButton={false}
         unstyled
       >
-        <DialogTitle className="visually-hidden">任务点数兑换 - 舞萌DX</DialogTitle>
+        <DialogTitle className="visually-hidden">{t('Maimai2.PointExchangesPage.PageTitle')}</DialogTitle>
         <div className="modal-dialog modal-xl modal-dialog-centered">
           <div className="modal-content">
             <Maimai2PointExchangesPanel onClose={onClose} />
