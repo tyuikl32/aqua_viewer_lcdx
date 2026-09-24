@@ -742,6 +742,7 @@
       "Title": "Server Missions"
     },
     "Setting": {
+      "AccessCodeLoading": "Please wait",
       "AccessCodeUpdateFailed": "Failed to update access code",
       "AccessCodeUpdated": "Access code updated",
       "BindingCardNumber": "Bound Card Number",

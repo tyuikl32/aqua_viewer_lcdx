@@ -742,6 +742,7 @@
       "Title": "服务器任务"
     },
     "Setting": {
+      "AccessCodeLoading": "请稍后",
       "AccessCodeUpdateFailed": "访问码更新失败",
       "AccessCodeUpdated": "访问码已更新",
       "BindingCardNumber": "绑定的卡号",

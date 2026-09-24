@@ -1,165 +1,34 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { api, rawFetch } from '@/lib/api/client';
+import { api, lcdx } from '@/lib/api/client';
 import { notice } from '@/lib/message';
+import { isOk } from '@/lib/models';
 import { getCurrentUser, loadUser } from '@/lib/user';
 import type { DisplayMaimai2Profile } from './models';
 import './Maimai2SettingPage.css';
 
-const PACKET_LENGTH = 10_240;
+/**
+ * 等价旧版 Maimai DX settings component + LCDX 缝合（bindCard / 国服数据引继 / 头像上传禁用）。
+ *
+ * LCDX 差异（对照 master:src/app/sega/maimai2/maimai2-setting/）：
+ * - 头像上传整功能禁用（LCDX 现行行为，按钮提示 UploadPortraitDisabled；上游 PortraitDialog 移除）
+ * - 新增「绑定卡号」卡：lcdx/getBindAccessCode|addAccessCode|removeAccessCode（注意用 cards[0].luid）
+ * - 新增「国服数据引继」卡：lcdx/mergeRegistry 状态查询 / request / cancel（用 defaultCard.luid）
+ * - 全部用户可见消息走 i18n（等价旧版 noticeTranslated / noticeError）
+ */
 
-async function centerSquareJpeg(file: File): Promise<Blob> {
-  const image = new Image();
-  const url = URL.createObjectURL(file);
-  try {
-    await new Promise<void>((resolve, reject) => {
-      image.onload = () => resolve();
-      image.onerror = () => reject(new Error('Unable to read image'));
-      image.src = url;
-    });
-    const side = Math.min(image.naturalWidth, image.naturalHeight);
-    const canvas = document.createElement('canvas');
-    canvas.width = side;
-    canvas.height = side;
-    const context = canvas.getContext('2d');
-    if (!context) throw new Error('Canvas is unavailable');
-    context.drawImage(
-      image,
-      (image.naturalWidth - side) / 2,
-      (image.naturalHeight - side) / 2,
-      side,
-      side,
-      0,
-      0,
-      side,
-      side,
-    );
-    const qualities = [0.92, 0.75, 0.55];
-    for (const quality of qualities) {
-      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
-      if (blob) return blob;
-    }
-    throw new Error('Unable to crop image');
-  } finally {
-    URL.revokeObjectURL(url);
+/** 引继日期规范化：后端无记录时返回 DateTime 默认值 0001-01-01，视为无记录（等价旧版 normalizeMergeDate） */
+function normalizeMergeDate(value: unknown): string | null {
+  if (!value) {
+    return null;
   }
+  const date = new Date(String(value));
+  if (Number.isNaN(date.getTime()) || date.getFullYear() < 2000) {
+    return null;
+  }
+  return date.toLocaleString();
 }
 
-function PortraitDialog({
-  aimeId,
-  divMaxLength,
-  onClose,
-  open,
-}: {
-  aimeId: string;
-  divMaxLength: number;
-  onClose: () => void;
-  open: boolean;
-}) {
-  const { t } = useTranslation();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState('');
-  const [uploading, setUploading] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    const timer = window.setTimeout(() => inputRef.current?.click(), 0);
-    return () => window.clearTimeout(timer);
-  }, [open]);
-
-  useEffect(() => {
-    if (!file) {
-      setPreview('');
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [file]);
-
-  const upload = async () => {
-    if (!file || uploading) return;
-    setUploading(true);
-    try {
-      const blob = await centerSquareJpeg(file);
-      if (blob.size > divMaxLength * PACKET_LENGTH) {
-        notice('Upload file size is too large.');
-        return;
-      }
-      const buffer = await blob.arrayBuffer();
-      const divLength = Math.floor(buffer.byteLength / PACKET_LENGTH) + 1;
-      let offset = 0;
-      let divNumber = 0;
-      while (offset < buffer.byteLength) {
-        const readLength = Math.min(PACKET_LENGTH, buffer.byteLength - offset);
-        const bytes = new Uint8Array(buffer.slice(offset, offset + readLength));
-        let binary = '';
-        for (const byte of bytes) binary += String.fromCharCode(byte);
-        const payload = {
-          userPortrait: {
-            userId: aimeId,
-            divLength,
-            divNumber,
-            divData: btoa(binary),
-            placeId: 291,
-            clientId: 'A63E01A2857',
-            uploadDate: new Date().toISOString(),
-            fileName: `${aimeId}.jpg`,
-          },
-        };
-        const response = await rawFetch('/Maimai2Servlet/A63E01C2948/1.40/UploadUserPortraitApi', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        const result = await response.json();
-        if (!response.ok || result?.returnCode !== 1) throw new Error('File size is too large');
-        offset += readLength;
-        divNumber += 1;
-      }
-      notice('Change user portrait successfully.');
-      onClose();
-    } catch (error) {
-      notice(`Change user portrait failed: ${String(error)}`);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
-      <DialogContent
-        showCloseButton={false}
-        className="maimai2-portrait-dialog max-h-[85vh] max-w-lg gap-0 overflow-hidden border border-[var(--bs-border-color)] bg-[var(--bs-body-bg)] p-0 shadow-[var(--bs-box-shadow-lg)]"
-      >
-        <div className="modal-header">
-          <h4 className="modal-title">Change User Portrait</h4>
-          <button type="button" className="btn-close" aria-label="Close" onClick={onClose} />
-        </div>
-        <div className="modal-body overflow-y-auto">
-          <div className="d-grid mb-3">
-            <div hidden>
-              <input
-                ref={inputRef}
-                type="file"
-                accept="image/*"
-                onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-              />
-            </div>
-            <div>{preview && <img className="portrait-preview img-fluid" src={preview} alt="" />}</div>
-          </div>
-          <button className="btn btn-primary btn-sm" disabled={!file || uploading} onClick={() => void upload()}>
-            {t('Common.OK')}
-          </button>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-/** Equivalent to the legacy Maimai DX settings component. */
 export function Maimai2SettingPage() {
   const { t } = useTranslation();
   const [profile, setProfile] = useState<DisplayMaimai2Profile | null>(null);
@@ -169,14 +38,45 @@ export function Maimai2SettingPage() {
   const [redeemCode, setRedeemCode] = useState('');
   const [redeemTouched, setRedeemTouched] = useState(false);
   const [divMaxLength, setDivMaxLength] = useState(0);
-  const [portraitOpen, setPortraitOpen] = useState(false);
+
+  // ---- LCDX：绑定卡 access code（等价旧版 bindCardForm：20 位 access code 绑定/解绑） ----
+  const [currentAccessCode, setCurrentAccessCode] = useState('');
+  const [accessCode, setAccessCode] = useState('');
+  const [accessCodeLoaded, setAccessCodeLoaded] = useState(false);
+
+  // ---- LCDX：国服数据引继（merge request） ----
+  const [mergeRequested, setMergeRequested] = useState(false);
+  const [mergeRequestLoading, setMergeRequestLoading] = useState(false);
+  const [mergeCardId, setMergeCardId] = useState('');
+  const [mergeLastRequestDate, setMergeLastRequestDate] = useState<string | null>(null);
+  const [mergeLastSuccessDate, setMergeLastSuccessDate] = useState<string | null>(null);
+
+  const loadMergeRequestStatus = (cardId: string) => {
+    if (!cardId) {
+      return;
+    }
+    const user = encodeURIComponent(getCurrentUser()?.username ?? '');
+    lcdx
+      .get(`lcdx/mergeRegistry/${user}/${encodeURIComponent(cardId)}`)
+      .then((resp) => {
+        if (isOk(resp)) {
+          setMergeRequested(resp.data?.isOnRequest === true);
+          setMergeLastRequestDate(normalizeMergeDate(resp.data?.lastRequestDate));
+          setMergeLastSuccessDate(normalizeMergeDate(resp.data?.lastSuccessDate));
+        }
+      })
+      .catch(() => notice(t('Common.OperationFailed')));
+  };
 
   useEffect(() => {
     void (async () => {
       try {
         await loadUser();
-        const id = String(getCurrentUser()?.defaultCard?.extId ?? '');
+        const user = getCurrentUser();
+        const id = String(user?.defaultCard?.extId ?? '');
         setAimeId(id);
+        setMergeCardId(String(user?.defaultCard?.luid ?? ''));
+
         const [loadedProfile, maxLength] = await Promise.all([
           api.get('api/game/maimai2/profile', { aimeId: id }),
           api.get('api/game/maimai2/config/userPhoto/divMaxLength'),
@@ -184,20 +84,44 @@ export function Maimai2SettingPage() {
         setProfile(loadedProfile as DisplayMaimai2Profile);
         setUserName((loadedProfile as DisplayMaimai2Profile).userName);
         setDivMaxLength(Number(maxLength) || 0);
-      } catch (error) {
-        notice(String(error));
+
+        // LCDX：读已绑定的 access code（等价旧版：有值则只读，空则可编辑；注意用 cards[0].luid）
+        const cardLuid = user?.cards?.[0]?.luid ?? '';
+        const bindUser = encodeURIComponent(user?.username ?? '');
+        try {
+          const bindResp = await lcdx.get(`lcdx/getBindAccessCode/${bindUser}/${cardLuid}`);
+          const code = String(bindResp?.data ?? '');
+          setCurrentAccessCode(code);
+          setAccessCode(code === '' ? '' : code);
+        } finally {
+          setAccessCodeLoaded(true);
+        }
+      } catch {
+        notice(t('Common.OperationFailed'));
+        setAccessCodeLoaded(true);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (mergeCardId) {
+      loadMergeRequestStatus(mergeCardId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mergeCardId]);
 
   const changeUserName = async () => {
     if (!userNameTouched) return;
     try {
-      const updated = await api.post('api/game/maimai2/profile/username', { aimeId: Number(aimeId), userName });
+      const updated = await api.post('api/game/maimai2/profile/username', {
+        aimeId: Number(aimeId),
+        userName,
+      });
       setProfile(updated as DisplayMaimai2Profile);
-      notice('Successfully changed');
-    } catch (error) {
-      notice(String(error));
+      notice(t('Maimai2.Setting.UsernameChanged'));
+    } catch {
+      notice(t('Common.OperationFailed'));
     }
   };
 
@@ -205,9 +129,13 @@ export function Maimai2SettingPage() {
     if (!redeemTouched) return;
     try {
       const result = await api.get('api/game/maimai2/redeem', { aimeId, redeemCode });
-      notice(result?.status?.code === 92001 ? `Successfully activated ${result.data}` : String(result?.data));
-    } catch (error) {
-      notice(String(error));
+      if (result?.status?.code === 92001) {
+        notice(t('Maimai2.Setting.RedeemActivated', { name: result.data }));
+      } else {
+        notice(t('Maimai2.Setting.RedeemFailed'));
+      }
+    } catch {
+      notice(t('Common.OperationFailed'));
     }
   };
 
@@ -220,8 +148,106 @@ export function Maimai2SettingPage() {
       anchor.download = `maimai2_${aimeId}_exported.json`;
       anchor.click();
       URL.revokeObjectURL(url);
-    } catch (error) {
-      notice(String(error));
+    } catch {
+      notice(t('Common.OperationFailed'));
+    }
+  };
+
+  /** LCDX：头像上传功能整功能禁用（等价旧版 openUploadUserPortraitDialog 的 warning 提示） */
+  const openPortraitDisabled = () => {
+    notice(t('Maimai2.Setting.UploadPortraitDisabled'), 'warning');
+  };
+
+  // ==================== LCDX：绑定卡 access code ====================
+
+  /** 等价旧版 lcdxBindAccessCode：有 code → 解绑（removeAccessCode）；无 code 且输入合法 → 绑定（addAccessCode） */
+  const lcdxBindAccessCode = async () => {
+    const user = getCurrentUser();
+    const cardLuid = user?.cards?.[0]?.luid ?? '';
+    const name = user?.username ?? '';
+    if (currentAccessCode !== '') {
+      try {
+        const resp = await lcdx.post(`lcdx/removeAccessCode/${name}`, { currentAccessCode: cardLuid });
+        if (isOk(resp)) {
+          notice(t('Maimai2.Setting.AccessCodeUpdated'));
+          window.location.reload();
+        } else {
+          notice(t('Maimai2.Setting.AccessCodeUpdateFailed'));
+        }
+      } catch {
+        notice(t('Common.OperationFailed'));
+      }
+      return;
+    }
+    if (accessCode.length === 20) {
+      try {
+        const resp = await lcdx.post(`lcdx/addAccessCode/${name}`, {
+          currentAccessCode: cardLuid,
+          accessCode,
+        });
+        if (isOk(resp)) {
+          notice(t('Maimai2.Setting.AccessCodeUpdated'));
+          window.location.reload();
+        } else {
+          notice(t('Maimai2.Setting.AccessCodeUpdateFailed'));
+        }
+      } catch {
+        notice(t('Common.OperationFailed'));
+      }
+    }
+  };
+
+  // ==================== LCDX：国服数据引继 ====================
+
+  /** 等价旧版 requestMergeFromDefaultServer：确认后提交引继请求 */
+  const requestMergeFromDefaultServer = async () => {
+    if (mergeRequestLoading || mergeRequested || !mergeCardId) {
+      return;
+    }
+    if (!window.confirm(t('Maimai2.Setting.MergeRequestConfirm'))) {
+      return;
+    }
+    setMergeRequestLoading(true);
+    const user = encodeURIComponent(getCurrentUser()?.username ?? '');
+    const card = encodeURIComponent(mergeCardId);
+    try {
+      const resp = await lcdx.post(`lcdx/mergeRegistry/request/${user}/${card}`);
+      setMergeRequestLoading(false);
+      if (isOk(resp)) {
+        setMergeRequested(true);
+        notice(t('Maimai2.Setting.MergeRequestSuccess'));
+      } else {
+        notice(t('Maimai2.Setting.MergeRequestFailed'));
+      }
+    } catch {
+      setMergeRequestLoading(false);
+      notice(t('Common.OperationFailed'));
+    }
+  };
+
+  /** 等价旧版 cancelMergeRequest：确认后撤销引继请求 */
+  const cancelMergeRequest = async () => {
+    if (mergeRequestLoading || !mergeRequested || !mergeCardId) {
+      return;
+    }
+    if (!window.confirm(t('Maimai2.Setting.MergeCancelConfirm'))) {
+      return;
+    }
+    setMergeRequestLoading(true);
+    const user = encodeURIComponent(getCurrentUser()?.username ?? '');
+    const card = encodeURIComponent(mergeCardId);
+    try {
+      const resp = await lcdx.post(`lcdx/mergeRegistry/cancel/${user}/${card}`);
+      setMergeRequestLoading(false);
+      if (isOk(resp)) {
+        setMergeRequested(false);
+        notice(t('Maimai2.Setting.MergeCancelSuccess'));
+      } else {
+        notice(t('Maimai2.Setting.MergeCancelFailed'));
+      }
+    } catch {
+      setMergeRequestLoading(false);
+      notice(t('Maimai2.Setting.MergeCancelFailed'));
     }
   };
 
@@ -237,7 +263,10 @@ export function Maimai2SettingPage() {
               <form onSubmit={(event) => event.preventDefault()}>
                 <input
                   value={userName}
-                  onChange={(event) => { setUserName(event.target.value); setUserNameTouched(true); }}
+                  onChange={(event) => {
+                    setUserName(event.target.value);
+                    setUserNameTouched(true);
+                  }}
                   type="text"
                   className="form-control mb-3"
                   id="username"
@@ -245,7 +274,9 @@ export function Maimai2SettingPage() {
               </form>
               <div className="d-flex justify-content-between align-items-center">
                 <div className="text-muted small align-text-bottom">{t('Maimai2.Setting.UserNameSubTitle')}</div>
-                <a className="btn btn-primary" onClick={() => void changeUserName()}>{t('Maimai2.Setting.UserNameChangeButton')}</a>
+                <a className="btn btn-primary" onClick={() => void changeUserName()}>
+                  {t('Maimai2.Setting.UserNameChangeButton')}
+                </a>
               </div>
             </div>
           </div>
@@ -257,13 +288,17 @@ export function Maimai2SettingPage() {
               <h5 className="card-text">
                 {t('Maimai2.Setting.UserIconTips')}
                 <ul>
-                  <li>{t('Maimai2.Setting.UserIconLimit1')} &lt; <b>{divMaxLength * 10} kb</b>.</li>
+                  <li>
+                    {t('Maimai2.Setting.UserIconLimit1')} &lt; <b>{divMaxLength * 10} kb</b>.
+                  </li>
                   <li>{t('Maimai2.Setting.UserIconLimit2')}</li>
                 </ul>
               </h5>
               <div className="d-flex justify-content-between align-items-end">
                 <div className="text-muted small align-text-bottom">{t('Maimai2.Setting.UserIconSubTitle')}</div>
-                <a className="btn btn-primary" onClick={() => setPortraitOpen(true)}>{t('Maimai2.Setting.UserIconChangeButton')}</a>
+                <a className="btn btn-primary" onClick={openPortraitDisabled}>
+                  {t('Maimai2.Setting.UserIconChangeButton')}
+                </a>
               </div>
             </div>
           </div>
@@ -275,7 +310,10 @@ export function Maimai2SettingPage() {
               <form onSubmit={(event) => event.preventDefault()}>
                 <input
                   value={redeemCode}
-                  onChange={(event) => { setRedeemCode(event.target.value); setRedeemTouched(true); }}
+                  onChange={(event) => {
+                    setRedeemCode(event.target.value);
+                    setRedeemTouched(true);
+                  }}
                   type="text"
                   className="form-control mb-3"
                   id="redeemCode"
@@ -283,8 +321,84 @@ export function Maimai2SettingPage() {
               </form>
               <div className="d-flex justify-content-between align-items-center">
                 <div className="text-muted small align-text-bottom">{t('Maimai2.Setting.RedemptionCodeSubTitle')}</div>
-                <a className="btn btn-primary" onClick={() => void activateRedeemCode()}>{t('Maimai2.Setting.RedeemButton')}</a>
+                <a className="btn btn-primary" onClick={() => void activateRedeemCode()}>
+                  {t('Maimai2.Setting.RedeemButton')}
+                </a>
               </div>
+            </div>
+          </div>
+
+          {/* LCDX：绑定卡号卡（等价旧版 BindingCardNumber；有 code 只读 + 解绑，无 code 可编辑 + 绑定） */}
+          <div className="card mb-3">
+            <div className="card-header">{t('Maimai2.Setting.BindingCardNumber')}</div>
+            <div className="card-body">
+              <h5 className="card-title">{t('Maimai2.Setting.BindingCardNumberTitle')}</h5>
+              <form onSubmit={(event) => event.preventDefault()}>
+                <input
+                  value={accessCodeLoaded ? accessCode : t('Maimai2.Setting.AccessCodeLoading')}
+                  onChange={(event) => setAccessCode(event.target.value)}
+                  type="text"
+                  className="form-control mb-3"
+                  id="accessCode"
+                  disabled={!accessCodeLoaded || currentAccessCode !== ''}
+                />
+              </form>
+              <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                <div className="text-muted small">
+                  {t('Maimai2.Setting.BindingCardNumberSubTitle1')}
+                  <br />
+                  {t('Maimai2.Setting.BindingCardNumberSubTitle2')}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void lcdxBindAccessCode()}
+                  className="btn btn-primary flex-shrink-0"
+                  disabled={currentAccessCode === '' && accessCode.length !== 20}
+                >
+                  {currentAccessCode === ''
+                    ? t('Maimai2.Setting.TryBind')
+                    : t('Maimai2.Setting.Unbind')}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* LCDX：国服数据引继卡（等价旧版 MergeRequest：状态查询 + 请求/取消 + 日期展示） */}
+          <div className="card mb-3">
+            <div className="card-header">{t('Maimai2.Setting.MergeRequest')}</div>
+            <div className="card-body">
+              <h5 className="card-title">{t('Maimai2.Setting.MergeRequestTitle')}</h5>
+              <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                <div className="text-muted small">{t('Maimai2.Setting.MergeRequestSubTitle')}</div>
+                <button
+                  type="button"
+                  className={`btn flex-shrink-0 ${mergeRequested ? 'btn-danger' : 'btn-primary'}`}
+                  disabled={mergeRequestLoading || !mergeCardId}
+                  onClick={() =>
+                    void (mergeRequested ? cancelMergeRequest() : requestMergeFromDefaultServer())
+                  }
+                >
+                  {mergeRequestLoading
+                    ? t('Maimai2.Setting.MergeRequestLoading')
+                    : mergeRequested
+                      ? t('Maimai2.Setting.MergeCancelButton')
+                      : t('Maimai2.Setting.MergeRequestButton')}
+                </button>
+              </div>
+              {(mergeLastRequestDate || mergeLastSuccessDate) && (
+                <div className="text-muted small mt-2">
+                  {mergeLastRequestDate && (
+                    <div>
+                      {t('Maimai2.Setting.MergeLastRequestDate')}: {mergeLastRequestDate}
+                    </div>
+                  )}
+                  {mergeLastSuccessDate && (
+                    <div>
+                      {t('Maimai2.Setting.MergeLastSuccessDate')}: {mergeLastSuccessDate}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -294,19 +408,14 @@ export function Maimai2SettingPage() {
               <h5 className="card-text">{t('Maimai2.Setting.ExportDataTitle')}</h5>
               <div className="d-flex justify-content-between align-items-end">
                 <div className="text-muted small align-text-bottom">{t('Maimai2.Setting.ExportDataSubTitle')}</div>
-                <a className="btn btn-primary" onClick={() => void downloadFile()}>{t('Maimai2.Setting.ExportDataSubButton')}</a>
+                <a className="btn btn-primary" onClick={() => void downloadFile()}>
+                  {t('Maimai2.Setting.ExportDataSubButton')}
+                </a>
               </div>
             </div>
           </div>
         </>
       )}
-
-      <PortraitDialog
-        aimeId={aimeId}
-        divMaxLength={divMaxLength}
-        open={portraitOpen}
-        onClose={() => setPortraitOpen(false)}
-      />
     </div>
   );
 }
