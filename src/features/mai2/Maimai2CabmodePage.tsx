@@ -120,7 +120,7 @@ export function Maimai2CabmodePage() {
       return '';
     }
     const fromDb = cabModes.find((m) => m.id === id)?.name;
-    return fromDb ? `${id}（${fromDb}）` : String(id);
+    return fromDb ? t('Maimai2.CabinetControl.ModeNameWithId', { id, name: fromDb }) : String(id);
   })();
 
   const currentModeFallbackLabelKey =
@@ -128,9 +128,10 @@ export function Maimai2CabmodePage() {
 
   const modeChanged = info != null && selectedMode !== info.isSpecialMode;
 
-  const currentLcsetDefault = lcsetKeys.find((k) => k.key === lcsetKey)?.default;
+  const currentLcsetEntry = lcsetKeys.find((k) => k.key === lcsetKey);
+  const currentLcsetDefault = currentLcsetEntry?.default;
   /** 输入格式提示（如 cc 的格式(0,1)）：仅作 placeholder/辅助说明，不锁定输入 */
-  const currentLcsetNote = lcsetKeys.find((k) => k.key === lcsetKey)?.note;
+  const currentLcsetNote = currentLcsetEntry?.noteKey ? t(currentLcsetEntry.noteKey) : undefined;
 
   const loadCabModes = useCallback(async () => {
     try {
@@ -326,7 +327,7 @@ export function Maimai2CabmodePage() {
                         <>
                           {info?.isSpecialMode}
                           {currentModeFallbackLabelKey
-                            ? `（${t(currentModeFallbackLabelKey)}）`
+                            ? t('Maimai2.CabinetControl.Parenthesized', { value: t(currentModeFallbackLabelKey) })
                             : ''}
                         </>
                       )}
@@ -396,7 +397,7 @@ export function Maimai2CabmodePage() {
                       </option>
                       {lcsetKeys.map((k) => (
                         <option key={k.key + k.setting} value={k.key}>
-                          {k.key} → {k.setting}
+                          {k.keyLabelKey ? t(k.keyLabelKey) : k.key} → {k.setting}
                         </option>
                       ))}
                     </select>

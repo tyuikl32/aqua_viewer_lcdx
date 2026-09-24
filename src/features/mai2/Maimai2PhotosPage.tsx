@@ -62,7 +62,7 @@ export function Maimai2PhotosPage() {
           {photos.map((item) => (
             <div className="col-12 col-xl-6" key={`${item.playlogId}-${item.trackNo}`}>
               <div className="card">
-                <img src={item.fileName} className="card-img-top" alt="右键して遊戏の写真を保存する" />
+                <img src={item.fileName} className="card-img-top" alt={t('Maimai2.PhotosPage.ImageAlt')} />
                 <div className="card-footer">
                   <div className="d-flex justify-content-between">
                     <div>{String(item.uploadDate)}</div>

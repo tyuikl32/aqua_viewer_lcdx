@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '@/lib/api/client';
+import { translate } from '@/lib/i18n';
 import { notice } from '@/lib/message';
 import type { Page } from '@/lib/models';
 import { getCurrentUser, loadUser } from '@/lib/user';
@@ -30,7 +31,7 @@ function remainingTime(endDate: string): { expired: boolean; value: string } {
   if (difference <= 0) return { expired: true, value: '' };
   const days = Math.floor(difference / 86_400_000);
   const hours = Math.floor((difference % 86_400_000) / 3_600_000);
-  return { expired: false, value: `${days}天 ${hours}小时` };
+  return { expired: false, value: translate('Maimai2.DxpassPage.RemainingTime', { days, hours }) };
 }
 
 function passName(type: number): string {

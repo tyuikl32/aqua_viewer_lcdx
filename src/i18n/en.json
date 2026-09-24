@@ -540,6 +540,8 @@
       "Failed": "Failed",
       "LCModeCard": "LC Mode",
       "LCSettingsCard": "LC Settings",
+      "LcsetKeyBypassCloseShop": "Bypass closed shop",
+      "LcsetNoteCameraConfig": "Format (0,1)",
       "LevelBurn": "Burn",
       "LevelCard": "Cabinet Level",
       "LevelCold": "Cold",
@@ -551,6 +553,8 @@
       "LevelSpecial": "Special",
       "LevelWarm": "Warm",
       "LevelWarning": "Lower levels receive fewer deliveries",
+      "ModeNameWithId": "{{id}} ({{name}})",
+      "Parenthesized": "({{value}})",
       "RebootCard": "Classic Reboot",
       "RebootConfirm": "The cabinet will reboot on next heartbeat (when idle). Confirm?",
       "RebootHint": "The cabinet reboots on next heartbeat when idle",
@@ -699,6 +703,7 @@
       "Expired": "Expired",
       "NotOwned": "You do not own any deluxe pass.",
       "Remaining": "remaining",
+      "RemainingTime": "{{days}}d {{hours}}h",
       "SetDefault": "Set type as default",
       "Success": "Success",
       "Title": "Deluxe Pass Info"
@@ -796,6 +801,7 @@
       "Title": "Logs & Grants"
     },
     "PhotosPage": {
+      "ImageAlt": "Right-click to save the game photo",
       "NotOpened": "The function isn't yet opened",
       "NotOwned": "You have not upload any game photo.",
       "Title": "Game Gallery"

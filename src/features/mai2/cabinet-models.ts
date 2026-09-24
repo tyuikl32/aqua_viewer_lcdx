@@ -169,14 +169,21 @@ export const CABINET_LEVELS: { level: number; name: string; descKey: string }[] 
 ];
 
 /** lcset 9 项（Admin；与后端 CabinetPolicy.LcsetKeys 一致，普通子集由 botPermission 过滤）
- *  default："恢复默认值"按钮填充值；note：输入格式提示（如 cc 格式(0,1)），可正常编辑提交 */
-export const LCSET_KEYS: { key: string; setting: string; default?: string; note?: string }[] = [
-  { key: '跳过闭店', setting: 'ForceBypassCloseShop', default: '0' },
+ *  default："恢复默认值"按钮填充值；noteKey：输入格式提示（如 cc 格式(0,1)），可正常编辑提交
+ *  key 是提交给后端的协议值，不随语言变化；keyLabelKey 仅供展示 */
+export const LCSET_KEYS: {
+  key: string;
+  setting: string;
+  default?: string;
+  keyLabelKey?: string;
+  noteKey?: string;
+}[] = [
+  { key: '跳过闭店', setting: 'ForceBypassCloseShop', default: '0', keyLabelKey: 'Maimai2.CabinetControl.LcsetKeyBypassCloseShop' },
   { key: 'bd', setting: 'ForceBypassCloseShop', default: '0' },
   { key: 'event', setting: 'MininumOpenEvent', default: '25091800' },
   { key: 'cam', setting: 'ReImplCam' },
   { key: 'igam', setting: 'IgnoreAMError', default: '0' },
-  { key: 'cc', setting: 'CustomCameraConfig', note: '格式(0,1)' },
+  { key: 'cc', setting: 'CustomCameraConfig', noteKey: 'Maimai2.CabinetControl.LcsetNoteCameraConfig' },
   { key: 'skipdlc', setting: 'SkipDeliveryCheck', default: '1' },
   { key: 'disfesta', setting: 'DisableFestaMode', default: '1' },
   { key: 'ffesta', setting: 'ForceFestaMode', default: '0' },

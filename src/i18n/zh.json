@@ -540,6 +540,8 @@
       "Failed": "操作失败",
       "LCModeCard": "LC 模式",
       "LCSettingsCard": "LC 功能设置",
+      "LcsetKeyBypassCloseShop": "跳过闭店",
+      "LcsetNoteCameraConfig": "格式(0,1)",
       "LevelBurn": "全量",
       "LevelCard": "机台级别",
       "LevelCold": "冷备",
@@ -551,6 +553,8 @@
       "LevelSpecial": "特殊",
       "LevelWarm": "标准",
       "LevelWarning": "级别越低可收到的配信内容越少",
+      "ModeNameWithId": "{{id}}（{{name}}）",
+      "Parenthesized": "（{{value}}）",
       "RebootCard": "传统重启",
       "RebootConfirm": "机台将在下次心跳（空闲时）自动重启，确认设置？",
       "RebootHint": "机台将在下次心跳（空闲时）自动重启",
@@ -699,6 +703,7 @@
       "Expired": "已过期",
       "NotOwned": "你暂未拥有任何DX通行证。",
       "Remaining": "剩余",
+      "RemainingTime": "{{days}}天 {{hours}}小时",
       "SetDefault": "设为默认类型",
       "Success": "操作成功",
       "Title": "DX通行证"
@@ -796,6 +801,7 @@
       "Title": "操作记录与授权"
     },
     "PhotosPage": {
+      "ImageAlt": "右键して遊戏の写真を保存する",
       "NotOpened": "该功能尚未开放",
       "NotOwned": "你暂未在游戏中上传任何照片。",
       "Title": "相册"
