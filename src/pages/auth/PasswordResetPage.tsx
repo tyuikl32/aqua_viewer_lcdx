@@ -79,12 +79,12 @@ export function PasswordResetPage() {
         } else if (statusCode === StatusCode.VERIFY_CODE_SEND_TOO_FAST) {
           notice(t('ResetPasswordPage.Messages.SendCodeTooFast'), 'warning');
         } else {
-          notice(resp.status.message);
+          notice(t('PasswordResetPage.OperationFailed'));
         }
       }
     } catch (error) {
       console.warn('get reset password code fail', error);
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     }
   }
 
@@ -104,12 +104,12 @@ export function PasswordResetPage() {
         } else if (statusCode === StatusCode.VERIFY_CODE_NOT_CORRECT) {
           notice(t('ResetPasswordPage.Messages.CodeIncorrect'), 'danger');
         } else {
-          notice(resp.status.message);
+          notice(t('PasswordResetPage.OperationFailed'));
         }
       }
     } catch (error) {
       console.warn('reset password fail', error);
-      notice(String(error));
+      notice(t('Common.OperationFailed'));
     } finally {
       setSubmitting(false);
     }

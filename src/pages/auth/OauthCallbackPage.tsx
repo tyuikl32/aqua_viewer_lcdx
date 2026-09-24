@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { loginWithOAuth } from '@/lib/auth/auth';
 import { getAccount } from '@/lib/auth/account';
@@ -7,6 +8,7 @@ import { notice } from '@/lib/message';
 
 /** 等价旧版 oauth-callback.component（不可见处理页：state 校验 + 换 token + 分流） */
 export function OauthCallbackPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { type } = useParams<{ type: string }>();
   const [searchParams] = useSearchParams();
@@ -17,7 +19,7 @@ export function OauthCallbackPage() {
     const storedState = localStorage.getItem('oauth_state');
 
     if (state && state !== storedState) {
-      notice('Invalid state parameter');
+      notice(t('OAuthPage.InvalidState'));
       if (getAccount()) {
         void navigate('/profile');
       } else {
@@ -33,11 +35,11 @@ export function OauthCallbackPage() {
             const statusCode: number = resp.status.code;
             if (statusCode === StatusCode.OK && resp.data) {
               localStorage.removeItem('oauth_state');
-              notice(resp.status.message);
+              notice(t('OAuthPage.OperationFailed'));
               void navigate('/');
             } else if (statusCode === StatusCode.OAUTH_USER_NOT_REGISTERED) {
               if (!getAccount()) {
-                notice(resp.status.message);
+                notice(t('OAuthPage.OperationFailed'));
                 const token = resp.data.token;
                 const name = resp.data.name;
                 const username = resp.data.userName;
@@ -52,14 +54,14 @@ export function OauthCallbackPage() {
               void navigate('/profile');
             } else {
               localStorage.removeItem('oauth_state');
-              notice(resp.status.message);
+              notice(t('OAuthPage.OperationFailed'));
               void navigate('/');
             }
           }
         })
-        .catch((error) => {
+        .catch(() => {
           localStorage.removeItem('oauth_state');
-          notice(String(error));
+          notice(t('OAuthPage.OperationFailed'));
           void navigate('/');
         });
     }
