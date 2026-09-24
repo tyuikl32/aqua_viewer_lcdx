@@ -835,7 +835,34 @@
       "YourRivalID": "Your Rival ID"
     },
     "ServerMissions": {
-      "Title": "Server Missions"
+      "AvailablePoints": "Available points",
+      "ChangelogTitle": "Mission point changelog",
+      "Completed": "Completed",
+      "Exchange": "Exchange",
+      "HideCompleted": "Hide completed missions",
+      "MissionList": "Mission list",
+      "NextPage": "Next",
+      "NoChangelog": "No changelog entries",
+      "NoMissions": "No missions available",
+      "PageIndicator": "Page {{page}} of {{total}}",
+      "PaginationLabel": "Changelog pagination",
+      "PreviousPage": "Previous",
+      "Refresh": "Refresh",
+      "RefreshCycle": {
+        "EveryDay": "Daily refresh",
+        "EveryMonth": "Monthly refresh",
+        "EveryWeek": "Weekly refresh",
+        "None": "Permanent"
+      },
+      "Reward": "Reward:",
+      "Table": {
+        "ChangedAmount": "Amount changed",
+        "Reason": "Reason",
+        "Time": "Time"
+      },
+      "Title": "Server Missions",
+      "TotalPoints": "Total points earned",
+      "TotalRecords": "{{total}} records"
     },
     "Setting": {
       "AccessCodeLoading": "Please wait",

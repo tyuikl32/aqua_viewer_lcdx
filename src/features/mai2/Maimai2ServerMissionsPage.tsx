@@ -39,10 +39,10 @@ function refreshCycleOrder(cycle: Maimai2ServerMissionRefreshCycle): number {
 
 function refreshCycleText(cycle: Maimai2ServerMissionRefreshCycle): string {
   switch (cycle) {
-    case 'None': return '永久';
-    case 'EveryDay': return '每日刷新';
-    case 'EveryWeek': return '每周刷新';
-    case 'EveryMonth': return '每月刷新';
+    case 'None': return translate('Maimai2.ServerMissions.RefreshCycle.None');
+    case 'EveryDay': return translate('Maimai2.ServerMissions.RefreshCycle.EveryDay');
+    case 'EveryWeek': return translate('Maimai2.ServerMissions.RefreshCycle.EveryWeek');
+    case 'EveryMonth': return translate('Maimai2.ServerMissions.RefreshCycle.EveryMonth');
     default: return cycle;
   }
 }
@@ -139,18 +139,18 @@ export function Maimai2ServerMissionsPage() {
         <div className="points-card">
           <div className="points-info">
             <div className="points-item">
-              <span className="points-label">可用点数</span>
+              <span className="points-label">{t('Maimai2.ServerMissions.AvailablePoints')}</span>
               <span className="points-value available-points">{pointData?.availablePoints || 0}</span>
             </div>
             <div className="points-divider" />
             <div className="points-item">
-              <span className="points-label">总获得点数</span>
+              <span className="points-label">{t('Maimai2.ServerMissions.TotalPoints')}</span>
               <span className="points-value total-points">{pointData?.totalPoints || 0}</span>
             </div>
           </div>
           <div className="points-actions">
             <button className="btn btn-primary btn-sm" onClick={() => setExchangeOpen(true)}>
-              <i className="bi bi-gift" />兑换
+              <i className="bi bi-gift" />{t('Maimai2.ServerMissions.Exchange')}
             </button>
           </div>
         </div>
@@ -158,7 +158,7 @@ export function Maimai2ServerMissionsPage() {
         <div className="content">
           <div className="missions-section">
             <div className="section-header">
-              <h3>任务列表</h3>
+              <h3>{t('Maimai2.ServerMissions.MissionList')}</h3>
               <div className="form-check form-switch hide-completed-toggle">
                 <input
                   className="form-check-input"
@@ -168,10 +168,10 @@ export function Maimai2ServerMissionsPage() {
                   checked={hideCompleted}
                   onChange={(event) => setHideCompleted(event.target.checked)}
                 />
-                <label className="form-check-label" htmlFor="hideCompleted">隐藏已完成任务</label>
+                <label className="form-check-label" htmlFor="hideCompleted">{t('Maimai2.ServerMissions.HideCompleted')}</label>
               </div>
               <button className="btn btn-sm btn-outline-primary" onClick={() => void loadMissions(aimeId)}>
-                <i className="bi bi-arrow-repeat" /> 刷新
+                <i className="bi bi-arrow-repeat" /> {t('Maimai2.ServerMissions.Refresh')}
               </button>
             </div>
 
@@ -187,7 +187,7 @@ export function Maimai2ServerMissionsPage() {
                       <div className="mission-header">
                         <div className="mission-title-wrapper">
                           {completed && (
-                            <span className="completed-tag"><i className="bi bi-check-circle-fill" /> 已完成</span>
+                            <span className="completed-tag"><i className="bi bi-check-circle-fill" /> {t('Maimai2.ServerMissions.Completed')}</span>
                           )}
                           <h4 className="mission-title">{mission.missionTitle}</h4>
                         </div>
@@ -232,7 +232,7 @@ export function Maimai2ServerMissionsPage() {
                       </div>
                       <div className="mission-footer">
                         <div className="reward-info">
-                          <span className="reward-label">奖励:</span>
+                          <span className="reward-label">{t('Maimai2.ServerMissions.Reward')}</span>
                           <span className="reward-description">{mission.rewardDescription}</span>
                         </div>
                       </div>
@@ -241,17 +241,17 @@ export function Maimai2ServerMissionsPage() {
                 })}
               </div>
             ) : (
-              <div className="empty-state"><i className="bi bi-inbox" /><p>暂无可用任务</p></div>
+              <div className="empty-state"><i className="bi bi-inbox" /><p>{t('Maimai2.ServerMissions.NoMissions')}</p></div>
             )}
           </div>
 
           <div className="changelog-section">
             <div className="section-header">
-              <h3>任务点数变更记录</h3>
+              <h3>{t('Maimai2.ServerMissions.ChangelogTitle')}</h3>
               <div className="changelog-controls">
-                <span className="total-count">共 {pointLogTotal} 条记录</span>
+                <span className="total-count">{t('Maimai2.ServerMissions.TotalRecords', { total: pointLogTotal })}</span>
                 <button className="btn btn-sm btn-outline-primary" onClick={() => void loadPoints(aimeId, pointLogPage)}>
-                  <i className="bi bi-arrow-repeat" /> 刷新
+                  <i className="bi bi-arrow-repeat" /> {t('Maimai2.ServerMissions.Refresh')}
                 </button>
               </div>
             </div>
@@ -259,7 +259,7 @@ export function Maimai2ServerMissionsPage() {
             {pointLogs.length > 0 ? (
               <div className="changelog-table-container">
                 <table className="table table-hover">
-                  <thead><tr><th>时间</th><th>原因</th><th>变更数量</th></tr></thead>
+                  <thead><tr><th>{t('Maimai2.ServerMissions.Table.Time')}</th><th>{t('Maimai2.ServerMissions.Table.Reason')}</th><th>{t('Maimai2.ServerMissions.Table.ChangedAmount')}</th></tr></thead>
                   <tbody>
                     {pointLogs.map((log, index) => (
                       <tr key={`${log.recordDate}-${index}`}>
@@ -274,21 +274,21 @@ export function Maimai2ServerMissionsPage() {
                 </table>
               </div>
             ) : (
-              <div className="empty-state"><i className="bi bi-journal-text" /><p>暂无变更记录</p></div>
+              <div className="empty-state"><i className="bi bi-journal-text" /><p>{t('Maimai2.ServerMissions.NoChangelog')}</p></div>
             )}
 
             {pointLogTotal > PAGE_SIZE && (
               <div className="pagination-container">
-                <nav aria-label="变更记录分页">
+                <nav aria-label={t('Maimai2.ServerMissions.PaginationLabel')}>
                   <ul className="pagination justify-content-center">
                     <li className={`page-item${pointLogPage === 0 ? ' disabled' : ''}`}>
-                      <a className="page-link" onClick={() => pointLogPage > 0 && void loadPoints(aimeId, pointLogPage - 1)}>上一页</a>
+                      <a className="page-link" onClick={() => pointLogPage > 0 && void loadPoints(aimeId, pointLogPage - 1)}>{t('Maimai2.ServerMissions.PreviousPage')}</a>
                     </li>
                     <li className="page-item active">
-                      <span className="page-link">第 {pointLogPage + 1} 页 / 共 {totalPages} 页</span>
+                      <span className="page-link">{t('Maimai2.ServerMissions.PageIndicator', { page: pointLogPage + 1, total: totalPages })}</span>
                     </li>
                     <li className={`page-item${pointLogPage >= totalPages - 1 ? ' disabled' : ''}`}>
-                      <a className="page-link" onClick={() => pointLogPage < totalPages - 1 && void loadPoints(aimeId, pointLogPage + 1)}>下一页</a>
+                      <a className="page-link" onClick={() => pointLogPage < totalPages - 1 && void loadPoints(aimeId, pointLogPage + 1)}>{t('Maimai2.ServerMissions.NextPage')}</a>
                     </li>
                   </ul>
                 </nav>

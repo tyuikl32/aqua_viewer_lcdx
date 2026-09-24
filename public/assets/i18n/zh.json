@@ -835,7 +835,34 @@
       "YourRivalID": "你的对手ID"
     },
     "ServerMissions": {
-      "Title": "服务器任务"
+      "AvailablePoints": "可用点数",
+      "ChangelogTitle": "任务点数变更记录",
+      "Completed": "已完成",
+      "Exchange": "兑换",
+      "HideCompleted": "隐藏已完成任务",
+      "MissionList": "任务列表",
+      "NextPage": "下一页",
+      "NoChangelog": "暂无变更记录",
+      "NoMissions": "暂无可用任务",
+      "PageIndicator": "第 {{page}} 页 / 共 {{total}} 页",
+      "PaginationLabel": "变更记录分页",
+      "PreviousPage": "上一页",
+      "Refresh": "刷新",
+      "RefreshCycle": {
+        "EveryDay": "每日刷新",
+        "EveryMonth": "每月刷新",
+        "EveryWeek": "每周刷新",
+        "None": "永久"
+      },
+      "Reward": "奖励:",
+      "Table": {
+        "ChangedAmount": "变更数量",
+        "Reason": "原因",
+        "Time": "时间"
+      },
+      "Title": "服务器任务",
+      "TotalPoints": "总获得点数",
+      "TotalRecords": "共 {{total}} 条记录"
     },
     "Setting": {
       "AccessCodeLoading": "请稍后",
