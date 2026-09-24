@@ -1,9 +1,10 @@
 import { api } from '@/lib/api/client';
+import { lcdx } from '@/lib/api/client';
 import { StatusCode } from '@/lib/models';
 import { navigate } from '@/lib/nav';
 import { setAccount, clearAccount, getAccount } from '@/lib/auth/account';
 import { restoreAccess, clearAccess } from '@/lib/auth/access';
-import { loadUser, clearUser } from '@/lib/user';
+import { loadUser, clearUser, getCurrentUser } from '@/lib/user';
 
 /** 等价旧版 authentication.service.ts */
 
@@ -23,7 +24,11 @@ export async function procLoginResp(loginResp: any): Promise<any> {
     navigate('/eula');
     return loginResp;
   }
-  await loadUser(true);
+  const userResp = await loadUser(true);
+  // LCDX：无卡用户引导至网络码绑定页（等价旧版 procLoginResp 的 cards.length===0 分支）
+  if (userResp?.status?.code === StatusCode.OK && getCurrentUser()?.cards?.length === 0) {
+    navigate('/netcode-bind');
+  }
   return loginResp;
 }
 
@@ -45,6 +50,11 @@ export function loginAs(username: string): Promise<any> {
 
 export function loginWithOAuth(oauthCode: string, type: string): Promise<any> {
   return api.post(`api/auth/signin/oauth2/${oauthCode}/${type}`).then(procLoginResp);
+}
+
+/** LCDX 一次性登录（等价旧版 login_lcdx：GET lcdx/onetime-v2/{token}） */
+export function loginLcdxOnetime(token: string): Promise<any> {
+  return lcdx.get(`lcdx/onetime-v2/${encodeURIComponent(token)}`).then(procLoginResp);
 }
 
 export function signUp(
