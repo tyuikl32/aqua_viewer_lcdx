@@ -1,0 +1,33 @@
+/* 等价旧版 dashboard.component.css 的快速导航色块。
+   React 无视图封装，故统一限定在 .dashboard-page 容器内，避免污染全局。 */
+
+.dashboard-page .quick-navigate {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  height: 5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-size: 1.5em;
+  padding: 0.5rem;
+  text-decoration: none;
+}
+
+.dashboard-page .mai2-playlog {
+  background: linear-gradient(45deg, #0d2e40, #3a4165);
+  color: #ffffff;
+}
+
+.dashboard-page .mai2-rating {
+  background: linear-gradient(45deg, darkblue, darkgray);
+  color: #ffffff;
+}
+
+.dashboard-page .mai2-profile {
+  background: linear-gradient(45deg, darkgreen, darkred);
+  color: #ffffff;
+}
+
+.dashboard-page .mai2-photo {
+  background: linear-gradient(45deg, darksalmon, #b393e1);
+  color: #ffffff;
+}

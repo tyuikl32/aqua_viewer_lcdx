@@ -35,6 +35,11 @@ export function getCurrentLang(): string {
 
 export const langStore = createStore<string>(getCurrentLang());
 
+/** 命令式取词（等价旧版 TranslateService.instant）：供异步回调等非渲染路径的提示文案使用 */
+export function translate(key: string, params?: Record<string, unknown>): string {
+  return i18next.t(key, params);
+}
+
 export function setLang(lang: string) {
   localStorage.setItem('lang', lang);
   langStore.set(getCurrentLang());
