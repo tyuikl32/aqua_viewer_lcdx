@@ -493,3 +493,39 @@ Key convention: upstream keeps **Bootstrap class names** (`globals.css` rebuilds
 ### Status
 
 [WIP] Phases 0–3 complete; **Phase 4 (shared-page replay, ~14 files incl. dashboard + sign-up) and Phase 5 (Liquefy default, spec rewrite, `master reset --hard`) remain**. Full handoff in `implement.md` → HANDOFF NOTES.
+
+
+## Session 15: React LCDX audit SPA fallback verification
+
+**Date**: 2026-09-25
+**Task**: React LCDX audit SPA fallback verification
+**Branch**: `migrate/react-port`
+
+### Summary
+
+Completed the follow-up for unauthenticated deep links: local React routing already sends known protected routes to home and unknown routes to the 404 page; fixed separate Baota/Nginx SPA rewrite includes for both LCDX hosts, rebuilt dist, and verified live browser behavior. No Git commit, push, or app artifact upload.
+
+### Main Changes
+
+- Confirmed 56 offline LCDX regression tests, including /mai2/photos -> / and unknown -> /not-found.
+- Backed up and updated both site-specific Nginx rewrite files; nginx -t passed and systemctl reload nginx completed.
+- Rebuilt E:\\ALL.Net\\Project_LCDX_NET\\aqua_viewer_lcdx\\dist.
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] npm run test:lcdx-regression — 56 passed.
+- [OK] npm run build — passed (tsc + Vite + PWA); existing @charset/chunk-size warnings only.
+- [OK] node scripts/audit-i18n.mjs — no errors.
+- [OK] Live browser checks — both domains redirect known protected deep links to / and unknown paths to /not-found.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Await explicit Git commit/archive approval; keep remote Nginx change recorded separately from application commits.
