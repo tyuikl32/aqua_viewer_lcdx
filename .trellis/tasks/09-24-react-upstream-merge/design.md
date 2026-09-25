@@ -90,14 +90,14 @@ master (Angular, 152 LCDX commits)          backup (upstream React, 41 commits)
         │                                            │
         ├─ tag/branch: legacy-angular (safety line)  │
         │                                            │
-        └────────── port intent ──────────► migrate/react-port (new branch from backup)
+        └────────── port intent ──────────► test/lcdx-react-port-audit (new branch from backup)
                                                      │  Phase 1..5
                                                      ▼
                                           master ← reset/merge (final, user decides)
 ```
 
 - `legacy-angular` branch permanently preserves the Angular app (also used later as parity baseline).
-- `migrate/react-port` starts from `backup`; `.trellis/` is copied in from master (not tracked upstream).
+- `test/lcdx-react-port-audit` starts from `backup`; `.trellis/` is copied in from master (not tracked upstream).
 - Final adoption of `master`: recommended `git reset --hard` (linear history; a merge commit would carry no real merge semantics) — open question Q1.
 
 ### Porting model (how each item is translated)
@@ -113,7 +113,7 @@ master (Angular, 152 LCDX commits)          backup (upstream React, 41 commits)
 ### Phase 0 — Baseline preparation (no feature work)
 
 1. `git branch legacy-angular master` (on master).
-2. `git checkout -b migrate/react-port backup`; copy `.trellis/` from master; commit.
+2. `git checkout -b test/lcdx-react-port-audit backup`; copy `.trellis/` from master; commit.
 3. `npm install`, `npm run build` — confirm the React baseline builds as-is.
 4. Record parity-harness prerequisites (certs via `npm run gen:cert`, hosts entry) — dev-env only, non-blocking.
 

@@ -7,7 +7,7 @@
 
 ```bash
 cd E:/ALL.Net/Project_LCDX_NET/aqua_viewer_lcdx
-git status && git log --oneline -5          # confirm clean tree on migrate/react-port
+git status && git log --oneline -5          # confirm clean tree on test/lcdx-react-port-audit
 py -3 ./.trellis/scripts/task.py start 09-24-react-upstream-merge   # re-activate session task
 py -3 ./.trellis/scripts/task.py current    # verify
 cat .trellis/tasks/09-24-react-upstream-merge/implement.md   # this file — read "Current position"
@@ -28,7 +28,8 @@ Context docs (read in order): `design.md` (full analysis & phased plan) → `prd
 
 **Phase 0 ✅ · Phase 1 ✅ · Phase 2 ✅ · Phase 3 ✅ · Phase 4 ✅ · Phase 5 ⏳ 5 of 6 done — see Phase 5 below**
 
-**45 commits ahead of `backup`, all local (user asked to commit but NOT push).** Working tree clean.
+**50 commits ahead of `backup`.** Branch was renamed `migrate/react-port` → `test/lcdx-react-port-audit`
+(2026-09-25) and is synced to `origin/test/lcdx-react-port-audit`. Working tree clean.
 `master` is still the old Angular code; `legacy-angular` points at it — do not touch them until Phase 5's last step.
 
 ### Phase 4 — Shared-page replay ✅ COMPLETE
@@ -71,7 +72,7 @@ backend change needed.**
 | `.trellis/spec/frontend/*` React rewrite | ✅ **done** | commit `d50691e` — all six files (five were empty templates) |
 | **Run-time verification** | ✅ **done (first time ever)** | Playwright smoke over 14 routes on a `vite preview` build: **zero console errors / zero page errors**, `#root` mounted on every route, theme `liquefy/light` everywhere. Verified: `/` (Home + ICP footer, Chinese copy), `/sign-in` (QQ + 密码 form), `/sign-up` (QQ号 + 验证码 + "注册账号或重设密码"), `/password-reset`, `/contributors`, `/not-found` ("TRACK 404 · SIGNAL LOST"), unknown route → `/not-found`, and the 6 auth-guarded routes correctly redirect guests to `/`. Not covered: anything behind login (needs a live LCDX backend) |
 | **Hardcoded Chinese copy sweep** | ✅ **done** | see below — 8 commits, catalogs now 1203 keys |
-| Adopt into `master` (Q1) | ⏸ **awaiting user confirmation** | `git checkout master && git reset --hard migrate/react-port` — destructive, not done |
+| Adopt into `master` (Q1) | ⏸ **awaiting user confirmation** | `git checkout master && git reset --hard test/lcdx-react-port-audit` — destructive, not done |
 | UI-parity suite | ⛔ **blocked** | needs a hosts entry mapping `portal.naominet.live` → `127.0.0.1` (`scripts/add-hosts.ps1`, requires Administrator). Certs already exist under `ssl/`. Playwright uses `channel: 'chrome'` (system Chrome), and `ms-playwright` has no downloaded browser |
 
 ### Hardcoded Chinese copy sweep ✅ COMPLETE (2026-09-25 session 3–4)
@@ -104,7 +105,7 @@ banner hardcoded (it is branding, not copy) and only the subtitle moves to a key
 
 ## Phase 0–3 (recap, all done)
 
-- **Phase 0**: `legacy-angular` created at old master (`b1c3fb4`); `migrate/react-port` from `backup`
+- **Phase 0**: `legacy-angular` created at old master (`b1c3fb4`); `test/lcdx-react-port-audit` from `backup`
   (`90ed95b`); `.trellis/` restored; `npm ci` OK; `npm run build` green.
 - **Phase 1**: i18n merge (993 keys, zh/en synced in both copies), `.env` / `.env.development`,
   `src/lib/api/client.ts` (`api` + `lcdx`), `src/lib/botPermission.ts` (five-tier model),
@@ -117,13 +118,14 @@ banner hardcoded (it is branding, not copy) and only the subtitle moves to a key
 
 ## 🔁 HANDOFF NOTES (for the next AI)
 
-**Branch / state**: work happens on `migrate/react-port` (branched from `backup`). 45 commits ahead of
-`backup`, **pushed nowhere** (user asked to commit but not push). Working tree clean.
+**Branch / state**: work happens on `test/lcdx-react-port-audit` (branched from `backup`; renamed from
+`migrate/react-port` on 2026-09-25). 50 commits ahead of `backup`, synced to
+`origin/test/lcdx-react-port-audit`. Working tree clean.
 
 **Resume ritual**:
 ```bash
 cd E:/ALL.Net/Project_LCDX_NET/aqua_viewer_lcdx
-git log --oneline -3 && git status          # expect clean tree on migrate/react-port
+git log --oneline -3 && git status          # expect clean tree on test/lcdx-react-port-audit
 py -3 ./.trellis/scripts/task.py start 09-24-react-upstream-merge
 cat .trellis/tasks/09-24-react-upstream-merge/implement.md   # this file
 ```
@@ -137,7 +139,8 @@ cat .trellis/tasks/09-24-react-upstream-merge/implement.md   # this file
    use `notice(t('Key'))` / `Common.OperationFailed`.
 4. **Scope new CSS** under a page-specific class — Vite CSS is global, there is no Angular view
    encapsulation.
-5. Commit after every completed unit with a descriptive message; **do not push**.
+5. Commit after every completed unit with a descriptive message; push only when the user asks
+   (branch is currently synced to `origin/test/lcdx-react-port-audit`).
 6. `npm run build` must be green before each commit (`tsc -b && vite build`). `npm run lint` is
    **not usable** (no ESLint config, eslint not a dependency).
 
@@ -151,7 +154,7 @@ production build (public/guest routes only — nothing behind login has ever bee
 - Do NOT run `dotnet` from the Bash tool (known env corruption — see skill `dotnet-windows-env-fix`).
 - `py -3` works for trellis scripts; plain `python` in Bash resolves to the Windows Store stub.
 - Git topology: `master` (Angular, frozen) → `legacy-angular` (backup pointer, keep forever) ·
-  `backup` (upstream main mirror, do not commit to) · `migrate/react-port` (work branch, base for the
+  `backup` (upstream main mirror, do not commit to) · `test/lcdx-react-port-audit` (work branch, base for the
   final master reset).
 - LCDX API endpoints in use (all prefixed `lcdx/`): `cabinet/{permission,manage-access,command,
   global-players,grants,lcset,level,mode,permissions,reboot,info,players,delivery,dlprog}`,
