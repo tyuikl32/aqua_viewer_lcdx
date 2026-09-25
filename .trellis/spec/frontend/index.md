@@ -17,7 +17,7 @@
 | i18n | `i18next` + `react-i18next`, resources in `src/i18n/{zh,en}.json` |
 | Global state | Hand-rolled `createStore` / `useStore` (`src/lib/store.ts`) — no Redux/Zustand |
 | Server state | Plain `fetch` via `src/lib/api/client.ts`; `@tanstack/react-query` is mounted in `src/app.tsx` but is **not** used by feature pages |
-| Tests | Playwright UI-parity suite in `tests/ui-parity/` (`npm run test:ui-parity`) |
+| Tests | Offline LCDX browser regressions (`npm run test:lcdx-regression`); separate UI-parity suite (`npm run test:ui-parity`) |
 
 ---
 

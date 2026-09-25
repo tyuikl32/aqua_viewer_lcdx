@@ -96,6 +96,7 @@
     "WhiteListed": "已加白"
   },
   "AnnouncementsPage": {
+    "ContentUnavailable": "公告正文暂不可用。",
     "All": "全部",
     "Announcement": "公告",
     "Delete": "删除",
@@ -1079,6 +1080,7 @@
     "SignInFailed": "OAuth2 登录失败"
   },
   "OnetimeSignInPage": {
+    "Loading": "请稍候…",
     "OperationFailed": "一次性登录失败"
   },
   "Ongeki": {

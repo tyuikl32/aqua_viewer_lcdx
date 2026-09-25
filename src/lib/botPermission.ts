@@ -66,45 +66,42 @@ export function isBotAdmin(): boolean {
   return getBotPermission().permission >= ADMIN_PERMISSION;
 }
 
-/** 登录后调用：EP-01 + EP-18 并行探测（任一失败保持默认态，不阻塞页面） */
+// A generation covers both probes and is invalidated on logout/account replacement.
+let permissionGeneration = 0;
+let permissionUser: string | null = null;
+
+/** 登录后并行探测；两个请求均结束才完成加载，避免守卫使用半份权限快照。 */
 export function loadBotPermission(userName: string): void {
-  if (!userName) {
-    return;
+  const generation = ++permissionGeneration;
+  if (permissionUser !== userName) {
+    botPermissionStore.set(INITIAL_STATE);
+    permissionUser = userName;
   }
+  if (!userName) return;
+
   const encoded = encodeURIComponent(userName);
-  void lcdx
-    .get(`lcdx/cabinet/permission/${encoded}`)
-    .then((resp) => {
-      if (isOk(resp) && resp.data) {
-        botPermissionStore.set({
-          ...botPermissionStore.get(),
-          permission: resp.data.permission ?? 0,
-          qqNumber: resp.data.qqNumber ?? null,
-          loaded: true,
-        });
-      }
-    })
-    .catch(() => {
-      /* 保持默认态：permission 0 */
+  void Promise.allSettled([
+    lcdx.get(`lcdx/cabinet/permission/${encoded}`),
+    lcdx.get(`lcdx/cabinet/manage-access/${encoded}`),
+  ]).then(([permissionResult, manageResult]) => {
+    if (generation !== permissionGeneration) return;
+    const permission = permissionResult.status === 'fulfilled' && isOk(permissionResult.value)
+      ? permissionResult.value.data : null;
+    const manage = manageResult.status === 'fulfilled' && isOk(manageResult.value)
+      ? manageResult.value.data : null;
+    botPermissionStore.set({
+      permission: permission?.permission ?? 0,
+      qqNumber: permission?.qqNumber ?? null,
+      hasManage: !!manage?.hasManage,
+      loaded: true,
     });
-  void lcdx
-    .get(`lcdx/cabinet/manage-access/${encoded}`)
-    .then((resp) => {
-      if (isOk(resp) && resp.data) {
-        botPermissionStore.set({
-          ...botPermissionStore.get(),
-          hasManage: !!resp.data.hasManage,
-          loaded: true,
-        });
-      }
-    })
-    .catch(() => {
-      /* 保持默认态：hasManage false */
-    });
+  });
 }
 
-/** 登出/清理：归零 */
+/** 登出/清理：归零并废弃旧请求，不能让旧账号的权限写回。 */
 export function clearBotPermission(): void {
+  permissionGeneration++;
+  permissionUser = null;
   botPermissionStore.set(INITIAL_STATE);
 }
 

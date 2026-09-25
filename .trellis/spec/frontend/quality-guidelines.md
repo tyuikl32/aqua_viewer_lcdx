@@ -30,6 +30,23 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
   cabmode / remotecontrol / locks (three copies of the same rules), while `cab-mode-*` is
   cabmode-only. Verified-unique names are what keeps the global stylesheet safe.
 
+- Review imported upstream page CSS too: scoping only new LCDX styles is insufficient.
+  Upstream Ongeki bare `.name`/`.rank` rules broke the otherwise correctly ported KOP table.
+  Scope the source rules under their owning page and verify both pages with populated data,
+  including desktop/mobile table geometry and locally served assets.
+
+### Nullable announcement bodies and LCDX category adaptation
+
+- LCDX announcement list rows may omit `content`; detail/recent can return null when the
+  deployed `{id}.html` body is absent. Normalize optional text and translations in
+  `Announcement.fromJSON` before rendering; never pass null/undefined to `marked`.
+- Use the shared `AnnouncementContent` in list and dashboard. Blank content has localized
+  unavailable copy; real content retains DOMPurify sanitization and translation fallback.
+- Missing content is a server-data issue too: record affected IDs and the configured
+  `AnnouncementContentPath`; do not fabricate body text or fall back to an unrelated API.
+- Adapt LCDX `OTHERS` to the UI's upstream `OTHER` on reads and reverse that value only for
+  LCDX list-filter requests. Keep upstream admin writes on their existing contract.
+
 ### Rewriting a ported LCDX page into shadcn/Tailwind
 
 - Ported pages keep Bootstrap class names because `globals.css` rebuilds the `--bs-*` tokens for
@@ -58,6 +75,28 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
   editing four files in one change.
 - Async callbacks must use the imperative `translate()` from `@/lib/i18n`, not a captured `t` — the
   language can change while a request is in flight.
+
+### Async snapshots, initialization and request ownership
+
+- Publish EP-01 permission and EP-18 manage-access as one complete snapshot after both settle.
+  Invalidate outstanding generations on logout/account changes; a late response must not restore
+  another account's permissions. Same-user refreshes retain the last completed snapshot until the
+  new one is ready, avoiding guard/initialization loops.
+- Await user initialization before constructing username-scoped URLs on cold deep links.
+- Guard cabinet reads by both selected cabinet and request generation. Clear old-cabinet cards
+  on selection changes; a late result must not relabel the newly selected cabinet.
+- Independent LCDX account tools (binding/merge) must not depend on upstream game-profile or
+  photo-config success. Only enable binding mutations after a valid binding-state response.
+  Preserve the legacy distinction: binding uses `cards[0].luid`, merge uses `defaultCard.luid`.
+- Draft filter edits must not retrigger initialization; apply filters explicitly.
+- Allow at most one in-flight poll per remote session. Terminal results are monotonic: timeout
+  may only change a still-pending entry. Thirty attempts are not a strict wall-clock 60-second
+  guarantee when requests are slow. Always release the in-flight marker in `finally`.
+- One-time authentication tokens must not be consumed again during React StrictMode effect
+  replay. Guard that irreversible operation, not every effect indiscriminately.
+- Existing cabinet-level `result.warning` is a deliberate server-authored compatibility message,
+  not a generic exception/status passthrough. Preserve its meaning until the protocol supplies a
+  localizable warning identifier; continue localizing ordinary success/failure notices.
 
 ### Pagination: use the shared controls
 
@@ -101,6 +140,15 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
   This is the only automated check that reliably runs in this environment.
 - **`npm run lint` is not usable** — there is no ESLint config in the repo and `eslint` is not a
   declared dependency. Do not claim lint coverage.
+- **Offline LCDX regression suite**: `npm run test:lcdx-regression` starts an isolated HTTP Vite
+  server at `127.0.0.1:5187` with no live proxy. Requires installed dependencies and Chrome
+  (`channel: 'chrome'`). `tests/lcdx-regression/fixture.ts` intercepts all API/LCDX traffic and
+  blocks other origins; use fake credentials only. This verifies browser behavior and fixture
+  contracts, not live backend integration or pixel parity.
+- **i18n audit**: `node scripts/audit-i18n.mjs` checks all four resources, interpolation variables,
+  literal translation calls and full-key declarations. `--dynamic` lists unresolved expressions
+  for review. The parser comes from the locked Vite React plugin dependency tree; reinstall with
+  `npm ci` if needed. This does not prove every backend-driven dynamic key.
 - **UI-parity suite**: `tests/ui-parity/` (26 specs) runs via `npm run test:ui-parity` against
   `playwright.parity.config.ts`. It starts two servers — the React dev server and the legacy Angular
   baseline — both on `https://portal.naominet.live` (ports 5173 / 4201). Prerequisites:
@@ -119,15 +167,10 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
 
 Tracked, deliberate, do not extend:
 
-- **Hardcoded Chinese copy outside `notice()`**. The notice sweep covered toasts; page copy in
-  several upstream-ported screens is still literal Chinese, so English users see Chinese:
-  `src/pages/AdminPage.tsx` (admin labels + confirm prompts), `src/components/shell/ConfirmDialog.tsx`
-  (确认/取消/确定 defaults), `src/pages/AnnouncementEditPage.tsx`, `src/pages/BannedPage.tsx`,
-  `src/pages/PlaceholderPage.tsx`, `src/pages/KeychipPage.tsx`, `src/main.tsx` (impersonation
-  bootstrap failure), `src/features/mai2/Maimai2PointExchangesPage.tsx`,
-  `Maimai2FestaPage.tsx`, `Maimai2ServerMissionsPage.tsx`, `Maimai2PhotosPage.tsx`,
-  `Maimai2DxPassPage.tsx`, `src/lib/auth/access.ts` (QQ group notice).
-  Not to be fixed piecemeal — do it as one sweep with keys added to all four i18n files.
+- **Localization review boundary**: the page-copy backlog formerly listed here was addressed by
+  `8e07df2..97dfa10`; do not keep reporting those screens as wholly unlocalized. Static key,
+  interpolation and resource-copy checks are available via `node scripts/audit-i18n.mjs`.
+  Dynamic key domains, server-supplied labels and runtime copy still need semantic review.
 - **Intentionally NOT i18n candidates**: game-native data — maimai dan ranks
   (`src/features/mai2/models.ts`), music genre names (`Maimai2SongListPage`, `OngekiSongListPage`,
   `ChuniV2SongListPage`), mission reward category names (`server-mission-models.ts`), the maimai

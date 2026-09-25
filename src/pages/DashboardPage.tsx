@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
 import {
   CheckLg,
   ExclamationTriangleFill,
@@ -22,6 +20,7 @@ import { fullWidth, padDigits } from '@/lib/format';
 import { preloadStates, checkingUpdate, dbVersionStore, reload } from '@/lib/db/preload';
 import { loadUser } from '@/lib/user';
 import { Announcement } from '@/features/announcements/announcement';
+import { AnnouncementContent } from '@/features/announcements/AnnouncementContent';
 import '@/features/announcements/AnnouncementDialog.css';
 import './DashboardPage.css';
 
@@ -101,8 +100,6 @@ export function DashboardPage() {
             const parsed = Announcement.fromJSON(resp.data);
             if (index === 0) setAnnouncement(parsed);
             else setAnnouncement2(parsed);
-          } else {
-            notice(translate('DashboardPage.OperationFailed'));
           }
         })
         .catch(() => {
@@ -223,8 +220,23 @@ export function DashboardPage() {
     </div>
   );
 
+  // 与 master 的 dashboard.component.ts 一致：recent 只负责展示摘要，点击后重新读取 item 详情。
+  // 详情接口才是公告正文的权威来源，不能直接把 recent/list 的摘要对象当成正文。
+  const showAnnouncement = (item: Announcement) => {
+    void lcdx
+      .get('lcdx/announcement/item/' + item.id, { lang: getCurrentLang() })
+      .then((resp) => {
+        if (resp?.status?.code === StatusCode.OK && resp.data) {
+          setDetail(Announcement.fromJSON(resp.data));
+        } else {
+          notice(translate('DashboardPage.OperationFailed'));
+        }
+      })
+      .catch(() => notice(translate('Common.OperationFailed')));
+  };
+
   const announcementEntry = (item: Announcement) => (
-    <div className="my-1" onClick={() => setDetail(item)}>
+    <div className="my-1" onClick={() => showAnnouncement(item)}>
       <div className="fw-light text-secondary mb-1">{item.updatedAt.toLocaleDateString()}</div>
       <h4>{item.title}</h4>
     </div>
@@ -492,12 +504,7 @@ export function DashboardPage() {
 
       <BModal className="announcement-detail-dialog" open={!!detail} onClose={() => setDetail(null)} scrollable>
         {detail && (
-          <div
-            className="announcement-content"
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(marked.parse(detail.getLocalContent(getCurrentLang())) as string),
-            }}
-          />
+          <AnnouncementContent content={detail.getLocalContent(getCurrentLang())} />
         )}
       </BModal>
     </div>

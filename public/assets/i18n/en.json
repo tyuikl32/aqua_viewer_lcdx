@@ -96,6 +96,7 @@
     "WhiteListed": "Whitelisted"
   },
   "AnnouncementsPage": {
+    "ContentUnavailable": "Announcement content is currently unavailable.",
     "All": "All",
     "Announcement": "Announcement",
     "Delete": "Delete",
@@ -1079,6 +1080,7 @@
     "SignInFailed": "OAuth2 sign-in error"
   },
   "OnetimeSignInPage": {
+    "Loading": "Please wait...",
     "OperationFailed": "Operation failed"
   },
   "Ongeki": {

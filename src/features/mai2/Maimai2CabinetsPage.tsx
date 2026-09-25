@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { lcdx } from '@/lib/api/client';
+import { translate } from '@/lib/i18n';
 import { notice } from '@/lib/message';
 import { isOk } from '@/lib/models';
 import { getCurrentUser, loadUser } from '@/lib/user';
@@ -49,36 +50,41 @@ export function Maimai2CabinetsPage() {
   const [autoRefresh, setAutoRefresh] = useState(false);
 
   /** selectedNick 的最新值（自动刷新定时器内使用，避免闭包过期） */
+  const refreshGenerationRef = useRef(0);
   const selectedNickRef = useRef(selectedNick);
   selectedNickRef.current = selectedNick;
 
   const userName = () => getCurrentUser()?.username ?? '';
 
-  const loadInfo = useCallback(async (nick: string) => {
+  const loadInfo = useCallback(async (nick: string, generation: number) => {
     const resp = await lcdx.get(
       `lcdx/cabinet/info/${encodeURIComponent(userName())}/${encodeURIComponent(nick)}`,
     );
+    if (generation !== refreshGenerationRef.current || nick !== selectedNickRef.current) return;
     setInfo(isOk(resp) ? (resp.data as CabinetInfo) : null);
   }, []);
 
-  const loadPlayers = useCallback(async (nick: string) => {
+  const loadPlayers = useCallback(async (nick: string, generation: number) => {
     const resp = await lcdx.get(
       `lcdx/cabinet/players/${encodeURIComponent(userName())}/${encodeURIComponent(nick)}`,
     );
+    if (generation !== refreshGenerationRef.current || nick !== selectedNickRef.current) return;
     setPlayers(isOk(resp) ? (resp.data as CabinetPlayers) : null);
   }, []);
 
-  const loadDelivery = useCallback(async (nick: string) => {
+  const loadDelivery = useCallback(async (nick: string, generation: number) => {
     const resp = await lcdx.get(
       `lcdx/cabinet/delivery/${encodeURIComponent(userName())}/${encodeURIComponent(nick)}`,
     );
+    if (generation !== refreshGenerationRef.current || nick !== selectedNickRef.current) return;
     setDelivery(isOk(resp) ? (resp.data as DeliveryStatus) : null);
   }, []);
 
-  const loadDlprog = useCallback(async (nick: string) => {
+  const loadDlprog = useCallback(async (nick: string, generation: number) => {
     const resp = await lcdx.get(
       `lcdx/cabinet/dlprog/${encodeURIComponent(userName())}/${encodeURIComponent(nick)}`,
     );
+    if (generation !== refreshGenerationRef.current || nick !== selectedNickRef.current) return;
     setDlprog(isOk(resp) ? (resp.data as DownloadProgress) : null);
   }, []);
 
@@ -88,7 +94,21 @@ export function Maimai2CabinetsPage() {
       if (!nick) {
         return;
       }
-      void Promise.all([loadInfo(nick), loadPlayers(nick), loadDelivery(nick), loadDlprog(nick)]);
+      const generation = ++refreshGenerationRef.current;
+      void Promise.allSettled([
+        loadInfo(nick, generation),
+        loadPlayers(nick, generation),
+        loadDelivery(nick, generation),
+        loadDlprog(nick, generation),
+      ]).then((results) => {
+        if (
+          generation === refreshGenerationRef.current &&
+          nick === selectedNickRef.current &&
+          results.some((result) => result.status === 'rejected')
+        ) {
+          notice(translate('Common.OperationFailed'));
+        }
+      });
     },
     [loadInfo, loadPlayers, loadDelivery, loadDlprog],
   );
@@ -111,7 +131,7 @@ export function Maimai2CabinetsPage() {
         });
       }
     } catch {
-      notice(t('Maimai2.CabinetsPage.LoadFailed'));
+      notice(translate('Maimai2.CabinetsPage.LoadFailed'));
     }
   }, [t]);
 
@@ -121,9 +141,16 @@ export function Maimai2CabinetsPage() {
 
   /** 选中机台变化（含初次默认选中）→ 四卡片刷新（等价旧版 onCabinetChange + 自动选中） */
   useEffect(() => {
+    setInfo(null);
+    setPlayers(null);
+    setDelivery(null);
+    setDlprog(null);
     if (selectedNick) {
       refreshAll(selectedNick);
     }
+    return () => {
+      refreshGenerationRef.current++;
+    };
   }, [selectedNick, refreshAll]);
 
   /** 30s 自动刷新（等价旧版 toggleAutoRefresh/stopAutoRefresh 的 interval 生命周期） */

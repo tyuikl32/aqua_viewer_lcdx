@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { lcdx } from '@/lib/api/client';
+import { translate } from '@/lib/i18n';
 import { notice } from '@/lib/message';
 import { isOk } from '@/lib/models';
 import { getCurrentUser, loadUser } from '@/lib/user';
@@ -67,6 +68,7 @@ export function Maimai2RemoteControlPage() {
   const sessionsRef = useRef(sessions);
   sessionsRef.current = sessions;
   const pollCountsRef = useRef(new Map<string, number>());
+  const pollingRequestsRef = useRef(new Set<string>());
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const userName = () => getCurrentUser()?.username ?? '';
@@ -101,6 +103,13 @@ export function Maimai2RemoteControlPage() {
       return;
     }
     for (const entry of pending) {
+      if (
+        pollingRequestsRef.current.has(entry.requestId) ||
+        !sessionsRef.current.some((s) => s.requestId === entry.requestId && s.status === 'pending')
+      ) {
+        continue;
+      }
+      pollingRequestsRef.current.add(entry.requestId);
       const count = (pollCountsRef.current.get(entry.requestId) ?? 0) + 1;
       pollCountsRef.current.set(entry.requestId, count);
       try {
@@ -111,7 +120,7 @@ export function Maimai2RemoteControlPage() {
         if (data && data.status !== 'pending') {
           setSessions((prev) =>
             prev.map((s) =>
-              s.requestId === entry.requestId
+              s.requestId === entry.requestId && s.status === 'pending'
                 ? { ...s, status: data.status, message: data.message, imageUrl: data.imageUrl }
                 : s,
             ),
@@ -120,11 +129,17 @@ export function Maimai2RemoteControlPage() {
         // data 为空（94041）：保持 pending 直至上限
       } catch {
         /* 等价旧版：单次轮询失败不终止会话，直到上限 */
+      } finally {
+        pollingRequestsRef.current.delete(entry.requestId);
       }
       if (count >= POLL_MAX) {
-        // 2s×30 上限：置 timeout 停止轮询该条目
+        // 最多 30 次已完成的查询；慢请求不重叠，不保证严格的 60 秒超时。
         setSessions((prev) =>
-          prev.map((s) => (s.requestId === entry.requestId ? { ...s, status: 'timeout' } : s)),
+          prev.map((s) =>
+            s.requestId === entry.requestId && s.status === 'pending'
+              ? { ...s, status: 'timeout' }
+              : s,
+          ),
         );
       }
     }
@@ -185,11 +200,11 @@ export function Maimai2RemoteControlPage() {
         pollCountsRef.current.set(requestId, 0);
         startPolling();
       } else {
-        notice(t('Maimai2.RemoteControlPage.Failed'));
+        notice(translate('Maimai2.RemoteControlPage.Failed'));
       }
     } catch {
       setSending(false);
-      notice(t('Maimai2.RemoteControlPage.NetworkError'));
+      notice(translate('Maimai2.RemoteControlPage.NetworkError'));
     }
   }, [message, selectedCommand, selectedNick, sending, startPolling, t]);
 

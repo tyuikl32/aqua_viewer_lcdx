@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { lcdx } from '@/lib/api/client';
+import { translate } from '@/lib/i18n';
 import { notice } from '@/lib/message';
 import { isOk } from '@/lib/models';
 import { getCurrentUser, loadUser } from '@/lib/user';
@@ -116,6 +117,10 @@ export function Maimai2LocksPage() {
     }
   }, [filterAction, filterKeychip, filterQQ, filterSince, filterUntil]);
 
+  // Filter drafts must not retrigger all permission/member initialization.
+  const loadLocksRef = useRef(loadLocks);
+  loadLocksRef.current = loadLocks;
+
   // ==================== 卡B：EP-15/16/17 ====================
 
   const loadGrants = useCallback(async () => {
@@ -163,14 +168,14 @@ export function Maimai2LocksPage() {
     }
     void (async () => {
       await loadUser();
-      void loadLocks(1);
+      void loadLocksRef.current(1);
       void loadGrants();
       void loadCabinets();
       if (canAdmin) {
         void loadMembers();
       }
     })();
-  }, [ready, canManage, canAdmin, loadLocks, loadGrants, loadCabinets, loadMembers]);
+  }, [ready, canManage, canAdmin, loadGrants, loadCabinets, loadMembers]);
 
   /** 刷新后当前页越界（如吊销导致列表变短）时回到第 1 页 */
   const filteredGrants = useMemo(() => {
@@ -256,15 +261,15 @@ export function Maimai2LocksPage() {
         nickName: grantNick,
       });
       if (isOk(resp)) {
-        notice(t('Maimai2.LocksPage.OperationSuccess'));
+        notice(translate('Maimai2.LocksPage.OperationSuccess'));
         setGrantQQ(null);
         setGrantNick('');
         void loadGrants();
       } else {
-        notice(t('Maimai2.LocksPage.OperationFailed'));
+        notice(translate('Maimai2.LocksPage.OperationFailed'));
       }
     } catch {
-      notice(t('Maimai2.LocksPage.OperationFailed'));
+      notice(translate('Maimai2.LocksPage.OperationFailed'));
     }
   };
 
@@ -280,13 +285,13 @@ export function Maimai2LocksPage() {
         nickName: item.fullKeychip,
       });
       if (isOk(resp)) {
-        notice(t('Maimai2.LocksPage.OperationSuccess'));
+        notice(translate('Maimai2.LocksPage.OperationSuccess'));
         void loadGrants();
       } else {
-        notice(t('Maimai2.LocksPage.OperationFailed'));
+        notice(translate('Maimai2.LocksPage.OperationFailed'));
       }
     } catch {
-      notice(t('Maimai2.LocksPage.OperationFailed'));
+      notice(translate('Maimai2.LocksPage.OperationFailed'));
     }
   };
 
@@ -295,7 +300,7 @@ export function Maimai2LocksPage() {
       return;
     }
     if (permLevel === ADMIN_PERMISSION && !permNote.trim()) {
-      notice(t('Maimai2.LocksPage.PermNoteRequiredError'));
+      notice(translate('Maimai2.LocksPage.PermNoteRequiredError'));
       return;
     }
     try {
@@ -306,16 +311,16 @@ export function Maimai2LocksPage() {
         note: permNote || null,
       });
       if (isOk(resp)) {
-        notice(t('Maimai2.LocksPage.OperationSuccess'));
+        notice(translate('Maimai2.LocksPage.OperationSuccess'));
         setPermQQ(null);
         setPermLevel(null);
         setPermNote('');
         void loadMembers();
       } else {
-        notice(t('Maimai2.LocksPage.OperationFailed'));
+        notice(translate('Maimai2.LocksPage.OperationFailed'));
       }
     } catch {
-      notice(t('Maimai2.LocksPage.OperationFailed'));
+      notice(translate('Maimai2.LocksPage.OperationFailed'));
     }
   };
 
@@ -329,13 +334,13 @@ export function Maimai2LocksPage() {
         targetQQNumber: member.qqNumber,
       });
       if (isOk(resp)) {
-        notice(t('Maimai2.LocksPage.OperationSuccess'));
+        notice(translate('Maimai2.LocksPage.OperationSuccess'));
         void loadMembers();
       } else {
-        notice(t('Maimai2.LocksPage.OperationFailed'));
+        notice(translate('Maimai2.LocksPage.OperationFailed'));
       }
     } catch {
-      notice(t('Maimai2.LocksPage.OperationFailed'));
+      notice(translate('Maimai2.LocksPage.OperationFailed'));
     }
   };
 
@@ -349,7 +354,7 @@ export function Maimai2LocksPage() {
    *  P10 备注必填（空备注后端会删条目） */
   const submitNoteEdit = async (member: MemberPermissionItem) => {
     if (member.permission === ADMIN_PERMISSION && !editingNoteValue.trim()) {
-      notice(t('Maimai2.LocksPage.PermNoteRequiredError'));
+      notice(translate('Maimai2.LocksPage.PermNoteRequiredError'));
       return;
     }
     try {
@@ -360,15 +365,15 @@ export function Maimai2LocksPage() {
         note: editingNoteValue || null,
       });
       if (isOk(resp)) {
-        notice(t('Maimai2.LocksPage.OperationSuccess'));
+        notice(translate('Maimai2.LocksPage.OperationSuccess'));
         setEditingNoteQQ(null);
         setEditingNoteValue('');
         void loadMembers();
       } else {
-        notice(t('Maimai2.LocksPage.OperationFailed'));
+        notice(translate('Maimai2.LocksPage.OperationFailed'));
       }
     } catch {
-      notice(t('Maimai2.LocksPage.OperationFailed'));
+      notice(translate('Maimai2.LocksPage.OperationFailed'));
     }
   };
 

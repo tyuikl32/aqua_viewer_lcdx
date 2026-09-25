@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { lcdx } from '@/lib/api/client';
+import { translate } from '@/lib/i18n';
 import { notice } from '@/lib/message';
 import { isOk } from '@/lib/models';
 import { getCurrentUser, loadUser } from '@/lib/user';
@@ -100,6 +101,10 @@ export function Maimai2CabmodePage() {
     [permission],
   );
 
+  const selectedNickRef = useRef(selectedNick);
+  selectedNickRef.current = selectedNick;
+  const infoGenerationRef = useRef(0);
+
   const userName = () => getCurrentUser()?.username ?? '';
 
   /** 可选模式：目录已滤 IsEnabled；此处再滤机台 level ≥ 目录最低档；无目录时回退 LC_MODES */
@@ -135,6 +140,7 @@ export function Maimai2CabmodePage() {
 
   const loadCabModes = useCallback(async () => {
     try {
+      await loadUser();
       const resp = await lcdx.get(`lcdx/cabinet/modes/${encodeURIComponent(userName())}`);
       if (isOk(resp) && resp.data?.modes) {
         setCabModes(resp.data.modes as CabModeItem[]);
@@ -147,12 +153,14 @@ export function Maimai2CabmodePage() {
   const loadInfo = useCallback(async () => {
     try {
       const nick = selectedNick;
-      if (!nick) {
+      if (!nick || nick !== selectedNickRef.current) {
         return;
       }
+      const generation = ++infoGenerationRef.current;
       const resp = await lcdx.get(
         `lcdx/cabinet/info/${encodeURIComponent(userName())}/${encodeURIComponent(nick)}`,
       );
+      if (generation !== infoGenerationRef.current || nick !== selectedNickRef.current) return;
       if (isOk(resp)) {
         setInfo(resp.data);
         setSelectedMode(resp.data.isSpecialMode);
@@ -186,9 +194,11 @@ export function Maimai2CabmodePage() {
 
   /** 选中机台变化（含初次默认选中）→ 加载 info（等价旧版 onCabinetChange） */
   useEffect(() => {
+    setInfo(null);
     if (selectedNick) {
       void loadInfo();
     }
+    return () => { infoGenerationRef.current++; };
   }, [selectedNick, loadInfo]);
 
   const submitMode = async () => {
@@ -199,13 +209,13 @@ export function Maimai2CabmodePage() {
         mode: selectedMode,
       });
       if (isOk(resp)) {
-        notice(t('Maimai2.CabinetControl.Success'));
+        notice(translate('Maimai2.CabinetControl.Success'));
         void loadInfo();
       } else {
-        notice(t('Maimai2.CabinetControl.Failed'));
+        notice(translate('Maimai2.CabinetControl.Failed'));
       }
     } catch {
-      notice(t('Maimai2.CabinetControl.Failed'));
+      notice(translate('Maimai2.CabinetControl.Failed'));
     }
   };
 
@@ -222,13 +232,13 @@ export function Maimai2CabmodePage() {
         enable,
       });
       if (isOk(resp)) {
-        notice(t('Maimai2.CabinetControl.Success'));
+        notice(translate('Maimai2.CabinetControl.Success'));
         void loadInfo();
       } else {
-        notice(t('Maimai2.CabinetControl.Failed'));
+        notice(translate('Maimai2.CabinetControl.Failed'));
       }
     } catch {
-      notice(t('Maimai2.CabinetControl.Failed'));
+      notice(translate('Maimai2.CabinetControl.Failed'));
     }
   };
 
@@ -241,14 +251,14 @@ export function Maimai2CabmodePage() {
         val: lcsetVal,
       });
       if (isOk(resp)) {
-        notice(t('Maimai2.CabinetControl.Success'));
+        notice(translate('Maimai2.CabinetControl.Success'));
         setLcsetVal('');
         void loadInfo();
       } else {
-        notice(t('Maimai2.CabinetControl.Failed'));
+        notice(translate('Maimai2.CabinetControl.Failed'));
       }
     } catch {
-      notice(t('Maimai2.CabinetControl.Failed'));
+      notice(translate('Maimai2.CabinetControl.Failed'));
     }
   };
 
@@ -268,17 +278,17 @@ export function Maimai2CabmodePage() {
       });
       if (isOk(resp)) {
         const result = resp.data as CabinetLevelResult;
-        notice(t('Maimai2.CabinetControl.Success'));
+        notice(translate('Maimai2.CabinetControl.Success'));
         // 后端档位警告（级别越低配信越少）：有则一并提示，避免被静默吞掉
         if (result?.warning) {
           notice(result.warning, 'warning');
         }
         void loadInfo();
       } else {
-        notice(t('Maimai2.CabinetControl.Failed'));
+        notice(translate('Maimai2.CabinetControl.Failed'));
       }
     } catch {
-      notice(t('Maimai2.CabinetControl.Failed'));
+      notice(translate('Maimai2.CabinetControl.Failed'));
     }
   };
 
@@ -367,11 +377,11 @@ export function Maimai2CabmodePage() {
                 <div className="card-body">
                   <p className="small text-muted">{t('Maimai2.CabinetControl.RebootHint')}</p>
                   {rebooting ? (
-                    <button className="btn btn-warning" onClick={() => void toggleReboot()}>
+                    <button className="btn btn-warning" disabled={!info} onClick={() => void toggleReboot()}>
                       {t('Maimai2.CabinetControl.CancelReboot')}
                     </button>
                   ) : (
-                    <button className="btn btn-danger" onClick={() => void toggleReboot()}>
+                    <button className="btn btn-danger" disabled={!info} onClick={() => void toggleReboot()}>
                       {t('Maimai2.CabinetControl.SetReboot')}
                     </button>
                   )}
@@ -471,7 +481,7 @@ export function Maimai2CabmodePage() {
                     <div className="alert alert-warning py-2 small mb-2">
                       {t('Maimai2.CabinetControl.LevelWarning')}
                     </div>
-                    <button className="btn btn-success" onClick={() => void submitLevel()}>
+                    <button className="btn btn-success" disabled={!info} onClick={() => void submitLevel()}>
                       {t('Maimai2.CabinetControl.Submit')}
                     </button>
                   </div>

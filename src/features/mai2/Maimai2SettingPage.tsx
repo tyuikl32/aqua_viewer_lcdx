@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api, lcdx } from '@/lib/api/client';
+import { translate } from '@/lib/i18n';
 import { notice } from '@/lib/message';
 import { isOk } from '@/lib/models';
 import { getCurrentUser, loadUser } from '@/lib/user';
@@ -65,7 +66,7 @@ export function Maimai2SettingPage() {
           setMergeLastSuccessDate(normalizeMergeDate(resp.data?.lastSuccessDate));
         }
       })
-      .catch(() => notice(t('Common.OperationFailed')));
+      .catch(() => notice(translate('Common.OperationFailed')));
   };
 
   useEffect(() => {
@@ -77,28 +78,32 @@ export function Maimai2SettingPage() {
         setAimeId(id);
         setMergeCardId(String(user?.defaultCard?.luid ?? ''));
 
-        const [loadedProfile, maxLength] = await Promise.all([
-          api.get('api/game/maimai2/profile', { aimeId: id }),
-          api.get('api/game/maimai2/config/userPhoto/divMaxLength'),
+        // LCDX account tools must not depend on unrelated game-profile availability.
+        const results = await Promise.allSettled([
+          api.get('api/game/maimai2/profile', { aimeId: id }).then((loadedProfile) => {
+            setProfile(loadedProfile as DisplayMaimai2Profile);
+            setUserName((loadedProfile as DisplayMaimai2Profile).userName);
+          }),
+          api.get('api/game/maimai2/config/userPhoto/divMaxLength').then((maxLength) => {
+            setDivMaxLength(Number(maxLength) || 0);
+          }),
+          (async () => {
+            const cardLuid = user?.cards?.[0]?.luid ?? '';
+            const bindUser = encodeURIComponent(user?.username ?? '');
+            const bindResp = await lcdx.get(`lcdx/getBindAccessCode/${bindUser}/${cardLuid}`);
+            if (!isOk(bindResp) || typeof bindResp.data !== 'string') {
+              throw new Error('Binding lookup did not return a valid access code');
+            }
+            setCurrentAccessCode(bindResp.data);
+            setAccessCode(bindResp.data);
+            setAccessCodeLoaded(true);
+          })(),
         ]);
-        setProfile(loadedProfile as DisplayMaimai2Profile);
-        setUserName((loadedProfile as DisplayMaimai2Profile).userName);
-        setDivMaxLength(Number(maxLength) || 0);
-
-        // LCDX：读已绑定的 access code（等价旧版：有值则只读，空则可编辑；注意用 cards[0].luid）
-        const cardLuid = user?.cards?.[0]?.luid ?? '';
-        const bindUser = encodeURIComponent(user?.username ?? '');
-        try {
-          const bindResp = await lcdx.get(`lcdx/getBindAccessCode/${bindUser}/${cardLuid}`);
-          const code = String(bindResp?.data ?? '');
-          setCurrentAccessCode(code);
-          setAccessCode(code === '' ? '' : code);
-        } finally {
-          setAccessCodeLoaded(true);
+        if (results.some((result) => result.status === 'rejected')) {
+          notice(translate('Common.OperationFailed'));
         }
       } catch {
-        notice(t('Common.OperationFailed'));
-        setAccessCodeLoaded(true);
+        notice(translate('Common.OperationFailed'));
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -119,9 +124,9 @@ export function Maimai2SettingPage() {
         userName,
       });
       setProfile(updated as DisplayMaimai2Profile);
-      notice(t('Maimai2.Setting.UsernameChanged'));
+      notice(translate('Maimai2.Setting.UsernameChanged'));
     } catch {
-      notice(t('Common.OperationFailed'));
+      notice(translate('Common.OperationFailed'));
     }
   };
 
@@ -130,12 +135,12 @@ export function Maimai2SettingPage() {
     try {
       const result = await api.get('api/game/maimai2/redeem', { aimeId, redeemCode });
       if (result?.status?.code === 92001) {
-        notice(t('Maimai2.Setting.RedeemActivated', { name: result.data }));
+        notice(translate('Maimai2.Setting.RedeemActivated', { name: result.data }));
       } else {
-        notice(t('Maimai2.Setting.RedeemFailed'));
+        notice(translate('Maimai2.Setting.RedeemFailed'));
       }
     } catch {
-      notice(t('Common.OperationFailed'));
+      notice(translate('Common.OperationFailed'));
     }
   };
 
@@ -149,19 +154,20 @@ export function Maimai2SettingPage() {
       anchor.click();
       URL.revokeObjectURL(url);
     } catch {
-      notice(t('Common.OperationFailed'));
+      notice(translate('Common.OperationFailed'));
     }
   };
 
   /** LCDX：头像上传功能整功能禁用（等价旧版 openUploadUserPortraitDialog 的 warning 提示） */
   const openPortraitDisabled = () => {
-    notice(t('Maimai2.Setting.UploadPortraitDisabled'), 'warning');
+    notice(translate('Maimai2.Setting.UploadPortraitDisabled'), 'warning');
   };
 
   // ==================== LCDX：绑定卡 access code ====================
 
   /** 等价旧版 lcdxBindAccessCode：有 code → 解绑（removeAccessCode）；无 code 且输入合法 → 绑定（addAccessCode） */
   const lcdxBindAccessCode = async () => {
+    if (!accessCodeLoaded) return;
     const user = getCurrentUser();
     const cardLuid = user?.cards?.[0]?.luid ?? '';
     const name = user?.username ?? '';
@@ -169,13 +175,13 @@ export function Maimai2SettingPage() {
       try {
         const resp = await lcdx.post(`lcdx/removeAccessCode/${name}`, { currentAccessCode: cardLuid });
         if (isOk(resp)) {
-          notice(t('Maimai2.Setting.AccessCodeUpdated'));
+          notice(translate('Maimai2.Setting.AccessCodeUpdated'));
           window.location.reload();
         } else {
-          notice(t('Maimai2.Setting.AccessCodeUpdateFailed'));
+          notice(translate('Maimai2.Setting.AccessCodeUpdateFailed'));
         }
       } catch {
-        notice(t('Common.OperationFailed'));
+        notice(translate('Common.OperationFailed'));
       }
       return;
     }
@@ -186,13 +192,13 @@ export function Maimai2SettingPage() {
           accessCode,
         });
         if (isOk(resp)) {
-          notice(t('Maimai2.Setting.AccessCodeUpdated'));
+          notice(translate('Maimai2.Setting.AccessCodeUpdated'));
           window.location.reload();
         } else {
-          notice(t('Maimai2.Setting.AccessCodeUpdateFailed'));
+          notice(translate('Maimai2.Setting.AccessCodeUpdateFailed'));
         }
       } catch {
-        notice(t('Common.OperationFailed'));
+        notice(translate('Common.OperationFailed'));
       }
     }
   };
@@ -215,13 +221,13 @@ export function Maimai2SettingPage() {
       setMergeRequestLoading(false);
       if (isOk(resp)) {
         setMergeRequested(true);
-        notice(t('Maimai2.Setting.MergeRequestSuccess'));
+        notice(translate('Maimai2.Setting.MergeRequestSuccess'));
       } else {
-        notice(t('Maimai2.Setting.MergeRequestFailed'));
+        notice(translate('Maimai2.Setting.MergeRequestFailed'));
       }
     } catch {
       setMergeRequestLoading(false);
-      notice(t('Common.OperationFailed'));
+      notice(translate('Common.OperationFailed'));
     }
   };
 
@@ -241,13 +247,13 @@ export function Maimai2SettingPage() {
       setMergeRequestLoading(false);
       if (isOk(resp)) {
         setMergeRequested(false);
-        notice(t('Maimai2.Setting.MergeCancelSuccess'));
+        notice(translate('Maimai2.Setting.MergeCancelSuccess'));
       } else {
-        notice(t('Maimai2.Setting.MergeCancelFailed'));
+        notice(translate('Maimai2.Setting.MergeCancelFailed'));
       }
     } catch {
       setMergeRequestLoading(false);
-      notice(t('Maimai2.Setting.MergeCancelFailed'));
+      notice(translate('Maimai2.Setting.MergeCancelFailed'));
     }
   };
 
@@ -327,7 +333,10 @@ export function Maimai2SettingPage() {
               </div>
             </div>
           </div>
-
+        </>
+      )}
+      {aimeId && (
+        <>
           {/* LCDX：绑定卡号卡（等价旧版 BindingCardNumber；有 code 只读 + 解绑，无 code 可编辑 + 绑定） */}
           <div className="card mb-3">
             <div className="card-header">{t('Maimai2.Setting.BindingCardNumber')}</div>
@@ -353,7 +362,7 @@ export function Maimai2SettingPage() {
                   type="button"
                   onClick={() => void lcdxBindAccessCode()}
                   className="btn btn-primary flex-shrink-0"
-                  disabled={currentAccessCode === '' && accessCode.length !== 20}
+                  disabled={!accessCodeLoaded || (currentAccessCode === '' && accessCode.length !== 20)}
                 >
                   {currentAccessCode === ''
                     ? t('Maimai2.Setting.TryBind')
@@ -401,7 +410,10 @@ export function Maimai2SettingPage() {
               )}
             </div>
           </div>
-
+        </>
+      )}
+      {profile && (
+        <>
           <div className="card mb-3">
             <div className="card-header text-danger">{t('Maimai2.Setting.ExportData')}</div>
             <div className="card-body">

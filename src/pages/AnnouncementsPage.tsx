@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
 import { BModal } from '@/components/shared/BModal';
 import { Pagination } from '@/components/shared/Pagination';
 import { api, lcdx } from '@/lib/api/client';
@@ -12,6 +10,7 @@ import { getCurrentLang, langStore } from '@/lib/i18n';
 import { getCurrentUser } from '@/lib/user';
 import { useStore } from '@/lib/store';
 import { Announcement, AnnouncementType } from '@/features/announcements/announcement';
+import { AnnouncementContent } from '@/features/announcements/AnnouncementContent';
 import '@/features/announcements/AnnouncementDialog.css';
 
 const PAGE_SIZE = 10;
@@ -46,7 +45,7 @@ export function AnnouncementsPage() {
           lang: getCurrentLang(),
           page: page - 1,
           size: PAGE_SIZE,
-          ...(type ? { type } : {}),
+          ...(type ? { type: type === AnnouncementType.OTHER ? 'OTHERS' : type } : {}),
         })
         .then((resp) => {
           if (resp?.status) {
@@ -268,14 +267,7 @@ export function AnnouncementsPage() {
         scrollable
       >
         {detail && (
-          <div
-            className="announcement-content"
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(
-                marked.parse(detail.getLocalContent(getCurrentLang())) as string,
-              ),
-            }}
-          />
+          <AnnouncementContent content={detail.getLocalContent(getCurrentLang())} />
         )}
       </BModal>
 

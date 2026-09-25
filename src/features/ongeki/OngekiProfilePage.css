@@ -6,14 +6,14 @@
   font-size: 1rem;
 }
 
-.user-data-container{
+.ongeki-profile-page .user-data-container{
   position: relative;
   aspect-ratio: 4.6;
   container: user-data-container / inline-size;
   user-select: none;
 }
 
-.rank-bg{
+.ongeki-profile-page .rank-bg{
   position: absolute;
   transform: translate(-50%, -50%);
   width: 24.5%;
@@ -21,7 +21,7 @@
   left: 8.8%
 }
 
-.rank{
+.ongeki-profile-page .rank{
   position: absolute;
   transform: translate(-50%, -50%);
   width: 17.5%;
@@ -29,7 +29,7 @@
   left: 8.8%;
 }
 
-.user-icon-border{
+.ongeki-profile-page .user-icon-border{
   position: absolute;
   width: 21%;
   aspect-ratio: 1;
@@ -39,12 +39,12 @@
   top: 2%;
 }
 
-.user-icon{
+.ongeki-profile-page .user-icon{
   height: 100%;
   width: 100%;
 }
 
-.trophy-bg{
+.ongeki-profile-page .trophy-bg{
   position: absolute;
   width: 62.5%;
   aspect-ratio: 6.75862068965517;
@@ -53,7 +53,7 @@
   top: -3%
 }
 
-.level-bg{
+.ongeki-profile-page .level-bg{
   position: absolute;
   width: 17.2%;
   aspect-ratio: 1.83908045977011;
@@ -62,7 +62,7 @@
   top: 35%;
 }
 
-.name-bg{
+.ongeki-profile-page .name-bg{
   position: absolute;
   background-size: cover;
   aspect-ratio: 5.75;
@@ -71,7 +71,7 @@
   top: 36.5%;
 }
 
-.rating-header{
+.ongeki-profile-page .rating-header{
   position: absolute;
   width: 17.2%;
   aspect-ratio: 3.52173913043478;
@@ -80,7 +80,7 @@
   bottom: -1%;
 }
 
-.rebirth-bg{
+.ongeki-profile-page .rebirth-bg{
   position: absolute;
   background-size: cover;
   aspect-ratio: 1;
@@ -89,7 +89,7 @@
   top: 8%;
 }
 
-.trophy{
+.ongeki-profile-page .trophy{
   width: 100%;
   height: 100%;
   display: flex;
@@ -101,7 +101,7 @@
   color: black;
 }
 
-.rebirth{
+.ongeki-profile-page .rebirth{
   width: 100%;
   height: 100%;
   display: flex;
@@ -113,7 +113,7 @@
   color: black;
 }
 
-.level{
+.ongeki-profile-page .level{
   position: absolute;
   font-size: 6cqw;
   color: white;
@@ -122,7 +122,7 @@
   left: 41%;
 }
 
-.battle-point{
+.ongeki-profile-page .battle-point{
   color: black;
   position: absolute;
   transform: translate(-50%, -50%);
@@ -132,7 +132,7 @@
   font-weight: bold;
 }
 
-.name{
+.ongeki-profile-page .name{
   width: 100%;
   height: 100%;
   display: flex;
@@ -154,33 +154,33 @@
   gap: 2px;
 }
 
-.rating-num-integer{
+.ongeki-profile-page .rating-num-integer{
   height: 110%;
   margin-inline: -12%;
 }
 
-.rating-num-dot{
+.ongeki-profile-page .rating-num-dot{
   height: 90%;
   margin-left: -15%;
   margin-right: -20%;
 }
 
-.rating-new-num-dot {
+.ongeki-profile-page .rating-new-num-dot {
   margin-left: -23%;
   margin-right: -26%;
 }
 
-.rating-num-fractional{
+.ongeki-profile-page .rating-num-fractional{
   height: 90%;
   margin-inline: -10%;
   margin-bottom: 4%;
 }
 
-.rating-new-num-fractional {
+.ongeki-profile-page .rating-new-num-fractional {
   margin-inline: -13%;
 }
 
-.rating-highest{
+.ongeki-profile-page .rating-highest{
   font-size: 3cqw;
   white-space:nowrap;
   margin-bottom: .5cqw;
@@ -188,46 +188,46 @@
   overflow: unset !important;
 }
 
-.rank-00{
+.ongeki-profile-page .rank-00{
   padding-bottom: 12%;
 }
 
-.bp-00{
+.ongeki-profile-page .bp-00{
   padding-bottom: 14.5%;
 }
 
-.rank-01{
+.ongeki-profile-page .rank-01{
   padding-bottom: 8%;
 }
 
-.bp-01{
+.ongeki-profile-page .bp-01{
   padding-bottom: 9%;
 }
 
-.rank-02{
+.ongeki-profile-page .rank-02{
   padding-bottom: 4%;
 }
 
-.bp-02{
+.ongeki-profile-page .bp-02{
   padding-bottom: 2%;
 }
 
-.rank-03{
+.ongeki-profile-page .rank-03{
   padding-bottom: 4%;
 }
 
-.bp-03{
+.ongeki-profile-page .bp-03{
   padding-bottom: 2%;
 }
 
-.chara-container{
+.ongeki-profile-page .chara-container{
   z-index: -1;
   width: 100%;
   position: relative;
   text-align: center;
 }
 
-.chara-back{
+.ongeki-profile-page .chara-back{
   width: 100%;
   aspect-ratio: 1.05960264900662;
   background-size: cover;
@@ -235,7 +235,7 @@
   border-radius: 2% 2% 0 0;
 }
 
-.chara-img{
+.ongeki-profile-page .chara-img{
   position: absolute;
   width: 100%;
   height: 92%;
@@ -258,7 +258,7 @@
   font-weight: 500;
 }
 
-.rating-new-num-mask {
+.ongeki-profile-page .rating-new-num-mask {
   background: linear-gradient(to right,
   rgba(255, 255, 255, 0.1) 0%,
   rgba(255, 255, 255, 0.55) 57.5%,
@@ -270,7 +270,7 @@
   transform: scale(0.86);
 }
 
-.rating-num-clip-path {
+.ongeki-profile-page .rating-num-clip-path {
   clip-path: polygon(110% 120%, 240% -190%, 160% 100%, 100% 100%);
   animation: clipMoveFull 3.3s ease-in-out infinite;
 }

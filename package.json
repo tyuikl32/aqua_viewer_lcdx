@@ -9,6 +9,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
+    "test:lcdx-regression": "playwright test -c playwright.lcdx.config.ts",
     "test:ui-parity": "playwright test -c playwright.parity.config.ts",
     "test:ui-parity:auth": "playwright test -c playwright.parity.config.ts authenticated-pages.spec.ts",
     "parity:legacy-server": "node scripts/serve-legacy-baseline.mjs",
