@@ -1,0 +1,89 @@
+{
+  "id": "react-port-audit",
+  "name": "react-port-audit",
+  "title": "Audit React upstream merge and LCDX feature preservation",
+  "description": "",
+  "status": "in_progress",
+  "dev_type": "frontend",
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "Xavior",
+  "assignee": "Xavior",
+  "createdAt": "2026-09-25",
+  "completedAt": null,
+  "branch": "migrate/react-port",
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": "09-24-react-upstream-merge",
+  "relatedFiles": [
+    ".trellis/spec/frontend/index.md",
+    ".trellis/spec/frontend/quality-guidelines.md",
+    "package.json",
+    "playwright.lcdx.config.ts",
+    "public/assets/i18n/en.json",
+    "public/assets/i18n/zh.json",
+    "scripts/audit-i18n.mjs",
+    "scripts/serve-lcdx-regression.mjs",
+    "src/features/announcements/AnnouncementContent.tsx",
+    "src/features/announcements/announcement.ts",
+    "src/features/mai2/Maimai2CabinetsPage.tsx",
+    "src/features/mai2/Maimai2CabmodePage.tsx",
+    "src/features/mai2/Maimai2LocksPage.tsx",
+    "src/features/mai2/Maimai2RemoteControlPage.tsx",
+    "src/features/mai2/Maimai2SettingPage.tsx",
+    "src/features/ongeki/OngekiProfilePage.css",
+    "src/i18n/en.json",
+    "src/i18n/zh.json",
+    "src/lib/botPermission.ts",
+    "src/pages/AnnouncementsPage.tsx",
+    "src/pages/DashboardPage.tsx",
+    "src/pages/auth/OnetimeSignInPage.tsx",
+    "tests/lcdx-regression/README.md",
+    "tests/lcdx-regression/account.spec.ts",
+    "tests/lcdx-regression/cabinets.spec.ts",
+    "tests/lcdx-regression/content-pages.spec.ts",
+    "tests/lcdx-regression/fixture.ts",
+    "tests/lcdx-regression/game-contracts.spec.ts",
+    "tests/lcdx-regression/guards.spec.ts",
+    "tests/lcdx-regression/permissions.spec.ts",
+    "tests/lcdx-regression/settings.spec.ts",
+    "tests/lcdx-regression/themes.spec.ts"
+  ],
+  "notes": "Follow-up KOP CSS isolation and nullable announcement fixes verified: 56 offline regressions pass, i18n audit and production build pass. Existing router guards already send unauthenticated users from known protected routes to / and unknown routes to /not-found; the missing behavior was the test-site Nginx SPA fallback. Both lcdxnet.am-allnet.com and test-lcdxnet.am-allnet.com rewrite configs now serve /index.html for client-side deep links, nginx -t passed, and Nginx was reloaded. Backup: /root/backups/lcdx-spa-20260925-123607. The local dist was rebuilt; it was not uploaded to either site. No Git commit or push was performed.",
+  "meta": {
+    "audit": {
+      "upstream": "90ed95b",
+      "legacy": "b1c3fb4",
+      "lcdxDeltaStart": "defebab",
+      "reviewedHead": "9df7a97",
+      "backend": "49f20db",
+      "commits": 46,
+      "phase": "followup_verified_awaiting_commit_confirmation",
+      "refreshedRefs": {
+        "upstream/main": "90ed95b",
+        "master": "b1c3fb4",
+        "origin/master": "b1c3fb4"
+      }
+    },
+    "remoteSpa": {
+      "hosts": [
+        "lcdxnet.am-allnet.com",
+        "test-lcdxnet.am-allnet.com"
+      ],
+      "rewriteFiles": [
+        "/www/server/panel/vhost/rewrite/lcdxnet.am-allnet.com.conf",
+        "/www/server/panel/vhost/rewrite/test-lcdxnet.am-allnet.com.conf"
+      ],
+      "backup": "/root/backups/lcdx-spa-20260925-123607",
+      "nginxTest": "passed",
+      "reload": "systemctl reload nginx",
+      "appArtifactUploaded": false,
+      "verifiedAt": "2026-09-25T12:36:07+08:00"
+    }
+  }
+}

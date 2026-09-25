@@ -1,0 +1,136 @@
+{
+  "baseline": "9df7a97 plus uncommitted audit fixes",
+  "method": "Check current source-enumerated suffix domains against resources; all locale key sets are separately verified by scripts/audit-i18n.mjs.",
+  "limits": [
+    "Not a general evaluator of dynamic expressions.",
+    "Future or malformed server-provided modes/labels are not exhaustively covered.",
+    "Full-key label/description/hint declarations and literal conditional arms are checked by the AST audit."
+  ],
+  "domains": {
+    "App.Sidebar": [
+      "CabinetControl",
+      "Cabinets",
+      "Circle",
+      "Dxpass",
+      "Festa",
+      "KOP",
+      "Locks",
+      "MusicList",
+      "Photos",
+      "PlayRecord",
+      "Profile",
+      "Rating",
+      "RemoteControl",
+      "Rival",
+      "ServerMissions",
+      "Setting"
+    ],
+    "App.Footer": [
+      "Auto",
+      "Dark",
+      "Light"
+    ],
+    "DashboardPage": [
+      "Photos",
+      "PlayRecord",
+      "Profile",
+      "Rating"
+    ],
+    "ChuniV2.UserBoxPage": [
+      "AvatarBack",
+      "AvatarFace",
+      "AvatarHead",
+      "AvatarItem",
+      "AvatarWear",
+      "BattleResult",
+      "MapIcon",
+      "Matching",
+      "Nameplate",
+      "OverviewRival",
+      "OverviewSelf",
+      "Result",
+      "Stage",
+      "SystemVoice",
+      "Trophy",
+      "TrophySub1",
+      "TrophySub2"
+    ],
+    "Maimai2.CirclePage": [
+      "Advanced",
+      "ApproveJoinFailed",
+      "ApproveJoinSuccess",
+      "Basic",
+      "CreateCircleFailed",
+      "CreateCircleSuccess",
+      "DissolveCircleConfirm",
+      "DissolveCircleFailed",
+      "DissolveCircleSuccess",
+      "ExitCircleConfirm",
+      "ExitCircleFailed",
+      "ExitCircleSuccess",
+      "Expert",
+      "JoinCircleFailed",
+      "JoinCircleSuccess",
+      "KickUserFailed",
+      "KickUserSuccess",
+      "Master",
+      "ReMaster",
+      "RejectJoinFailed",
+      "RejectJoinSuccess",
+      "UpdateCircleFailed",
+      "UpdateCircleSuccess",
+      "Utage"
+    ],
+    "Maimai2.Cabinets": [
+      "Mode0",
+      "Mode10",
+      "Mode4",
+      "Mode5"
+    ],
+    "Maimai2.LocksPage": [
+      "RoleAdmin",
+      "RoleManager",
+      "RoleNormal",
+      "RoleSecondary",
+      "RoleSuperAdmin"
+    ],
+    "Maimai2.PointExchangesPage.Type": [
+      "Character",
+      "DXPass",
+      "Frame",
+      "Icon",
+      "KaleidxScopeKey",
+      "Mile",
+      "Partner",
+      "Plate",
+      "Present",
+      "Ticket",
+      "Title",
+      "Unknown"
+    ],
+    "Ongeki.MusicList.PatternTypes": [
+      "Artist",
+      "Boss",
+      "Const",
+      "ID",
+      "Level",
+      "Range",
+      "String",
+      "Title"
+    ],
+    "AnnouncementsPage": [
+      "Event",
+      "General",
+      "Maintenance",
+      "Other",
+      "Tutorial",
+      "Update"
+    ],
+    "KeychipPage.GameVersions": [
+      "CHUSAN",
+      "ONGEKI"
+    ]
+  },
+  "checkedKeys": 101,
+  "missingKeys": []
+}
