@@ -25,10 +25,19 @@ Switch it to the i18n key that already exists.
 
 ## Acceptance Criteria
 
-- [ ] `grep -n "KOP 6th" src/features/mai2/Maimai2KopRankingPage.tsx` returns no hardcoded heading.
-- [ ] The rendered heading text is still `KOP 6th` in both zh and en (key value unchanged).
-- [ ] `node scripts/audit-i18n.mjs` still reports `"errors": []`.
-- [ ] `npm run build` (tsc -b && vite build) exits 0.
+- [x] `grep -n "KOP 6th" src/features/mai2/Maimai2KopRankingPage.tsx` returns no hardcoded heading.
+- [x] The rendered heading text is still `KOP 6th` in both zh and en (key value unchanged).
+- [x] `node scripts/audit-i18n.mjs` still reports `"errors": []`.
+- [x] `npm run build` (tsc -b && vite build) exits 0.
+
+## Outcome (2026-09-29)
+
+One-token change in `src/features/mai2/Maimai2KopRankingPage.tsx:53`
+(`<h1 className="page-heading">KOP 6th</h1>` → `{t('Maimai2.KopPage.Title')}`), commit `a7646c1`.
+No imports added — `useTranslation` was already wired for `Maimai2.KopPage.NoRanking/Rank/Name/Score/Date`.
+Verified: diff is exactly 1 insertion / 1 deletion; grep finds no literal; `audit-i18n.mjs` → `errors: []`;
+`npm run build` exit 0 (4754 modules). Rendered text unchanged in zh and en, so this is a pure
+i18n-plumbing change with no visible diff.
 
 ## Out of scope
 
