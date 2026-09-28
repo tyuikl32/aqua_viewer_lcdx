@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "User-facing messages must be localized (Required Patterns) + both i18n copies must stay in sync; also Testing Requirements → i18n audit via node scripts/audit-i18n.mjs"}
+{"file": ".trellis/spec/frontend/hook-guidelines.md", "reason": "BootEffects is an effect inside AppShell; effect dependency rules apply when adding i18n.language to the title effect"}
+{"file": ".trellis/tasks/09-28-document-title-i18n/design.md", "reason": "Contains the authoritative route → i18n key mapping table and the five new key definitions"}
