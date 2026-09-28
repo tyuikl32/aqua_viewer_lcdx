@@ -350,6 +350,9 @@
       "UserName": "User Name",
       "Versionfile": "Version file"
     },
+    "SongRankingPage": {
+      "Title": "Song Ranking"
+    },
     "UserBoxPage": {
       "Avatar": "Avatar",
       "AvatarBack": "Avatar Back",
@@ -857,6 +860,7 @@
       "SearchLabel": "Search item name / description",
       "SearchPlaceholder": "Enter an item name or description keyword...",
       "Stock": "Stock:",
+      "Title": "Mission Point Exchange",
       "Type": {
         "Character": "Character",
         "DXPass": "DXPass",
@@ -1041,7 +1045,8 @@
       "Name": "Name",
       "NoRanking": "No ranking in progress.",
       "Rank": "Rank",
-      "Score": "Score"
+      "Score": "Score",
+      "Title": "KOP 6th"
     }
   },
   "NetCodeBindPage": {
@@ -1077,11 +1082,13 @@
     "GetResponseFailed": "Failed to get OAuth2 response data",
     "InvalidState": "Invalid state parameter",
     "OperationFailed": "Operation failed",
-    "SignInFailed": "OAuth2 sign-in error"
+    "SignInFailed": "OAuth2 sign-in error",
+    "Title": "OAuth Sign In"
   },
   "OnetimeSignInPage": {
     "Loading": "Please wait...",
-    "OperationFailed": "Operation failed"
+    "OperationFailed": "Operation failed",
+    "Title": "One-time Sign In"
   },
   "Ongeki": {
     "BattlePointPage": {

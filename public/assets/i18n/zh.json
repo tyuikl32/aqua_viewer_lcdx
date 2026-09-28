@@ -350,6 +350,9 @@
       "UserName": "玩家名",
       "Versionfile": "版本信息"
     },
+    "SongRankingPage": {
+      "Title": "乐曲排行"
+    },
     "UserBoxPage": {
       "Avatar": "虚拟形象",
       "AvatarBack": "背部",
@@ -857,6 +860,7 @@
       "SearchLabel": "物品名称/描述搜索",
       "SearchPlaceholder": "输入物品名称或描述关键字...",
       "Stock": "库存:",
+      "Title": "任务点数兑换",
       "Type": {
         "Character": "角色",
         "DXPass": "DXPass",
@@ -1041,7 +1045,8 @@
       "Name": "玩家",
       "NoRanking": "没有正在进行的排名。",
       "Rank": "排名",
-      "Score": "分数"
+      "Score": "分数",
+      "Title": "KOP 6th"
     }
   },
   "NetCodeBindPage": {
@@ -1077,11 +1082,13 @@
     "GetResponseFailed": "获取 OAuth2 返回数据失败",
     "InvalidState": "state 参数无效",
     "OperationFailed": "操作失败",
-    "SignInFailed": "OAuth2 登录失败"
+    "SignInFailed": "OAuth2 登录失败",
+    "Title": "OAuth 登录"
   },
   "OnetimeSignInPage": {
     "Loading": "请稍候…",
-    "OperationFailed": "一次性登录失败"
+    "OperationFailed": "一次性登录失败",
+    "Title": "一次性登录"
   },
   "Ongeki": {
     "BattlePointPage": {

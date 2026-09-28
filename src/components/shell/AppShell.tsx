@@ -31,6 +31,7 @@ import { setNavigator } from '@/lib/nav';
 import { useTheme } from '@/lib/theme';
 
 export interface RouteHandle {
+  /** 文档标题 i18n key（BootEffects 中经 t() 翻译后拼接为 document.title），值不是展示文案 */
   title?: string;
   disableSidebar?: boolean;
   accessLayout?: boolean;
@@ -53,22 +54,24 @@ function doLogout() {
 function BootEffects() {
   const routerNavigate = useNavigate();
   const matches = useMatches() as Array<{ handle?: { title?: string } }>;
+  const { t, i18n } = useTranslation();
 
   // 把 react-router 的 navigate 注入给非 React 模块（api client 等）
   useEffect(() => {
     setNavigator(routerNavigate);
   }, [routerNavigate]);
 
-  // 等价：标题拼接 "child - parent | NET"（LCDX 品牌后缀，上游为 RinNET）
+  // 等价：标题拼接 "child - parent | NET"（LCDX 品牌后缀，上游为 RinNET）；handle.title 为 i18n key，经 t() 翻译后拼接
   useEffect(() => {
     const titles = matches
       .map((m) => m.handle?.title)
-      .filter((t): t is string => Boolean(t))
+      .filter((key): key is string => Boolean(key))
+      .map((key) => t(key))
       .reverse();
     if (titles.length > 0) {
       document.title = titles.join(' - ') + ' | NET';
     }
-  }, [matches]);
+  }, [matches, t, i18n.language]);
 
   return null;
 }
