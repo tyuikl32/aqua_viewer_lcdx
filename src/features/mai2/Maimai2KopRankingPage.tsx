@@ -50,7 +50,7 @@ export function Maimai2KopRankingPage() {
 
   return (
     <div className="kop-ranking-page">
-      <h1 className="page-heading">KOP 6th</h1>
+      <h1 className="page-heading">{t('Maimai2.KopPage.Title')}</h1>
       {rankings.length === 0 ? (
         <div className="card p-1" style={{ maxWidth: '100%' }}>
           {t('Maimai2.KopPage.NoRanking')}
