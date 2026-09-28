@@ -75,6 +75,15 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
   editing four files in one change.
 - Async callbacks must use the imperative `translate()` from `@/lib/i18n`, not a captured `t` — the
   language can change while a request is in flight.
+- **The browser tab title is user-facing too.** `RouteHandle.title` in `src/router.tsx` stores an
+  **i18n key** — preferably the very key the page renders as its `page-heading`, so the tab text and
+  the page label cannot drift apart. `BootEffects` in `src/components/shell/AppShell.tsx` translates
+  it via `t()` and keeps `i18n.language` in the effect dependencies so a language switch rewrites
+  `document.title` without a reload. Display text in a route handle is a regression.
+- Why this rule exists: the title is written through `document.title`, which no `notice()` sweep can
+  see — that is exactly how a fully English title set survived the 2026-08-29 hardcoded-copy sweep
+  (fixed 2026-09-28, task `09-28-document-title-i18n`). When auditing for untranslated copy, grep
+  route handles and `document.title` explicitly; toast/dialog sweeps do not cover them.
 
 ### Async snapshots, initialization and request ownership
 
@@ -186,6 +195,8 @@ Tracked, deliberate, do not extend:
   edit batch, re-verify the critical file state before building; if a change vanished, re-apply it via
   a one-shot script instead of repeating single edits.
 - New user-facing strings: i18n keys in all four JSON files, or they do not ship.
+- New routes: `handle.title` is an i18n key (the page's `page-heading` key when one exists), never a
+  display literal.
 - Route-guard changes: guard tier matches the page's permission tier.
 - Store writes: never mutate the current value in place — `createStore` compares by identity, so an
   in-place mutation will not re-render. Always `set()` a new object/array.
