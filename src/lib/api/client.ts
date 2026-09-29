@@ -60,7 +60,7 @@ async function parseBody(resp: Response): Promise<any> {
   }
 }
 
-/** 原始 fetch（无拦截逻辑），刷新接口与 blob 下载使用 */
+/** 原始 fetch（无拦截逻辑），刷新接口与 blob 下载使用；url 必须传绝对路径（以 / 开头），不做前缀拼接 */
 export async function rawFetch(url: string, init: RequestInit = {}): Promise<Response> {
   return fetch(url, { ...init, headers: { ...authHeaders(), ...(init.headers as object) } });
 }

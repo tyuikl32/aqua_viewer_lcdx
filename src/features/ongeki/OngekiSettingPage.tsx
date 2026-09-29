@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { InfoCircleFill } from 'react-bootstrap-icons';
 import { BModal } from '@/components/shared/BModal';
-import { api, rawFetch } from '@/lib/api/client';
+import { api } from '@/lib/api/client';
 import { notice } from '@/lib/message';
 import { getCurrentUser } from '@/lib/user';
 import type { DisplayOngekiProfile } from './models';
@@ -54,9 +54,7 @@ export function OngekiSettingPage() {
   async function downloadFile() {
     notice(t('Ongeki.SettingsPage.DownloadingProfile'));
     try {
-      const resp = await rawFetch('api/game/ongeki/export');
-      if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`);
-      const blob = await resp.blob();
+      const blob = await api.blob('api/game/ongeki/export');
       const objectUrl = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = objectUrl;

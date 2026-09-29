@@ -288,7 +288,7 @@ export function AnnouncementsPage() {
         <form>
           <div className="d-grid">
             <p className="mb-3 ms-1">{t('AnnouncementsPage.DeleteTip')}</p>
-            <button className="btn btn-danger btn-sm" onClick={() => deleting && deleteAnnouncement(deleting)}>
+            <button type="button" className="btn btn-danger btn-sm" onClick={() => deleting && deleteAnnouncement(deleting)}>
               {t('Common.OK')}
             </button>
           </div>

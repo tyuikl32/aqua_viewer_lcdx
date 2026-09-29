@@ -535,7 +535,7 @@ export function KeychipPage() {
         <form>
           <div className="d-grid">
             <p className="mb-3 ms-1">{t('KeychipPage.RemoveMessage')}</p>
-            <button className="btn btn-danger btn-sm" onClick={() => removing && onRemoveKeychip(removing)}>
+            <button type="button" className="btn btn-danger btn-sm" onClick={() => removing && onRemoveKeychip(removing)}>
               {t('Common.OK')}
             </button>
           </div>
@@ -570,7 +570,7 @@ export function KeychipPage() {
         <form>
           <div className="d-grid">
             <p className="mb-3 ms-1">{t('KeychipPage.UntrustMessage')}</p>
-            <button className="btn btn-danger btn-sm" onClick={() => untrusting && onUntrustKeychip(untrusting)}>
+            <button type="button" className="btn btn-danger btn-sm" onClick={() => untrusting && onUntrustKeychip(untrusting)}>
               {t('Common.OK')}
             </button>
           </div>
