@@ -33,7 +33,7 @@ Switch it to the i18n key that already exists.
 ## Outcome (2026-09-29)
 
 One-token change in `src/features/mai2/Maimai2KopRankingPage.tsx:53`
-(`<h1 className="page-heading">KOP 6th</h1>` → `{t('Maimai2.KopPage.Title')}`), commit `a7646c1`.
+(`<h1 className="page-heading">KOP 6th</h1>` → `{t('Maimai2.KopPage.Title')}`), commit `b32e678`.
 No imports added — `useTranslation` was already wired for `Maimai2.KopPage.NoRanking/Rank/Name/Score/Date`.
 Verified: diff is exactly 1 insertion / 1 deletion; grep finds no literal; `audit-i18n.mjs` → `errors: []`;
 `npm run build` exit 0 (4754 modules). Rendered text unchanged in zh and en, so this is a pure
