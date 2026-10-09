@@ -19,7 +19,8 @@
   "pr_url": null,
   "subtasks": [],
   "children": [
-    "09-25-react-port-audit"
+    "09-25-react-port-audit",
+    "10-09-master-adoption"
   ],
   "parent": null,
   "relatedFiles": [],
