@@ -529,3 +529,24 @@ Completed the follow-up for unauthenticated deep links: local React routing alre
 ### Next Steps
 
 - Await explicit Git commit/archive approval; keep remote Nginx change recorded separately from application commits.
+
+
+## Session 16: Add CiRCLE+ and MAGiCAL to the maimai2 songlist version filter
+
+**Date**: 2026-10-10
+**Task**: Add CiRCLE+ and MAGiCAL to the maimai2 songlist version filter
+**Branch**: `master`
+
+### Summary
+
+Append 'CiRCLE+' (26) and 'MAGiCAL' (27) to the VERSIONS array in Maimai2SongListPage.tsx so the two newest maimai DX versions can be filtered; array index == song.addVersion, 28 entries, labels stay non-i18n game nouns; recorded the append-never-reorder rule in the frontend spec; build green.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d647e4c` | (see git log) |
+
+### Status
+
+[OK] **Completed**

@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 15
-- **Last Active**: 2026-09-25
+- **Total Sessions**: 16
+- **Last Active**: 2026-10-10
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~531 | Active |
+| `journal-1.md` | ~552 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 16 | 2026-10-10 | Add CiRCLE+ and MAGiCAL to the maimai2 songlist version filter | `d647e4c` | `master` |
 | 15 | 2026-09-25 | React LCDX audit SPA fallback verification | - | `migrate/react-port` |
 | 14 | 2026-09-17 | remote/locks cabinet locationName no-stretch | `476884a` | `master` |
 | 13 | 2026-09-17 | cabmode cabinet list locationName | `2c38fee` | `master` |
