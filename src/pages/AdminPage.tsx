@@ -15,11 +15,12 @@ import { getAccount, IMPERSONATED_USER_KEY, IMPERSONATION_KEY, type Account } fr
 import { IMPERSONATE_GRANT, IMPERSONATE_REQUEST } from '@/lib/auth/impersonation';
 import { useTheme } from '@/lib/theme';
 import { useTranslation } from 'react-i18next';
+import { AdminPlaylogs } from '@/features/admin/AdminPlaylogs';
 import './AdminPage.css';
 
 const PAGE_SIZE = 12;
 
-type AdminTab = 'users' | 'keychips';
+type AdminTab = 'users' | 'keychips' | 'playlogs';
 type GameKey = 'CHUSAN' | 'MAIMAI2' | 'ONGEKI';
 
 interface ApiEnvelope<T> {
@@ -403,6 +404,13 @@ export function AdminPage() {
   const initialized = useRef(false);
 
   async function loadUsers(page: number, searchPattern: string, searchField: string) {
+    if (searchField === 'keychipId') {
+      searchPattern = searchPattern.trim();
+      if (!searchPattern) {
+        notice(t('AdminPage.KeychipIdRequired'), 'warning');
+        return;
+      }
+    }
     setCurrentPage(page + 1);
     const params: Record<string, string | number> = { page, size: PAGE_SIZE, field: searchField || 'all' };
     if (searchPattern !== '') params.pattern = searchPattern;
@@ -848,7 +856,12 @@ export function AdminPage() {
         <div className="col-auto">
           <button type="button" className={`tab-selector${tab === 'keychips' ? ' tab-selector-active' : ''}`} onClick={() => setTab('keychips')}>Keychip</button>
         </div>
+        <div className="col-auto">
+          <button type="button" className={`tab-selector${tab === 'playlogs' ? ' tab-selector-active' : ''}`} onClick={() => setTab('playlogs')}>{t('AdminPage.Tab.Playlogs')}</button>
+        </div>
       </div>
+
+      {tab === 'playlogs' && <AdminPlaylogs />}
 
       {tab === 'users' && (
         <div>
@@ -863,6 +876,7 @@ export function AdminPage() {
                   <option value="game">{t('AdminPage.Field.GameName')}</option>
                   <option value="card">{t('AdminPage.Field.Card')}</option>
                   <option value="extId">ExtId</option>
+                  <option value="keychipId">Keychip ID</option>
                 </select>
                 <input
                   type="text"
@@ -875,6 +889,7 @@ export function AdminPage() {
               </div>
             </div>
           </div>
+          {field === 'keychipId' && <p className="small text-secondary">{t('AdminPage.KeychipSearchHint')}</p>}
           <div className="row mb-2 g-1">
             <div className="col-12 p-0">
               <button type="button" className="btn btn-primary btn-sm w-100" onClick={() => void loadUsers(0, pattern, field)}>{t('AdminPage.Search')}</button>

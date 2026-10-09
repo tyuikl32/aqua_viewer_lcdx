@@ -83,7 +83,8 @@
     "Search": "搜索",
     "SetDefault": "设为默认",
     "Tab": {
-      "Users": "用户"
+      "Users": "用户",
+      "Playlogs": "游玩记录"
     },
     "Title": "管理员",
     "ToggleWhiteList": "切换白名单",
@@ -93,7 +94,92 @@
     "UnbindByExtId": "按 ExtId 解绑",
     "UnlinkOauthButton": "解绑 {{provider}}：{{email}}",
     "ValidExtIdRequired": "请输入正确的 ExtId",
-    "WhiteListed": "已加白"
+    "WhiteListed": "已加白",
+    "Playlogs": {
+      "DetailTitle": "{{game}} · 游玩记录 {{id}}",
+      "CloseDetail": "关闭游玩记录详情",
+      "LoadingDetail": "正在加载详情…",
+      "Retry": "重试",
+      "NotBoundAqua": "未绑定 Aqua",
+      "ProfileGone": "游戏资料已不存在",
+      "RawJson": "完整 JSON",
+      "PlayLogIdLabel": "PlayLog ID：{{id}}",
+      "ExtIdLabel": "ExtId：{{id}}",
+      "AquaLabel": "Aqua：{{username}}",
+      "SectionLabel": "游玩记录查询",
+      "Game": "游戏",
+      "SearchField": "查询条件",
+      "SearchValue": "查询值",
+      "SearchValuePlaceholder": "输入查询值",
+      "Search": "查询记录",
+      "Prompt": "请选择条件并输入查询值。",
+      "Searching": "正在查询…",
+      "Total": "共 {{count}} 条记录",
+      "NoRecords": "未找到记录",
+      "Detail": "详情",
+      "ViewDetail": "查看详情 {{id}}",
+      "Section": {
+        "AquaAccount": "Aqua 账户",
+        "CurrentProfile": "游戏用户资料（当前）",
+        "SinglePlaylog": "单曲游玩记录"
+      },
+      "Field": {
+        "AquaUsername": "Aqua 用户名",
+        "AquaEmail": "Aqua 邮箱",
+        "UserName": "游戏内用户名",
+        "ExtId": "ExtId",
+        "AccessCode": "卡号 / Access Code",
+        "KeychipId": "Keychip ID",
+        "Id": "数据库 Playlog ID",
+        "PlayLogId": "Maimai2 PlayLog ID",
+        "AccountId": "账户 ID",
+        "LoginName": "登录名",
+        "Nickname": "昵称",
+        "Email": "邮箱",
+        "GameUserName": "游戏内用户名",
+        "MainAccessCode": "主卡 Access Code",
+        "LastKeychipId": "最近 Keychip ID",
+        "LastPlace": "最近店铺",
+        "DbId": "数据库 ID",
+        "MusicId": "曲目 ID",
+        "Level": "谱面难度值",
+        "PlayDate": "游玩时间",
+        "UserPlayDate": "用户游玩时间",
+        "Place": "游玩店铺"
+      },
+      "Score": {
+        "Achievement": "达成率",
+        "DxScore": "DX 分数",
+        "MaxCombo": "最大连击",
+        "Score": "分数",
+        "TechScore": "技术分",
+        "BattleScore": "战斗分",
+        "PlatinumScore": "白金分"
+      },
+      "Hint": {
+        "KeychipId": "按游戏资料当前的最近 Keychip 查询，不代表每条记录的历史游玩设备。",
+        "AccessCode": "可使用主卡号或关联卡号查询，结果显示主卡号。",
+        "UserName": "游戏内用户名支持包含匹配，忽略大小写。"
+      },
+      "Validation": {
+        "Required": "请输入查询值",
+        "Integer": "{{field}} 必须是十进制整数"
+      },
+      "Error": {
+        "LoadFailed": "无法加载游玩记录，请重试",
+        "IdOutOfRange": "记录 ID 超出浏览器可精确表示的范围，无法查询详情。"
+      },
+      "Column": {
+        "DbId": "数据库 ID",
+        "User": "游戏用户 / Aqua 账户",
+        "Card": "卡片",
+        "LastKeychip": "最近 Keychip",
+        "Music": "曲目 / 难度值",
+        "PlayDate": "游玩时间",
+        "Actions": "操作"
+      }
+    },
+    "KeychipSearchHint": "查询 Keychip 绑定的 Aqua 账户，不包含未绑定账户的游戏资料。"
   },
   "AnnouncementsPage": {
     "ContentUnavailable": "公告正文暂不可用。",

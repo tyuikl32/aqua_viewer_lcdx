@@ -83,7 +83,8 @@
     "Search": "Search",
     "SetDefault": "Set as default",
     "Tab": {
-      "Users": "Users"
+      "Users": "Users",
+      "Playlogs": "Playlogs"
     },
     "Title": "Administrator",
     "ToggleWhiteList": "Toggle whitelist",
@@ -93,7 +94,92 @@
     "UnbindByExtId": "Unbind by ExtId",
     "UnlinkOauthButton": "Unlink {{provider}}: {{email}}",
     "ValidExtIdRequired": "Please enter a valid ExtId",
-    "WhiteListed": "Whitelisted"
+    "WhiteListed": "Whitelisted",
+    "Playlogs": {
+      "DetailTitle": "{{game}} · Playlog {{id}}",
+      "CloseDetail": "Close playlog detail",
+      "LoadingDetail": "Loading detail…",
+      "Retry": "Retry",
+      "NotBoundAqua": "No Aqua account linked",
+      "ProfileGone": "Game profile no longer exists",
+      "RawJson": "Full JSON",
+      "PlayLogIdLabel": "PlayLog ID: {{id}}",
+      "ExtIdLabel": "ExtId: {{id}}",
+      "AquaLabel": "Aqua: {{username}}",
+      "SectionLabel": "Playlog search",
+      "Game": "Game",
+      "SearchField": "Search field",
+      "SearchValue": "Search value",
+      "SearchValuePlaceholder": "Enter a search value",
+      "Search": "Search playlogs",
+      "Prompt": "Choose a field and enter a value.",
+      "Searching": "Searching…",
+      "Total": "{{count}} records",
+      "NoRecords": "No records found",
+      "Detail": "Detail",
+      "ViewDetail": "View detail {{id}}",
+      "Section": {
+        "AquaAccount": "Aqua account",
+        "CurrentProfile": "Game profile (current)",
+        "SinglePlaylog": "Single playlog record"
+      },
+      "Field": {
+        "AquaUsername": "Aqua username",
+        "AquaEmail": "Aqua email",
+        "UserName": "In-game username",
+        "ExtId": "ExtId",
+        "AccessCode": "Card / Access Code",
+        "KeychipId": "Keychip ID",
+        "Id": "Database Playlog ID",
+        "PlayLogId": "Maimai2 PlayLog ID",
+        "AccountId": "Account ID",
+        "LoginName": "Login name",
+        "Nickname": "Nickname",
+        "Email": "Email",
+        "GameUserName": "In-game username",
+        "MainAccessCode": "Main card Access Code",
+        "LastKeychipId": "Last Keychip ID",
+        "LastPlace": "Last place",
+        "DbId": "Database ID",
+        "MusicId": "Music ID",
+        "Level": "Chart level",
+        "PlayDate": "Play date",
+        "UserPlayDate": "User play date",
+        "Place": "Play place"
+      },
+      "Score": {
+        "Achievement": "Achievement",
+        "DxScore": "DX score",
+        "MaxCombo": "Max combo",
+        "Score": "Score",
+        "TechScore": "Tech score",
+        "BattleScore": "Battle score",
+        "PlatinumScore": "Platinum score"
+      },
+      "Hint": {
+        "KeychipId": "Searches by the profile's current last Keychip, not the historical device of each record.",
+        "AccessCode": "Accepts the main card or a linked card; results show the main card.",
+        "UserName": "In-game username supports partial matching, case-insensitive."
+      },
+      "Validation": {
+        "Required": "Enter a search value",
+        "Integer": "{{field}} must be a decimal integer"
+      },
+      "Error": {
+        "LoadFailed": "Failed to load playlogs, please retry",
+        "IdOutOfRange": "Record ID exceeds the browser's exact integer range; cannot query detail."
+      },
+      "Column": {
+        "DbId": "Database ID",
+        "User": "Game user / Aqua account",
+        "Card": "Card",
+        "LastKeychip": "Last Keychip",
+        "Music": "Music / Level",
+        "PlayDate": "Play date",
+        "Actions": "Actions"
+      }
+    },
+    "KeychipSearchHint": "Searches the Aqua account bound to the Keychip; excludes game profiles of unbound accounts."
   },
   "AnnouncementsPage": {
     "ContentUnavailable": "Announcement content is currently unavailable.",
