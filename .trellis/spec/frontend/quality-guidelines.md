@@ -141,6 +141,19 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
   "no permission" — otherwise a deep link flashes a denial before the probes return. The locks page
   waits for `permission.loaded` before judging `noPermission` for the same reason.
 
+### Game-data option lists are index-mapped — append, never reorder
+
+- `Maimai2SongListPage`'s `VERSIONS` / `GENRES` literals mirror the game's own numbering: a
+  `VERSIONS` **index is the song's `addVersion`** (`VERSIONS.map((_, i) => i)` compared against
+  `song.addVersion`). Reordering, removing, or inserting an entry silently re-maps what every later
+  checkbox filters — that is a data bug, not a cosmetic edit.
+- When a new maimai version ships, **append** the next label at the tail, using the array's short
+  style (`Splash+`, `PRiSM+`, `CiRCLE+`, `MAGiCAL`), and only once the catalog actually carries that
+  `addVersion`. Extending the list ahead of the data yields an always-empty filter.
+- The labels are game-native proper nouns — intentionally **not** i18n keys (see Known Debt); the
+  same applies to `GENRES`.
+- This tail is fork-local: upstream stops at `PRiSM` (23), so the fork maintains entries 24+ itself.
+
 ---
 
 ## Testing Requirements
