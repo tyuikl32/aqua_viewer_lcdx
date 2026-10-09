@@ -686,6 +686,7 @@ export function ProfilePage() {
           <div className="d-grid">
             <p className="mb-3 ms-1">{t('ProfilePage.RemovePasskeyTip')}</p>
             <button
+              type="button"
               className="btn btn-danger btn-sm"
               onClick={() => {
                 if (removingPasskey) onRemovePasskey(removingPasskey.id);
@@ -704,6 +705,7 @@ export function ProfilePage() {
           <div className="d-grid">
             <p className="mb-3 ms-1">{t('ProfilePage.UnlinkTip')}</p>
             <button
+              type="button"
               className="btn btn-danger btn-sm"
               onClick={() => {
                 if (unlinking !== null) onUnlink(unlinking);

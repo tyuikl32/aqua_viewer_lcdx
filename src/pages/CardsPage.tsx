@@ -344,7 +344,7 @@ export function CardsPage() {
           <form>
             <div className="d-grid">
               <p className="mb-3 ms-1">{t('CardsPage.UnbindCardTip')}</p>
-              <button className="btn btn-danger btn-sm" onClick={() => void onUnbindCard(modal.card)}>
+              <button type="button" className="btn btn-danger btn-sm" onClick={() => void onUnbindCard(modal.card)}>
                 {t('Common.OK')}
               </button>
             </div>
@@ -406,7 +406,7 @@ export function CardsPage() {
           <form>
             <div className="d-grid">
               <p className="mb-3 ms-1">{t('CardsPage.RemoveAliasTip')}</p>
-              <button className="btn btn-danger btn-sm" onClick={() => void onRemoveExternal(modal.external)}>
+              <button type="button" className="btn btn-danger btn-sm" onClick={() => void onRemoveExternal(modal.external)}>
                 {t('Common.OK')}
               </button>
             </div>
