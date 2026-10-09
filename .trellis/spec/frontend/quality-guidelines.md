@@ -166,6 +166,17 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
     Administrator).
   Without the hosts entry the suite cannot start. The Angular unit tests (`ng test`, 54 known-failing
   legacy specs) were lost with the Angular source — the parity specs are the replacement.
+  - ⚠️ **NON-FUNCTIONAL IN THIS FORK — do not try to run it, do not "fix" it, and do not delete it.**
+    The harness diffs the React build against the **legacy Angular build**, resolved by
+    `scripts/serve-legacy-baseline.mjs` as `../aqua_viewer/dist/aqua-viewer/browser`. That directory
+    does not exist here (`ls ../aqua_viewer` → not found), so the script throws
+    `Legacy parity prerequisite is missing` at startup and the suite can never boot. It is kept
+    deliberately: upstream owns these files and deleting them would only have to be redone on every
+    upstream sync (see the standing "align with upstream" rule). It is inert — not in the build chain,
+    not in CI (`.github/workflows/deploy-test-server.yml` runs only `npm ci` + `npm run build`), not in
+    `dist/`. Treat the LCDX regression suite below as this fork's actual browser test. Also note the
+    specs are dominated by `chuni-*` / `ongeki-*` pages that are **frozen** in this fork, so even a
+    working run would not yield actionable work.
 - **Backend counterpart**: `dotnet test LCDXNetApi.sln` (cwd = `LCDXNetApi`), expected 95/95 green;
   use `--filter` for scoped runs. Do **not** run `dotnet` from the Bash tool (known environment
   corruption — see the `dotnet-windows-env-fix` skill).

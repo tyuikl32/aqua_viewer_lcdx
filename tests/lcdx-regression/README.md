@@ -29,7 +29,11 @@ pixel-perfect parity or that real CDN imagery loaded.
 The i18n scanner uses the parser already included through the locked Vite React plugin tree.
 `node scripts/audit-i18n.mjs --dynamic` lists expressions that need semantic review. It checks
 resource equality, interpolation variables and literal keys, not every server-driven string.
-The separate `test:ui-parity` suite retains its own legacy-server/hosts/certificate prerequisites.
+The separate `test:ui-parity` suite is **upstream and non-functional in this fork** — it diffs against
+the legacy Angular build under `../aqua_viewer/dist/aqua-viewer/browser`, which does not exist here.
+It is kept deliberately (upstream owns those files; deleting them would only have to be redone on every
+upstream sync) and is inert: not in the build chain, not in CI. **This LCDX regression suite is the
+fork's actual browser test.** Do not attempt to make the parity suite run.
 
 ## Announcement and KOP follow-up coverage
 

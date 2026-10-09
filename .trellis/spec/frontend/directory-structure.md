@@ -26,9 +26,11 @@ aqua_viewer_lcdx/
 ├── index.html                     # document shell (title, favicon, theme-color)
 ├── vite.config.ts                 # vite + react + tailwind + PWA manifest/workbox
 ├── tsconfig.json                  # project references → app / node
-├── playwright.parity.config.ts    # UI-parity suite config
+├── playwright.parity.config.ts    # UI-parity suite config — upstream; NON-FUNCTIONAL in this fork
+├── playwright.lcdx.config.ts      # LCDX regression suite config — this fork's actual browser test
 ├── .env / .env.development        # VITE_LCDX_API_SERVER, VITE_MAI_ASSETS_HOST
-├── scripts/                       # gen-cert.mjs, add-hosts.ps1, serve-legacy-baseline.mjs
+├── scripts/                       # gen-cert.mjs (used); add-hosts.ps1 + serve-legacy-baseline.mjs
+│                                  #   are upstream UI-parity prerequisites, unused in this fork
 ├── src/
 │   ├── main.tsx                   # createRoot, installTheme(), impersonation bootstrap
 │   ├── app.tsx                    # providers + one-shot startup (restoreAccess/loadUser)
