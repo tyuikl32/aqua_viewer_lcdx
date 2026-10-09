@@ -114,4 +114,6 @@ and one circle-info fallback — do not add new ones in feature code.
 
 `npm run build` (`tsc -b && vite build`) is the type gate and must be green before every commit.
 `npm run lint` is **not** usable — there is no ESLint config in the repo and `eslint` is not a
-declared dependency. Do not rely on it; use the build plus `tests/ui-parity/` for verification.
+declared dependency. Do not rely on it; use the build plus `npm run test:lcdx-regression` for
+verification. (The upstream `tests/ui-parity/` suite is **non-functional in this fork** — do not cite
+it as a verification path; see [quality-guidelines.md](./quality-guidelines.md).)

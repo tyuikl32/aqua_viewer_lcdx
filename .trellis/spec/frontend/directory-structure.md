@@ -63,7 +63,8 @@ aqua_viewer_lcdx/
 ├── public/
 │   ├── assets/i18n/{zh,en}.json   # static copy of the same resources (PWA)
 │   └── assets/…                   # laochan.svg, icons/, …
-├── tests/ui-parity/               # Playwright screenshot/behaviour parity specs
+├── tests/ui-parity/               # upstream parity specs — NON-FUNCTIONAL in this fork (kept on purpose)
+├── tests/lcdx-regression/         # offline LCDX browser regressions — the suite that runs here
 └── .trellis/                      # task + spec docs (not shipped)
 ```
 
