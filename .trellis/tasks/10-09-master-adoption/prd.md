@@ -1,4 +1,13 @@
-# Adopt the React port into master — `git merge -s ours`
+# Adopt the React port into master — two-parent commit with test's tree (commit-tree)
+
+> ⚠️ **Correction (2026-10-09, during execution)**: an earlier revision of this PRD claimed
+> `git merge -s ours test` **from master** was the chosen method. That was **backwards**: `-s ours`
+> from master keeps **master's tree (the Angular tree)** and records test as a parent — the opposite
+> of the goal. The error was caught by the acceptance check "tree-hash equality" immediately after a
+> real merge was executed: master's tree came out identical to `b1c3fb4` (452 Angular files, no
+> `src/router.tsx`). The wrong merge commit was discarded (`git reset --hard b1c3fb4`; it had never
+> been pushed, zero external effect) and the method below was executed instead. Recorded honestly
+> because the user explicitly asked for extra care ("操作前请再三确认，不要出错了").
 
 ## Goal
 
@@ -10,7 +19,7 @@ The user asked specifically: "最安全的做法是 merge 吧，把 test/lcdx-re
 怎么样更安全、更不容易出错" — so this task's core deliverable is a **method comparison** plus the
 chosen, verified-safe execution.
 
-## Method comparison (why `-s ours` and not the other three)
+## Method comparison
 
 Facts established by dry-run analysis (all reproducible):
 
@@ -22,56 +31,61 @@ Facts established by dry-run analysis (all reproducible):
 
 | Method | History kept? | Tree = React tree? | Conflict risk | Angular resurrection risk | Verdict |
 |---|---|---|---|---|---|
-| `git reset --hard test` | ❌ drops the 152 master-only commits from master's ancestry | ✅ | none | none | 09-24's original Q1 plan; rejected now — user wants history preserved; also loses the "no force-push needed" property (below) |
+| `git reset --hard test` | ❌ drops the 152 master-only commits from master's ancestry | ✅ | none | none | 09-24's original Q1 plan; rejected now — user wants history preserved; future `git push origin master` would also need force |
 | plain `git merge` | ✅ | ❌ mixed | **302 conflicts** | **95 Angular files resurrect** | worst option — days of hand-resolution, high error risk |
-| `git merge -X theirs` | ✅ | ❌ | ~0 reported conflicts, **silently wrong**: theirs-only resolution keeps master-only **additions** (e.g. `angular.json` may survive; spec files blend) | partial | deceptive "no conflict" green light; tree ≠ test tree |
-| **`git merge -s ours test`** | ✅ master's 152 commits stay in ancestry | ✅ **bit-for-bit** | **0** by construction | **none** by construction | **chosen** |
+| `git merge -X theirs` | ✅ | ❌ | ~0 reported conflicts, **silently wrong**: favors theirs per-hunk but keeps master-only additions and can still halt on delete/modify | partial | deceptive green light; tree ≠ test tree |
+| `git merge -s ours test` **from master** | ✅ | ❌ **keeps the Angular tree** | 0 | **total** (that IS the semantics) | ❌ **backwards — do not use** (see the correction note above) |
+| **two-parent commit via `git commit-tree`** | ✅ both lines become ancestors | ✅ **bit-for-bit by construction** (the commit is literally created with `test^{tree}`) | **0** by construction | **none** by construction | **chosen** |
 
-### Why `-s ours` is the correct semantics here (not a hack)
+### Chosen method: `git commit-tree` with test's tree and two parents
 
-The "ours" strategy means: *the merge result is master's current tree, unchanged* — while **recording
-test as a second parent**. That is exactly the intent: "React tree wins wholesale; the old Angular
-history remains reachable." Nothing from test's tree leaks in (not needed — test's tip **is** the
-tree we want), and nothing of master's tree survives (not wanted).
+There is no built-in `-s theirs` strategy in git merge (only `-s ours` exists). The canonical way to
+express "**take their tree exactly, keep our history as an ancestor**" is to create the merge commit
+directly:
 
-After the merge:
+```bash
+M=$(git commit-tree "test/lcdx-react-port-audit^{tree}" -p master -p test/lcdx-react-port-audit -F merge-msg.txt)
+git update-ref refs/heads/master "$M"    # executed while HEAD is on test, master not checked out
+```
 
-- `master` tree == `test/lcdx-react-port-audit` tree, **verified by tree-hash equality**, not by spot checks.
-- `git rev-list --count test..master` ≥ 1 (merge commit) and `master..test` = 0 → test fully contained.
-- The 152 old commits remain reachable **from master itself** (no need to check out legacy-angular).
-- **No force-push required**: origin/master (`b1c3fb4`) remains an ancestor of the new master, so a
-  future `git push origin master` is a normal fast-forward from the remote's point of view.
+Properties, each independently verifiable afterwards:
 
-### Why the switch stays on `test/lcdx-react-port-audit` during the merge
+1. `M`'s **tree is literally test's tree** (passed by tree-hash at creation — not derived by any
+   conflict-resolution process, so nothing can leak in or out).
+2. `M`'s parents are (old master `b1c3fb4`, test tip) — both histories reachable from master forever.
+3. `origin/master` (`b1c3fb4`) is the **first parent**, so a future `git push origin master` is a
+   **normal fast-forward**, no force needed.
+4. `legacy-angular` / `backup` / `test` refs are untouched (update-ref touches exactly one ref).
+5. No checkout of master is needed during the operation → no working-tree churn mid-operation.
 
-`git merge -s ours` must be run **from master's tip** (`b1c3fb4` = legacy Angular tree). Running it the
-other way (`git checkout test && git merge -s ours master`) would make **test** the parent and do
-nothing to master. So: `git checkout master` → merge → `git checkout test/lcdx-react-port-audit` back.
-The working tree is clean, so checkout is safe.
+(Equivalent porcelain recipe — `git checkout test && git merge -s ours master && git checkout master
+&& git merge --ff-only test` — yields the same shape but moves the test branch tip; rejected because
+the user said 别的不动.)
 
 ## Constraints
 
 - **C1 (hard): do NOT push master** after the merge. `.github/workflows/deploy-test-server.yml`
   triggers on push to master (build + artifact). Pushing needs separate explicit user approval.
-- **C2**: do not modify `legacy-angular` / `backup` / `test/lcdx-react-port-audit` branches.
-- **C3**: the merge commit message must record WHAT was merged and WHY this strategy, so future
+- **C2**: do not modify `legacy-angular` / `backup` / `test/lcdx-react-port-audit` branch tips
+  (normal work commits on the working branch are the session's established pattern and are fine).
+- **C3**: the merge commit message must record WHAT was merged and WHY this method, so future
   archaeology understands the Angular→React cutover.
 - **C4**: before merging, verify the working tree is clean and record all four branch SHAs; after
   merging, verify tree-hash equality with test and that the other branches did not move.
-- **C5**: `dist/` and untracked runtime dirs stay untracked — the merge does not touch them.
+- **C5**: `dist/`, `node_modules/`, `test-results/` are untracked and survive branch switches —
+  they must not appear in any commit.
 
 ## Acceptance Criteria
 
 - [ ] AC1 Before: `git status --short` clean (except this task's dir); four branch SHAs recorded.
-- [ ] AC2 The merge command is exactly `git merge --no-ff -s ours test/lcdx-react-port-audit` on master.
+- [ ] AC2 The merge commit is created with `git commit-tree <test-tree> -p <old-master> -p <test>`
+      and installed with `git update-ref refs/heads/master`.
 - [ ] AC3 After: `git rev-parse master^{tree}` == `git rev-parse test/lcdx-react-port-audit^{tree}`
       (bit-for-bit identical trees).
 - [ ] AC4 After: `git merge-base --is-ancestor test/lcdx-react-port-audit master` → exit 0.
 - [ ] AC5 After: `git merge-base --is-ancestor b1c3fb4 master` → exit 0 (old Angular history retained).
-- [ ] AC6 After: `src/app/` count on master == **0**; `src/` has the React layout (`src/router.tsx` etc.).
-- [ ] AC7 After: `npm run build` green on the merged master (same tree as test, so must pass; run on
-      the checked-out master to be certain — requires a fresh checkout copy of files since dist/node_modules
-      are per-branch; node_modules is untracked so it persists across checkout).
-- [ ] AC8 `legacy-angular`, `backup`, `test/lcdx-react-port-audit`, all remote refs untouched
-      (`git ls-remote` unchanged except nothing).
-- [ ] AC9 No push performed; origin/master still `b1c3fb4`.
+- [ ] AC6 After: `src/app/` count on master == **0**; `src/router.tsx` present on master.
+- [ ] AC7 After: `npm run build` green with master checked out (same tree as test, must pass).
+- [ ] AC8 After: `legacy-angular`, `backup`, `test/lcdx-react-port-audit` tips unchanged; no remote
+      ref changed; **no push performed**; `origin/master` still `b1c3fb4`.
+- [ ] AC9 `git log --graph` on master shows the two-parent merge commit with both lines.
