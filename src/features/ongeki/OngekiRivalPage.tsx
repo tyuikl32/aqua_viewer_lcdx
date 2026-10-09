@@ -205,6 +205,7 @@ export function OngekiRivalPage() {
           <div className="d-grid">
             <p className="mb-3 ms-1">{t('Ongeki.RivalPage.RemoveTip')}</p>
             <button
+              type="button"
               className="btn btn-danger btn-sm"
               onClick={() => {
                 if (removing) removeRival(removing.rivalUserId);
