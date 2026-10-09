@@ -39,25 +39,42 @@ review units, both user-requested as separate items.
 
 ## Progress
 
-### Step 1–4 — harness annotations ✅ (commit `feat`-style `docs`)
+**COMPLETE — 3 commits, docs-only, zero deletions, nothing pushed.**
 
-See results below.
+| Commit | What |
+|---|---|
+| `c1a4ce0` | `docs(trellis): mark the UI-parity harness as non-functional in this fork` — quality-guidelines.md, directory-structure.md, index.md, tests/lcdx-regression/README.md |
+| `c433480` | `docs(readme): rewrite for the LCDX fork` — README.md, 47 → ~250 lines, 7 sections |
+| `9eb0fcc` | `docs(trellis): catch two more ui-parity references that still read as usable` — directory-structure.md:66, type-safety.md:117 |
 
-### Step 5 — README rewrite ⏳
+### Why there is a third commit
 
-Target sections:
-1. **What this is** — LCDX fork of RinNET portal; deployed at `lcdxnet.am-allnet.com`; backend is
-   `LCDXNetApi` in the sibling directory (not upstream).
-2. **Architecture** — the 3-way topology (browser / LCDX backend / RinNET main site), so the
-   `portal.naominet.live` dependency is obvious rather than looking like a leftover.
-3. **Local dev** — keep the existing hosts + cert + `npm run dev` steps, but explain WHY the host is
-   needed (backend auth + OAuth callback + CDN referer).
-4. **Upstream sync** — branch topology (`master` / `legacy-angular` / `backup` / working branch) and the
-   "align with upstream, don't bend local files" rule.
-5. **Testing** — `test:lcdx-regression` (works) vs `test:ui-parity` (**non-functional here**, with a
-   pointer to the fork note).
-6. **Compat contract** — keep the existing localStorage / IndexedDB / theme-attribute table (valuable).
-7. **Directory map** — keep, lightly extended.
+The PRD's AC1 ("every remaining mention must be marked") was re-checked **after** commit 1 by grepping
+all `*.md`. That found two earlier misses: the `tests/ui-parity/` line in the directory tree (still
+described as an ordinary suite, and `tests/lcdx-regression/` was not listed at all), and the
+**Verification section of `type-safety.md`**, which recommended `tests/ui-parity/` as a verification
+path — actively misleading, since it cannot run here. Both fixed in `9eb0fcc`.
+
+### Verification
+
+| Check | Result |
+|---|---|
+| Zero deletions across all 3 commits | ✅ `git diff --name-status` shows only `M` (5 `.md`) and `A` (3 task files) |
+| Harness files untouched | ✅ `playwright.parity.config.ts`, `tests/ui-parity/**`, `scripts/*`, `package.json`, `vite.config.ts` all unmodified |
+| AC1 — every `ui-parity` / `serve-legacy-baseline` mention in non-archive docs carries a fork-status marker | ✅ remaining grep hits are continuation lines inside annotated blocks |
+| AC3 — `npm run build` green | ✅ `tsc -b` + `vite build`, PWA 47 precache entries |
+| i18n audit unaffected | ✅ `node scripts/audit-i18n.mjs` → `errors: []`, 1280 keys × 4 catalogs |
+| Provenance table reproducible | ✅ every row re-derived via `git cat-file -e backup:<file>` / `git diff backup -- <file>` |
+
+### README facts verified before writing (not copied from the old README)
+
+- `notice()` exported at `src/lib/message.ts:29`; `api` at `client.ts:164`, `lcdx` at `client.ts:184`
+- `Common.OperationFailed` exists in both `zh.json` and `en.json`
+- `src/lib/menu.ts:25` comment confirms mai2-only: "旧版已删除 ongeki/chusan 两组，这里保持一致"
+- `src/features/chuni/` = 27 files, `src/features/ongeki/` = 32 files, `src/router.tsx` = 60 `path:` entries
+- backend `launchSettings.json`: `http://localhost:5104` / `:40508`
+- `vite.config.ts` deviates from upstream in exactly 4 lines (PWA branding); proxy lines byte-identical
+
 
 ## Notes / gotchas
 
