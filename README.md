@@ -106,12 +106,15 @@ LCDX 业务接口不走这两个代理 —— `.env.development` 里 `VITE_LCDX_
 
 | 分支 | 角色 |
 |---|---|
-| `master` | 主线。**当前仍指向旧 Angular 代码**，等待 React 版的最终采纳 |
-| `legacy-angular` | 旧 Angular 代码的永久保留点，不要动 |
+| `master` | **主线 = React 实现**（2026-10-09 采纳完成：双父合并，React 树逐字节 + 旧 Angular 全部历史仍在祖先里） |
+| `legacy-angular` | 旧 Angular 代码的永久保留点（`b1c3fb4`），不要动 |
 | `backup` | **上游 `RinNET_frontend` main 的镜像。只读，不要往上提交** |
-| `test/lcdx-react-port-audit` | React 移植工作分支，最终 `master` 会 reset 到它 |
 
-同步上游的流程：`git fetch upstream --prune` → 更新 `backup` → 把增量**按意图移植**到工作分支。
+> 曾经的 `test/lcdx-react-port-audit` 工作分支已于 2026-10-10 退役（内容已被 `master` 完全吸收，
+> 且其尖端是 `master` 的祖先，历史永久可达）。新工作**直接在 `master` 上进行**。
+
+同步上游的流程：`git fetch upstream --prune` → 更新 `backup` → 把增量**按意图移植**到 `master`。
+（`master` 与上游无共同文件语言，仍是「意图级移植」，不是 git merge。）
 
 ### 一条铁律：与上游对齐优先于本地整洁
 
