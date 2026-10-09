@@ -1,0 +1,18 @@
+Merge branch 'test/lcdx-react-port-audit': adopt the React 19 rewrite as master
+
+Angular → React 正式切换。本提交是一个双父合并提交：
+- 树 = test/lcdx-react-port-audit 的树（创建时直接传 tree-hash，逐字节一致，
+  之后已用 `git rev-parse master^{tree}` == `test^{tree}` 复核）
+- 第一父 b1c3fb4 = 旧 Angular 主线（152 个本 fork 提交：机台管理 / 权限体系 / i18n 清算等）
+- 第二父 test/lcdx-react-port-audit = React 19 移植线（上游 RinNET_frontend 重写为基线
+  + LCDX 功能意图级移植 + 2026-10-09 的 7 提交上游增量回填 + playlog 等价移植）
+
+为什么不用普通 merge：干跑 `git merge-tree --write-tree` 报告 302 个冲突路径；
+src/app/ 在 master 有 452 个 Angular 文件、在 React 分支被整体删除，普通合并会把
+其中 95 个 delete/modify 冲突文件复活回树里。
+为什么不用 `git reset --hard test`：会切断 master 对这 152 个提交的祖先关系，
+且以后 push 需要强推。本提交两全：React 树 + 双历史，未来 push 对 origin/master
+（b1c3fb4，第一父）是普通 fast-forward，无需 force。
+
+旧 Angular 代码另由 legacy-angular 分支永久封存（b1c3fb4，已推 origin）。
+本提交仅在本地，未推送 master（CI 会因 master push 触发构建，推送需另行确认）。
