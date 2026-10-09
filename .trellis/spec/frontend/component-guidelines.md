@@ -172,20 +172,28 @@ breakpoints are a *different* system that only happens to agree at `≥1400px`.
   Keep `container-xxl` on the element — the override exists *because* the two geometries differ.
 - **Toast overlay** — `src/components/shell/Toasts.tsx` renders `.app-toasts`, which Liquefy needs at
   `right: max(0.6rem, calc((100vw - 1320px) / 2))` and **without** `end-0`. Branch on the family
-  (`family === 'liquefy' ? '' : ' end-0'`) instead of trying to override the utility: an upstream
-  stylesheet emits `.end-0 { right: 0 !important }` **inside a cascade layer**, and layer precedence
-  for `!important` is inverted — a layered `!important` beats an unlayered one regardless of
-  specificity, so no override wins.
+  (`family === 'liquefy' ? '' : ' end-0'`) instead of trying to override the utility. `end-0` is
+  emitted twice into the bundle: **Bootstrap** (imported as `layer(legacy-bootstrap)` in
+  `src/styles/globals.css`) ships `right: 0 !important`, and **Tailwind** ships the plain
+  `inset-inline-end: 0`. Both escape routes are therefore closed — a plain declaration loses to
+  Bootstrap's `!important`, and an `!important` override also loses, because layer precedence for
+  `!important` is **inverted**: a layered `!important` beats an unlayered one regardless of
+  specificity.
 - **Grid track** — the sidebar branch must use `auto minmax(0, 1fr)`. A bare `1fr` implies
   `minmax(auto, 1fr)`, whose `auto` minimum lets wide page content (long tables) stretch the track
   past the container instead of shrinking.
 
 Two precision notes for anyone editing these rules:
 
-- `100vw` **includes** the classic scrollbar (4px here — see `globals.css`), while a
-  `position: fixed` element resolves `right`/`width` percentages against the initial containing
-  block, which **excludes** it. In the toast rule that leaves a residual ~2px outward offset on
-  pages that actually scroll; prefer `100%` over `100vw` if you touch that line.
+- `100vw` **includes** a classic scrollbar, while a `position: fixed` element resolves
+  `right`/`width` percentages against the initial containing block, which **excludes** it — the two
+  therefore differ by the scrollbar width on any page that actually scrolls. This repo styles that
+  scrollbar at 4px (`::-webkit-scrollbar` in `globals.css`), i.e. **2px per side** in Blink/WebKit;
+  Firefox ignores the rule and uses a wider system scrollbar, so the gap grows there, while an
+  overlay-scrollbar environment has no gap at all (verified: this repo's headless Chromium reports
+  a 0px scrollbar and 0px divergence). Prefer `100%` over `100vw` in the toast rule if you touch
+  that line — it is immune to the difference either way. The figure above is derived from that
+  spec-level difference, not measured on a classic-scrollbar browser.
 - Verify with `tests/lcdx-regression/shell-alignment.spec.ts` (1920/1366/1280/992px, panel /
   content / toast edges within ±1px). It runs against the offline fixture, so scrollbar-dependent
   regressions may not surface there.
