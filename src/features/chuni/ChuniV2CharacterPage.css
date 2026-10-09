@@ -1,0 +1,207 @@
+.chuni-v2-character-page .character-card {
+  user-select: none;
+}
+
+/* Keep this page's disclosure independent from Bootstrap/Tailwind's global
+   `.collapse` utility. The inner wrapper lets the grid row animate between a
+   true zero-height state and the content's intrinsic height. */
+.chuni-v2-character-filter-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 0.25s ease,
+    opacity 0.2s ease,
+    visibility 0s linear 0.25s;
+}
+
+.chuni-v2-character-filter-collapse.show {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.chuni-v2-character-filter-collapse-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.chuni-v2-character-page .character-card .character-img {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.chuni-v2-character-page .character-card .character-title {
+  font-size: small;
+  text-align: center;
+}
+
+.chuni-v2-character-page .character-card .character-message {
+  width: 80%;
+  padding: 1rem 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.chuni-v2-character-page .character-card .character-message > span {
+  color: white;
+  background: var(--bs-tertiary-color);
+  border: 1px solid #381c47;
+}
+
+.chuni-v2-character-page .character-card .character-message > span:nth-child(2) {
+  background: var(--bs-primary-border-subtle);
+}
+
+.chuni-v2-character-page .image-switch {
+  user-select: none;
+  position: absolute;
+  bottom: 1em;
+  right: 1em;
+}
+
+.chuni-v2-character-page .marquee {
+  overflow: hidden;
+  text-overflow: fade;
+  text-wrap: nowrap;
+}
+
+.chuni-v2-character-page .marquee .marquee-wrap,
+.chuni-v2-character-page .marquee .marquee-content {
+  transform: translateX(0);
+}
+
+.chuni-v2-character-page .marquee .marquee-wrap {
+  width: 100%;
+}
+
+.chuni-v2-character-page .marquee .marquee-content {
+  float: left;
+  min-width: 100%;
+  white-space: nowrap;
+}
+
+.chuni-v2-character-page .character-card:hover .marquee .marquee-wrap {
+  animation: chuni-v2-character-marquee-wrap 4s infinite linear;
+}
+
+.chuni-v2-character-page .character-card:hover .marquee .marquee-content {
+  animation: chuni-v2-character-marquee-content 4s infinite linear;
+}
+
+@keyframes chuni-v2-character-marquee-wrap {
+  0%,
+  30% {
+    transform: translateX(0);
+  }
+  70%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes chuni-v2-character-marquee-content {
+  0%,
+  30% {
+    transform: translateX(0);
+  }
+  70%,
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.chuni-v2-character-dialog-overlay {
+  z-index: 1050;
+  animation-duration: 0.2s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.chuni-v2-character-dialog-overlay[data-dialog-state='open'] {
+  animation-name: chuni-v2-character-dialog-overlay-in;
+}
+
+.chuni-v2-character-dialog-overlay[data-dialog-state='closed'] {
+  animation-name: chuni-v2-character-dialog-overlay-out;
+}
+
+.chuni-v2-character-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 1055;
+  display: block;
+  overflow-x: hidden;
+  overflow-y: auto;
+  outline: 0;
+  animation-duration: 0.25s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+.chuni-v2-character-dialog[data-dialog-state='open'] {
+  animation-name: chuni-v2-character-dialog-in;
+}
+
+.chuni-v2-character-dialog[data-dialog-state='closed'] {
+  animation-name: chuni-v2-character-dialog-out;
+}
+
+.chuni-v2-character-dialog .modal-dialog {
+  pointer-events: none;
+}
+
+.chuni-v2-character-dialog .modal-content {
+  pointer-events: auto;
+}
+
+/* Ongeki's gallery has a legacy-global 50% cell-width rule using this shared
+   class name. Character details rely on Bootstrap's automatic table layout. */
+.chuni-v2-character-dialog .card-details-table td {
+  width: auto;
+}
+
+@keyframes chuni-v2-character-dialog-overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes chuni-v2-character-dialog-overlay-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes chuni-v2-character-dialog-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes chuni-v2-character-dialog-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chuni-v2-character-filter-collapse,
+  .chuni-v2-character-filter-collapse.show,
+  .chuni-v2-character-dialog-overlay,
+  .chuni-v2-character-dialog {
+    animation: none;
+    transition: none;
+  }
+}

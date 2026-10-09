@@ -1,0 +1,35 @@
+/* 等价旧版 public.ranking.scss + ranking 组件样式 */
+.ranking-row {
+  padding-left: 0.5em;
+}
+
+.medal {
+  width: 2em;
+}
+
+.ranking-text {
+  display: inline-block;
+  width: 2rem;
+  text-align: center;
+  font-weight: bold;
+  color: #7e7e7e;
+}
+
+.ranking-item-icon {
+  width: 3em;
+  aspect-ratio: 1;
+}
+
+.ranking-item-icon-lg {
+  width: 4em !important;
+}
+
+.ranking-item-icon-xl {
+  width: 5em !important;
+}
+
+.ranking-row th,
+.ranking-row td {
+  display: table-cell;
+  vertical-align: middle;
+}

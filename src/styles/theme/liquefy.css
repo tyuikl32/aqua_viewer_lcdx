@@ -1,0 +1,1928 @@
+/*
+ * Liquefy visual bridge for the existing Bootstrap/Radix structural markup.
+ * Import after Bootstrap and the Liquefy package stylesheet from globals.css.
+ * Every rule is rooted at the Liquefy family so the legacy presentation remains
+ * byte-for-byte independent.
+ */
+
+:root[data-theme='liquefy'] {
+  --ui-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', 'Noto Sans',
+    'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  --lq-accent: #087f8c;
+  --lq-warm-accent: #c65d32;
+  --lq-space: 4px;
+  --lq-radius-default: 20px;
+  --lq-duration: 260ms;
+  --lq-easing: cubic-bezier(0.22, 1, 0.36, 1);
+  --lq-text: #102f35;
+  --lq-foreground: #102f35;
+  --lq-muted: #547177;
+  --lq-placeholder: #6e878b;
+  --lq-clear-fill: transparent;
+  --lq-clear-line: rgb(18 94 105 / 22%);
+  --lq-control-fill: rgb(255 255 255 / 36%);
+  --lq-control-line: rgb(18 94 105 / 26%);
+  --lq-control-hover-line: color-mix(in srgb, var(--lq-accent) 52%, white);
+  --lq-dock-active: #0a5964;
+  --lq-dock-hover-fill: rgb(8 127 140 / 8%);
+  --lq-dock-indicator-fill: rgb(8 127 140 / 12%);
+  --lq-field-fill: rgb(255 255 255 / 44%);
+  --lq-field-focus-fill: rgb(215 249 248 / 68%);
+  --lq-field-line: rgb(18 94 105 / 28%);
+  --lq-glass-bright: rgb(255 255 255 / 74%);
+  --lq-glass-shade: rgb(4 87 98 / 10%);
+  --lq-glass-soft: rgb(222 250 249 / 42%);
+  --lq-quiet-fill: rgb(255 255 255 / 20%);
+  --lq-quiet-line: rgb(18 94 105 / 17%);
+  --lq-regular-fill: rgb(238 255 254 / 50%);
+  --lq-regular-line: rgb(18 94 105 / 25%);
+  --lq-shadow-color: rgb(7 48 57 / 16%);
+  --lq-solid-fill: #e9f7f6;
+  --lq-switch-fill: rgb(255 255 255 / 34%);
+  --lq-switch-line: rgb(18 94 105 / 25%);
+  --liquefy-shell-fill: color-mix(in srgb, var(--lq-solid-fill) 30%, transparent);
+  --liquefy-shell-line: color-mix(in srgb, var(--lq-quiet-line) 80%, var(--lq-glass-bright));
+  --liquefy-shell-filter: blur(24px) saturate(1.5);
+  --liquefy-shell-shadow:
+    0 12px 30px color-mix(in srgb, var(--lq-shadow-color) 26%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 74%, transparent);
+  --liquefy-footer-clearance: 7.25rem;
+
+  --ui-primary: var(--lq-accent);
+  --ui-primary-rgb: 8, 127, 140;
+  --ui-primary-text: #075761;
+  --ui-primary-subtle: #d7f6f4;
+  --ui-primary-border: #9adeda;
+  --ui-secondary: #587277;
+  --ui-secondary-rgb: 88, 114, 119;
+  --ui-secondary-text: #314e54;
+  --ui-secondary-subtle: #e3efee;
+  --ui-secondary-border: #c3d8d7;
+  --ui-success: #23845a;
+  --ui-success-rgb: 35, 132, 90;
+  --ui-success-text: #155238;
+  --ui-success-subtle: #daf3e7;
+  --ui-success-border: #aadcc3;
+  --ui-info: #207ca1;
+  --ui-info-rgb: 32, 124, 161;
+  --ui-info-text: #15546f;
+  --ui-info-subtle: #d9f0f8;
+  --ui-info-border: #acd8e8;
+  --ui-warning: #ad6b17;
+  --ui-warning-rgb: 173, 107, 23;
+  --ui-warning-text: #6d430e;
+  --ui-warning-subtle: #fff0d8;
+  --ui-warning-border: #f3d39b;
+  --ui-destructive: #b8453b;
+  --ui-destructive-rgb: 184, 69, 59;
+  --ui-destructive-foreground: #fffafa;
+  --ui-destructive-text: #7d2f29;
+  --ui-destructive-subtle: #fde5e2;
+  --ui-destructive-border: #efbcb6;
+  --ui-orange: var(--lq-warm-accent);
+  --ui-orange-subtle: #f9e5dc;
+  --ui-light: #f4fbfa;
+  --ui-dark: #102f35;
+
+  --ui-foreground: var(--lq-foreground);
+  --ui-foreground-rgb: 16, 47, 53;
+  --ui-background: #d8eceb;
+  --ui-background-rgb: 216, 236, 235;
+  --ui-secondary-foreground: color-mix(in srgb, var(--lq-foreground) 68%, transparent);
+  --ui-secondary-foreground-rgb: 56, 88, 93;
+  --ui-muted-foreground: color-mix(in srgb, var(--lq-foreground) 68%, transparent);
+  --ui-muted-foreground-rgb: 90, 117, 121;
+  --ui-secondary-surface: #cae2e1;
+  --ui-secondary-surface-rgb: 202, 226, 225;
+  --ui-muted-surface: #e9f6f5;
+  --ui-muted-surface-rgb: 233, 246, 245;
+  --ui-emphasis: #08252b;
+  --ui-emphasis-rgb: 8, 37, 43;
+  --ui-card-foreground: var(--ui-foreground);
+  --ui-popover: var(--ui-background);
+  --ui-popover-foreground: var(--ui-foreground);
+  --ui-accent-surface: var(--ui-muted-surface);
+  --ui-accent-foreground: var(--ui-foreground);
+  --ui-link: #08727d;
+  --ui-link-rgb: 8, 114, 125;
+  --ui-link-hover: #075965;
+  --ui-link-hover-rgb: 7, 89, 101;
+  --ui-code: #b13b78;
+  --ui-highlight-foreground: var(--ui-foreground);
+  --ui-highlight-background: var(--ui-warning-subtle);
+  --ui-border-width: 1px;
+  --ui-border: var(--lq-regular-line);
+  --ui-border-translucent: var(--lq-quiet-line);
+  --ui-input-border: var(--lq-field-line);
+  --ui-radius-md: 1rem;
+  --ui-radius-sm: 0.7rem;
+  --ui-radius-lg: 1.25rem;
+  --ui-radius-xl: 1.5rem;
+  --ui-shadow: 0 16px 40px var(--lq-shadow-color), inset 0 1px 0 var(--lq-glass-bright);
+  --ui-shadow-sm: 0 7px 20px rgb(7 48 57 / 11%), inset 0 1px 0 var(--lq-glass-bright);
+  --ui-shadow-lg: 0 24px 60px rgb(7 48 57 / 22%), inset 0 1px 0 var(--lq-glass-bright);
+  --ui-shadow-inset: inset 0 1px 2px rgb(7 48 57 / 11%);
+  --ui-focus-ring: #087f8c;
+  --ui-valid: var(--ui-success);
+  --ui-invalid: var(--ui-destructive);
+  --ui-card: var(--lq-regular-fill);
+  --ui-card-cap: rgb(255 255 255 / 18%);
+  --ui-progress: var(--lq-accent);
+  --ui-primary-foreground: #f8ffff;
+  --ui-primary-hover: color-mix(in srgb, var(--lq-accent) 94%, white 6%);
+  --ui-primary-hover-border: color-mix(in srgb, var(--lq-accent) 78%, white);
+  --ui-primary-active: color-mix(in srgb, var(--lq-accent) 78%, black 8%);
+  --ui-overlay: rgb(7 11 18 / 46%);
+
+  --ui-control-background: var(--lq-control-fill);
+  --ui-control-foreground: var(--lq-foreground);
+  --ui-control-border: var(--lq-control-line);
+  --ui-control-hover-background: color-mix(in srgb, var(--lq-accent) 10%, var(--lq-control-fill));
+  --ui-control-hover-foreground: var(--lq-foreground);
+  --ui-control-hover-border: var(--lq-control-hover-line);
+  --ui-control-active-background: color-mix(in srgb, var(--lq-accent) 17%, var(--lq-control-fill));
+  --ui-control-active-foreground: var(--lq-foreground);
+  --ui-control-active-border: color-mix(in srgb, var(--lq-accent) 62%, white);
+  --ui-primary-control-background: color-mix(in srgb, var(--lq-accent) 84%, var(--lq-control-fill));
+  --ui-primary-control-border: color-mix(in srgb, var(--lq-accent) 68%, white);
+  --ui-primary-control-hover-background: color-mix(in srgb, var(--lq-accent) 94%, white 6%);
+  --ui-primary-control-hover-border: color-mix(in srgb, var(--lq-accent) 78%, white);
+  --ui-primary-control-active-background: color-mix(in srgb, var(--lq-accent) 78%, black 8%);
+  --ui-primary-control-active-border: var(--lq-accent);
+  --ui-destructive-control-background: color-mix(in srgb, var(--ui-destructive) 82%, var(--lq-control-fill));
+  --ui-destructive-control-border: color-mix(in srgb, var(--ui-destructive) 68%, white);
+  --ui-destructive-control-hover-background: color-mix(in srgb, var(--ui-destructive) 92%, white 8%);
+  --ui-destructive-control-hover-border: color-mix(in srgb, var(--ui-destructive) 78%, white);
+  --ui-destructive-control-active-background: color-mix(in srgb, var(--ui-destructive) 82%, black 8%);
+  --ui-destructive-control-active-border: var(--ui-destructive);
+  --ui-warning-control-foreground: #34220b;
+  --ui-outline-control-background: color-mix(in srgb, var(--lq-control-fill) 68%, transparent);
+  --ui-outline-control-hover-foreground: var(--lq-foreground);
+  --ui-outline-control-hover-mix: 14%;
+  --ui-link-control-background: transparent;
+  --ui-link-control-border: transparent;
+  --ui-link-control-hover-background: color-mix(in srgb, var(--lq-accent) 8%, transparent);
+
+  --ui-table-foreground: var(--lq-foreground);
+  --ui-table-background: transparent;
+  --ui-table-border: var(--lq-quiet-line);
+  --ui-table-striped-background: color-mix(in srgb, var(--lq-accent) 5%, transparent);
+  --ui-table-hover-background: color-mix(in srgb, var(--lq-accent) 9%, transparent);
+  --ui-table-hover-foreground: var(--lq-foreground);
+
+  --ui-theme-menu-min-width: 13.25rem;
+  --ui-theme-menu-padding: 0.45rem;
+  --ui-theme-menu-background: color-mix(in srgb, var(--lq-solid-fill) 42%, transparent);
+  --ui-theme-menu-border: color-mix(in srgb, var(--lq-regular-line) 86%, var(--lq-glass-bright));
+  --ui-theme-menu-radius: 1rem;
+  --ui-theme-menu-shadow: 0 18px 44px var(--lq-shadow-color), inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 88%, white), inset 0 -1px 0 var(--lq-glass-shade);
+  --ui-theme-menu-label: var(--lq-muted);
+  --ui-theme-menu-label-padding-block: 0.45rem 0.3rem;
+  --ui-theme-menu-label-padding-inline: 0.6rem;
+  --ui-theme-menu-label-font-size: 0.75rem;
+  --ui-theme-menu-label-font-weight: 650;
+  --ui-theme-menu-item-min-height: 2.3rem;
+  --ui-theme-menu-item-margin: 0.1rem 0;
+  --ui-theme-menu-item-padding: 0.45rem 0.6rem;
+  --ui-theme-menu-item-radius: 0.65rem;
+  --ui-theme-menu-item-hover: color-mix(in srgb, var(--lq-accent) 9%, transparent);
+  --ui-theme-menu-item-active: color-mix(in srgb, var(--lq-accent) 16%, transparent);
+  --ui-theme-menu-item-active-foreground: var(--lq-foreground);
+  --ui-theme-menu-item-active-border: color-mix(in srgb, var(--lq-accent) 26%, var(--lq-quiet-line));
+  --ui-theme-menu-item-active-shadow: inset 0 1px 0 var(--lq-glass-bright);
+  --ui-theme-menu-item-active-font-weight: 650;
+  color-scheme: light;
+}
+
+:root[data-theme='liquefy'][data-color-scheme='dark'] {
+  --lq-accent: #7abcf3;
+  --lq-warm-accent: #f0a16d;
+  --lq-text: #f2f5fb;
+  --lq-foreground: #f2f5fb;
+  --lq-muted: #adb8ca;
+  --lq-placeholder: #8996aa;
+  --lq-clear-line: rgb(219 228 242 / 18%);
+  --lq-control-fill: rgb(31 39 53 / 54%);
+  --lq-control-line: rgb(207 220 241 / 22%);
+  --lq-control-hover-line: color-mix(in srgb, var(--lq-accent) 62%, white 14%);
+  --lq-dock-active: #e4edfb;
+  --lq-dock-hover-fill: rgb(122 188 243 / 10%);
+  --lq-dock-indicator-fill: rgb(122 188 243 / 15%);
+  --lq-field-fill: rgb(28 36 49 / 60%);
+  --lq-field-focus-fill: rgb(44 58 78 / 68%);
+  --lq-field-line: rgb(207 220 241 / 22%);
+  --lq-glass-bright: rgb(245 248 255 / 24%);
+  --lq-glass-shade: rgb(4 8 16 / 38%);
+  --lq-glass-soft: rgb(122 188 243 / 8%);
+  --lq-quiet-fill: rgb(29 37 50 / 36%);
+  --lq-quiet-line: rgb(221 228 242 / 14%);
+  --lq-regular-fill: rgb(31 39 53 / 58%);
+  --lq-regular-line: rgb(209 220 239 / 19%);
+  --lq-shadow-color: rgb(4 8 16 / 46%);
+  --lq-solid-fill: #222936;
+  --lq-switch-fill: rgb(31 39 53 / 58%);
+  --lq-switch-line: rgb(207 220 241 / 20%);
+
+  --ui-primary: var(--lq-accent);
+  --ui-primary-rgb: 122, 188, 243;
+  --ui-primary-text: #b9dcfa;
+  --ui-primary-subtle: #243a54;
+  --ui-primary-border: #496c90;
+  --ui-secondary: #b3bece;
+  --ui-secondary-rgb: 179, 190, 206;
+  --ui-secondary-text: #dbe4f2;
+  --ui-secondary-subtle: #293444;
+  --ui-secondary-border: #54657d;
+  --ui-success: #75d4a4;
+  --ui-success-rgb: 117, 212, 164;
+  --ui-success-text: #b4ebcc;
+  --ui-success-subtle: #19392e;
+  --ui-success-border: #357557;
+  --ui-info: #8ccaff;
+  --ui-info-rgb: 140, 202, 255;
+  --ui-info-text: #c8e5ff;
+  --ui-info-subtle: #203c59;
+  --ui-info-border: #4d7ea5;
+  --ui-warning: #ffc36e;
+  --ui-warning-rgb: 255, 195, 110;
+  --ui-warning-text: #ffdc9f;
+  --ui-warning-subtle: #4a3313;
+  --ui-warning-border: #9a6823;
+  --ui-destructive: #ff9890;
+  --ui-destructive-rgb: 255, 152, 144;
+  --ui-destructive-foreground: #0e1c2c;
+  --ui-destructive-text: #ffc1bd;
+  --ui-destructive-subtle: #4d2528;
+  --ui-destructive-border: #914950;
+  --ui-orange: var(--lq-warm-accent);
+  --ui-orange-subtle: #503329;
+
+  --ui-foreground: var(--lq-foreground);
+  --ui-foreground-rgb: 242, 245, 251;
+  --ui-background: #171b24;
+  --ui-background-rgb: 23, 27, 36;
+  --ui-secondary-foreground: color-mix(in srgb, var(--lq-foreground) 74%, transparent);
+  --ui-secondary-foreground-rgb: 179, 190, 206;
+  --ui-muted-foreground: color-mix(in srgb, var(--lq-foreground) 54%, transparent);
+  --ui-muted-foreground-rgb: 139, 151, 171;
+  --ui-secondary-surface: #202735;
+  --ui-secondary-surface-rgb: 32, 39, 53;
+  --ui-muted-surface: #252d3b;
+  --ui-muted-surface-rgb: 37, 45, 59;
+  --ui-emphasis: #fff;
+  --ui-emphasis-rgb: 255, 255, 255;
+  --ui-link: #91c9ff;
+  --ui-link-rgb: 145, 201, 255;
+  --ui-link-hover: #c3e1ff;
+  --ui-link-hover-rgb: 195, 225, 255;
+  --ui-code: #e9a1ca;
+  --ui-highlight-foreground: var(--ui-foreground);
+  --ui-highlight-background: var(--ui-warning-subtle);
+  --ui-border: var(--lq-regular-line);
+  --ui-border-translucent: var(--lq-quiet-line);
+  --ui-card: var(--lq-regular-fill);
+  --ui-card-cap: rgb(191 217 255 / 7%);
+  --ui-shadow: 0 18px 44px var(--lq-shadow-color), inset 0 1px 0 var(--lq-glass-bright);
+  --ui-shadow-sm: 0 8px 22px rgb(4 8 16 / 27%), inset 0 1px 0 var(--lq-glass-bright);
+  --ui-shadow-lg: 0 28px 70px rgb(4 8 16 / 55%), inset 0 1px 0 var(--lq-glass-bright);
+  --ui-focus-ring: #7abcf3;
+  --ui-primary-foreground: #0e1c2c;
+  color-scheme: dark;
+}
+
+:root[data-theme='liquefy'] {
+  background-color: #c9e9e7;
+}
+
+[data-theme='liquefy'] body {
+  min-width: 320px;
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+}
+
+[data-theme='liquefy'] body::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(124deg, #d9f1ef 0%, #c9e9e7 45%, #e5f2e9 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  content: '';
+  pointer-events: none;
+}
+
+[data-theme='liquefy'] .lq-provider {
+  /*
+   * Liquefy declares its own local tokens. These are literal theme values,
+   * rather than aliases back to the root variables, to keep the provider
+   * from forming a cyclic variable chain with the Bootstrap bridge.
+   */
+  --lq-clear-fill: transparent;
+  --lq-clear-line: rgb(18 94 105 / 22%);
+  --lq-control-fill: rgb(255 255 255 / 36%);
+  --lq-control-line: rgb(18 94 105 / 26%);
+  --lq-control-hover-line: color-mix(in srgb, var(--lq-accent) 52%, white);
+  --lq-dock-active: #0a5964;
+  --lq-dock-hover-fill: rgb(8 127 140 / 8%);
+  --lq-dock-indicator-fill: rgb(8 127 140 / 12%);
+  --lq-field-fill: rgb(255 255 255 / 44%);
+  --lq-field-focus-fill: rgb(215 249 248 / 68%);
+  --lq-field-line: rgb(18 94 105 / 28%);
+  --lq-foreground: #102f35;
+  --lq-glass-bright: rgb(255 255 255 / 74%);
+  --lq-glass-shade: rgb(4 87 98 / 10%);
+  --lq-glass-soft: rgb(222 250 249 / 42%);
+  --lq-muted: #547177;
+  --lq-placeholder: #6e878b;
+  --lq-quiet-fill: rgb(255 255 255 / 20%);
+  --lq-quiet-line: rgb(18 94 105 / 17%);
+  --lq-regular-fill: rgb(238 255 254 / 50%);
+  --lq-regular-line: rgb(18 94 105 / 25%);
+  --lq-shadow-color: rgb(7 48 57 / 16%);
+  --lq-solid-fill: #e9f7f6;
+  --lq-switch-fill: rgb(255 255 255 / 34%);
+  --lq-switch-line: rgb(18 94 105 / 25%);
+  min-height: 100vh;
+  color: var(--lq-foreground);
+  background: transparent;
+  color-scheme: inherit;
+}
+
+:root[data-theme='liquefy'][data-color-scheme='dark'] body {
+  background: transparent;
+}
+
+:root[data-theme='liquefy'][data-color-scheme='dark'] {
+  background-color: #1b202a;
+}
+
+:root[data-theme='liquefy'][data-color-scheme='dark'] body::before {
+  background: linear-gradient(124deg, #151a23 0%, #1d2430 46%, #282d38 100%);
+}
+
+:root[data-theme='liquefy'][data-color-scheme='dark'] .lq-provider {
+  --lq-clear-line: rgb(219 228 242 / 18%);
+  --lq-control-fill: rgb(31 39 53 / 54%);
+  --lq-control-line: rgb(207 220 241 / 22%);
+  --lq-control-hover-line: color-mix(in srgb, var(--lq-accent) 62%, white 14%);
+  --lq-dock-active: #e4edfb;
+  --lq-dock-hover-fill: rgb(122 188 243 / 10%);
+  --lq-dock-indicator-fill: rgb(122 188 243 / 15%);
+  --lq-field-fill: rgb(28 36 49 / 60%);
+  --lq-field-focus-fill: rgb(44 58 78 / 68%);
+  --lq-field-line: rgb(207 220 241 / 22%);
+  --lq-foreground: #f2f5fb;
+  --lq-glass-bright: rgb(245 248 255 / 24%);
+  --lq-glass-shade: rgb(4 8 16 / 38%);
+  --lq-glass-soft: rgb(122 188 243 / 8%);
+  --lq-muted: #adb8ca;
+  --lq-placeholder: #8996aa;
+  --lq-quiet-fill: rgb(29 37 50 / 36%);
+  --lq-quiet-line: rgb(221 228 242 / 14%);
+  --lq-regular-fill: rgb(31 39 53 / 58%);
+  --lq-regular-line: rgb(209 220 239 / 19%);
+  --lq-shadow-color: rgb(4 8 16 / 46%);
+  --lq-solid-fill: #222936;
+  --lq-switch-fill: rgb(31 39 53 / 58%);
+  --lq-switch-line: rgb(207 220 241 / 20%);
+}
+
+[data-theme='liquefy'] ::selection {
+  background: color-mix(in srgb, var(--lq-accent) 30%, transparent);
+  color: var(--lq-foreground);
+}
+
+[data-theme='liquefy'] :focus-visible {
+  outline: 2px solid var(--ui-focus-ring);
+  outline-offset: 3px;
+}
+
+[data-theme='liquefy'] ::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px;
+}
+
+[data-theme='liquefy'] ::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--lq-solid-fill) 55%, transparent) !important;
+  box-shadow: none !important;
+}
+
+[data-theme='liquefy'] ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--lq-accent) 42%, var(--lq-muted)) !important;
+  border: 2px solid transparent;
+  border-radius: 999px !important;
+  background-clip: padding-box;
+  box-shadow: none !important;
+}
+
+/* Buttons and small interactive controls */
+[data-theme='liquefy'] .btn,
+[data-theme='liquefy'] [data-slot='button'] {
+  border-radius: 0.65rem;
+  box-shadow:
+    0 5px 14px color-mix(in srgb, var(--lq-shadow-color) 52%, transparent),
+    inset 0 1px 0 var(--lq-glass-bright),
+    inset 0 -1px 0 var(--lq-glass-shade);
+  transition:
+    background var(--lq-duration) var(--lq-easing),
+    border-color var(--lq-duration) var(--lq-easing),
+    box-shadow var(--lq-duration) var(--lq-easing),
+    transform var(--lq-duration) var(--lq-easing);
+}
+
+[data-theme='liquefy'] .btn:hover:not(:disabled),
+[data-theme='liquefy'] [data-slot='button']:hover:not(:disabled) {
+  box-shadow:
+    0 10px 22px color-mix(in srgb, var(--lq-shadow-color) 68%, transparent),
+    inset 0 1px 0 var(--lq-glass-bright),
+    inset 0 -1px 0 var(--lq-glass-shade);
+  transform: translateY(-1px);
+}
+
+[data-theme='liquefy'] .btn:active:not(:disabled),
+[data-theme='liquefy'] [data-slot='button']:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+[data-theme='liquefy'] .btn-link,
+[data-theme='liquefy'] [data-slot='button'][data-variant='link'] {
+  box-shadow: none;
+}
+
+[data-theme='liquefy'] .btn-close {
+  border-radius: 0.5rem;
+  opacity: 0.72;
+}
+
+[data-theme='liquefy'] .btn-close:hover {
+  background-color: color-mix(in srgb, var(--lq-accent) 12%, transparent);
+  opacity: 1;
+}
+
+[data-theme='liquefy'] .btn:disabled,
+[data-theme='liquefy'] .btn.disabled,
+[data-theme='liquefy'] [data-slot='button']:disabled {
+  box-shadow: none;
+  opacity: 0.48;
+}
+
+/* Admin detail actions keep their Bootstrap semantics while using Liquefy's
+   glass controls. The dialog is dense, so neutralising these variants makes
+   destructive and recovery actions too easy to confuse. */
+[data-theme='liquefy'] .admin-dialog-content .btn-primary {
+  --bs-btn-color: var(--ui-primary-foreground);
+  --bs-btn-bg: var(--ui-primary-control-background);
+  --bs-btn-border-color: var(--ui-primary-control-border);
+  --bs-btn-hover-color: var(--ui-primary-foreground);
+  --bs-btn-hover-bg: var(--ui-primary-control-hover-background);
+  --bs-btn-hover-border-color: var(--ui-primary-control-hover-border);
+  --bs-btn-active-color: var(--ui-primary-foreground);
+  --bs-btn-active-bg: var(--ui-primary-control-active-background);
+  --bs-btn-active-border-color: var(--ui-primary-control-active-border);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-danger {
+  --bs-btn-color: var(--ui-destructive-foreground);
+  --bs-btn-bg: var(--ui-destructive-control-background);
+  --bs-btn-border-color: var(--ui-destructive-control-border);
+  --bs-btn-hover-color: var(--ui-destructive-foreground);
+  --bs-btn-hover-bg: var(--ui-destructive-control-hover-background);
+  --bs-btn-hover-border-color: var(--ui-destructive-control-hover-border);
+  --bs-btn-active-color: var(--ui-destructive-foreground);
+  --bs-btn-active-bg: var(--ui-destructive-control-active-background);
+  --bs-btn-active-border-color: var(--ui-destructive-control-active-border);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-success {
+  --bs-btn-color: var(--ui-primary-foreground);
+  --bs-btn-bg: color-mix(in srgb, var(--ui-success) 82%, var(--lq-control-fill));
+  --bs-btn-border-color: color-mix(in srgb, var(--ui-success) 68%, white);
+  --bs-btn-hover-color: var(--ui-primary-foreground);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--ui-success) 92%, white 8%);
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--ui-success) 78%, white);
+  --bs-btn-active-color: var(--ui-primary-foreground);
+  --bs-btn-active-bg: color-mix(in srgb, var(--ui-success) 82%, black 8%);
+  --bs-btn-active-border-color: var(--ui-success);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-warning {
+  --bs-btn-color: var(--ui-warning-control-foreground);
+  --bs-btn-bg: var(--ui-warning);
+  --bs-btn-border-color: var(--ui-warning-border);
+  --bs-btn-hover-color: var(--ui-warning-control-foreground);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--ui-warning) 90%, white 10%);
+  --bs-btn-hover-border-color: var(--ui-warning);
+  --bs-btn-active-color: var(--ui-warning-control-foreground);
+  --bs-btn-active-bg: color-mix(in srgb, var(--ui-warning) 84%, black 8%);
+  --bs-btn-active-border-color: var(--ui-warning);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-primary,
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-secondary,
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-success,
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-danger,
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-warning,
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-info {
+  --bs-btn-bg: var(--ui-outline-control-background);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-primary {
+  --bs-btn-color: var(--ui-primary-text);
+  --bs-btn-border-color: var(--ui-primary-border);
+  --bs-btn-hover-color: var(--ui-primary-foreground);
+  --bs-btn-hover-bg: var(--ui-primary);
+  --bs-btn-hover-border-color: var(--ui-primary);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-secondary {
+  --bs-btn-color: var(--ui-secondary-text);
+  --bs-btn-border-color: var(--ui-secondary-border);
+  --bs-btn-hover-color: var(--ui-secondary-foreground);
+  --bs-btn-hover-bg: var(--ui-secondary);
+  --bs-btn-hover-border-color: var(--ui-secondary);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-success {
+  --bs-btn-color: var(--ui-success-text);
+  --bs-btn-border-color: var(--ui-success-border);
+  --bs-btn-hover-color: var(--ui-primary-foreground);
+  --bs-btn-hover-bg: var(--ui-success);
+  --bs-btn-hover-border-color: var(--ui-success);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-danger {
+  --bs-btn-color: var(--ui-destructive-text);
+  --bs-btn-border-color: var(--ui-destructive-border);
+  --bs-btn-hover-color: var(--ui-destructive-foreground);
+  --bs-btn-hover-bg: var(--ui-destructive);
+  --bs-btn-hover-border-color: var(--ui-destructive);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-warning {
+  --bs-btn-color: var(--ui-warning-text);
+  --bs-btn-border-color: var(--ui-warning-border);
+  --bs-btn-hover-color: var(--ui-warning-control-foreground);
+  --bs-btn-hover-bg: var(--ui-warning);
+  --bs-btn-hover-border-color: var(--ui-warning);
+}
+
+[data-theme='liquefy'] .admin-dialog-content .btn-outline-info {
+  --bs-btn-color: var(--ui-info-text);
+  --bs-btn-border-color: var(--ui-info-border);
+  --bs-btn-hover-color: var(--ui-primary-foreground);
+  --bs-btn-hover-bg: var(--ui-info);
+  --bs-btn-hover-border-color: var(--ui-info);
+}
+
+/* Cards, content wells, and metadata */
+[data-theme='liquefy'] .card,
+[data-theme='liquefy'] .authorization-card,
+[data-theme='liquefy'] .json-view {
+  background: var(--lq-regular-fill);
+  border-color: var(--lq-regular-line);
+  box-shadow:
+    0 14px 34px color-mix(in srgb, var(--lq-shadow-color) 70%, transparent),
+    inset 0 1px 0 var(--lq-glass-bright),
+    inset 0 -1px 0 var(--lq-glass-shade);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
+  backdrop-filter: blur(14px) saturate(1.25);
+}
+
+[data-theme='liquefy'] .card {
+  overflow: clip;
+  border-radius: 1.25rem;
+}
+
+[data-theme='liquefy'] .liquefy-card,
+[data-theme='liquefy'] .liquefy-import-panel {
+  --lq-radius: 1.25rem;
+  --lq-fill: color-mix(in srgb, var(--lq-regular-fill) 82%, transparent);
+  --lq-line: color-mix(in srgb, var(--lq-regular-line) 84%, var(--lq-glass-bright));
+  --lq-blur: 20px;
+  --lq-saturate: 1.42;
+  --lq-glow: 0.38;
+  box-shadow:
+    0 18px 42px color-mix(in srgb, var(--lq-shadow-color) 68%, transparent),
+    inset 0 1px 0 var(--lq-glass-bright),
+    inset 0 -1px 0 var(--lq-glass-shade);
+}
+
+[data-theme='liquefy'] .liquefy-import-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  min-height: 8.5rem;
+  padding: 1.25rem 1.4rem;
+}
+
+[data-theme='liquefy'] .liquefy-import-panel__meta {
+  min-width: 0;
+}
+
+[data-theme='liquefy'] .liquefy-import-panel__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+[data-theme='liquefy'] .liquefy-import-panel__hint {
+  margin: 0.4rem 0 0;
+  color: var(--lq-muted);
+  font-size: 0.9rem;
+}
+
+[data-theme='liquefy'] .liquefy-import-panel__button {
+  flex: 0 0 auto;
+  min-width: 11rem;
+  min-height: 3rem;
+  padding: 0.7rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--lq-accent) 54%, var(--lq-glass-bright));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--lq-accent) 15%, var(--lq-glass-soft) 72%);
+  box-shadow:
+    0 10px 24px color-mix(in srgb, var(--lq-shadow-color) 48%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 92%, white),
+    inset 0 -1px 0 var(--lq-glass-shade);
+  color: var(--lq-foreground);
+  white-space: nowrap;
+  transition:
+    background 180ms var(--lq-easing),
+    border-color 180ms var(--lq-easing),
+    box-shadow 180ms var(--lq-easing),
+    transform 180ms var(--lq-easing);
+}
+
+[data-theme='liquefy'] .liquefy-import-panel__button:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--lq-accent) 78%, white);
+  background: color-mix(in srgb, var(--lq-accent) 26%, var(--lq-glass-soft) 68%);
+  box-shadow:
+    0 14px 30px color-mix(in srgb, var(--lq-shadow-color) 62%, transparent),
+    inset 0 1px 0 var(--lq-glass-bright),
+    inset 0 -1px 0 var(--lq-glass-shade);
+  transform: translateY(-1px);
+}
+
+[data-theme='liquefy'] .liquefy-import-panel__button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+[data-theme='liquefy'] .liquefy-import-panel__button:focus-visible {
+  outline: 2px solid var(--ui-focus-ring);
+  outline-offset: 3px;
+}
+
+[data-theme='liquefy'] .card-header,
+[data-theme='liquefy'] .card-footer {
+  background: color-mix(in srgb, var(--lq-glass-soft) 74%, transparent);
+  border-color: var(--lq-quiet-line);
+}
+
+[data-theme='liquefy'] .card-btn:hover {
+  background: color-mix(in srgb, var(--lq-accent) 8%, var(--lq-regular-fill));
+}
+
+[data-theme='liquefy'] .badge {
+  border: 1px solid color-mix(in srgb, currentColor 18%, var(--lq-regular-line));
+  box-shadow: inset 0 1px 0 var(--lq-glass-bright);
+}
+
+[data-theme='liquefy'] .page-heading::after {
+  background-color: var(--lq-warm-accent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--lq-warm-accent) 45%, transparent);
+}
+
+/* Forms */
+[data-theme='liquefy'] .form-control,
+[data-theme='liquefy'] .form-select,
+[data-theme='liquefy'] .form-check-input,
+[data-theme='liquefy'] input:not([type='checkbox']):not([type='radio']):not([type='range']),
+[data-theme='liquefy'] textarea,
+[data-theme='liquefy'] select {
+  color: var(--lq-foreground);
+  background-color: var(--lq-field-fill);
+  border-color: var(--lq-field-line);
+  box-shadow:
+    inset 0 1px 0 var(--lq-glass-bright),
+    inset 0 -1px 0 var(--lq-glass-shade);
+  -webkit-backdrop-filter: blur(10px) saturate(1.18);
+  backdrop-filter: blur(10px) saturate(1.18);
+}
+
+[data-theme='liquefy'] .form-control::placeholder,
+[data-theme='liquefy'] textarea::placeholder,
+[data-theme='liquefy'] input::placeholder {
+  color: var(--lq-placeholder);
+  opacity: 1;
+}
+
+[data-theme='liquefy'] .form-control:focus,
+[data-theme='liquefy'] .form-select:focus,
+[data-theme='liquefy'] input:focus,
+[data-theme='liquefy'] textarea:focus,
+[data-theme='liquefy'] select:focus {
+  color: var(--lq-foreground);
+  background-color: var(--lq-field-focus-fill);
+  border-color: color-mix(in srgb, var(--lq-accent) 62%, white);
+  box-shadow:
+    0 0 0 0.22rem color-mix(in srgb, var(--lq-accent) 23%, transparent),
+    inset 0 1px 0 var(--lq-glass-bright);
+}
+
+[data-theme='liquefy'] .form-check-input {
+  border-radius: 0.35rem;
+}
+
+[data-theme='liquefy'] .form-check-input:checked {
+  background-color: var(--lq-accent);
+  border-color: var(--lq-accent);
+}
+
+[data-theme='liquefy'] .form-control:disabled,
+[data-theme='liquefy'] .form-select:disabled {
+  background-color: color-mix(in srgb, var(--lq-solid-fill) 70%, transparent);
+  opacity: 0.65;
+}
+
+/* Tables, alerts, and contextual containers */
+[data-theme='liquefy'] .table {
+  border-color: var(--lq-quiet-line);
+}
+
+[data-theme='liquefy'] .table-responsive {
+  border: 1px solid var(--lq-quiet-line);
+  border-radius: var(--ui-radius-md);
+  background: color-mix(in srgb, var(--lq-regular-fill) 78%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme='liquefy'] .table > :not(caption) > * > * {
+  border-bottom-color: var(--lq-quiet-line);
+}
+
+[data-theme='liquefy'] .table thead th,
+[data-theme='liquefy'] .table thead td {
+  color: color-mix(in srgb, var(--lq-foreground) 84%, var(--lq-accent));
+  background: color-mix(in srgb, var(--lq-glass-soft) 86%, transparent);
+  font-weight: 600;
+}
+
+[data-theme='liquefy'] .alert,
+[data-theme='liquefy'] .callout {
+  background: color-mix(in srgb, var(--bd-callout-bg, var(--ui-muted-surface)) 84%, transparent);
+  border: 1px solid var(--bd-callout-border, var(--ui-border));
+  border-left-width: 0.3rem;
+  border-radius: var(--ui-radius-md);
+  box-shadow:
+    0 8px 22px color-mix(in srgb, var(--lq-shadow-color) 28%, transparent),
+    inset 0 1px 0 var(--lq-glass-bright);
+  -webkit-backdrop-filter: blur(12px) saturate(1.16);
+  backdrop-filter: blur(12px) saturate(1.16);
+  padding: 1rem 1.1rem;
+}
+
+[data-theme='liquefy'] .alert-primary,
+[data-theme='liquefy'] .callout-primary {
+  --bd-callout-bg: var(--ui-primary-subtle);
+  --bd-callout-border: var(--ui-primary);
+}
+
+[data-theme='liquefy'] .alert-info,
+[data-theme='liquefy'] .callout-info {
+  --bd-callout-bg: var(--ui-info-subtle);
+  --bd-callout-border: var(--ui-info);
+}
+
+[data-theme='liquefy'] .alert-warning,
+[data-theme='liquefy'] .callout-warning {
+  --bd-callout-bg: var(--ui-warning-subtle);
+  --bd-callout-border: var(--ui-warning);
+}
+
+[data-theme='liquefy'] .alert-success,
+[data-theme='liquefy'] .callout-success {
+  --bd-callout-bg: var(--ui-success-subtle);
+  --bd-callout-border: var(--ui-success);
+}
+
+[data-theme='liquefy'] .alert-danger,
+[data-theme='liquefy'] .callout-danger {
+  --bd-callout-bg: var(--ui-destructive-subtle);
+  --bd-callout-border: var(--ui-destructive);
+}
+
+[data-theme='liquefy'] .liquefy-import-warning {
+  --lq-alert-tint: #f3b54e;
+  align-items: center;
+  min-height: 5.5rem;
+  padding: 1.2rem 1.35rem;
+  background: color-mix(in srgb, var(--lq-alert-tint) 28%, var(--lq-solid-fill) 46%);
+  border-color: color-mix(in srgb, var(--lq-alert-tint) 74%, var(--lq-glass-bright));
+  border-left: 0.35rem solid color-mix(in srgb, var(--lq-alert-tint) 86%, white);
+  box-shadow:
+    0 13px 28px color-mix(in srgb, var(--lq-shadow-color) 32%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 82%, white);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
+}
+
+[data-theme='liquefy'] .liquefy-import-warning .lq-alert__icon {
+  align-self: center;
+  color: color-mix(in srgb, var(--lq-alert-tint) 84%, white);
+}
+
+[data-theme='liquefy'] .liquefy-import-warning .lq-alert__copy {
+  gap: 0.35rem;
+}
+
+[data-theme='liquefy'] .liquefy-import-warning .lq-alert__message {
+  color: var(--lq-foreground);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+
+[data-theme='liquefy'] .liquefy-import-warning .lq-alert__message > strong,
+[data-theme='liquefy'] .liquefy-import-warning .lq-alert__message > span {
+  display: block;
+}
+
+[data-theme='liquefy'] .liquefy-import-warning .lq-alert__message > strong {
+  margin-bottom: 0.25rem;
+  font-size: 1.02rem;
+}
+
+[data-theme='liquefy'] .liquefy-import-warning .lq-alert__message > span {
+  margin-left: 0 !important;
+}
+
+/* Navigation groups, tabs, pagination, and selectable rows */
+[data-theme='liquefy'] .nav-tabs {
+  border-bottom-color: var(--lq-quiet-line);
+  gap: 0.25rem;
+}
+
+[data-theme='liquefy'] .nav-tabs .nav-link {
+  color: var(--ui-secondary-foreground);
+  border: 1px solid transparent;
+  border-radius: 0.6rem 0.6rem 0 0;
+}
+
+[data-theme='liquefy'] .nav-tabs .nav-link:hover {
+  color: var(--lq-foreground);
+  background: color-mix(in srgb, var(--lq-accent) 8%, transparent);
+  border-color: var(--lq-quiet-line);
+}
+
+[data-theme='liquefy'] .nav-tabs .nav-link.active,
+[data-theme='liquefy'] .nav-tabs .nav-item.show .nav-link {
+  color: var(--lq-foreground);
+  background: var(--lq-regular-fill);
+  border-color: var(--lq-regular-line) var(--lq-regular-line) transparent;
+  box-shadow: inset 0 1px 0 var(--lq-glass-bright);
+}
+
+[data-theme='liquefy'] .pagination {
+  gap: 0.35rem;
+}
+
+[data-theme='liquefy'] .page-item .page-link,
+[data-theme='liquefy'] .pagination button {
+  color: var(--lq-foreground);
+  background: var(--lq-control-fill);
+  border-color: var(--lq-control-line);
+  border-radius: 0.55rem;
+  box-shadow: inset 0 1px 0 var(--lq-glass-bright);
+}
+
+[data-theme='liquefy'] .page-item:not(.disabled) .page-link:hover,
+[data-theme='liquefy'] .pagination button:hover {
+  color: var(--lq-foreground);
+  background: color-mix(in srgb, var(--lq-accent) 12%, var(--lq-control-fill));
+  border-color: var(--lq-control-hover-line);
+}
+
+[data-theme='liquefy'] .page-item.active .page-link {
+  color: var(--ui-primary-foreground);
+  background: var(--lq-accent);
+  border-color: color-mix(in srgb, var(--lq-accent) 72%, white);
+}
+
+[data-theme='liquefy'] .page-item.disabled .page-link {
+  color: var(--lq-muted);
+  background: color-mix(in srgb, var(--lq-solid-fill) 46%, transparent);
+  border-color: var(--lq-quiet-line);
+}
+
+[data-theme='liquefy'] .list-group {
+  border-radius: var(--ui-radius-md);
+  overflow: clip;
+}
+
+[data-theme='liquefy'] .list-group-item {
+  color: var(--lq-foreground);
+  background: color-mix(in srgb, var(--lq-regular-fill) 84%, transparent);
+  border-color: var(--lq-quiet-line);
+}
+
+[data-theme='liquefy'] .list-group-item-action:hover,
+[data-theme='liquefy'] .list-group-item-action:focus,
+[data-theme='liquefy'] .list-group-item.active {
+  color: var(--lq-foreground);
+  background: color-mix(in srgb, var(--lq-accent) 12%, var(--lq-regular-fill));
+  border-color: color-mix(in srgb, var(--lq-accent) 34%, var(--lq-regular-line));
+}
+
+[data-theme='liquefy'] .tab-selector,
+[data-theme='liquefy'] .checkbox-label {
+  color: var(--lq-foreground);
+  background: var(--lq-control-fill);
+  border-color: var(--lq-control-line);
+  box-shadow: inset 0 1px 0 var(--lq-glass-bright);
+}
+
+[data-theme='liquefy'] .tab-selector:hover,
+[data-theme='liquefy'] input[type='checkbox'] + .checkbox-label:hover {
+  color: var(--lq-foreground);
+  background: color-mix(in srgb, var(--lq-accent) 10%, var(--lq-control-fill));
+}
+
+[data-theme='liquefy'] .tab-selector-active,
+[data-theme='liquefy'] input[type='checkbox']:checked + .checkbox-label {
+  color: var(--ui-primary-foreground) !important;
+  background: var(--lq-accent) !important;
+  border-color: var(--lq-accent) !important;
+}
+
+/* Shell, footer, and portalized Radix surfaces */
+[data-theme='liquefy'] .app-navbar {
+  top: 0.6rem;
+  right: 0.6rem;
+  left: 0.6rem;
+  width: auto !important;
+  max-width: 1320px;
+  margin-inline: auto;
+  min-height: 4.1rem;
+  height: 4.1rem;
+  background: var(--liquefy-shell-fill) !important;
+  border: 1px solid var(--liquefy-shell-line);
+  border-radius: 1.15rem;
+  box-shadow: var(--liquefy-shell-shadow);
+  -webkit-backdrop-filter: var(--liquefy-shell-filter);
+  backdrop-filter: var(--liquefy-shell-filter);
+}
+
+/*
+ * The legacy shell declares its navbar background and Bootstrap declares its
+ * shadow utility as !important inside the legacy-bootstrap layer. Important layer
+ * precedence is inverted, so keep the Liquefy surface overrides in that same
+ * layer and win through the theme selector's higher specificity.
+ */
+@layer legacy-bootstrap {
+  [data-theme='liquefy'] .app-navbar {
+    width: auto !important;
+    background: var(--liquefy-shell-fill) !important;
+    box-shadow: var(--liquefy-shell-shadow) !important;
+  }
+
+  [data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface {
+    box-shadow: var(--liquefy-shell-shadow) !important;
+  }
+}
+
+[data-theme='liquefy'] .navbar-brand {
+  color: var(--lq-foreground);
+  letter-spacing: 0;
+}
+
+[data-theme='liquefy'] .navbar-brand:hover {
+  color: var(--lq-accent);
+}
+
+[data-theme='liquefy'] .app-navbar-menu-trigger.lq-icon-button {
+  --lq-button-radius: 999px;
+  border-radius: 999px !important;
+}
+
+[data-theme='liquefy'] .sidebar {
+  background: color-mix(in srgb, var(--lq-solid-fill) 34%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lq-regular-line) 82%, var(--lq-glass-bright));
+  border-radius: 1.25rem;
+  box-shadow:
+    0 16px 34px color-mix(in srgb, var(--lq-shadow-color) 34%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 82%, white),
+    inset 0 -1px 0 var(--lq-glass-shade);
+  -webkit-backdrop-filter: blur(26px) saturate(1.62);
+  backdrop-filter: blur(26px) saturate(1.62);
+}
+
+@media (min-width: 992px) {
+  [data-theme='liquefy'] .sidebar {
+    align-self: start;
+    min-width: 15rem;
+    margin: 5.55rem 0.6rem 1rem 0.6rem;
+    max-height: calc(100vh - 6.55rem);
+    padding: 0.55rem 0.4rem;
+    top: 5.55rem;
+  }
+}
+
+[data-theme='liquefy'] .shell-sidebar-nav .link-btn,
+[data-theme='liquefy'] .shell-user-popover .link-btn {
+  color: var(--lq-foreground);
+  border: 1px solid transparent;
+  border-radius: 0.8rem;
+  padding: 0.55rem 0.7rem;
+  transition:
+    background var(--lq-duration) var(--lq-easing),
+    border-color var(--lq-duration) var(--lq-easing),
+    color var(--lq-duration) var(--lq-easing);
+}
+
+[data-theme='liquefy'] .shell-sidebar-nav .link-btn:hover,
+[data-theme='liquefy'] .shell-user-popover .link-btn:hover {
+  color: var(--lq-foreground) !important;
+  background: color-mix(in srgb, var(--lq-accent) 8%, transparent);
+  border-color: transparent;
+}
+
+[data-theme='liquefy'] .shell-sidebar-nav .link-btn.active,
+[data-theme='liquefy'] .shell-user-popover .link-btn.active {
+  color: var(--lq-foreground) !important;
+  background: color-mix(in srgb, var(--lq-accent) 15%, transparent);
+  border-color: color-mix(in srgb, var(--lq-accent) 28%, var(--lq-quiet-line));
+  box-shadow:
+    0 6px 16px color-mix(in srgb, var(--lq-shadow-color) 34%, transparent),
+    inset 0 1px 0 var(--lq-glass-bright),
+    inset 0 -1px 0 var(--lq-glass-shade);
+  font-weight: 600;
+}
+
+[data-theme='liquefy'] .footer {
+  position: fixed;
+  right: 0.6rem;
+  bottom: calc(0.6rem + env(safe-area-inset-bottom));
+  left: 0.6rem;
+  box-sizing: border-box;
+  width: auto !important;
+  max-width: 1320px;
+  margin: 0 auto !important;
+  color: var(--ui-secondary-foreground);
+  background: var(--liquefy-shell-fill);
+  border: 1px solid var(--liquefy-shell-line);
+  border-radius: 1.15rem;
+  box-shadow: var(--liquefy-shell-shadow);
+  -webkit-backdrop-filter: var(--liquefy-shell-filter);
+  backdrop-filter: var(--liquefy-shell-filter);
+}
+
+[data-theme='liquefy'] .app-container > .flex-grow-1 {
+  padding-bottom: calc(var(--liquefy-footer-clearance) + env(safe-area-inset-bottom));
+}
+
+[data-theme='liquefy'] .footer hr {
+  display: none;
+}
+
+[data-theme='liquefy'] .footer a {
+  color: var(--ui-secondary-foreground);
+}
+
+[data-theme='liquefy'] .footer a:hover {
+  color: var(--lq-accent);
+}
+
+[data-theme='liquefy'] [data-slot='popover-content'],
+[data-theme='liquefy'] [data-slot='dropdown-menu-content']:not(.theme-menu-content),
+[data-theme='liquefy'] [data-slot='dropdown-menu-sub-content'],
+[data-theme='liquefy'] .shell-user-popover,
+[data-theme='liquefy'] .shell-legacy-dropdown {
+  color: var(--lq-foreground) !important;
+  background: color-mix(in srgb, var(--lq-solid-fill) 42%, transparent) !important;
+  border-color: color-mix(in srgb, var(--lq-regular-line) 86%, var(--lq-glass-bright)) !important;
+  border-radius: 1rem !important;
+  box-shadow:
+    0 18px 44px var(--lq-shadow-color),
+    inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 88%, white),
+    inset 0 -1px 0 var(--lq-glass-shade) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(1.65);
+  backdrop-filter: blur(28px) saturate(1.65);
+}
+
+[data-theme='liquefy'] [data-slot='dropdown-menu-content'].theme-menu-content {
+  -webkit-backdrop-filter: blur(28px) saturate(1.65);
+  backdrop-filter: blur(28px) saturate(1.65);
+}
+
+[data-theme='liquefy'] [data-slot='dropdown-menu-item']:not(.theme-menu-item):not([data-variant='destructive']),
+[data-theme='liquefy'] [data-slot='dropdown-menu-sub-trigger'],
+[data-theme='liquefy'] .shell-dropdown-item {
+  color: var(--lq-foreground) !important;
+  border-radius: 0.45rem !important;
+}
+
+[data-theme='liquefy'] [data-slot='dropdown-menu-item']:not(.theme-menu-item):not([data-variant='destructive']):focus,
+[data-theme='liquefy'] [data-slot='dropdown-menu-item']:not(.theme-menu-item):not([data-variant='destructive'])[data-highlighted],
+[data-theme='liquefy'] [data-slot='dropdown-menu-sub-trigger']:focus,
+[data-theme='liquefy'] .shell-dropdown-item:hover,
+[data-theme='liquefy'] .shell-dropdown-item:focus,
+[data-theme='liquefy'] .shell-dropdown-item.active {
+  color: var(--lq-foreground) !important;
+  background: color-mix(in srgb, var(--lq-accent) 13%, transparent) !important;
+}
+
+[data-theme='liquefy'] [data-slot='dropdown-menu-separator'] {
+  background: var(--lq-quiet-line);
+}
+
+[data-theme='liquefy'] .shell-user-popover {
+  width: 12.5rem;
+  min-width: 12.5rem;
+  padding: 0.5rem !important;
+}
+
+[data-theme='liquefy'] .shell-user-popover .user-popover {
+  min-width: 0;
+}
+
+/* Radix dialog/sheet and Bootstrap-compatible modal/offcanvas contracts */
+[data-theme='liquefy'] [data-slot='dialog-overlay'],
+[data-theme='liquefy'] [data-slot='sheet-overlay'],
+[data-theme='liquefy'] .modal-backdrop,
+[data-theme='liquefy'] .offcanvas-backdrop {
+  background: var(--ui-overlay) !important;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+[data-theme='liquefy'] [data-slot='dialog-content'],
+[data-theme='liquefy'] .modal-content,
+[data-theme='liquefy'] .compat-modal,
+[data-theme='liquefy'] .offcanvas,
+[data-theme='liquefy'] .compat-offcanvas {
+  color: var(--lq-foreground) !important;
+  background: color-mix(in srgb, var(--lq-solid-fill) 68%, transparent) !important;
+  border-color: var(--lq-regular-line) !important;
+  box-shadow:
+    0 24px 60px var(--lq-shadow-color),
+    inset 0 1px 0 var(--lq-glass-bright),
+    inset 0 -1px 0 var(--lq-glass-shade) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.55);
+  backdrop-filter: blur(22px) saturate(1.55);
+}
+
+[data-theme='liquefy'] .modal-header,
+[data-theme='liquefy'] .modal-footer {
+  border-color: var(--lq-quiet-line);
+}
+
+[data-theme='liquefy'] .modal-header,
+[data-theme='liquefy'] .shell-mobile-sheet-header {
+  background: color-mix(in srgb, var(--lq-glass-soft) 74%, transparent);
+}
+
+[data-theme='liquefy'] .liquefy-modal .lq-dialog__surface,
+[data-theme='liquefy'] .liquefy-confirm-dialog .lq-dialog__surface {
+  /*
+   * Preserve the pointer-position sheen but pin all transform channels. Liquefy
+   * writes these values inline, so the overrides must be important.
+   */
+  --lq-rotate-x: 0deg !important;
+  --lq-rotate-y: 0deg !important;
+  --lq-skew-x: 0deg !important;
+  --lq-scale-x: 1 !important;
+  --lq-scale-y: 1 !important;
+  --lq-squish: 0 !important;
+  --lq-lift: 0px !important;
+  --lq-magnet-x: 0px !important;
+  --lq-magnet-y: 0px !important;
+  --lq-radius: 1.5rem !important;
+  --lq-line: color-mix(in srgb, var(--lq-accent) 30%, var(--lq-glass-bright));
+  --lq-fill: color-mix(in srgb, var(--lq-solid-fill) 64%, transparent);
+  --lq-blur: 18px;
+  --lq-saturate: 1.28;
+  --lq-glow: 0.38;
+  padding: 1.15rem;
+}
+
+[data-theme='liquefy'] .liquefy-modal.lq-dialog[data-open],
+[data-theme='liquefy'] .liquefy-confirm-dialog.lq-dialog[data-open] {
+  animation: liquefy-dialog-soft-in 180ms var(--lq-easing) both;
+}
+
+[data-theme='liquefy'] .liquefy-modal.lq-dialog[data-closed],
+[data-theme='liquefy'] .liquefy-confirm-dialog.lq-dialog[data-closed] {
+  animation: liquefy-dialog-soft-out 140ms ease-in both;
+}
+
+/* Confirmations opened from an already-visible admin dialog must sit above
+   that dialog rather than being trapped behind its Bootstrap-compatible layer. */
+[data-theme='liquefy'] .liquefy-confirm-dialog.lq-dialog {
+  pointer-events: auto !important;
+  z-index: 1070 !important;
+}
+
+[data-theme='liquefy'] .liquefy-confirm-dialog .lq-button {
+  /* Tailwind preflight resets native buttons; restore Liquefy's intended md
+     glass-button geometry for the confirmation actions. */
+  border-radius: 14px !important;
+  display: inline-flex !important;
+  min-height: 46px !important;
+  padding: 0 21px !important;
+}
+
+[data-theme='liquefy'] body:has(.liquefy-confirm-dialog) .lq-dialog__backdrop {
+  pointer-events: auto !important;
+  z-index: 1069 !important;
+}
+
+[data-theme='liquefy'] .liquefy-modal .lq-dialog__header,
+[data-theme='liquefy'] .liquefy-confirm-dialog .lq-dialog__header {
+  gap: 0.75rem;
+}
+
+[data-theme='liquefy'] .liquefy-modal .lq-dialog__header h2,
+[data-theme='liquefy'] .liquefy-confirm-dialog .lq-dialog__header h2 {
+  font-size: 1.35rem;
+  letter-spacing: 0;
+}
+
+[data-theme='liquefy'] .liquefy-modal .lq-dialog__body,
+[data-theme='liquefy'] .liquefy-confirm-dialog .lq-dialog__body {
+  margin-top: 0.7rem;
+}
+
+[data-theme='liquefy'] .liquefy-modal--wide {
+  max-width: min(72rem, calc(100vw - 2rem));
+}
+
+[data-theme='liquefy'] .liquefy-modal--scrollable .lq-dialog__body {
+  max-height: min(70vh, 44rem);
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+/* Song details use the shell glass in a rounded, floating right-hand panel. */
+[data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface {
+  --liquefy-song-gap: 0.75rem;
+  --liquefy-song-right: calc(var(--liquefy-song-gap) + env(safe-area-inset-right));
+  inset:
+    calc(var(--liquefy-song-gap) + env(safe-area-inset-top))
+    var(--liquefy-song-right)
+    calc(var(--liquefy-song-gap) + env(safe-area-inset-bottom))
+    auto;
+  max-width: calc(100vw - 2 * var(--liquefy-song-gap) - env(safe-area-inset-left) - env(safe-area-inset-right)) !important;
+  height: auto !important;
+  max-height: calc(100dvh - 2 * var(--liquefy-song-gap) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  color: var(--lq-foreground);
+  background: var(--liquefy-shell-fill) !important;
+  border: 1px solid var(--liquefy-shell-line) !important;
+  border-radius: 1.5rem !important;
+  box-shadow: var(--liquefy-shell-shadow) !important;
+  -webkit-backdrop-filter: var(--liquefy-shell-filter);
+  backdrop-filter: var(--liquefy-shell-filter);
+  transform: none !important;
+  will-change: auto;
+}
+
+[data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface .btn-close {
+  position: absolute !important;
+  top: 1rem !important;
+  right: 1rem !important;
+}
+
+/* Moving the inset preserves backdrop sampling throughout the transition. */
+[data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface[data-sheet-state='open'] {
+  animation: liquefy-song-detail-in 420ms var(--lq-easing) both !important;
+}
+
+[data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface[data-sheet-state='closed'] {
+  animation: liquefy-song-detail-out 280ms ease-in both !important;
+}
+
+@keyframes liquefy-song-detail-in {
+  from { right: -400px; }
+  to { right: var(--liquefy-song-right); }
+}
+
+@keyframes liquefy-song-detail-out {
+  from { right: var(--liquefy-song-right); }
+  to { right: -400px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='liquefy'] [data-slot='sheet-content'].song-detail-surface[data-sheet-state] {
+    animation: none !important;
+  }
+}
+
+[data-theme='liquefy'] .shell-mobile-liquid-drawer .lq-drawer__surface {
+  --lq-radius: 1.5rem;
+  -webkit-backdrop-filter: var(--liquefy-shell-filter) !important;
+  backdrop-filter: var(--liquefy-shell-filter) !important;
+  background: var(--liquefy-shell-fill) !important;
+  border: 1px solid var(--liquefy-shell-line);
+  border-radius: 1.5rem;
+  box-shadow: var(--liquefy-shell-shadow);
+  /* Keep the absolute glass edge and ::after highlight out of the scroller. */
+  overflow: hidden;
+  padding: 1.35rem;
+  transform: none !important;
+  transform-style: flat !important;
+  will-change: auto;
+}
+
+[data-theme='liquefy'] .shell-mobile-liquid-drawer {
+  inset: 0.75rem auto calc(0.75rem + env(safe-area-inset-bottom)) 0.75rem;
+  width: min(24rem, calc(100vw - 1.5rem));
+  height: auto;
+  max-height: none;
+  z-index: 1050;
+}
+
+@keyframes liquefy-mobile-drawer-in {
+  from {
+    left: -24rem;
+  }
+
+  to {
+    left: 0.75rem;
+  }
+}
+
+@keyframes liquefy-mobile-drawer-out {
+  from {
+    left: 0.75rem;
+  }
+
+  to {
+    left: -24rem;
+  }
+}
+
+[data-theme='liquefy'] .shell-mobile-liquid-drawer[data-open][data-side='left'] {
+  animation: liquefy-mobile-drawer-in 420ms var(--lq-easing) both !important;
+  transform: none !important;
+}
+
+[data-theme='liquefy'] .shell-mobile-liquid-drawer[data-closed][data-side='left'] {
+  animation: liquefy-mobile-drawer-out 320ms ease-in both !important;
+  transform: none !important;
+}
+
+[data-theme='liquefy'] .lq-drawer__backdrop {
+  z-index: 1049;
+}
+
+[data-theme='liquefy'] .shell-mobile-liquid-drawer .lq-drawer__header {
+  flex-shrink: 0;
+  margin-bottom: 1.2rem;
+}
+
+[data-theme='liquefy'] .shell-mobile-liquid-drawer .lq-drawer__body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+
+[data-theme='liquefy'] .shell-mobile-liquid-drawer .lq-drawer__header h2 {
+  font-size: 1.3rem;
+  letter-spacing: 0;
+}
+
+[data-theme='liquefy'] .shell-mobile-liquid-drawer .lq-drawer__close {
+  border-radius: 0.75rem;
+}
+
+[data-theme='liquefy'] body:has(.shell-mobile-liquid-drawer) .lq-drawer__backdrop {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+[data-theme='liquefy'] .liquefy-toast {
+  --lq-alert-tint: var(--lq-accent);
+  border-radius: 1rem;
+  box-shadow:
+    0 14px 30px color-mix(in srgb, var(--lq-shadow-color) 36%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 88%, white);
+  min-height: 4.1rem;
+  padding: 1rem 1.1rem;
+  -webkit-backdrop-filter: blur(22px) saturate(1.55);
+  backdrop-filter: blur(22px) saturate(1.55);
+}
+
+[data-theme='liquefy'] .liquefy-toast[data-severity='info'] {
+  --lq-alert-tint: #3cc9d1;
+  background: color-mix(in srgb, var(--lq-alert-tint) 18%, var(--lq-solid-fill) 48%);
+  border-color: color-mix(in srgb, var(--lq-alert-tint) 62%, var(--lq-glass-bright));
+}
+
+[data-theme='liquefy'] .liquefy-toast[data-severity='success'] {
+  --lq-alert-tint: #52d69a;
+  background: color-mix(in srgb, var(--lq-alert-tint) 19%, var(--lq-solid-fill) 48%);
+  border-color: color-mix(in srgb, var(--lq-alert-tint) 60%, var(--lq-glass-bright));
+}
+
+[data-theme='liquefy'] .liquefy-toast[data-severity='warning'] {
+  --lq-alert-tint: #f3b54e;
+  background: color-mix(in srgb, var(--lq-alert-tint) 22%, var(--lq-solid-fill) 48%);
+  border-color: color-mix(in srgb, var(--lq-alert-tint) 64%, var(--lq-glass-bright));
+}
+
+[data-theme='liquefy'] .liquefy-toast[data-severity='danger'] {
+  --lq-alert-tint: #f27670;
+  background: color-mix(in srgb, var(--lq-alert-tint) 21%, var(--lq-solid-fill) 48%);
+  border-color: color-mix(in srgb, var(--lq-alert-tint) 62%, var(--lq-glass-bright));
+}
+
+[data-theme='liquefy'] .liquefy-toast .lq-alert__icon {
+  color: color-mix(in srgb, var(--lq-alert-tint) 78%, white);
+}
+
+[data-theme='liquefy'] .liquefy-toast .lq-alert__message {
+  color: var(--lq-foreground);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+[data-theme='liquefy'] .liquefy-toast .lq-alert__close {
+  color: color-mix(in srgb, var(--lq-foreground) 72%, var(--lq-alert-tint));
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme='liquefy'] .shell-mobile-sheet-overlay {
+  background: var(--ui-overlay) !important;
+  opacity: 1 !important;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+[data-theme='liquefy'] .shell-mobile-sheet {
+  color: var(--lq-foreground) !important;
+  background: color-mix(in srgb, var(--lq-solid-fill) 72%, transparent) !important;
+  border-right-color: var(--lq-regular-line) !important;
+  box-shadow:
+    12px 0 38px var(--lq-shadow-color),
+    inset 0 1px 0 var(--lq-glass-bright),
+    inset 0 -1px 0 var(--lq-glass-shade) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.55);
+  backdrop-filter: blur(22px) saturate(1.55);
+}
+
+[data-theme='liquefy'] .shell-mobile-sheet > [data-sheet-close] {
+  color: var(--lq-foreground);
+  border-radius: 0.5rem !important;
+}
+
+[data-theme='liquefy'] .shell-mobile-sheet > [data-sheet-close]:hover {
+  background: color-mix(in srgb, var(--lq-accent) 12%, transparent) !important;
+  opacity: 1 !important;
+}
+
+[data-theme='liquefy'] .progress {
+  background: color-mix(in srgb, var(--lq-solid-fill) 76%, transparent);
+}
+
+[data-theme='liquefy'] .progress-bar {
+  background-color: var(--lq-accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--lq-accent) 52%, transparent);
+}
+
+[data-theme='liquefy'] .liquefy-user-spinner {
+  box-sizing: border-box;
+  display: inline-block;
+  width: 1.05rem;
+  height: 1.05rem;
+  border: 2px solid color-mix(in srgb, var(--lq-accent) 26%, transparent);
+  border-top-color: var(--lq-accent);
+  border-radius: 50%;
+  animation: liquefy-user-spinner-spin 700ms linear infinite;
+  flex: 0 0 auto;
+}
+
+@keyframes liquefy-dialog-soft-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes liquefy-dialog-soft-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes liquefy-user-spinner-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 991.98px) {
+  :root[data-theme='liquefy'] {
+    --liquefy-footer-clearance: 11.5rem;
+  }
+
+  [data-theme='liquefy'] .app-navbar {
+    top: 0.5rem;
+    right: 0.5rem;
+    left: 0.5rem;
+    height: 4.1rem;
+    border-radius: 1rem;
+    background-clip: padding-box;
+    overflow: hidden;
+  }
+
+  [data-theme='liquefy'] .app-navbar-menu-trigger-detached {
+    position: fixed;
+    top: 1.1125rem;
+    left: 0.5rem;
+    z-index: 1000;
+    margin: 0;
+    background: var(--liquefy-shell-fill) !important;
+    border: 1px solid var(--liquefy-shell-line) !important;
+    box-shadow: var(--liquefy-shell-shadow);
+    -webkit-backdrop-filter: var(--liquefy-shell-filter);
+    backdrop-filter: var(--liquefy-shell-filter);
+    /* Keep the glass in the page's backdrop while the icon reacts to input. */
+    transform: none !important;
+    transform-style: flat;
+    will-change: auto;
+  }
+
+  [data-theme='liquefy'] .app-navbar-menu-trigger-detached:not(.v-hidden):not(.v-not-login) + .app-navbar {
+    left: 3.875rem;
+  }
+
+  [data-theme='liquefy'] .footer {
+    --footer-expanded-width: calc(100vw - 1rem - env(safe-area-inset-left) - env(safe-area-inset-right));
+    right: auto;
+    bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    left: calc(0.5rem + env(safe-area-inset-left));
+    width: var(--footer-expanded-width) !important;
+    height: var(--footer-expanded-height, auto);
+    padding: 0;
+    overflow: hidden;
+    z-index: 990;
+    /* Morph the actual glass bounds, never scale/translate the backdrop layer. */
+    transition:
+      width 480ms var(--lq-easing),
+      height 480ms var(--lq-easing),
+      border-radius 480ms var(--lq-easing);
+  }
+
+  [data-theme='liquefy'] .footer[data-scroll-state='compact'] {
+    width: min(var(--footer-compact-width), var(--footer-expanded-width)) !important;
+    height: var(--footer-compact-height);
+    border-radius: calc(var(--footer-compact-height) / 2);
+  }
+
+  [data-theme='liquefy'] .shell-footer-layout {
+    box-sizing: border-box;
+    width: calc(var(--footer-expanded-width) - 2px);
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  [data-theme='liquefy'] .shell-footer-controls {
+    width: max-content;
+    max-width: 100%;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  [data-theme='liquefy'] .shell-footer-controls > .col-auto {
+    padding-inline: 0;
+  }
+
+  [data-theme='liquefy'] .shell-footer-controls [data-slot='dropdown-menu-trigger'] {
+    min-height: 44px;
+    padding-inline: 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: background-color 180ms var(--lq-easing);
+  }
+
+  [data-theme='liquefy'] .shell-footer-controls [data-slot='dropdown-menu-trigger']:hover,
+  [data-theme='liquefy'] .shell-footer-controls [data-slot='dropdown-menu-trigger'][data-state='open'] {
+    background: var(--lq-control-fill);
+  }
+
+  [data-theme='liquefy'] .shell-footer-details {
+    width: 100%;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition: opacity 220ms ease 100ms, transform 400ms var(--lq-easing), visibility 0s;
+  }
+
+  [data-theme='liquefy'] .footer[data-scroll-state='compact'] .shell-footer-details {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(0.6rem);
+    pointer-events: none;
+    transition: opacity 120ms ease, transform 320ms var(--lq-easing), visibility 0s 120ms;
+  }
+
+  [data-theme='liquefy'] .shell-mobile-sheet {
+    width: min(24rem, calc(100vw - 2.5rem)) !important;
+  }
+
+  [data-theme='liquefy'] .authorization-card {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Match the priority of Bootstrap spacing utilities without changing the
+   classic/Animal Island footer or the desktop layout. */
+@layer legacy-bootstrap {
+  @media (max-width: 991.98px) {
+    [data-theme='liquefy'] .shell-footer-layout {
+      padding: 0.5rem 0.75rem !important;
+    }
+
+    [data-theme='liquefy'] .shell-footer-controls {
+      margin: 0 !important;
+    }
+
+    [data-theme='liquefy'] .shell-footer-details {
+      margin: 0.25rem 0 0 !important;
+    }
+  }
+}
+
+@media (max-width: 575.98px) {
+  [data-theme='liquefy'] .card,
+  [data-theme='liquefy'] .alert,
+  [data-theme='liquefy'] .callout {
+    border-radius: 1rem;
+  }
+
+  [data-theme='liquefy'] .liquefy-import-panel {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 1.1rem;
+  }
+
+  [data-theme='liquefy'] .liquefy-import-panel__button {
+    width: 100%;
+  }
+
+  [data-theme='liquefy'] [data-slot='dialog-content'],
+  [data-theme='liquefy'] .compat-modal,
+  [data-theme='liquefy'] .modal-dialog {
+    max-width: calc(100vw - 1rem) !important;
+  }
+
+  [data-theme='liquefy'] .pagination {
+    flex-wrap: wrap;
+  }
+
+  [data-theme='liquefy'] .table-responsive {
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='liquefy'] .shell-footer-details {
+    transition-delay: 0s !important;
+  }
+
+  [data-theme='liquefy'] *,
+  [data-theme='liquefy'] *::before,
+  [data-theme='liquefy'] *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Low-amplitude motion for route, tab, pagination, and portal surfaces. */
+[data-theme='liquefy'] .route-view-transition {
+  view-transition-name: page-content;
+  animation: liquefy-route-enter 220ms var(--lq-easing) both;
+}
+
+[data-theme='liquefy'] .pagination-view-transition,
+[data-theme='liquefy'] [data-pagination-page] {
+  animation: liquefy-pagination-enter 180ms var(--lq-easing) both;
+}
+
+[data-theme='liquefy'] [data-slot='tabs-content'][data-state='active'],
+[data-theme='liquefy'] .tab-pane.show.active {
+  animation: liquefy-tab-content-enter 190ms var(--lq-easing) both;
+}
+
+[data-theme='liquefy'] .tab-selector {
+  position: relative;
+  overflow: hidden;
+  transition:
+    color 180ms var(--lq-easing),
+    background-color 180ms var(--lq-easing),
+    border-color 180ms var(--lq-easing),
+    box-shadow 180ms var(--lq-easing),
+    transform 180ms var(--lq-easing);
+}
+
+[data-theme='liquefy'] .tab-selector::after {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 0.15rem;
+  left: 0.55rem;
+  height: 2px;
+  border-radius: 999px;
+  content: '';
+  background: var(--ui-primary);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms var(--lq-easing), opacity 180ms var(--lq-easing);
+}
+
+[data-theme='liquefy'] .tab-selector-active::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+[data-theme='liquefy'] .tab-selector:active:not(:disabled) {
+  transform: translateY(1px) scale(0.985);
+}
+
+[data-theme='liquefy'] [data-slot='tabs-trigger']::after,
+[data-theme='liquefy'] .nav-tabs .nav-link::after {
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms var(--lq-easing), opacity 180ms var(--lq-easing);
+}
+
+[data-theme='liquefy'] [data-slot='tabs-trigger'][data-state='active']::after,
+[data-theme='liquefy'] .nav-tabs .nav-link.active::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+[data-theme='liquefy'] .nav-tabs .nav-link {
+  position: relative;
+  transition: color 180ms var(--lq-easing), background-color 180ms var(--lq-easing), border-color 180ms var(--lq-easing);
+}
+
+[data-theme='liquefy'] .nav-tabs .nav-link::after {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 0.15rem;
+  left: 0.55rem;
+  height: 2px;
+  content: '';
+  background: var(--lq-accent);
+  opacity: 0;
+}
+
+[data-theme='liquefy'] [data-slot='dialog-overlay'][data-dialog-state='open'],
+[data-theme='liquefy'] [data-slot='sheet-overlay'][data-sheet-state='open'],
+[data-theme='liquefy'] .modal-backdrop.show,
+[data-theme='liquefy'] .offcanvas-backdrop.show {
+  animation: liquefy-overlay-enter 180ms ease-out both;
+}
+
+[data-theme='liquefy'] [data-slot='dialog-content'][data-dialog-state='open'],
+[data-theme='liquefy'] [data-slot='sheet-content'][data-sheet-state='open'],
+[data-theme='liquefy'] .modal.show .modal-dialog,
+[data-theme='liquefy'] .offcanvas.show {
+  animation: liquefy-surface-enter 220ms var(--lq-easing) both;
+}
+
+[data-theme='liquefy'] .lq-dialog__backdrop,
+[data-theme='liquefy'] .lq-drawer__backdrop {
+  animation: liquefy-overlay-enter 180ms ease-out both;
+}
+
+[data-theme='liquefy'] .lq-dialog[data-open] {
+  animation: liquefy-surface-enter 220ms var(--lq-easing) both;
+}
+
+[data-theme='liquefy'] [data-slot='dialog-close'],
+[data-theme='liquefy'] .btn-close,
+[data-theme='liquefy'] .lq-dialog__header > .lq-button,
+[data-theme='liquefy'] .lq-drawer__close {
+  box-sizing: border-box;
+  display: inline-grid;
+  width: 2.25rem !important;
+  min-width: 2.25rem !important;
+  height: 2.25rem !important;
+  min-height: 2.25rem !important;
+  place-items: center;
+  padding: 0 !important;
+  border: 1px solid color-mix(in srgb, var(--lq-glass-bright) 72%, var(--lq-accent));
+  border-radius: 999px !important;
+  background-color: color-mix(in srgb, var(--lq-glass-soft) 74%, transparent) !important;
+  box-shadow: inset 0 1px 0 var(--lq-glass-bright), 0 5px 16px color-mix(in srgb, var(--lq-shadow-color) 48%, transparent);
+  color: var(--lq-foreground);
+  opacity: 1;
+  transition: background-color 160ms var(--lq-easing), border-color 160ms var(--lq-easing), box-shadow 160ms var(--lq-easing), transform 160ms var(--lq-easing);
+}
+
+[data-theme='liquefy'] .lq-dialog__header > .lq-button {
+  aspect-ratio: 1;
+  flex: 0 0 2.25rem;
+  font-size: 1.35rem;
+  line-height: 1;
+  text-decoration: none;
+}
+
+[data-theme='liquefy'] .lq-dialog__header > .lq-button .lq-button__content {
+  color: var(--lq-foreground);
+  display: grid;
+  min-height: 100%;
+  place-items: center;
+  width: 100%;
+}
+
+[data-theme='liquefy'] .lq-dialog__header > .lq-button .lq-button__content > span {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+[data-theme='liquefy'] [data-slot='dialog-close']:hover,
+[data-theme='liquefy'] .btn-close:hover,
+[data-theme='liquefy'] .lq-dialog__header > .lq-button:hover,
+[data-theme='liquefy'] .lq-drawer__close:hover {
+  background-color: color-mix(in srgb, var(--lq-accent) 18%, var(--lq-glass-soft)) !important;
+  border-color: color-mix(in srgb, var(--lq-accent) 60%, var(--lq-glass-bright));
+  box-shadow: inset 0 1px 0 var(--lq-glass-bright), 0 8px 20px color-mix(in srgb, var(--lq-shadow-color) 58%, transparent);
+  transform: translateY(-1px);
+}
+
+[data-theme='liquefy'] [data-slot='dialog-close']:focus-visible,
+[data-theme='liquefy'] .btn-close:focus-visible,
+[data-theme='liquefy'] .lq-dialog__header > .lq-button:focus-visible,
+[data-theme='liquefy'] .lq-drawer__close:focus-visible {
+  outline: 2px solid var(--ui-focus-ring);
+  outline-offset: 3px;
+}
+
+@keyframes liquefy-route-enter {
+  from { transform: translateY(6px); }
+  to { transform: translateY(0); }
+}
+
+@keyframes liquefy-tab-content-enter {
+  from { transform: translateY(4px); }
+  to { transform: translateY(0); }
+}
+
+@keyframes liquefy-pagination-enter {
+  from { transform: translateY(3px) scale(0.99); }
+  to { transform: translateY(0) scale(1); }
+}
+
+@keyframes liquefy-overlay-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes liquefy-surface-enter {
+  from { opacity: 0; transform: translateY(7px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='liquefy'] .route-view-transition,
+  [data-theme='liquefy'] .pagination-view-transition,
+  [data-theme='liquefy'] [data-pagination-page],
+  [data-theme='liquefy'] [data-slot='tabs-content'][data-state='active'],
+  [data-theme='liquefy'] .tab-pane.show.active,
+  [data-theme='liquefy'] [data-slot='dialog-overlay'][data-dialog-state='open'],
+  [data-theme='liquefy'] [data-slot='sheet-overlay'][data-sheet-state='open'],
+  [data-theme='liquefy'] [data-slot='dialog-content'][data-dialog-state='open'],
+  [data-theme='liquefy'] [data-slot='sheet-content'][data-sheet-state='open'],
+  [data-theme='liquefy'] .modal.show .modal-dialog,
+  [data-theme='liquefy'] .offcanvas.show,
+  [data-theme='liquefy'] .lq-dialog__backdrop,
+  [data-theme='liquefy'] .lq-drawer__backdrop,
+  [data-theme='liquefy'] .lq-dialog[data-open] {
+    animation: none !important;
+    transition: none !important;
+  }
+}

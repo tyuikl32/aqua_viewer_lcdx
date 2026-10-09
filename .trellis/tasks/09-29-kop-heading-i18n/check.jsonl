@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Quality Check section + Code Review Checklist to review the one-line change against"}
+{"file": ".trellis/tasks/09-29-kop-heading-i18n/prd.md", "reason": "Acceptance criteria (grep no literal, same rendered text, audit clean, build green)"}

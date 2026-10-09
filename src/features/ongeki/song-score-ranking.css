@@ -1,0 +1,147 @@
+/* 等价旧版 ongeki-song-score-ranking.component.css + card-level 样式 */
+.ongeki-song-score-ranking-sheet {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ongeki-song-score-ranking-sheet > .offcanvas-body {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+/* Bootstrap's offcanvas header normally contributes a 1rem inset.  The
+   header is absolutely positioned here so it can sit over the jacket while
+   keeping the close control away from the panel's top/right edges. */
+.ongeki-song-score-ranking .offcanvas-header {
+  top: 0;
+  right: 0;
+  width: auto;
+  height: auto;
+  padding: 1rem;
+}
+
+.ongeki-song-score-ranking .offcanvas-header .btn-close {
+  margin: 0;
+}
+
+.ongeki-song-score-ranking-overlay {
+  z-index: 1040;
+}
+
+.ongeki-song-score-ranking .music-img {
+  max-width: 12em;
+}
+
+.ongeki-song-score-ranking .music-info {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.ongeki-song-score-ranking .music-title {
+  font-weight: bold;
+}
+
+.ongeki-song-score-ranking .honor-badge {
+  aspect-ratio: 1;
+  width: 32px;
+}
+
+.ongeki-song-score-ranking .honor {
+  height: 32px;
+}
+
+.ongeki-song-score-ranking .difficulty-detail-body {
+  min-height: 2.5em;
+}
+
+.ongeki-song-score-ranking .color-basic {
+  color: var(--bs-green);
+}
+
+.ongeki-song-score-ranking .color-advanced {
+  color: var(--bs-yellow);
+}
+
+.ongeki-song-score-ranking .color-expert {
+  color: var(--bs-red);
+}
+
+.ongeki-song-score-ranking .color-master {
+  color: var(--bs-purple);
+}
+
+.ongeki-song-score-ranking .bg-lunatic {
+  background: var(--bs-white);
+}
+
+.ongeki-song-score-ranking .medal {
+  width: 1rem;
+}
+
+.ongeki-song-score-ranking .boss-img {
+  right: 0;
+  height: 3em;
+  min-width: 0;
+  aspect-ratio: 1.8;
+  object-fit: cover;
+}
+
+.ongeki-song-score-ranking .boss-level {
+  width: 4em;
+}
+
+.ongeki-song-score-ranking .music-info-container {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+[data-color-scheme='light'] .ongeki-song-score-ranking .music-info-container {
+  --color-from: rgba(255, 255, 255, 0.3);
+  --color-to: rgba(255, 255, 255, 1);
+}
+
+[data-color-scheme='dark'] .ongeki-song-score-ranking .music-info-container {
+  --color-from: rgba(33, 37, 41, 0.3);
+  --color-to: rgba(33, 37, 41, 1);
+}
+
+.ongeki-song-score-ranking .music-info-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 120%;
+  background-image: linear-gradient(to bottom, var(--color-from) 0%, var(--color-to) 100%),
+    var(--jacket-img);
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+  filter: blur(10px);
+  z-index: -1;
+}
+
+.ongeki-song-score-ranking .level-container {
+  bottom: 0;
+  --bs-aspect-ratio: 40.2985074626866%;
+  background-size: 100% 100%;
+  background-position: left bottom;
+  background-repeat: no-repeat;
+}
+.ongeki-song-score-ranking .level-container .level-number {
+  height: 60%;
+  margin-top: 3%;
+}
+.ongeki-song-score-ranking .level-container .level-header {
+  height: 50%;
+  padding: 0;
+  margin-top: 8%;
+  margin-left: -5%;
+}

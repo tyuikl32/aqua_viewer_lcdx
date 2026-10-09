@@ -1,0 +1,46 @@
+e1d92ae chore(trellis): restore .trellis workspace onto React baseline (from Angular master)
+221ebb6 feat(i18n): merge LCDX 985-key zh/en onto React baseline (+8 upstream keys = 993, sync both i18n copies); fix upstream dead UnknownArtist key; env scaffolding for LCDX API + mai asset host; task docs (prd/design/implement)
+0968738 feat(lcdx): port LCDX API client (lcdx.get/post/delete onto shared auth pipeline), five-tier botPermission model, mai asset host env, laochan brand asset, dev env overrides
+2c06ff2 feat(cabinet): port mai2 cabinets page (EP-19 selector, EP-04/05/06/07 cards, 30s auto-refresh) + RequireCabinetManage/Admin guards + menu gating (requiredBotPermission)
+2ed986d feat(cabinet): port mai2 remote-control page (role-filtered 17 commands, EP-13 send + 2s x30 result polling, in-memory session log)
+78ee865 chore(trellis): record Phase 2 progress (cabinets+remote-control done) and Bootstrap-parity convention
+7bda5be feat(cabinet): port mai2 locks page (EP-14 audit log w/ filters+paging, EP-15/16/17 grants w/ QQ prefix search, EP-20/20L/20D admin perms w/ sort + inline note edit + P10 must-note) + RequireCabinetAdmin route + menu gate P>=4
+3196cec chore(trellis): locks done (3/4) + detailed cabmode handoff notes
+e0db341 feat(cabinet): port mai2 cabmode page (catalog-driven LC modes w/ label-wrap algorithm, LC 9-key settings + restore-default, D13 level card P4-6 2..5 / P7+ full, reboot read-and-clear) — Phase 2 complete
+3321b8f chore(trellis): Phase 2 complete (4/4 cabinet pages), trim consumed handoff notes
+cfe5b9e feat(setting): splice LCDX bind-card + merge-request (国服数据引继) into React setting page; keep LCDX portrait-upload-disabled behavior; i18n-ize all notices
+38f8c00 feat(netcode-bind): port LCDX netcode bind page (lcdx/bind numeric-only, auto-redirect when cards exist); fix legacy success-toast bug
+d825a98 feat(onetime-sign-in): port LCDX one-time sign-in (lcdx/onetime-v2 token login); splice no-card -> netcode-bind redirect into shared procLoginResp; add loginLcdxOnetime
+d4b0ab9 feat(kop): port LCDX KOP ranking page (lcdx/kop/rank, medals, i18n-ized legacy hardcoded copy) + route/menu
+ced3647 chore(trellis): Phase 3 complete + full handoff notes (Phase 4 per-file map, Phase 5 checklist, resume ritual, non-negotiables)
+4ffc07e chore(journal): record session 15 (upstream React port Phases 0-3) and handoff state
+4b1e7fd feat(dashboard): replay LCDX dashboard (quick-nav tiles, global-players card, card unbind, index-based announcements)
+b7fab46 feat(menu): hide ongeki/chusan sidebar groups to match LCDX's mai2-only deployment
+18dbf8b fix(router): remove duplicated /onetime-sign-in and /netcode-bind route entries
+10e2efc feat(sign-up): replay LCDX QQ-only register/reset flow (lcdx/register_start + register_confirm)
+cbe5c7f feat(sign-in): replay LCDX QQ login (POST lcdx/login) + TOTP, drop email/passkey/OAuth entry points
+eeb49d0 feat(shell+home): replay LCDX branding (laochan hero, NET title, ICP footer, trimmed nav/user menu)
+60c1248 feat(admin+announcements): replay LCDX backend wiring (lcdx/announcement/*, drop admin EULA tab, i18n-ize notices)
+21fc2d1 feat(not-found): replay LCDX 404 redesign (Bootstrap card + terminal log + i18n)
+ff36ec9 refactor(i18n): replay LCDX message localization in keychip/cards/profile/importer/maimai2-recent+profile
+9c4c50a refactor(i18n): replay LCDX message localization in oauth-callback + password-reset
+5fb27b6 feat(eula): remove EULA feature to match LCDX upstream (e1f80ea Remove EULA)
+290cacc refactor(i18n): replace error-object notice passthrough with Common.OperationFailed
+c88af01 refactor(i18n): localize hardcoded notices in rival/card/rating/dxpass pages
+75838b9 refactor(i18n): finish repo-wide notice sweep to zero hardcoded strings
+cf62226 refactor(assets): route maimai2 images through maiAssetsHost CDN
+7633613 fix(mai2,chuni): replay four LCDX deltas missed by the React port
+33c36b7 feat(branding): finish LCDX shell branding (index.html, PWA manifest, prod CDN env)
+d50691e docs(spec): rewrite .trellis/spec/frontend for the React port
+eced86a ci: keep the fork's deploy customizations in the React workflow
+bd472d8 fix(branding): correct the pre-paint theme-color to the Liquefy status bar
+9b75bc0 docs(task): refresh implement.md with verified Phase 4/5 status
+8e07df2 refactor(i18n): localize the global ConfirmDialog defaults
+3d07cc0 refactor(i18n): localize the AdminPage admin console copy
+449ce76 refactor(i18n): localize the mai2 server missions page
+4930423 refactor(i18n): localize the mai2 Festa page
+6b846b0 refactor(i18n): localize the mai2 point exchange page
+2d10d46 refactor(i18n): localize the mai2 cabinet control, DX pass and photo pages
+9c31f94 refactor(i18n): localize the announcement editor page
+97dfa10 refactor(i18n): localize the remaining stray hardcoded copy
+9df7a97 docs(task): record the hardcoded-copy sweep as Phase 5 complete

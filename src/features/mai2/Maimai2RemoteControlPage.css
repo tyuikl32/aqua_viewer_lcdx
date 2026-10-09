@@ -1,0 +1,13 @@
+/* 页③ 远程控制（等价旧版 maimai2-remote-control.component.css） */
+
+/* 机台下拉：框宽跟父列，不因 option 长文案拉伸；收起态省略 */
+.cabinet-select-col {
+  min-width: 0;
+}
+
+.cabinet-select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis;
+}

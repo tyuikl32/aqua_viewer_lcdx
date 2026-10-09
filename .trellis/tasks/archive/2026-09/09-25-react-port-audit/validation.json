@@ -1,0 +1,197 @@
+{
+  "scope": "90ed95b..9df7a97 plus uncommitted audit and content-page follow-up fixes plus remote Nginx SPA fallback follow-up",
+  "backendBaseline": "49f20db (read-only; no backend runtime tests)",
+  "browser": {
+    "command": "npm run test:lcdx-regression",
+    "passed": 56,
+    "failed": 0,
+    "durationReported": "1.2m",
+    "liveNetwork": false,
+    "routeRegression": {
+      "knownProtectedDeepLink": "/mai2/photos -> /",
+      "unknownRoute": "/not-a-real-route -> /not-found"
+    }
+  },
+  "build": {
+    "command": "npm run build",
+    "passed": true,
+    "warnings": [
+      "existing Bootstrap @charset",
+      "existing chunk size over 500 kB"
+    ],
+    "outputDirectory": "E:\\ALL.Net\\Project_LCDX_NET\\aqua_viewer_lcdx\\dist",
+    "artifactSha256": {
+      "index.html": "e22239169bcadcf0108159ac3f19a97e3a8b9b49a32361eedf3689b9a2abe689",
+      "assets/index-lUIX_dDw.js": "ad377ed7601539b66aa5fa5f380c933aea22cebc5ac9cd9a106cbc71374f3f14",
+      "assets/index-B6maVScG.css": "a57acfc32b918ea6964a54b860b1d854fb0d191925161f08749a36a2de7f7593",
+      "sw.js": "853ef61413d1c822c9e553d83e2940b2cec20ff6db0eb1a99f7c539027e47825",
+      "workbox-9c191d2f.js": "04b086f1b2f4215ee4b659a7bc9c76162894abdb43fa876247bc7c0bd6fd1c37",
+      "manifest.webmanifest": "0f80fba1a68b8361c8870b7d2178c8e394a088ddc8d4dbcb4564efedc68dd7f6"
+    }
+  },
+  "i18n": {
+    "command": "node scripts/audit-i18n.mjs",
+    "keysPerResource": [
+      1205,
+      1205,
+      1205,
+      1205
+    ],
+    "staticCalls": 1361,
+    "errors": [],
+    "declaredKeys": 1437,
+    "dynamicCalls": 50
+  },
+  "dynamicI18n": {
+    "domains": 11,
+    "keys": 101,
+    "missing": [],
+    "exhaustiveDynamicEvaluation": false
+  },
+  "lint": {
+    "command": "npm run lint",
+    "passed": false,
+    "reason": "eslint executable not available; dependency/config absent"
+  },
+  "notRun": [
+    "authenticated live backend integration",
+    "backend build/tests",
+    "legacy-vs-React pixel-parity suite",
+    "live application artifact deployment (dist was rebuilt locally but not uploaded)"
+  ],
+  "sha256": {
+    ".trellis/spec/frontend/index.md": "21aa1287056ded031a48cb0f45f0eb9803b562b7b85b0c34dd119810e57cb0c5",
+    ".trellis/spec/frontend/quality-guidelines.md": "4809469d8125a0934e09bd4937615a7d0a03f7ddd64c6f4bfc2942602fad2b5e",
+    "package.json": "b5c73a5a842d7e8c5bba2dddc6a1753739b7b3f694085018a2cc07ad5910ff67",
+    "playwright.lcdx.config.ts": "ac237e5c7e816a9f46544242ff7d0157ad2d255fb590879c0892b457045c94af",
+    "public/assets/i18n/en.json": "cbe6e9626796e681e57fcf17a3680ffcaeecc802bcb840d41eeb9da88f43030d",
+    "public/assets/i18n/zh.json": "d4196931f95fe54b67fae7a3dbbbb9c5c9e98056ca2f0a6c56035d85804d3e8c",
+    "scripts/audit-i18n.mjs": "b63e9ee487d8a329d1d43cefd83dc205d0d906efd50a7517d85cb91d1c3929a5",
+    "scripts/serve-lcdx-regression.mjs": "a6687319aea7a1a9eeb4dee56e9e2081d292019e2e991cf8be29a1be10ab4075",
+    "src/features/announcements/AnnouncementContent.tsx": "7613ca98681483c8d56ddf0194ef04183dd988bec62e1fd320b18bc330e5b211",
+    "src/features/announcements/announcement.ts": "d1686bc3c4e41b6a527174d632b6fb57de5732263a037a07ddb0fa3d85a852e0",
+    "src/features/mai2/Maimai2CabinetsPage.tsx": "0782a9faab508f24c73449cbe6396efeb4123f388f9f99708ea966558f46d35d",
+    "src/features/mai2/Maimai2CabmodePage.tsx": "1b4f2ec5d616ea283779a32e42dde9a17e2bfe2d929a1b45d20ecb887ec2422b",
+    "src/features/mai2/Maimai2LocksPage.tsx": "11089ce9bd8768661b69e009ed0a0ad9b5c6aece89ca2613af8f7a104e347aee",
+    "src/features/mai2/Maimai2RemoteControlPage.tsx": "71356e54f19aa9cf13b6915fe1a53fb6ab9ce15d022d2e2ea93cec8c974b6ae8",
+    "src/features/mai2/Maimai2SettingPage.tsx": "4182c598301f692e5b9c5ad3b988555aabcd9e4c22dc16f17f49c7c27a67fbcd",
+    "src/features/ongeki/OngekiProfilePage.css": "56fa3966caed2500e97fa2ace6fc6e7036dbb8c119da3983020e9c5080afcad3",
+    "src/i18n/en.json": "cbe6e9626796e681e57fcf17a3680ffcaeecc802bcb840d41eeb9da88f43030d",
+    "src/i18n/zh.json": "d4196931f95fe54b67fae7a3dbbbb9c5c9e98056ca2f0a6c56035d85804d3e8c",
+    "src/lib/botPermission.ts": "57d77d275b4eefcafcff012d15ff2e756d465b0cd6d23e1d24de4503c969cfb3",
+    "src/pages/AnnouncementsPage.tsx": "99f6826fc302c46694b25accb6d59aa02d63fa59bec2e42083d6f8a335a3d9a5",
+    "src/pages/DashboardPage.tsx": "efefd2129b6a7fe8943a51deecf423029d8e17fe236c516d07ce3ded815d0a16",
+    "src/pages/auth/OnetimeSignInPage.tsx": "9c3fdaeea2eaee3a026f0d028e291dc6c7dd8850515a428cb6d2e42ef4c6ae1a",
+    "tests/lcdx-regression/README.md": "4f51d7d929b8809327b861089ec468e0db2de2b80bc11650fdb5e0fcf9221261",
+    "tests/lcdx-regression/account.spec.ts": "66019e7f38fdc58edbf706e85098ab9a265e49ae93396842b1c3092f8a135303",
+    "tests/lcdx-regression/cabinets.spec.ts": "acb732bf685238fc06cb2e579c7d3cf781c175255eea60962ae224053b159ed4",
+    "tests/lcdx-regression/content-pages.spec.ts": "1610529e210a67c1753c106d55317e87c01d0147058c3e100c851cd299957050",
+    "tests/lcdx-regression/fixture.ts": "c7b1f155d0228d20ef36ace7e2e23dc732eaafd045dd698164fcac59b8f7884c",
+    "tests/lcdx-regression/game-contracts.spec.ts": "908d2efcb0069e7f79e213d8f7ae13d4458d28ebf9fb7617c3e9dff4fb000cf3",
+    "tests/lcdx-regression/guards.spec.ts": "81c86fb2ee2a8130b23210451d8f58f4d4f8094421fc39c4c63443b04a70941a",
+    "tests/lcdx-regression/permissions.spec.ts": "b394fccdb6e6c302559ac0485a1a988d01c2511daa23b833e1d5a4d21f1e159f",
+    "tests/lcdx-regression/settings.spec.ts": "67b2f0f14f457ec606192979cfb52755c1a4f30aac70016b7d8dfd10574bcc0c",
+    "tests/lcdx-regression/themes.spec.ts": "bed3ff42e60257ab85e0ea69097f451d206a70080fc2751de3f26d429d5cd394"
+  },
+  "contentPageRegression": {
+    "command": "npm run test:lcdx-regression -- content-pages.spec.ts",
+    "passed": 20,
+    "failed": 0,
+    "seconds": 23.8,
+    "kopViewports": [
+      1280,
+      390
+    ],
+    "kopThemeFamilies": [
+      "legacy",
+      "liquefy",
+      "animal-island"
+    ],
+    "kopDarkModeParameterized": false,
+    "pixelParity": false
+  },
+  "refreshedRefs": {
+    "upstream/main": "90ed95b",
+    "master": "b1c3fb4",
+    "origin/master": "b1c3fb4",
+    "HEAD": "9df7a97"
+  },
+  "readOnlyLiveAnnouncementChecks": {
+    "baseUrl": "https://test-lcdxnet.am-allnet.com",
+    "authenticated": false,
+    "mutations": false,
+    "responses": [
+      {
+        "path": "/lcdx/announcement/item/47",
+        "statusCode": 92001,
+        "content": null
+      },
+      {
+        "path": "/lcdx/announcement/item/15",
+        "statusCode": 92001,
+        "content": null
+      },
+      {
+        "path": "/lcdx/announcement/item/1",
+        "statusCode": 92001,
+        "contentType": "string",
+        "contentLength": 30
+      },
+      {
+        "path": "/lcdx/announcement/recent?index=0",
+        "content": null
+      }
+    ],
+    "remainingServerWork": "Restore missing deployed announcement files or correct AnnouncementContentPath; no backend files/config changed."
+  },
+  "whitespace": {
+    "trackedDiffCheck": true,
+    "relatedTextFiles": 43,
+    "trailingWhitespace": []
+  },
+  "liveSpaChecks": {
+    "checkedAt": "2026-09-25T12:36:07+08:00",
+    "hosts": {
+      "https://lcdxnet.am-allnet.com": {
+        "/mai2/photos": {
+          "httpStatus": 200,
+          "finalPath": "/",
+          "title": "Home | NET"
+        },
+        "/not-a-real-route": {
+          "httpStatus": 200,
+          "finalPath": "/not-found",
+          "title": "NotFound | NET"
+        }
+      },
+      "https://test-lcdxnet.am-allnet.com": {
+        "/mai2/photos": {
+          "httpStatus": 200,
+          "finalPath": "/",
+          "title": "Home | NET"
+        },
+        "/not-a-real-route": {
+          "httpStatus": 200,
+          "finalPath": "/not-found",
+          "title": "NotFound | NET"
+        }
+      }
+    },
+    "interpretation": "Nginx serves index.html; React performs auth and unknown-route decisions."
+  },
+  "nginx": {
+    "hosts": [
+      "lcdxnet.am-allnet.com",
+      "test-lcdxnet.am-allnet.com"
+    ],
+    "rewriteFiles": [
+      "/www/server/panel/vhost/rewrite/lcdxnet.am-allnet.com.conf",
+      "/www/server/panel/vhost/rewrite/test-lcdxnet.am-allnet.com.conf"
+    ],
+    "backup": "/root/backups/lcdx-spa-20260925-123607",
+    "configTest": "passed",
+    "reload": "systemctl reload nginx",
+    "bothRewriteSha256": "d0b7b28c0354b5f19e1665e7e7b2a53ce00b480181347ae17318a063f0e17bba",
+    "applicationDistUploaded": false
+  }
+}

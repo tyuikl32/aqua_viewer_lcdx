@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "User-facing messages must be localized; the hardcoded heading violates it and the fix must keep the four-resource sync rule intact"}
+{"file": ".trellis/tasks/09-29-kop-heading-i18n/prd.md", "reason": "Scope is one token; R1-R3 and the out-of-scope list prevent collateral edits"}

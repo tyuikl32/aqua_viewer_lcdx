@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="liquefy" data-color-scheme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>NET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <link href="/assets/laochan.svg" rel="icon" type="image/x-icon">
+  <link href="/manifest.webmanifest" rel="manifest">
+  <meta name="theme-color" content="#eefbff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <script>
+    // 首屏只恢复通用主题状态；catalog 校验与兼容 adapter 由主 bundle 负责。
+    (function () {
+      var root = document.documentElement;
+      var storedTheme = null;
+      var colorTheme = 'auto';
+      try {
+        storedTheme = localStorage.getItem('themeFamily');
+        var savedColorTheme = localStorage.getItem('colorTheme');
+        if (savedColorTheme === 'auto' || savedColorTheme === 'light' || savedColorTheme === 'dark') {
+          colorTheme = savedColorTheme;
+        }
+      } catch (e) { /* ignore */ }
+      if (storedTheme) root.dataset.theme = storedTheme;
+      var dark = colorTheme === 'dark';
+      if (colorTheme === 'auto') {
+        try { dark = window.matchMedia('(prefers-color-scheme: dark)').matches; } catch (e) { dark = false; }
+      }
+      root.dataset.colorScheme = dark ? 'dark' : 'light';
+    })();
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <noscript>Please enable JavaScript to continue using this application.</noscript>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

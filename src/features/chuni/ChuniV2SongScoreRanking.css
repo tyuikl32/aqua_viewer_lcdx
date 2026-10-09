@@ -1,0 +1,89 @@
+.chuni-v2-song-score-ranking-panel {
+  --bs-offcanvas-padding-x: 1rem;
+  --bs-offcanvas-padding-y: 1rem;
+  --bs-offcanvas-title-line-height: 1.5;
+  width: 400px !important;
+  max-width: 100vw !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border-left: var(--bs-border-width) solid var(--bs-border-color-translucent) !important;
+  box-shadow: none !important;
+  z-index: 1045;
+}
+
+.chuni-v2-song-score-ranking-panel > .offcanvas-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: -1.5rem;
+  overflow-y: auto;
+}
+
+.chuni-v2-song-score-ranking-overlay {
+  z-index: 1040;
+  background: var(--ui-overlay);
+  opacity: 1;
+}
+
+.chuni-v2-song-score-ranking-panel .music-img {
+  width: 60%;
+}
+
+.chuni-v2-song-score-ranking-panel .fbab-img {
+  margin-left: 20px;
+}
+
+.chuni-v2-song-score-ranking-panel .honor-badge {
+  aspect-ratio: 1;
+  width: 32px;
+}
+
+.chuni-v2-song-score-ranking-panel .color-basic {
+  color: #00ab84;
+}
+
+.chuni-v2-song-score-ranking-panel .color-advanced {
+  color: #ff7e00;
+}
+
+.chuni-v2-song-score-ranking-panel .color-expert {
+  color: #f12929;
+}
+
+.chuni-v2-song-score-ranking-panel .color-master {
+  color: #8e1be5;
+}
+
+.chuni-v2-song-score-ranking-panel .color-ultima {
+  color: #424242;
+}
+
+.chuni-v2-song-score-ranking-panel .color-we {
+  background: linear-gradient(45deg, #0be9ee, #ace559, #fce116, #cb00b0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  -webkit-text-stroke: 1px rgba(0, 0, 0, 0.3);
+}
+
+.chuni-v2-song-score-ranking-panel .honor {
+  height: 32px;
+}
+
+.chuni-v2-song-score-ranking-panel .difficulty-detail-body {
+  min-height: 32px;
+}
+
+.chuni-v2-song-score-ranking-panel .medal {
+  width: 1rem;
+}
+
+@media (max-width: 575.98px) {
+  .chuni-v2-song-score-ranking-panel .music-img {
+    width: 100%;
+  }
+}
