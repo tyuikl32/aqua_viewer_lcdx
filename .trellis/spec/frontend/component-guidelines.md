@@ -156,6 +156,42 @@ Rules:
 
 ---
 
+## Shell panel geometry (Liquefy)
+
+Liquefy draws the app shell as **floating panels**, not full-width bars: `src/styles/theme/liquefy.css`
+gives `.app-navbar` and `.footer` `position: fixed`, `left`/`right: 0.6rem`, `max-width: 1320px`,
+`margin-inline: auto`. Their effective width is therefore `min(100% - 1.2rem, 1320px)`, centred.
+Every surface that must line up with the shell has to use that same formula — Bootstrap's container
+breakpoints are a *different* system that only happens to agree at `≥1400px`.
+
+- **Content column** — `src/components/shell/AppShell.tsx` renders the page grid as
+  `.d-lg-grid.container-xxl`. `container-xxl` is constrained only at `≥1400px`; below that it is
+  `width: 100%`, i.e. 0.6rem wider per side than the panels (the "content is wider than the bars
+  when the window is not maximized" defect). `liquefy.css` overrides it with
+  `width: min(calc(100% - 1.2rem), 1320px)` + Bootstrap's own `margin-inline: auto` centring.
+  Keep `container-xxl` on the element — the override exists *because* the two geometries differ.
+- **Toast overlay** — `src/components/shell/Toasts.tsx` renders `.app-toasts`, which Liquefy needs at
+  `right: max(0.6rem, calc((100vw - 1320px) / 2))` and **without** `end-0`. Branch on the family
+  (`family === 'liquefy' ? '' : ' end-0'`) instead of trying to override the utility: an upstream
+  stylesheet emits `.end-0 { right: 0 !important }` **inside a cascade layer**, and layer precedence
+  for `!important` is inverted — a layered `!important` beats an unlayered one regardless of
+  specificity, so no override wins.
+- **Grid track** — the sidebar branch must use `auto minmax(0, 1fr)`. A bare `1fr` implies
+  `minmax(auto, 1fr)`, whose `auto` minimum lets wide page content (long tables) stretch the track
+  past the container instead of shrinking.
+
+Two precision notes for anyone editing these rules:
+
+- `100vw` **includes** the classic scrollbar (4px here — see `globals.css`), while a
+  `position: fixed` element resolves `right`/`width` percentages against the initial containing
+  block, which **excludes** it. In the toast rule that leaves a residual ~2px outward offset on
+  pages that actually scroll; prefer `100%` over `100vw` if you touch that line.
+- Verify with `tests/lcdx-regression/shell-alignment.spec.ts` (1920/1366/1280/992px, panel /
+  content / toast edges within ±1px). It runs against the offline fixture, so scrollbar-dependent
+  regressions may not surface there.
+
+---
+
 ## Accessibility
 
 - Dialogs/overlays go through `BModal` / `ConfirmDialog` / `src/components/ui/dialog.tsx` so focus
