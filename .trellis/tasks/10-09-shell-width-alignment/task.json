@@ -1,0 +1,31 @@
+{
+  "id": "shell-width-alignment",
+  "name": "shell-width-alignment",
+  "title": "Shell width alignment: content container and toast overlay do not follow the Liquefy navbar/footer panel geometry",
+  "description": "After the React upgrade the default theme is Liquefy, whose navbar/footer are floating panels (inset 0.6rem, max-width 1320px, centered). The main content still uses the Bootstrap container-xxl breakpoints and the toast overlay is still pinned to the viewport edge, so their edges never line up with the panels.",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": "frontend",
+  "package": null,
+  "priority": "P1",
+  "creator": "Xavior",
+  "assignee": "Xavior",
+  "createdAt": "2026-10-09",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "aqua_viewer_lcdx/src/components/shell/AppShell.tsx",
+    "aqua_viewer_lcdx/src/components/shell/Toasts.tsx",
+    "aqua_viewer_lcdx/src/styles/theme/liquefy.css",
+    "aqua_viewer_lcdx/src/styles/globals.css"
+  ],
+  "notes": "",
+  "meta": {}
+}

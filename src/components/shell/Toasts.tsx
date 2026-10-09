@@ -83,7 +83,14 @@ export function Toasts() {
     <div
       aria-live="polite"
       aria-atomic="true"
-      className="pointer-events-none fixed end-0 top-0 z-[1200] flex flex-col gap-2 p-3"
+      className={
+        'app-toasts pointer-events-none fixed top-0 z-[1200] flex flex-col gap-2 p-3' +
+        // liquefy 由 liquefy.css 的 .app-toasts 规则提供面板对齐的右偏移；
+        // 其余主题保持 end-0 视口贴边（旧版行为）。
+        // （end-0 不能与 liquefy 覆写共存：某依赖样式表在 @layer 里输出
+        //   .end-0{right:0!important}，层内 !important 压过层外 !important。）
+        (family === 'liquefy' ? '' : ' end-0')
+      }
       style={{ marginTop: family === 'liquefy' ? '4.35rem' : family === 'animal-island' ? '4.75rem' : '3.6rem' }}
     >
       {toasts.map((t) => (

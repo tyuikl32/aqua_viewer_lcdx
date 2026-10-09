@@ -369,7 +369,7 @@ export function AppShell() {
             className={'d-lg-grid' + (accessLayout ? '' : ' container-xxl')}
             style={{
               gridTemplateAreas: sidebarEnabled ? "'sidebar main'" : "'main'",
-              gridTemplateColumns: sidebarEnabled ? 'auto 1fr' : 'minmax(0, 1fr)',
+              gridTemplateColumns: sidebarEnabled ? 'auto minmax(0, 1fr)' : 'minmax(0, 1fr)',
             }}
           >
             {sidebarEnabled && (

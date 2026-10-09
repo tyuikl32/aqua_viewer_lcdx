@@ -1082,6 +1082,23 @@
   padding-bottom: calc(var(--liquefy-footer-clearance) + env(safe-area-inset-bottom));
 }
 
+/* 内容列与 .app-navbar/.footer 面板同一几何：宽 = min(100% - 1.2rem, 1320px)，水平居中。
+   （容器自身靠 bootstrap container-xxl 的 margin-inline:auto 居中，这里只接管宽度。）
+   ≥1400px 不变（1320px，本就与面板对齐）；992–1400px 修正 0.6rem/侧的外扩；
+   <992px 与同为 0.6rem 内缩的移动端面板对齐。登录等 accessLayout 路由无 container-xxl，
+   不受影响。 */
+[data-theme='liquefy'] .d-lg-grid.container-xxl {
+  width: min(calc(100% - 1.2rem), 1320px);
+}
+
+/* toast 覆盖层右缘贴齐面板右缘：视口右缘内缩 max(0.6rem, (100vw - 1320px) / 2)。
+   （与 .app-navbar 的 left/right:0.6rem + max-width:1320px + margin:auto 同一条几何。）
+   liquefy 分支不带 end-0（Toasts.tsx 条件类名），此处常规优先级即可生效；
+   容器自带 p-3，toast 视觉体再内让 12px。物理 right 与面板规则写法一致。 */
+[data-theme='liquefy'] .app-toasts {
+  right: max(0.6rem, calc((100vw - 1320px) / 2));
+}
+
 [data-theme='liquefy'] .footer hr {
   display: none;
 }
