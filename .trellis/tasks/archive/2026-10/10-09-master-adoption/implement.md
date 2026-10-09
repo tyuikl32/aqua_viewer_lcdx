@@ -68,3 +68,57 @@ Why this is the safest form of "merge" for this situation:
    remaining item there is the UI-parity suite (blocked by design in this fork — documented as
    non-functional). Consider archiving 09-24 after user review.
 4. `09-14` / `09-28` / `09-29` task archiving — waiting per "告诉我但不开工".
+
+---
+
+## Addendum (2026-10-09, late evening): full-completion pass — master caught up to the test tip
+
+User follow-up: "核验，审计，没问题的话提交master分支的commit，再次确认" then
+"对比两个分支，看看是否已经全部合并到master分支里了".
+
+### Comparison found one residual gap
+
+After the adoption merge (`b4731f9`), `test` had ONE commit master lacked (`fc7e605` — this task's own
+archive bookkeeping, landed after the merge was created). Content diff master↔test was 5 `.trellis`
+doc files; **code areas (`src/`, `public/`, configs, CI, tests config) had ZERO diff**.
+
+### Completion executed
+
+`git checkout master && git merge test/lcdx-react-port-audit` — a **normal merge** (no strategy
+tricks). Zero conflicts **by construction**: `b4731f9`'s tree equals the merge base `5f2a25e`'s tree,
+so master had no content changes since the base and test's doc changes applied cleanly.
+Result: **merge commit `bf6a720`**, master tree == test tree, byte-identical.
+
+This also validates the **future sync path**: now that master and test share content, future
+test→master syncs are ordinary conflict-free merges — the 302-conflict problem is permanently gone.
+
+### Post-completion verification (all green)
+
+| Check | Result |
+|---|---|
+| `master^{tree}` == `test^{tree}` | ✅ byte-identical |
+| commits in test missing from master | ✅ none (empty `git log test ^master`) |
+| Angular history `b1c3fb4` ⊆ master | ✅ |
+| React line `5f2a25e` ⊆ master, archive commit `fc7e605` ⊆ master | ✅ |
+| `origin/master` (`b1c3fb4`) ⊆ master → future push = fast-forward | ✅ |
+| `src/app/` on master = 0, `src/router.tsx` present | ✅ |
+| `npm run build` on master checkout | ✅ green (`✓ built in 6.04s`, PWA 47 precache entries, dist 三件套齐全) |
+| i18n audit (`node scripts/audit-i18n.mjs`) | ✅ `errors: []`, 1280 keys × 4 catalogs |
+| guards regression re-run | ⚠️ not re-executed — two attempts stalled in the known environment webServer/proxy quirk (SIGTERM at timeout). Evidence stands: the **identical code** (tree-hash equal, zero code-area diff) passed guards **11/11** earlier the same evening, plus build green + i18n clean. Environmental, not code. |
+
+### CI secret audit (for the pending push decision)
+
+`gh secret list` (authenticated as XaviorShen, scopes include `repo`) returned **empty** — the repo
+has **no `REMOTE_HOST`/`REMOTE_USER`/`SSH_PRIVATE_KEY` secrets**, so the workflow's `deploy` job
+guard `HAS_DEPLOY_SECRETS` evaluates false and **both deploy steps are skipped**. Pushing master
+would only trigger the `build` job (checkout → npm ci → build → artifact upload, 7-day retention).
+**No server would be touched.** Still awaiting explicit user approval per the standing rule.
+
+### Branch state (end of this pass)
+
+| Branch | Local | Remote |
+|---|---|---|
+| `master` | `bf6a720` (React tree + full history; NOT pushed) | `b1c3fb4` (old Angular) |
+| `test/lcdx-react-port-audit` | `fc7e605` + this addendum commit | `fc7e605` (observed synced — pushed from outside this session, not by the assistant) |
+| `legacy-angular` | `b1c3fb4` | `b1c3fb4` ✓ pushed earlier |
+| `backup` | `99029d7` | `90ed95b` (stale remote mirror, harmless — never fetched from) |
