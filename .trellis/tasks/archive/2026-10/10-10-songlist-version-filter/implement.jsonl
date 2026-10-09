@@ -1,0 +1,2 @@
+{"file": ".trellis/tasks/10-10-songlist-version-filter/prd.md", "reason": "R1-R3 and the out-of-scope list pin the change to two appended array entries and forbid collateral edits"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Confirms the version labels are game-native (not i18n candidates) and the required type/build gate (npm run build)"}

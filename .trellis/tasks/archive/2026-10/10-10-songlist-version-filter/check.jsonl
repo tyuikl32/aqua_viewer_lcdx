@@ -1,0 +1,2 @@
+{"file": ".trellis/tasks/10-10-songlist-version-filter/prd.md", "reason": "Acceptance criteria: VERSIONS[26]/[27] values, diff scope, uniqueness, build green"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Code Review Checklist + Testing Requirements (type/build gate; lint is not usable in this repo)"}

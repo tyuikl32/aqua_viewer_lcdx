@@ -1,0 +1,28 @@
+{
+  "id": "songlist-version-filter",
+  "name": "songlist-version-filter",
+  "title": "Add CiRCLE+ and MAGiCAL to the maimai2 songlist version filter",
+  "description": "The maimai2 songlist version checkbox list (VERSIONS in Maimai2SongListPage.tsx) stops at CiRCLE (addVersion 25); append CiRCLE+ (26) and MAGiCAL (27).",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P3",
+  "creator": "Xavior",
+  "assignee": "Xavior",
+  "createdAt": "2026-10-10",
+  "completedAt": "2026-10-10",
+  "branch": null,
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "push": "false"
+  }
+}
