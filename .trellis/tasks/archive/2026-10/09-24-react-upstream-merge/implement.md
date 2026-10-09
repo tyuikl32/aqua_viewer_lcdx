@@ -24,12 +24,11 @@ Context docs (read in order): `design.md` (full analysis & phased plan) → `prd
 - Q4: default theme = **Liquefy**. ✅ verified at runtime.
 - Q5 (CI): self-investigate. ✅ done — the fork *does* use `deploy-test-server.yml`; its customizations were merged back (commit `eced86a`).
 
-## Current position (updated 2026-09-25 session 4)
+## Current position (updated 2026-10-10)
 
-**Phase 0 ✅ · Phase 1 ✅ · Phase 2 ✅ · Phase 3 ✅ · Phase 4 ✅ · Phase 5 ⏳ 5 of 6 done — see Phase 5 below**
+**Phase 0 ✅ · Phase 1 ✅ · Phase 2 ✅ · Phase 3 ✅ · Phase 4 ✅ · Phase 5 ✅ 6 of 6 done — see Phase 5 below**
 
-**50 commits ahead of `backup`.** Branch was renamed `migrate/react-port` → `test/lcdx-react-port-audit`
-(2026-09-25) and is synced to `origin/test/lcdx-react-port-audit`. Working tree clean.
+**All six Phase 5 items are closed.** The React port has been adopted into `master` (see Phase 5 table).
 `master` is still the old Angular code; `legacy-angular` points at it — do not touch them until Phase 5's last step.
 
 ### Phase 4 — Shared-page replay ✅ COMPLETE
@@ -62,7 +61,7 @@ self-service (so never permanently stuck by frontend logic) — but LCDX upstrea
 the feature outright in `e1f80ea`. We followed upstream and removed it. **No frontend hack, no
 backend change needed.**
 
-### Phase 5 — Finalize ⏳ 5 of 6 done
+### Phase 5 — Finalize ✅ 6 of 6 done
 
 | Item | Status | Evidence |
 |---|---|---|
@@ -72,8 +71,8 @@ backend change needed.**
 | `.trellis/spec/frontend/*` React rewrite | ✅ **done** | commit `d50691e` — all six files (five were empty templates) |
 | **Run-time verification** | ✅ **done (first time ever)** | Playwright smoke over 14 routes on a `vite preview` build: **zero console errors / zero page errors**, `#root` mounted on every route, theme `liquefy/light` everywhere. Verified: `/` (Home + ICP footer, Chinese copy), `/sign-in` (QQ + 密码 form), `/sign-up` (QQ号 + 验证码 + "注册账号或重设密码"), `/password-reset`, `/contributors`, `/not-found` ("TRACK 404 · SIGNAL LOST"), unknown route → `/not-found`, and the 6 auth-guarded routes correctly redirect guests to `/`. Not covered: anything behind login (needs a live LCDX backend) |
 | **Hardcoded Chinese copy sweep** | ✅ **done** | see below — 8 commits, catalogs now 1203 keys |
-| Adopt into `master` (Q1) | ⏸ **awaiting user confirmation** | `git checkout master && git reset --hard test/lcdx-react-port-audit` — destructive, not done |
-| UI-parity suite | ⛔ **blocked** | needs a hosts entry mapping `portal.naominet.live` → `127.0.0.1` (`scripts/add-hosts.ps1`, requires Administrator). Certs already exist under `ssl/`. Playwright uses `channel: 'chrome'` (system Chrome), and `ms-playwright` has no downloaded browser |
+| Adopt into `master` (Q1) | ✅ **done (2026-10-09)** | method changed with user approval from `reset --hard` to a **two-parent merge**: `b4731f9` created via `git commit-tree "test^{tree}" -p b1c3fb4 -p test` + `update-ref` (React tree **byte-identical** + both histories as ancestors; future push is a plain fast-forward). Completed by catch-up merges `bf6a720` / `4bba4a4` (docs). Post-adoption test→master syncs are ordinary zero-conflict merges. Full record: `10-09-master-adoption` (archived). `master` pushed to origin 2026-10-09; CI run 37948809186 **success** (deploy steps skipped — repo has no deploy secrets) |
+| UI-parity suite | ✅ **closed by decision (2026-10-09)** | deliberately **kept and documented as non-functional in this fork** — its legacy Angular baseline (`../aqua_viewer/dist/aqua-viewer/browser`) does not exist here; the harness is inert (not in build chain, not in CI). Deleting it would only be redone on every upstream sync. Annotations in 4 spec files + README; full record: `10-09-parity-fork-notes` (archived) |
 
 ### Hardcoded Chinese copy sweep ✅ COMPLETE (2026-09-25 session 3–4)
 

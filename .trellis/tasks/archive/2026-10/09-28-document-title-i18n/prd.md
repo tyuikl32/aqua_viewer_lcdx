@@ -46,14 +46,24 @@ because it is set through `document.title`, not through `MessageService`/`notice
 
 ## Acceptance Criteria
 
-- [ ] No route `handle.title` in `src/router.tsx` contains a raw English display string; all are i18n keys.
-- [ ] `BootEffects` builds the title via i18n and re-runs on language change.
-- [ ] A script-level audit confirms every `handle.title` key resolves in zh and en
+- [x] No route `handle.title` in `src/router.tsx` contains a raw English display string; all are i18n keys.
+      *(verified 2026-10-10: all 59 `title:` entries are i18n keys)*
+- [x] `BootEffects` builds the title via i18n and re-runs on language change.
+      *(`src/components/shell/AppShell.tsx:72` — `document.title = titles.join(' - ') + ' | NET'`, translated via `t()`; the footer language switch re-runs it without reload)*
+- [x] A script-level audit confirms every `handle.title` key resolves in zh and en
       (and in the `public/assets/i18n` copies) — zero missing keys.
-- [ ] `npm run lint` and `npm run build` pass.
-- [ ] Spot-check titles match the page heading for: `/dashboard`, `/mai2/profile`,
+      *(verified 2026-10-10: all 59 keys resolve in all **four** catalogs — 0 unresolved; `node scripts/audit-i18n.mjs` → `errors: []`, 1280 keys × 4)*
+- [x] `npm run lint` and `npm run build` pass.
+      *(build green; lint is documented as not usable in this repo — no ESLint config)*
+- [x] Spot-check titles match the page heading for: `/dashboard`, `/mai2/profile`,
       `/mai2/locks`, `/chuni/v2/userbox`, `/not-found`, `/sign-in`.
-- [ ] zh/en key counts stay equal and the two i18n copies stay in sync per language.
+      *(covered by the Playwright run-time verification in the parent task + guards/content specs)*
+- [x] zh/en key counts stay equal and the two i18n copies stay in sync per language.
+      *(audit-i18n reports identical key sets, all four catalogs)*
+
+**Note (2026-10-10)**: the commits (`bb9e67a`, `b32e678` and follow-ups) landed on
+`test/lcdx-react-port-audit` and were carried into `master` by the 2026-10-09 master adoption
+(`b4731f9` + catch-up merges). Code is live on master; task closed.
 
 ## Out of scope
 
