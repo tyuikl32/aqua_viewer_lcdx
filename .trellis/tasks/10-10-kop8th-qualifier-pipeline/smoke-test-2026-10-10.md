@@ -48,7 +48,39 @@
 | 单 credit 打 3 曲 → 真实 playlog → `KOPRankings(20006)` 出值 | 需真机；且会向生产库写入测试成绩 |
 | `kop6th/get` 在有 8th 成绩后返回名次 | 依赖上一条 |
 | 游戏内 The 8th 榜 + 第三曲解锁 | 需 `N021` option 包 + `LCTitleServer` 分发到机台 |
-| 前端页面（标题/届次切换/榜单） | 前端本次未部署（S3 的提交仍在本地未推） |
+
+## 前端（2026-10-10 追加，已部署）
+
+静态资源 + bundle 层验证（不需要登录即可做）：
+
+| # | 检查 | 实测 | 结果 |
+|---|---|---|---|
+| 9 | `GET /` | 200 · `text/html` · 1 801 B | ✅ SPA 外壳 |
+| 10 | `GET /mai2/kop`、`/mai2/rating` | 200（SPA fallback，同一外壳） | ✅ |
+| 11 | `GET /assets/i18n/zh.json` | 200 · 59 083 B | ✅ |
+| 12 | 主 bundle `/assets/index-BIhlLtIp.js`（1 530 951 B）内是否含 S3 新代码 | `kop/tournaments` ×1 · `kop/current` ×1 · `kop/rank` ×1 · `NoTournament` ×3 · `tournamentId` ×6 | ✅ **新版前端确认在线** |
+
+> 前端与 LCDXNetApi **同域**（生产为同源 `'/'`，见 `.env`），
+> 所以上面第 1–7 项的 `/lcdx/*` 探测就是在同一站点上做的。
+
+### 未覆盖（前端）
+
+- **登录后的实际渲染**：`mai2/kop` 菜单项带 `displayCondition: HasProfile`，页面需登录才能看到；
+  本次只做到「资源与 bundle 层」验证，没有做带凭据的浏览器渲染检查。
+
+## 侧边栏文案修正（本次一并做）
+
+`App.Sidebar.KOP` 原为 `"KOP6th"`（写死第 6 届），而页面现在已按届次动态取数 → 改为届次中立：
+
+| 资源 | 原值 | 新值 |
+|---|---|---|
+| `src/i18n/zh.json` · `public/assets/i18n/zh.json` | `KOP6th` | **`KOP 榜单`** |
+| `src/i18n/en.json` · `public/assets/i18n/en.json` | `KOP6th` | **`KOP Ranking`** |
+
+- 4 份资源同步修改；`src` 与 `public` 两份逐字节一致 ✅
+- `node scripts/audit-i18n.mjs` → 4 资源各 **1290 key**，`errors: []` ✅
+- 全仓已无 `KOP6th` 残留（仅剩一处代码注释提及历史）✅
+- ⚠️ **需重新构建并部署前端才生效**（当前线上仍是旧文案）
 
 ## 复现命令
 
