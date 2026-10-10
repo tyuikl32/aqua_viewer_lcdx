@@ -195,7 +195,10 @@ export function Maimai2RatingPage() {
   const [gameMusicRating, setGameMusicRating] = useState(0);
   const [pool, setPool] = useState<PoolKey>('b35');
   const [detailMusic, setDetailMusic] = useState<Maimai2Music | null>(null);
+  // 数据没到位之前不算分、不渲染推分表：空池的 base 会是 0，算出来的是一张没有意义的全范围表。
+  const [loading, setLoading] = useState(true);
   const catalogReady = catalogStates.maimai2Music === 'OK';
+  const catalogFailed = catalogStates.maimai2Music === 'Error';
 
   useEffect(() => {
     if (!catalogReady) return;
@@ -216,6 +219,9 @@ export function Maimai2RatingPage() {
         }
       } catch (error) {
         if (active) notice(t('Common.OperationFailed'));
+      } finally {
+        // 不论成败都要落地：否则目录预载成功但后端报错时，页面会永远停在加载态。
+        if (active) setLoading(false);
       }
     })();
     return () => { active = false; };
@@ -227,10 +233,8 @@ export function Maimai2RatingPage() {
   // 游戏自己算的总分与本地复算之差 = 谱面定数缺失吃掉的分数。
   const unscoredGap = Math.max(0, gameMusicRating - (computedB35 + computedB15));
 
-  const table = useMemo(
-    () => buildTable(pool === 'b35' ? best35 : best15),
-    [pool, best35, best15],
-  );
+  const activePool = pool === 'b35' ? best35 : best15;
+  const table = useMemo(() => buildTable(activePool), [activePool]);
 
   const recommendationValue = (ratingBase: number, rank: number) =>
     table.rows[rank]?.[ratingBase] === undefined ? ' ' : String(table.rows[rank][ratingBase]);
@@ -243,8 +247,14 @@ export function Maimai2RatingPage() {
         <div className="row justify-content-between p-3 align-items-center" style={{ fontSize: '1.25rem' }}>
           <span className="col-auto">Rating:</span>
           <span className="col-auto">
-            <span className="player-rating" style={{ fontSize: '0.75rem' }}>{computedB35}+{computedB15}=</span>
-            {gameMusicRating}
+            {loading ? (
+              <span className="text-body-secondary">—</span>
+            ) : (
+              <>
+                <span className="player-rating" style={{ fontSize: '0.75rem' }}>{computedB35}+{computedB15}=</span>
+                {gameMusicRating}
+              </>
+            )}
           </span>
         </div>
         {unscored > 0 && (
@@ -274,71 +284,89 @@ export function Maimai2RatingPage() {
             </div>
           </div>
 
-          <div className="table-container d-block d-md-none">
-            <table className="table table-striped" style={{ textAlign: 'center' }}>
-              <thead>
-                <tr>
-                  <th />
-                  {table.headers.map((header, index) => (
-                    <th style={{ fontWeight: 'bold' }} key={index}>{header !== 0 ? header / 10 : ' '}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {rankIcons.map((icon, rowIndex) => (
-                  <tr key={icon}>
-                    <td><img className="rank-icon" src={`${maiAssetsHost}assets/mai2/common/music_icon_${icon}.webp`} alt="" /></td>
-                    {table.headers.map((header, index) => (
-                      <td key={index}>{recommendationValue(header, rowIndex)}</td>
+          {loading ? (
+            <div className="text-center py-4">
+              <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : catalogFailed ? (
+            <div className="text-body-secondary py-3">{t('Common.FailedToLoad')}</div>
+          ) : activePool.length === 0 ? (
+            <div className="text-body-secondary py-3">{t('Maimai2.RatingPage.Empty')}</div>
+          ) : (
+            <>
+              <div className="table-container d-block d-md-none">
+                <table className="table table-striped" style={{ textAlign: 'center' }}>
+                  <thead>
+                    <tr>
+                      <th />
+                      {table.headers.map((header, index) => (
+                        <th style={{ fontWeight: 'bold' }} key={index}>{header !== 0 ? header / 10 : ' '}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rankIcons.map((icon, rowIndex) => (
+                      <tr key={icon}>
+                        <td><img className="rank-icon" src={`${maiAssetsHost}assets/mai2/common/music_icon_${icon}.webp`} alt="" /></td>
+                        {table.headers.map((header, index) => (
+                          <td key={index}>{recommendationValue(header, rowIndex)}</td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  </tbody>
+                </table>
+              </div>
 
-          <div className="table-container d-none d-md-block">
-            <table className="table table-striped" style={{ textAlign: 'center' }}>
-              <thead>
-                <tr>
-                  <th />
-                  {rankIcons.map((icon) => (
-                    <th key={icon}><img className="rank-icon" src={`${maiAssetsHost}assets/mai2/common/music_icon_${icon}.webp`} alt="" /></th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {table.headers.map((header, rowIndex) => (
-                  <tr key={rowIndex}>
-                    <td style={{ fontWeight: 'bold' }}>{header !== 0 ? header / 10 : ' '}</td>
-                    {rankIcons.map((_, rankIndex) => <td key={rankIndex}>{recommendationValue(header, rankIndex)}</td>)}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              <div className="table-container d-none d-md-block">
+                <table className="table table-striped" style={{ textAlign: 'center' }}>
+                  <thead>
+                    <tr>
+                      <th />
+                      {rankIcons.map((icon) => (
+                        <th key={icon}><img className="rank-icon" src={`${maiAssetsHost}assets/mai2/common/music_icon_${icon}.webp`} alt="" /></th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {table.headers.map((header, rowIndex) => (
+                      <tr key={rowIndex}>
+                        <td style={{ fontWeight: 'bold' }}>{header !== 0 ? header / 10 : ' '}</td>
+                        {rankIcons.map((_, rankIndex) => <td key={rankIndex}>{recommendationValue(header, rankIndex)}</td>)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
-      <div className="mb-3 d-flex align-items-center mt-3">
-        <h2 className="mb-0">{t('Maimai2.RatingPage.B35')}</h2>
-        <span className="badge bg-secondary text-bg-secondary rounded-pill ms-2">{computedB35}</span>
-      </div>
-      <div className="row mb-4 g-2">
-        {best35.map((item, index) => (
-          <RatingRecord item={item} index={index} onOpen={setDetailMusic} key={`${item.musicId}-${item.level}-${index}`} />
-        ))}
-      </div>
+      {!loading && (
+        <>
+          <div className="mb-3 d-flex align-items-center mt-3">
+            <h2 className="mb-0">{t('Maimai2.RatingPage.B35')}</h2>
+            <span className="badge bg-secondary text-bg-secondary rounded-pill ms-2">{computedB35}</span>
+          </div>
+          <div className="row mb-4 g-2">
+            {best35.map((item, index) => (
+              <RatingRecord item={item} index={index} onOpen={setDetailMusic} key={`${item.musicId}-${item.level}-${index}`} />
+            ))}
+          </div>
 
-      <div className="mb-3 d-flex align-items-center mt-3">
-        <h2 className="mb-0">{t('Maimai2.RatingPage.B15')}</h2>
-        <span className="badge bg-info text-bg-info rounded-pill ms-2">{computedB15}</span>
-      </div>
-      <div className="row mb-4 g-2">
-        {best15.map((item, index) => (
-          <RatingRecord item={item} index={index} onOpen={setDetailMusic} key={`${item.musicId}-${item.level}-${index}`} />
-        ))}
-      </div>
+          <div className="mb-3 d-flex align-items-center mt-3">
+            <h2 className="mb-0">{t('Maimai2.RatingPage.B15')}</h2>
+            <span className="badge bg-info text-bg-info rounded-pill ms-2">{computedB15}</span>
+          </div>
+          <div className="row mb-4 g-2">
+            {best15.map((item, index) => (
+              <RatingRecord item={item} index={index} onOpen={setDetailMusic} key={`${item.musicId}-${item.level}-${index}`} />
+            ))}
+          </div>
+        </>
+      )}
 
       <Maimai2SongDetail music={detailMusic} open={detailMusic !== null} onClose={() => setDetailMusic(null)} />
     </div>
