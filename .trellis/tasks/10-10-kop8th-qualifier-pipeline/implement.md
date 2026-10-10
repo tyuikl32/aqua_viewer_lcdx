@@ -78,18 +78,33 @@
 > 兼容性：`rank` 仍按裸数组解析（`unwrap()` 同时兼容信封形态）；空态区分"无届次"与"该届无数据"。
 > 时间展示用浏览器本地时区（中国即北京时间），后端输出带 `Z` 的 UTC 串 → 不会再有 8 小时偏差。
 
-## S4 — 游戏包 `N021`（option 形式）
+## S4 — 游戏包 `N021`（option 形式）✅ 文件已建；⚠️ 发现 G21
 
-- [ ] S4.1 新建 `N021/scoreRanking/ScoreRanking020006/ScoreRanking.xml`
-      （照 `A000/scoreRanking/ScoreRanking020005` 模板：id=20006、`Net261029`、
-      MusicIds=11810/11745/12025、`FileName=UI_Tab_Kop`）
-- [ ] S4.2 新建 `N021/event/event261029011/Event.xml`（`261029_01_1：KOP8th オンライン予選紹介`）
-- [ ] S4.3 新建 `N021/event/event261029051/Event.xml`（`261029_05_1：ScoreRanking KOP8th(ID:20006)`）
-- [x] S4.4 `N021/DataConfig.xml` —— 用户已补（N5 关闭）
-- [ ] S4.5 启用日期解禁：在 CLL.Net `CabinetSettings` 给机台配 `[lcdx] MininumOpenEvent = 26010100`
-      （下发链路见 `design.md` §4.1；**BmDaemon 不改**）。
-      ⚠️ 若 contact type 5 未生效（N7），退路为随包 `mai2.ini` 直写该键
-- [ ] **验收**：机台启动后 KOP8th 活动条目出现、`ScoreRanking` 页出现 The 8th 榜且 3 曲可打
+**已创建**（`E:\SGImgTool\decrypt\SDEZ\1.70\N021`，UTF-8 无 BOM + CRLF，与 `A000` 模板一致）：
+
+- [x] S4.1 `scoreRanking/ScoreRanking020006/ScoreRanking.xml`
+      id=20006 / `KING of Performai The 8th` / `isSpecial=true` / `eventText=KOP8th告知` /
+      `netOpenName=Net261029` / MusicIds=`11810(ATLAS RUSH)`·`11745(氷滅の135小節)`·`12025(魔法仕掛けのファンタジア)` /
+      `genreNameTwoLine` / Color `191,151,30`（历代同色） / `FileName=UI_Tab_Kop`
+- [x] S4.2 `event/event261029011/Event.xml`（`261029_01_1：KOP8th オンライン予選紹介`，infoType=0，alwaysOpen=false）
+- [x] S4.3 `event/event261029051/Event.xml`（`261029_05_1：ScoreRanking KOP8th(ID:20006)`）
+- [x] S4.4 `DataConfig.xml` 已存在（version 1.70.2，用户补）
+
+**校验**：三文件 XML 良构（Python ElementTree 解析通过，root 标签正确）；与 `A000/020005` diff 后
+**仅**届次/曲目/netOpenName/eventText/genreName 有差异，结构完全一致。
+
+**两处记录在案**
+
+1. SEGA 自己的 event 文案把 ID 写成 `20003`（6th 与 7th 都是 `ScoreRanking KOP?th(ID:20003)`），
+   与实际 ScoreRanking id（20004/20005）不符 —— 纯显示文案。我们写**正确的 `ID:20006`**。
+2. 🔴 **G21（见 `design.md` §11）**：游戏内 KOP 榜与第三曲解禁由**主站 `GetGameTournamentInfo`** 驱动，
+   而该接口硬编码返回空 → 仅放数据包文件**不足以**让游戏内出现 The 8th 榜。
+   **网页端不受影响**（S1–S3 已满足原始需求）。需用户拍板走 A（改主站）还是 B（只保留网页榜）。
+
+- [ ] S4.5（运维项，未动）`[lcdx] MininumOpenEvent` —— 决定 event お知らせ能否按 id 日期解禁。
+      ⚠️ **当前 event id 前缀为 `261029`，即 2026-10-29 之前不会解禁**（`now < startDate` 会 skip）→
+      这是**符合官方窗口的正确行为**；若要**提前测试**，需另加一组前缀 ≤ 今天的调试 event
+      （例如 `event261010011`），或临时改机台时间。**未擅自添加。**
 - [ ] **注意**：`12025` 仅测试，**不同步到数据库 detail**
 
 ## S5 — 端到端验证

@@ -247,6 +247,7 @@ N021/
 | **G18** | 上报时机 = credit 结束 | 只在 `DataSaveMonitor.Initialize`（存档画面）触发；credit 中途崩溃/断电 → 该 credit 丢失。**与官方一致，可接受** |
 | **G19** | `userId` 全程 uint | `DataSaveMonitorEx` 里 `uint userId = (uint)userData.Detail.UserID`，而 `UserDetail.UserID` 是 **ulong**；下游 `Report.UploaserPlaylog(uint,…)` → native 也是 uint。**隐含假设 LCDX 用户 ID < 2^32**。若将来 ID 超界会截断。属 `LCDX_Mod` 范围，本次不动，仅记录 |
 | **G20** | `playlogId` 可能是合成值 | `DataSaveMonitorEx:46-53`：当 `playlogId == 1`（哨兵）时替换为 `userId*1000 + GetNowUnixTime()`，同一 credit 内共享。**仍是 credit 唯一键**，且不同 userId 不碰撞 → 可安全用作分组键 |
+| **G21** | 🔴 **游戏内 KOP 榜与第三曲解锁依赖主站的 `GetGameTournamentInfo`，而它现在返回空** | 见 §11。**网页端不受影响**；但游戏内不会出现 The 8th 榜，官方"打两首解锁第三首"也不会生效 |
 
 ## 9. 计分设计（G3/G4/G11/G12）
 
@@ -378,3 +379,60 @@ UserPlaylogService.ProcessPlaylogAsync → 筛曲/计时/计分 → KOPRankings
 
 **另**：`JbManager.Is2078Modo => true`（`JbManager.Core.cs:20` 硬编码）→ 该条件恒真，
 故 **实际门槛只剩 `Setting.EnableNetworkBackup`**（默认 true）。
+
+## 11. 游戏内 KOP 榜的数据来源（G21，2026-10-10 实证）
+
+### 11.1 结论：驱动源是**主站**，不是数据包
+
+`Re_SDGB/Assembly-CSharp_LC_170/Manager/ScoreRankingManager.cs:UpdateData()`：
+
+```csharp
+GameTournamentInfo[] list = Singleton<OperationManager>.Instance.GetGameTournamentInfoDataList();  // ← 主站
+foreach (var info in list) {
+    if (startDate > playBaseTime || playBaseTime > endDate) continue;      // 时间窗来自 info
+    var sr = DataManager.Instance.GetScoreRanking(info.tournamentId);      // 去数据包找同名 ScoreRanking
+    if (sr == null) continue;
+    if (rankingKind == 0 || rankingKind == 1) {
+        seq.FileName = sr.FileName; seq.GenreColor = sr.Color; seq.GenreName = sr.genreNameTwoLine;
+        // 注意：曲目清单取 info.gameTournamentMusicList，**不是** sr.MusicIds
+        foreach (var m in info.gameTournamentMusicList)
+            seq.MusicInfoList.Add(new ScoreRankingMusicInfo { MusicID = m.musicId, IsLock = m.isFirstLock });
+        enableRankings.Add(sr.GetID(), seq);
+    }
+}
+```
+
+- `OperationManager.GetGameTournamentInfoDataList()` → `_operationData.GameTournamentInfos`
+  → 来自 `_downloadData` / `_dataDownloader` = **主站 `GetGameTournamentInfo` 的响应**。
+- 而 `RinNET_backend/.../GetGameTournamentInfoHandler.java` **硬编码返回 `length: 0` 空列表**。
+  → **`enableRankings` 恒为空**。
+- 代码里那句 `where EventManager.IsOpenEvent(x.Value.eventName.id)` 的结果被 `_ =` 丢弃，**不参与过滤**；
+  `netOpenName` 在 `ScoreRankingManager` 中**未被使用**（仅各 Data 类的属性定义）。
+  → 所以**游戏内榜的显示与 `netOpenName` 无关，只看主站 info**。
+
+### 11.2 连带影响：第三曲解禁也走同一条链
+
+`ScoreRankingManager.GetUnlockMusicList(monitorId)`：遍历 `enableRankings`，把 `IsLock == true` 的曲
+（= `gameTournamentMusic.isFirstLock == true`）作为待解锁项；当该 credit 内**所有非锁定课题曲都被打过**时返回它们。
+即官方"打前两首 → credit 结束解禁第三首"的判定完全依赖 `enableRankings`。
+
+→ 主站 info 为空 ⇒ **游戏内无 The 8th 榜，且 12025 不会被这条规则解禁**
+（调试包 `mai2.ini` 的 `[Debug] AllOpen=1` 仍可让所有曲可玩）。
+
+### 11.3 与网页端的关系
+
+| 环节 | 依赖 | 现状 |
+|---|---|---|
+| event お知らせ（活动条目） | 数据包 `event/` + `EventManagerEx` 的 **id 日期解禁** | ✅ 与主站无关，10-29 起自动出现 |
+| ScoreRanking 数据 | 数据包 `scoreRanking/` | ✅ 已补 `ScoreRanking020006` |
+| **游戏内 KOP 榜 / 第三曲解禁** | **主站 `GetGameTournamentInfo`** | 🔴 **主站返回空 → 不生效** |
+| **LCDX 网页榜 / 计分** | CLL.Net + LCDXNetApi | ✅ 已完成（S1/S2/S3） |
+
+### 11.4 选项
+
+- **A**：改主站 `RinNET_backend` 的 `GetGameTournamentInfoHandler`，在 1.70 且窗口内返回 KOP8th 的 info：
+  `tournamentId=20006`、`startDate/endDate`、`rankingKind=1`、
+  `gameTournamentMusicList=[{11810,isFirstLock:false},{11745,false},{12025,true}]`。
+  → 游戏内出现 The 8th 榜 + 官方解锁行为。**属改主站（另一个项目/远端部署）**。
+- **B**：不动主站 → 游戏内无 KOP 榜；玩家仍可正常游玩 3 曲（调试包全开）。
+  **我们的原始需求（前端看成绩+排行榜）已由 S1–S3 满足**。
