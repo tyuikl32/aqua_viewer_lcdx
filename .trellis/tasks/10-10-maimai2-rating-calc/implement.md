@@ -174,3 +174,28 @@ catalog fetch (which runs before the account check) fails first, so the caller s
 either way, and the page only surfaces a generic message, but the wording misleads during debugging.
 A one-line change (include the upstream HTTP status in that message, or map a 401 to `94001`) would
 fix it — it needs a redeploy, so it was left for the user to schedule.
+
+## Loading-state fix (2026-10-10, third pass — user report)
+
+The user caught the page rendering a **computed** table before any data existed: header `0+0=0` and an
+elevation table spanning 3.8 → 15.0. Cause: the pools are empty during load, `poolBase([])` returns
+`0`, and every level in 10..150 therefore qualified as an improvement — so the empty state produced
+the widest possible (and meaningless) table instead of nothing.
+
+Fix (`Maimai2RatingPage.tsx`, commit `25bd2fc`):
+
+- an explicit `loading` state, initialised `true` and cleared in the async body's `finally` (so a
+  backend error cannot leave the page spinning forever);
+- while loading: the header shows `—` instead of `0+0=0`, the elevation card shows a spinner, and the
+  B35/B15 sections (headings + badges) are not rendered at all;
+- a failed catalog preload shows `Common.FailedToLoad` rather than spinning forever;
+- a pool with no entries shows the empty-data message instead of an all-levels table.
+
+Verified against the deployed backend with the catalog request slowed down:
+
+| state | header | spinner | table rows | score cards |
+| --- | --- | --- | --- | --- |
+| loading | `—` (no `0+0=0`) | 1 | **0** | **0** |
+| loaded | `11046+3224=14604` + the unscored warning | 0 | 5 (13.7 → 15.0) | 50 / 3 unscored |
+
+7/7 checks pass; screenshots `.artifacts/rating-loading.png` and `.artifacts/rating-b35.png`.
