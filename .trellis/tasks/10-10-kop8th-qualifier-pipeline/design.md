@@ -434,7 +434,11 @@ foreach (var info in list) {
 - **C（已实施）**：**由 LCTitleServer 自己发**。用户指出它本就是转发层 → 在机台内本地合成该响应，
   并做成**可移除模块**。已落地：`LCTitleServer@upgrade/net11-runtime-async b79da6b`
   - `Options/KopTournamentInfoOptions.cs`（`KopTournamentInfo:Enabled` / `IgnoreSchedule`）
-  - `Raw/Processors/KopTournamentInfoInjector.cs`（合并上游列表 + KOP8th 条目；始终 200；幂等）
+  - `Raw/Processors/KopTournamentInfoInjector.cs`（合并上游列表 + KOP8th 条目；
+    **在响应处理阶段强制 200**；幂等）
+    ⚠️ **边界（2026-10-11 实测更正）**：它只覆盖"上游**有应答**但内容为空/不符"的情况；
+    上游**连接失败**（拒绝连接/超时）时管线会在到达该阶段前短路，机台拿到的是上游错误。
+    机台上游是主站、正常可达，故部署可用；**上机验收第 1 步同时充当上游健康检查**。
   - `Program.cs` 注册（排在既有 `GameTournamentInfoApiProcessor` 之后）
   - `appsettings.json` 开关段
   - `tools/smoke-kop-tournament-info.ps1` 实测 **22/22 通过**（含两次调用逐字节一致）
