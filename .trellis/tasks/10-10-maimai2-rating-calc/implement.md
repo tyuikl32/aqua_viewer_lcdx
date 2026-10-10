@@ -108,7 +108,7 @@ Live probe recipe (which login endpoint works, which endpoints exist, response s
 | i18n parity | all four files parse; `src/i18n/{zh,en}` and `public/assets/i18n/{zh,en}` are identical for the `Maimai2.RatingPage` block, and the zh/en key sets match |
 | algorithm vs the game's own numbers (account `13297476`) | `Σ b35 = 11046` == `playerOldRating`; `Σ b15 = 3224`; headline `14604` == `musicRating`; residual 334 = the deferred `12024` catalog gap |
 | elevation table | B35 rows 13.7 / 14.0 / 14.4 / 14.7 / 15.0, B15 rows 8.9 / 10.4 / 12.0 / 13.5 / 15.0 — both non-degenerate |
-| `npm run test:lcdx-regression` | run against this change as a no-regression gate (the suite covers account, cabinet, content and shell pages, not the rating page) |
+| `npm run test:lcdx-regression` | **`shell-alignment.spec.ts` passed 4/4** (1920/1366/1280/992 px) — the spec this repo's frontend guidelines actually guard. The full 60-test suite was started but not completed: at one worker it needs roughly an hour (4 shell tests alone took 4.9 min because each boots a server and a browser), and it does not cover the rating page. |
 | frozen surfaces | `src/features/chuni/**` and `src/features/ongeki/**` untouched |
 
 ### Notes / follow-ups
