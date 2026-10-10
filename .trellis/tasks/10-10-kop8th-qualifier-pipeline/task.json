@@ -3,7 +3,7 @@
   "name": "kop8th-qualifier-pipeline",
   "title": "KOP8th 预选全链路（event 读取 → 按届计分 → 前端成绩与排行榜）",
   "description": "对照 1.62(KOP6th) 实现，跨 CLL.Net / LCDXNetApi / 前端 / 游戏包，把 KOP8th 预选跑通：读赛事定义、按届次计分入榜、前端看我的成绩与排行榜。",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "cross-repo",
   "package": null,
