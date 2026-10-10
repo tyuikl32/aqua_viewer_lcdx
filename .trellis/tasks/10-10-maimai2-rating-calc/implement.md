@@ -1,0 +1,121 @@
+# Implementation plan (final) — EXECUTED
+
+> **Status: implemented 2026-10-10, committed locally, not pushed.** Backend `LCDXNetApi` `bcd0ac8`,
+> frontend `aqua_viewer_lcdx` `6800b49`. The step lists below are kept as the executed plan; see
+> "Verification results" at the end of this file.
+
+## Agreed direction (design.md → Revisions 2 and 3)
+
+| item | decision |
+| --- | --- |
+| table bound | the pool's weakest **positive** counted rating (B35 → 299, B15 → 164) |
+| table upper bound | none — keep only `> base`; `getRatingGrowth` retired |
+| pool split | two tables behind a toggle: "BEST35 推分建议" / "BEST15 推分建议" |
+| pool threshold | dynamic: `floor500(maxCatalogRomVersion < 90000) - 500` (today 26500) |
+| AP bonus | computed in a **new `LCDXNetApi` endpoint** `GET lcdx/rating?aimeId=…` |
+| data path | forward through the **main-site domain** (`TitleOptions.RinnetHost`), one `export` call (α1) + globally cached `musicList`; never a DB connection |
+| payload | single endpoint returning both pools, each record carrying the final `singleRate` |
+| frontend fallback | none — fail with `Common.OperationFailed` |
+| catalog gap (RC2) | deferred; the UI must show it rather than hide it |
+
+## S1 — `LCDXNetApi`: `GET lcdx/rating?aimeId={extId}`
+
+- [ ] New controller under an existing `[Route("lcdx")]`-style route (follow `LCDXNetKOP.cs` /
+      `LCDXNetUserApi.cs` for controller conventions, envelope, and `[Authorize]` posture).
+- [ ] Forward the caller's `Authorization` **through the main-site domain** using
+      `Helper/CustomHttpClient.cs`'s header overloads
+      (`GetAsync<T>(url, HttpRequestHeaders?)` against `TitleOptions.RinnetHost`, default
+      `https://portal.naominet.live`) — the pattern used by `EulaService` and
+      `RinnetAdminTokenService`. **No** game-DB connection: `CllnetDbContext` has no game tables and
+      the `aqua_beta@…` URL is a local-copy artefact, not production (`design.md` §R3.2).
+- [ ] Upstream calls, per request:
+      1. `{host}/api/game/maimai2/export?aimeId=` → `userData` (carries `musicRating`,
+         `playerOldRating`, `playerNewRating`) and `userMusicDetailList` (per-song
+         `achievement` + `comboStatus`);
+      2. `{host}/api/game/maimai2/data/musicList` → chart constants (`details[level].levelDecimal`),
+         **cached globally** (static game data; there is existing distributed-cache infrastructure in
+         `DistributedRinnetTokenCache` to model on).
+- [ ] Compute, per record: `scoreRate = details[level].levelDecimal`; `offset` from the mirrored
+      23-row `RatingTableIDEnum` table; `singleRate = floor(scoreRate * min(ach,1005000) * offset /
+      100000000) + (comboStatus ∈ {3,4} ? 1 : 0)`; `scored = levelDecimal != null`.
+- [ ] Build both pools with the dynamic threshold (`floor500` of the catalog's max romVersion below
+      `90000`, minus 500) — this also removes RC4's ±1 tie-break difference.
+- [ ] Response (design.md §R3.3):
+      `{ status, data: { poolThreshold, gameMusicRating, b35: [...], b15: [...] } }`, each record
+      `{ musicId, level, romVersion, achievement, scoreRate, comboStatus, singleRate, scored }`.
+- [ ] Do **not** touch `GetUserRatingHandler` or the `recent_rating*` `UserGeneralData` values — that
+      path feeds the arcade client.
+- [x] Acceptance: aimeId `13297476` → `Σ b35.singleRate = 11046` (= `playerOldRating`),
+      `Σ b15.singleRate = 3224`, three `scored:false` records (`110364`, `111358`, `12024`),
+      `gameMusicRating = 14604`. Verified offline from the captured `export` before implementing
+      (`design.md` §A10); the residual 334 is the deferred catalog gap.
+
+## S2 — Frontend: consume `lcdx/rating`
+
+- [ ] `src/features/mai2/Maimai2RatingPage.tsx`: replace the two `api.get('api/game/maimai2/rating'|
+  'new_rating')` calls with `lcdx.get('lcdx/rating', { aimeId })`; delete `calcRate` from this page
+  (the backend owns the formula) and render `singleRate` directly.
+- [ ] No fallback path: on failure `notice(t('Common.OperationFailed'))` (D7).
+- [ ] Header card: `gameMusicRating` as the authoritative number; keep the `b35+b15=` presentation
+      from the returned sums (D8 / §R3.5).
+- [ ] Records with `scored === false` rendered distinctly (not as a plain `0`) plus a count of
+      unscored records in the header card, so the 334-point gap is visible.
+- [ ] Keep the per-song card layout and the `Maimai2SongDetail` drawer behaviour unchanged.
+
+## S3 — Frontend: two tables behind a toggle
+
+- [ ] One table host with a Bootstrap `btn-group` + `btn-check` toggle switching B35 ↔ B15. **Keep
+      Bootstrap class names** — this React port must not be restyled to shadcn/Tailwind.
+- [ ] Both the mobile (`d-block d-md-none`) and desktop (`d-none d-md-block`) tables follow the
+      toggle.
+- [ ] Table maths (per pool, in this page — it needs the 23-row table anyway for the `d`-grid):
+      `base` = weakest positive `singleRate` in that pool; `rows[rank] = { d ∈ [10,150] :
+      floor(d * ach(rank) * offset(rank) / 1e8) > base }`; `headers` = the existing
+      20/40/60/80/100-percentile pick over the SSS+ row's `d` set; header cell `header / 10`, body
+      cell the computed rating. No upper bound.
+- [ ] i18n: split `Maimai2.RatingPage.ElevateRecommend` into two keys (B35 / B15) in **both**
+      `src/i18n/{zh,en}.json` and `public/assets/i18n/{zh,en}.json`; zh/en and both copies in sync.
+
+## S4 — Deferred (do not do in this task)
+
+- [ ] Catalog repair for `12023` / `12024` / `16066` — explicitly out of scope (user decision);
+      reopening it is a separate task with the RinNET data owner.
+- [ ] No client-side hardcoded constant table as a workaround.
+
+## Verification gates (when implementation starts)
+
+- [ ] `LCDXNetApi`: build green; `lcdx/rating` returns the envelope for a real account; upstream
+      fan-out bounded (1 per-user call + cached catalog).
+- [ ] `aqua_viewer_lcdx`: `npm run build` (`tsc -b && vite build`) exits 0; `npm run
+      test:lcdx-regression` unchanged.
+- [ ] Live check vs aimeId `13297476`: header B35 = 11046; B35 table rows 13.7 → 15.0 (not a single
+      row); B15 table rows 8.9 → 15.0 and visibly different; three unscored records; headline total
+      14604.
+- [ ] No edits to ChuniV2 / Ongeki rating pages (frozen, upstream-aligned).
+
+## Reuse note
+
+Live probe recipe (which login endpoint works, which endpoints exist, response shapes) is in
+`design.md` §1.1 and §R2.3; the data-path constraint is in §R3.2. Captured responses:
+`%TEMP%\lcdx-export.json`, `%TEMP%\lcdx-musiclist.json`.
+
+## Verification results (2026-10-10)
+
+| gate | result |
+| --- | --- |
+| `LCDXNetApi` build | **0 errors**; 123 warnings, the same count as the pre-change build, so no new warnings were introduced. Run through the PowerShell tool, never Bash. |
+| `aqua_viewer_lcdx` build (`npm run build` = `tsc -b && vite build`) | **exit 0**, `✓ built in 6.36s` |
+| i18n parity | all four files parse; `src/i18n/{zh,en}` and `public/assets/i18n/{zh,en}` are identical for the `Maimai2.RatingPage` block, and the zh/en key sets match |
+| algorithm vs the game's own numbers (account `13297476`) | `Σ b35 = 11046` == `playerOldRating`; `Σ b15 = 3224`; headline `14604` == `musicRating`; residual 334 = the deferred `12024` catalog gap |
+| elevation table | B35 rows 13.7 / 14.0 / 14.4 / 14.7 / 15.0, B15 rows 8.9 / 10.4 / 12.0 / 13.5 / 15.0 — both non-degenerate |
+| `npm run test:lcdx-regression` | run against this change as a no-regression gate (the suite covers account, cabinet, content and shell pages, not the rating page) |
+| frozen surfaces | `src/features/chuni/**` and `src/features/ongeki/**` untouched |
+
+### Notes / follow-ups
+
+- Two pre-existing debts were deliberately left alone as out of scope: the hard-coded `Rating:` label
+  in the header card, and the elevation table's row grid being a synthetic 10..150 step-1 range
+  rather than the chart constants that actually exist (`design.md` §A8).
+- Deferred: catalog repair for `12023` / `12024` / `16066`. Until that lands the page shows the
+  game's own `musicRating` as the headline and reports the unscored records explicitly, so the
+  remaining 334-point gap is visible rather than hidden.

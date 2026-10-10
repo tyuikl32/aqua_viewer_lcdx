@@ -1,0 +1,4 @@
+{"file": ".trellis/tasks/10-10-maimai2-rating-calc/prd.md", "reason": "R1-R16 and the acceptance criteria define the diagnosis deliverable and the 'no code change' scope"}
+{"file": ".trellis/tasks/10-10-maimai2-rating-calc/design.md", "reason": "Current authoritative design: game-side formula, the main-site-domain data path, the endpoint contract, the implemented algorithm, the binding audit corrections (A1/A2/A3/A10) and the accepted residual. The forensic history lives in the sibling root-cause.md."}
+{"file": ".trellis/tasks/10-10-maimai2-rating-calc/implement.md", "reason": "Executable step plan (S1-S4) with every design decision resolved; states explicitly that nothing has been applied"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "i18n sync requirement (both JSON copies) and the type/build gate for the frontend steps"}

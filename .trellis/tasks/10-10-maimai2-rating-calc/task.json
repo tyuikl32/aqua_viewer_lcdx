@@ -1,0 +1,30 @@
+{
+  "id": "maimai2-rating-calc",
+  "name": "maimai2-rating-calc",
+  "title": "Diagnose maimai2 rating page: understated total and degenerate elevation recommendation",
+  "description": "Implemented locally, not pushed. Root causes of the rating page showing 14246 while the game stores 14604: (RC1) calcRate omitted the game's All-Perfect bonus (+1 per AP chart); (RC2, deferred) the RinNET catalog has empty details for 12023/12024 and no 16066 entry, so those records score 0; (RC3) the elevation table was seeded from the account's BEST song, so only 15.0/SSS+ survived. Fix: new LCDXNetApi endpoint GET lcdx/rating?aimeId= that forwards through the main-site domain (TitleOptions.RinnetHost, one export call + cached musicList), computes singleRate incl. AP, builds both pools with a dynamic threshold (lastRomVersion minus one minor version), and returns {poolThreshold, gameMusicRating, b35[], b15[]}; the page renders two tables (BEST35/BEST15) behind a toggle, bounded by each pool's weakest POSITIVE rating with no upper bound. Verified: sum(b35) = 11046 == the game's playerOldRating, residual 334 left by the deferred catalog gap.",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "Xavior",
+  "assignee": "Xavior",
+  "createdAt": "2026-10-10",
+  "completedAt": "2026-10-10",
+  "branch": null,
+  "base_branch": "master",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "src/features/mai2/Maimai2RatingPage.tsx"
+  ],
+  "notes": "Cross-repo change. Backend: LCDXNetApi @ main -> bcd0ac8 (new lcdx/rating endpoint, service, catalog cache, DTOs; dotnet build 0 errors). Frontend: aqua_viewer_lcdx @ master -> 6800b49 (page rewrite, models.ts, 4 i18n copies; npm run build exit 0). Nothing pushed. Deferred: RinNET catalog data for 12023 / 12024 / 16066 (the residual 334 points).",
+  "meta": {
+    "push": "false"
+  }
+}
