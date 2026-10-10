@@ -97,9 +97,13 @@
 
 1. SEGA 自己的 event 文案把 ID 写成 `20003`（6th 与 7th 都是 `ScoreRanking KOP?th(ID:20003)`），
    与实际 ScoreRanking id（20004/20005）不符 —— 纯显示文案。我们写**正确的 `ID:20006`**。
-2. 🔴 **G21（见 `design.md` §11）**：游戏内 KOP 榜与第三曲解禁由**主站 `GetGameTournamentInfo`** 驱动，
-   而该接口硬编码返回空 → 仅放数据包文件**不足以**让游戏内出现 The 8th 榜。
-   **网页端不受影响**（S1–S3 已满足原始需求）。需用户拍板走 A（改主站）还是 B（只保留网页榜）。
+2. ✅ **G21 已解决（2026-10-10 追加）**：游戏内 KOP 榜与第三曲解禁由**主站 `GetGameTournamentInfo`** 驱动，
+   而主站硬编码返回空。**用户决定不改主站，改由 LCTitleServer 本地供给**（它就是转发层）。
+   已落地为可移除模块 `LCTitleServer@upgrade/net11-runtime-async b79da6b`：
+   `Options/KopTournamentInfoOptions.cs` + `Raw/Processors/KopTournamentInfoInjector.cs` +
+   `Program.cs` 注册 + `appsettings.json` 开关 + `tools/smoke-kop-tournament-info.ps1`。
+   实测 **build 0 error，live smoke 22/22**（含两次调用逐字节一致）。
+   详见 `design.md` §11.4。**移除方式**：删两个新文件 + `TEMP-KOP` 块 + `KopTournamentInfo` 段。
 
 - [ ] S4.5（运维项，未动）`[lcdx] MininumOpenEvent` —— 决定 event お知らせ能否按 id 日期解禁。
       ⚠️ **当前 event id 前缀为 `261029`，即 2026-10-29 之前不会解禁**（`now < startDate` 会 skip）→

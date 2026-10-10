@@ -428,11 +428,17 @@ foreach (var info in list) {
 | **游戏内 KOP 榜 / 第三曲解禁** | **主站 `GetGameTournamentInfo`** | 🔴 **主站返回空 → 不生效** |
 | **LCDX 网页榜 / 计分** | CLL.Net + LCDXNetApi | ✅ 已完成（S1/S2/S3） |
 
-### 11.4 选项
+### 11.4 选项（已定：走 LCTitleServer 本地供给）
 
-- **A**：改主站 `RinNET_backend` 的 `GetGameTournamentInfoHandler`，在 1.70 且窗口内返回 KOP8th 的 info：
-  `tournamentId=20006`、`startDate/endDate`、`rankingKind=1`、
-  `gameTournamentMusicList=[{11810,isFirstLock:false},{11745,false},{12025,true}]`。
-  → 游戏内出现 The 8th 榜 + 官方解锁行为。**属改主站（另一个项目/远端部署）**。
-- **B**：不动主站 → 游戏内无 KOP 榜；玩家仍可正常游玩 3 曲（调试包全开）。
-  **我们的原始需求（前端看成绩+排行榜）已由 S1–S3 满足**。
+- **A**：改主站 `RinNET_backend` 的 `GetGameTournamentInfoHandler` —— **用户决定暂不做**（主站是远端部署的另一个项目）。
+- **C（已实施）**：**由 LCTitleServer 自己发**。用户指出它本就是转发层 → 在机台内本地合成该响应，
+  并做成**可移除模块**。已落地：`LCTitleServer@upgrade/net11-runtime-async b79da6b`
+  - `Options/KopTournamentInfoOptions.cs`（`KopTournamentInfo:Enabled` / `IgnoreSchedule`）
+  - `Raw/Processors/KopTournamentInfoInjector.cs`（合并上游列表 + KOP8th 条目；始终 200；幂等）
+  - `Program.cs` 注册（排在既有 `GameTournamentInfoApiProcessor` 之后）
+  - `appsettings.json` 开关段
+  - `tools/smoke-kop-tournament-info.ps1` 实测 **22/22 通过**（含两次调用逐字节一致）
+  - **移除方式**：删两个新文件 + `Program.cs` 的 `TEMP-KOP` 块 + `appsettings.json` 的 `KopTournamentInfo` 段
+- 时间窗：客户端本就按 `startDate..endDate` 丢弃窗口外的条目 → **无需额外日期逻辑**，10-29 自动出现。
+  提前联调可用 `KopTournamentInfo:IgnoreSchedule=true`（用 2019~2029 覆盖窗口）。
+- **B**（仅网页榜）已不再需要作为唯一出路，但若模块被移除则回到 B 的状态。
