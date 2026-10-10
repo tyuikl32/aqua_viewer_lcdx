@@ -159,3 +159,42 @@ hardcoded constant table as a workaround.
 - The elevation table's row grid is a synthetic `d` in 10..150 step 1, so a row label need not be a
   chart constant that actually exists. Filtering `d` by the catalog's real constants is an optional
   follow-up.
+- Row labels render as `15` rather than `15.0` (the `header / 10` arithmetic is inherited from the
+  original page). Cosmetic.
+
+## 8. What the local run found (2026-10-10, after the first commit)
+
+Running the endpoint against the live account on a local machine — rather than against the captured
+JSON — caught a defect that no offline recomputation could have: **the main site requires
+authentication on `api/game/maimai2/data/musicList`** (401 without a token), and the catalog cache,
+being a global singleton, sent no `Authorization` header. Every request failed with
+`95001 Failed to load the game catalog`. Fixed by threading the caller's token into the cache fetch
+(the catalog itself is user-independent, so the result stays globally cached).
+
+Two further weaknesses found in the same pass and fixed:
+
+- `ParseRomVersion` accepted any minor in 0..99, so a malformed `"1.7.00"` would have parsed as
+  `20700` and pushed every song into the new pool. It now requires a multiple of 5, and when neither
+  the account version nor the catalog yields a plausible value the request **fails** instead of
+  splitting pools on a bogus threshold.
+- A non-2xx `export` response discarded its body, so the caller lost the main site's error. The body
+  is now parsed for error responses too, with the HTTP status in the fallback message.
+
+### Local-run recipe (for the next session)
+
+`npm run dev` alone does **not** work for this fork: its `/api` proxy targets
+`http://aqua.naominet.live`, which rejects a token minted by `/lcdx/login` (HTTP 401 →
+`restoreAccess` clears the session → the app bounces back to `/sign-in`). To exercise the page
+locally, run the **production same-origin shape** instead:
+
+1. `npm run build` (or reuse `dist/`);
+2. serve `dist/` from a throwaway static server that proxies `/api/*` → `https://portal.naominet.live`
+   and `/lcdx/*` → the local `LCDXNetApi` (this also sidesteps CORS, self-signed certs and mixed
+   content); the server used for the verification lives in `.artifacts/local-server.mjs`
+   (`.artifacts/` is gitignored);
+3. start `LCDXNetApi` with `dotnet run --no-build --urls http://localhost:5104` (PowerShell, never
+   Bash) — `.env.development.local` (gitignored) points the dev `lcdx` client at that port.
+
+Verified end to end with account `13297476`: login → `/mai2/rating` shows `11046+3224=14604`, the
+unscored warning, the BEST35 table (13.7 → 15.0), and after the toggle the BEST15 table
+(8.9 → 15.0); 50 score cards, 3 unscored markers, no console errors and no failed requests.

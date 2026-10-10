@@ -119,3 +119,20 @@ Live probe recipe (which login endpoint works, which endpoints exist, response s
 - Deferred: catalog repair for `12023` / `12024` / `16066`. Until that lands the page shows the
   game's own `musicRating` as the headline and reports the unscored records explicitly, so the
   remaining 334-point gap is visible rather than hidden.
+
+## Local end-to-end run (2026-10-10, second pass)
+
+Backend started locally (`http://localhost:5104`) and driven with the real account through a browser.
+This pass caught a defect the offline recomputation could not: **the catalog endpoint requires
+authentication** and the cache sent no token (401) — so the first implementation failed on every
+call. Fixed, plus two smaller weaknesses; see `design.md` §8 for the full list and the local-run
+recipe. Commits: `LCDXNetApi` `0bc7e96` (fixes) on top of `bcd0ac8`.
+
+| check | result |
+| --- | --- |
+| `GET lcdx/rating` with the account's token | `92001`; `Σ b35 = 11046` (identical to the game's `playerOldRating`), `Σ b15 = 3224`, `gameMusicRating = 14604`, threshold `26500` from `lastRomVersion 1.70.00`, 3 unscored records |
+| without `Authorization` | `94001 Authorization is required` |
+| while authenticated as aimeId `1` (not the account's) | `95001 ... (HTTP 404)` — the main site's rejection is propagated |
+| catalog cache | second call 2.0 s vs 3.8 s first call (catalog cached; the rest is the ~1 MB export) |
+| page `/mai2/rating` in a browser | header `11046+3224=14604` + the unscored warning; BEST35 table rows 13.7 / 14.0 / 14.4 / 14.7 / 15.0; toggle → BEST15 rows 8.9 / 10.4 / 12.0 / 13.5 / 15.0; 50 cards, 3 unscored markers; **no console errors, no failed requests** |
+| screenshots | `.artifacts/rating-b35.png`, `.artifacts/rating-b15.png` (gitignored) |
