@@ -432,7 +432,10 @@ foreach (var info in list) {
 
 - **A**：改主站 `RinNET_backend` 的 `GetGameTournamentInfoHandler` —— **用户决定暂不做**（主站是远端部署的另一个项目）。
 - **C（已实施）**：**由 LCTitleServer 自己发**。用户指出它本就是转发层 → 在机台内本地合成该响应，
-  并做成**可移除模块**。已落地：`LCTitleServer@upgrade/net11-runtime-async b79da6b`
+  并做成**可移除模块**。
+  📍 **该模块的 trellis 任务在本仓**：`LCTitleServer/.trellis/tasks/10-11-kop8th-tournament-info/`
+  （prd / design / implement 三件套齐全；**本任务只保留跨仓视角，细节以那边为准** —— D9 要求各自建任务）
+  已落地：`LCTitleServer@upgrade/net11-runtime-async b79da6b`（+ `f3d87c3`→`cecc2a6` 压缩改回）
   - `Options/KopTournamentInfoOptions.cs`（`KopTournamentInfo:Enabled` / `IgnoreSchedule`）
   - `Raw/Processors/KopTournamentInfoInjector.cs`（合并上游列表 + KOP8th 条目；
     **在响应处理阶段强制 200**；幂等）
