@@ -1,0 +1,4 @@
+{"file": ".trellis/tasks/10-10-kop8th-qualifier-pipeline/prd.md", "reason": "R1-R7 与验收标准定义本任务的范围；明确 out-of-scope 不做决胜楽曲"}
+{"file": ".trellis/tasks/10-10-kop8th-qualifier-pipeline/design.md", "reason": "数据模型（KopTournaments / KOPRankings 主键改造）、三路线来源、逐仓库改动清单、缺口与 9 条待确认问题"}
+{"file": ".trellis/tasks/10-10-kop8th-qualifier-pipeline/implement.md", "reason": "S0-S5 步骤计划；S0 门禁未过不得开工"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "i18n 双份同步要求与前端构建门禁（S3 落地时适用）"}

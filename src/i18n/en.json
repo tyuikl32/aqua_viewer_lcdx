@@ -1132,11 +1132,17 @@
     },
     "KopPage": {
       "Date": "Date",
+      "Edition": "Edition",
       "Name": "Name",
       "NoRanking": "No ranking in progress.",
+      "NoTournament": "No KOP edition is configured.",
+      "Period": "Period",
       "Rank": "Rank",
       "Score": "Score",
-      "Title": "KOP 6th"
+      "StatusClosed": "Ended",
+      "StatusOpen": "In progress",
+      "StatusUpcoming": "Not started",
+      "Title": "KOP"
     }
   },
   "NetCodeBindPage": {

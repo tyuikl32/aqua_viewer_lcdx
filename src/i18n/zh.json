@@ -1132,11 +1132,17 @@
     },
     "KopPage": {
       "Date": "时间",
+      "Edition": "届次",
       "Name": "玩家",
       "NoRanking": "没有正在进行的排名。",
+      "NoTournament": "当前没有配置 KOP 届次。",
+      "Period": "举办期间",
       "Rank": "排名",
       "Score": "分数",
-      "Title": "KOP 6th"
+      "StatusClosed": "已结束",
+      "StatusOpen": "进行中",
+      "StatusUpcoming": "未开始",
+      "Title": "KOP"
     }
   },
   "NetCodeBindPage": {
