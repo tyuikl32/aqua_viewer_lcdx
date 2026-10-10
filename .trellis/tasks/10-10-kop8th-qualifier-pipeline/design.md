@@ -101,11 +101,30 @@ Base branch `master` · Created 2026-10-10 · 关联 PRD `prd.md`
 1. 取当届 3 曲在该次上报中的记录；
 2. **按 `playlogId` 分组**；
 3. 每个 credit：`score = Σ(achievement)`（仅该 credit 内出现的课题曲），`tie = Σ(deluxscore)`；
+   ⚠️ **2026-10-11 收紧（本服口径，有意偏离官方）**：仅当该 credit **已包含当届全部课题曲**时才算，
+   少一首即跳过整条 credit。见 §3.3。
 4. 取 `score` 最大者（并列比 `tie`，再并列比上传顺序）；
 5. 与库中既有值比较，**只升不降**（沿用现行为）。
 - **Score 存储格式**：现有为 `Σ(achievement + (Level-3)*10000)`（LCDX 自造编码）。
   对齐官方建议改为 **`Σ(achievement)`**（達成率合计，万分比）；前端显示 `score/10000 %` 语义不变。
   ⚠️ 这会改变 6th 历史值的语义 → 6th 数据保留旧值（历史只读），8th 起用新口径。
+
+### 3.3 上榜门槛：**必须打满当届全部课题曲**（2026-10-11 收紧，有意偏离官方）
+
+**官方原文**（`https://maimai.sega.jp/kop8th/maimai/`；该页 JS 渲染，需渲染后取文）：
+
+> **1プレイ内で課題曲をどれか1曲でも選択した場合**、選択した課題曲の達成率を合計したものがスコアとしてランキングに反映されます。
+> **エントリー後にプレイしたスコアがランキングに登録され**、その後…登録されているスコアを上回った時のみ更新されます。
+
+⇒ 官方**允许只打 1 首**入榜，但它同时有**报名门**（`エントリー後`）把非参赛者挡在榜外。
+**本服没有报名机制**，而 KOP 课题曲本身是普通曲目（谁都会随手打）→ 只打 1 首会让榜上被非参赛者填满。
+
+**故收紧为**：该 credit 必须包含**当届全部课题曲**，少一首即跳过整条 credit。
+
+- **实现只改一处**：`KopScoreCalculator.Best` 里 `if (perSong.Count < tournamentMusicIds.Count) continue;`
+- 课题曲集合直接取自 `KopTournaments.MusicId1/2/3` → **无新列、无迁移**，换届自动生效
+- 将来补上报名机制后，把该判断放宽回 `perSong.Count == 0` 即**恢复官方口径**
+- 落地：`CLL.Net@refactor ddc8bff`；`KopScoreCalculatorTests` 重写为 14 例（含"少一首不入榜"/"只打一首不入榜"/"拆三个 playlog 不入榜"），全量 **74/74**
 
 ## 4. event 解禁机制（回答"现在能否正常解锁"）
 
@@ -237,7 +256,7 @@ N021/
 | **G7** | 没问题，维持 | `TournamentId` 为权威键；`KopNo` 仅作展示/可读 |
 | **G9** | 解释：**游戏主动请求** | BmDaemon 监听 Contacter socket 的 `ContactType.RequestUserTournament` → 才调 `ProcessUserTournamentAsync`（`RuntimeCommandHandler.cs:68-71`）。播放日志同理走 `ContactType.UserPlaylog` → `ReportUserPlaylogAsync`。**均为被动响应，无需改** |
 | **G10** | 不操心，后置 | —— |
-| **G11** | **记，但不跨 playlog 计算** | 同一 `playlogId` 内**出现几首就合计几首**（1~3 首都算）；**绝不跨 playlog 相加** |
+| **G11** | **记，但不跨 playlog 计算**；**2026-10-11 追加：必须打满全部课题曲才入榜** | 同一 `playlogId` 内**必须出现当届全部课题曲**（少一首即不入榜，见 §3.3 —— 有意偏离官方，因本服无报名门）；**绝不跨 playlog 相加** |
 | **G12** | 解释 + 我设计 | 见 §9.3 |
 | **G13** | **做** | 前端加届次切换；需新增 `GET lcdx/kop/tournaments`（列出可切换届次） |
 | **G14** | ✅ **只算 MASTER** | 过滤 `Level == 3`（`MusicDifficultyID.Master = 3`；Basic0/Advanced1/Expert2/**Master3**/ReMaster4/Strong5）。`KopTournaments` 增 `RequiredLevel` 列（默认 3）以便将来灵活 |
