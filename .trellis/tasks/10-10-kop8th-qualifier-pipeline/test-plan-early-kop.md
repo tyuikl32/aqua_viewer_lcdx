@@ -240,5 +240,9 @@ DELETE FROM KOPRankings WHERE TournamentId=20006 AND UserId <> 10452920;        
 
 - **N021 的必要性**：既然 `12025` **原本就在机台包内**（不必靠 N021），那 N021 里的 12025 资源（封面/音乐/MV/谱面）
   可能是**冗余**；真正可能仍需要的只有 `scoreRanking/ScoreRanking020006` 与调试事件 → **建议核实后再打包**
-- **`KOPRankings.CurrentUserName` 的来源**：现取自**停用的 `PlayRecords` 老表** → 2024-11 之后的新账号名字为空；
-  建议改取 `LCDXUserV2Records` 或主站 admin（否则榜上会出现无名玩家）
+- **`KOPRankings.CurrentUserName` 的来源**：现取自 `PlayRecords`（`FindPlayRecordByUserIdAsync`）。
+  ⚠️ **更正**：该表**并未停用**（52 万行、最新 `2026-10-11 01:03:03` 仍在写）。
+  名字为空的真因是 **`CabinetRecordService.ProcessUserLogin` 在"机台未登记"时直接 `return -1`，不写 `PlayRecords`** ——
+  今天那两位玩家所在的 `A63E-01E1199` **不在 `Cabinets` 表**（全表仅 38 台），所以没有记录、名字为空。
+  ⇒ 建议：① **把常用机台登记进 `Cabinets`**；② 名字来源改取 `LCDXUserV2Records` 或主站 admin，
+  别依赖"机台是否登记"这个脆弱前提。
