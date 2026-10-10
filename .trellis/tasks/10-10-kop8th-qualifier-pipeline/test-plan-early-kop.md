@@ -244,5 +244,12 @@ DELETE FROM KOPRankings WHERE TournamentId=20006 AND UserId <> 10452920;        
   ⚠️ **更正**：该表**并未停用**（52 万行、最新 `2026-10-11 01:03:03` 仍在写）。
   名字为空的真因是 **`CabinetRecordService.ProcessUserLogin` 在"机台未登记"时直接 `return -1`，不写 `PlayRecords`** ——
   今天那两位玩家所在的 `A63E-01E1199` **不在 `Cabinets` 表**（全表仅 38 台），所以没有记录、名字为空。
-  ⇒ 建议：① **把常用机台登记进 `Cabinets`**；② 名字来源改取 `LCDXUserV2Records` 或主站 admin，
-  别依赖"机台是否登记"这个脆弱前提。
+  ⇒ **已修（CLL.Net `afbc3c9`）**：新增 `PlayerNames` 表（`userId → UserName`），写入点放在
+  `ProcessUserLogin` 的**机台校验之前**，与"机台是否登记 / keychip 形态"彻底解耦；
+  `UpdateKopRankingAsync` 优先取它、回退 `PlayRecords`。迁移 `20261010175642` 已 apply。
+  📌 **标记（不再研究）**：`FindCabinet` 全等匹配导致这类机台的 `UserLogin` 返回 `-1`，
+  **看起来是有意设计**，暂不改动。
+
+- 📌 **存疑存档（不再研究）**：向主站（rin 服）查询时得到的"**主站 `extId` 与客户端 userId 编号体系不一致**"
+  这一结论**未充分验证**（`field=extId` 能查到 `44060051`/`70856383` 且有名字，但 `10452920` 查为 0 条，
+  当时归因于编号体系 —— 该归因可能有误）。**够用的部分**：能按 `extId` 查到玩家名（已用于核实那两位是真实玩家 ✓）。
