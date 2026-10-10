@@ -197,3 +197,48 @@
 | 第三曲会不会被 `netOpenName` / `eventName` 挡住？ | **不会**。12025 的 `netOpenName = Net230324`（2023 年的旧值，早于现在）、`eventName = 無期限常時解放` → **无门控、常时解放** ✅ |
 
 **结论**：除了 §7.3 那 5 项，**没有别的隐藏依赖**。
+
+---
+
+## 八、执行结果（2026-10-11 凌晨，已落地）
+
+### 8.1 全链路实测通过 ✅
+
+真机跑了：**游戏内看到榜页 → 打到第三曲 → credit 结束上报 → CLL.Net 计分 → 网页榜出现成绩**。
+关键证据：
+- LCTitleServer 日志里 `GetGameTournamentInfoApi` **被调 16 次、全部 200 / success=True**（§7.1 的门 2 生效）
+- CLL.Net 日志 `ReportUploadPlaylog keychipId=1506 userId=10452920 uploadedTracks=3 acceptedTracks=2`
+- `lcdx/kop/rank` 返回 `10452920 / score=78040（= 26046+31174+20820）`
+  ⇒ 恰好验证「单 credit 合计」+「只升不降」两条规则 ✓
+
+### 8.2 清榜（已执行）
+
+```sql
+CREATE TABLE KOPRankings_bak_20261011_kop8th AS SELECT * FROM KOPRankings WHERE TournamentId=20006;  -- 备份 4 行
+DELETE FROM KOPRankings WHERE TournamentId=20006 AND UserId <> 10452920;                              -- 删 3 行
+```
+⇒ 榜上**只保留 `10452920`**。
+
+### 8.3 排查结论：**"1 首上榜"是我方规则，不是异常发包** ⚠️
+
+曾有 3 个"不知名"账号上榜（含主站核实为真实玩家的 `44060051` Ａｚｕｓａ☆☆☆ / `70856383` ＫＡＮＡ），
+一度被误判为"构造包"。**去主站（rin 服）核实后确认：都是真实玩家，只是在反复打第三曲 12025 一首** ⇒
+**旧规则「同一 credit 打 1~3 首都算」直接放行了单曲成绩** ⇒ 与 §3.3 的新门槛完全对应。
+
+> 复核工具（可复用）：主站 `https://portal.naominet.live` 的 **admin 接口**
+> `POST /api/auth/signin`（凭据在 LCDXNetApi 配置 `TitleSettings`）→ `GET /api/admin/playlogs/maimai2?field=extId&value=<id>`
+> ⚠️ 主站玩家编号是 **`extId`**；**客户端 userId（如 10452920）在 extId 维度查不到**，别把"查不到"当"不存在"。
+
+### 8.4 开赛前必做（10-29 之前）
+
+1. **部署 CLL.Net `ddc8bff`** —— 未部署前单曲成绩仍会继续上榜（实测 01:38 仍有新行进来）
+2. **回滚计分窗口**：`UPDATE KopTournaments SET OpenTime='2026-10-28 22:00:00' WHERE TournamentId=20006;`
+3. **机台 LCTitleServer**：`KopTournamentInfo:IgnoreSchedule` 改回 `false` + 重启
+4. **调试事件去留**：`event261011011` / `event261011051`（保留不影响，ID 日期已过）
+
+### 8.5 待重新评估的两处
+
+- **N021 的必要性**：既然 `12025` **原本就在机台包内**（不必靠 N021），那 N021 里的 12025 资源（封面/音乐/MV/谱面）
+  可能是**冗余**；真正可能仍需要的只有 `scoreRanking/ScoreRanking020006` 与调试事件 → **建议核实后再打包**
+- **`KOPRankings.CurrentUserName` 的来源**：现取自**停用的 `PlayRecords` 老表** → 2024-11 之后的新账号名字为空；
+  建议改取 `LCDXUserV2Records` 或主站 admin（否则榜上会出现无名玩家）
