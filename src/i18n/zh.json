@@ -978,6 +978,10 @@
       "B15": "BEST15 新曲 ",
       "B35": "BEST35 旧曲 ",
       "ElevateRecommend": "推分建议",
+      "ElevateRecommendB15": "BEST15 推分建议",
+      "ElevateRecommendB35": "BEST35 推分建议",
+      "Unscored": "该谱面缺少定数，无法计分",
+      "UnscoredNotice": "有 {{count}} 条成绩缺少谱面定数未计入，与游戏总分相差约 {{gap}} 分",
       "Empty": "警告：Rating 数据为空！",
       "Title": "评级"
     },

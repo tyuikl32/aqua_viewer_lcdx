@@ -201,11 +201,42 @@ export interface Maimai2RatingItem {
   artistName: string;
   level: number;
   score: number;
+  /** 谱面定数（ScoreRate = level*10 + levelDecimal），与游戏 UserRate.ScoreRate 同义。 */
   ratingBase: number;
+  /** 单曲分，含 AP 加成；由后端 LCDXNetApi `lcdx/rating` 计算。 */
   rating: number;
   romVersion: number;
+  comboStatus: number;
+  /** 谱面定数是否可解析。false 表示目录缺该曲/该难度，rating 恒为 0。 */
+  scored: boolean;
   music?: Maimai2Music;
 }
+
+/** `lcdx/rating` 返回的单曲条目（后端已算好 singleRate）。 */
+export interface Maimai2RatingEntry {
+  musicId: number;
+  level: number;
+  romVersion: number;
+  achievement: number;
+  scoreRate: number;
+  comboStatus: number;
+  singleRate: number;
+  scored: boolean;
+}
+
+/** `lcdx/rating` 的 data 载荷：BEST35 / BEST15 两个分池 + 游戏侧权威总分。 */
+export interface Maimai2RatingPool {
+  poolThreshold: number;
+  currentRomVersion: number;
+  lastRomVersion?: string;
+  catalogMaxRomVersion: number;
+  gameMusicRating: number;
+  gameOldRating: number;
+  gameNewRating: number;
+  b35: Maimai2RatingEntry[];
+  b15: Maimai2RatingEntry[];
+}
+
 
 export interface Maimai2Rival {
   rivalName: string;

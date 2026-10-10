@@ -1,18 +1,24 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { api } from '@/lib/api/client';
+import { lcdx } from '@/lib/api/client';
 import { dbGetByKey } from '@/lib/db/db';
 import { preloadStates } from '@/lib/db/preload';
 import { formatNumber } from '@/lib/format';
 import { notice } from '@/lib/message';
+import { StatusCode } from '@/lib/models';
 import { useStore } from '@/lib/store';
 import { getCurrentUser, loadUser } from '@/lib/user';
 import { maiAssetsHost } from '@/lib/utils';
 import { Maimai2SongDetail } from './Maimai2SongDetail';
-import type { Maimai2Music, Maimai2RatingItem } from './models';
+import type { Maimai2Music, Maimai2RatingEntry, Maimai2RatingItem, Maimai2RatingPool } from './models';
 import './Maimai2RatingPage.css';
 
 const rankIcons = ['sp', 'ss', 'ssp', 'sss', 'sssp'] as const;
+
+/** 推分表的列：S+ / SS / SS+ / SSS / SSS+ 的达成率阈值，与 rankIcons 一一对应。 */
+const RANKS = [980000, 990000, 995000, 1000000, 1005000] as const;
+
+type PoolKey = 'b35' | 'b15';
 
 function jacketId(input: number): string {
   return input.toString().slice(-4).padStart(6, '0');
@@ -23,63 +29,77 @@ function imageFallback(event: React.SyntheticEvent<HTMLImageElement>) {
   if (event.currentTarget.src !== fallback) event.currentTarget.src = fallback;
 }
 
+/** 抄自游戏 DB/RatingTableIDEnum.cs 的 23 行系数表：(达成率阈值, 系数)。 */
+const ratingRecords = [
+  [0, 0], [100000, 16], [200000, 32], [300000, 48], [400000, 64], [500000, 80],
+  [600000, 96], [700000, 112], [750000, 120], [799999, 128], [800000, 136],
+  [900000, 152], [940000, 168], [969999, 176], [970000, 200], [980000, 203],
+  [989999, 206], [990000, 208], [995000, 211], [999999, 214], [1000000, 216],
+  [1004999, 222], [1005000, 224],
+] as const;
+
+/**
+ * 单曲分公式：floor(ScoreRate × min(达成率, 1005000) × 系数 / 1e8)，与游戏 UserRate.cs 一致。
+ *
+ * 本函数只服务于推分表的「假想网格」（给定难度与等级会得多少分）；
+ * 实际每条成绩的分数一律采信后端 `lcdx/rating` 的 singleRate（那里才含 AP 加成）。
+ */
 function calcRate(level: number, achievement: number): number {
-  const records = [
-    [0, 0], [100000, 16], [200000, 32], [300000, 48], [400000, 64], [500000, 80],
-    [600000, 96], [700000, 112], [750000, 120], [799999, 128], [800000, 136],
-    [900000, 152], [940000, 168], [969999, 176], [970000, 200], [980000, 203],
-    [989999, 206], [990000, 208], [995000, 211], [999999, 214], [1000000, 216],
-    [1004999, 222], [1005000, 224],
-  ] as const;
-  const capped = Math.min(achievement, records[22][0]);
+  const capped = Math.min(achievement, ratingRecords[22][0]);
   let offset = 0;
-  for (let index = records.length - 1; index >= 0; index -= 1) {
-    if (records[index][0] <= capped) {
-      offset = records[index][1];
+  for (let index = ratingRecords.length - 1; index >= 0; index -= 1) {
+    if (ratingRecords[index][0] <= capped) {
+      offset = ratingRecords[index][1];
       break;
     }
   }
   return Math.floor((level * capped * offset) / 100_000_000);
 }
 
-function ratingGrowth(playerRating: number): number {
-  if (playerRating <= 200) return 50;
-  if (playerRating <= 250) return 40;
-  if (playerRating <= 300) return 30;
-  return 20;
+/**
+ * 推分表下界 = 该池里「最弱的一条有分成绩」，也就是新成绩要挤掉的那一条。
+ * 0 分与定数缺失的条目不参与取值 —— 它们不构成需要超越的门槛。
+ */
+function poolBase(items: Maimai2RatingItem[]): number {
+  const positives = items.filter((item) => item.scored && item.rating > 0).map((item) => item.rating);
+  return positives.length > 0 ? Math.min(...positives) : 0;
 }
 
-function targetDs(rating: number, maximum: number, rank: number): Record<number, number> {
-  const result: Record<number, number> = {};
-  for (let difficulty = 10; difficulty <= 150; difficulty += 1) {
-    const computed = calcRate(difficulty, rank);
-    if (computed > rating && computed <= maximum) result[difficulty] = computed;
+/**
+ * 生成一张推分表：rows[rankIndex][难度] = 该难度在该等级下的单曲分。
+ * 只保留「高于下界」的组合（无上界）；行标取 SSS+ 列难度集合的 20/40/60/80/100 百分位。
+ */
+function buildTable(items: Maimai2RatingItem[]): { base: number; headers: number[]; rows: Array<Record<number, number>> } {
+  const base = poolBase(items);
+  const rows = RANKS.map((rank) => {
+    const cells: Record<number, number> = {};
+    for (let difficulty = 10; difficulty <= 150; difficulty += 1) {
+      const value = calcRate(difficulty, rank);
+      if (value > base) {
+        cells[difficulty] = value;
+      }
+    }
+    return cells;
+  });
+
+  const ratingBases = Object.keys(rows[4]).map(Number).sort((left, right) => left - right);
+  const headers = [0, 0, 0, 0, 0];
+  if (ratingBases.length > 0) {
+    const preliminary = [0.2, 0.4, 0.6, 0.8, 1].map((percentile) =>
+      ratingBases[Math.ceil(percentile * ratingBases.length) - 1],
+    );
+    let insertion = 4;
+    let last = 0;
+    for (let index = 4; index >= 0; index -= 1) {
+      if ((preliminary[index] ?? 0) !== last) {
+        headers[insertion] = preliminary[index] ?? 0;
+        last = preliminary[index] ?? 0;
+        insertion -= 1;
+      }
+    }
   }
-  return result;
-}
 
-async function loadRating(aimeId: string, type: 'rating' | 'new_rating'): Promise<Maimai2RatingItem[]> {
-  const response = await api.get(`api/game/maimai2/${type}`, { aimeId });
-  const compact = String(response?.data ?? '');
-  if (!compact) return [];
-  return Promise.all(
-    compact.split(',').map(async (record: string) => {
-      const values = record.split(':').map(Number);
-      const music = await dbGetByKey<Maimai2Music>('maimai2Music', values[0]);
-      const detail = music?.details[values[1]];
-      return {
-        musicId: values[0],
-        level: values[1],
-        romVersion: values[2],
-        score: values[3],
-        artistName: music?.artistName ?? 'Unknown Artist',
-        ratingBase: detail?.levelDecimal ?? 0,
-        rating: 0,
-        musicName: music?.name ?? `MusicID: ${values[0]}`,
-        music,
-      };
-    }),
-  );
+  return { base, headers, rows };
 }
 
 function difficulty(level: number): { className: string; label: string } | null {
@@ -99,6 +119,7 @@ function RatingRecord({ item, index, onOpen }: {
   index: number;
   onOpen: (music: Maimai2Music | null) => void;
 }) {
+  const { t } = useTranslation();
   const meta = difficulty(item.level);
   return (
     <div className="col-12 col-md-6 col-xxl-4">
@@ -117,11 +138,13 @@ function RatingRecord({ item, index, onOpen }: {
               <div className="text-truncate small rating-score">
                 {meta && (
                   <span className={`${meta.className} badge rounded-pill`}>
-                    {meta.label} {formatNumber(item.ratingBase / 10, 1, 1)}
+                    {meta.label} {item.scored ? formatNumber(item.ratingBase / 10, 1, 1) : '?'}
                   </span>
                 )}
                 <b>➛</b>
-                {item.rating}
+                {item.scored
+                  ? item.rating
+                  : <span className="text-warning" title={t('Maimai2.RatingPage.Unscored')}>—</span>}
               </div>
             </div>
           ) : (
@@ -133,12 +156,44 @@ function RatingRecord({ item, index, onOpen }: {
   );
 }
 
+async function loadPools(aimeId: string): Promise<Maimai2RatingPool> {
+  const response = await lcdx.get('lcdx/rating', { aimeId });
+  if (response?.status?.code !== StatusCode.OK || !response.data) {
+    throw new Error(String(response?.status?.message ?? 'lcdx/rating failed'));
+  }
+  return response.data as Maimai2RatingPool;
+}
+
+/** 用本地目录补歌名与曲目对象（卡片与详情抽屉要用）；分池与分数一律用后端结果。 */
+async function toItems(entries: Maimai2RatingEntry[]): Promise<Maimai2RatingItem[]> {
+  return Promise.all(
+    entries.map(async (entry) => {
+      const music = await dbGetByKey<Maimai2Music>('maimai2Music', entry.musicId);
+      return {
+        musicId: entry.musicId,
+        level: entry.level,
+        romVersion: entry.romVersion,
+        score: entry.achievement,
+        artistName: music?.artistName ?? 'Unknown Artist',
+        ratingBase: entry.scoreRate,
+        rating: entry.singleRate,
+        comboStatus: entry.comboStatus,
+        scored: entry.scored,
+        musicName: music?.name ?? `MusicID: ${entry.musicId}`,
+        music,
+      };
+    }),
+  );
+}
+
 /** Equivalent to the legacy maimai2 best-50 rating component. */
 export function Maimai2RatingPage() {
   const { t } = useTranslation();
   const catalogStates = useStore(preloadStates);
   const [best35, setBest35] = useState<Maimai2RatingItem[]>([]);
   const [best15, setBest15] = useState<Maimai2RatingItem[]>([]);
+  const [gameMusicRating, setGameMusicRating] = useState(0);
+  const [pool, setPool] = useState<PoolKey>('b35');
   const [detailMusic, setDetailMusic] = useState<Maimai2Music | null>(null);
   const catalogReady = catalogStates.maimai2Music === 'OK';
 
@@ -149,15 +204,16 @@ export function Maimai2RatingPage() {
       try {
         await loadUser();
         const aimeId = String(getCurrentUser()?.defaultCard?.extId ?? '');
-        const [oldSongs, newSongs] = await Promise.all([
-          loadRating(aimeId, 'rating'),
-          loadRating(aimeId, 'new_rating'),
-        ]);
-        oldSongs.forEach((item) => { item.rating = calcRate(item.ratingBase, item.score); });
-        newSongs.forEach((item) => { item.rating = calcRate(item.ratingBase, item.score); });
+        // 分池与单曲分（含 AP 加成）都在后端算；这里只补歌名与曲目对象。
+        const pools = await loadPools(aimeId);
+        const [oldItems, newItems] = await Promise.all([toItems(pools.b35), toItems(pools.b15)]);
         if (!active) return;
-        setBest35(oldSongs);
-        setBest15(newSongs);
+        setBest35(oldItems);
+        setBest15(newItems);
+        setGameMusicRating(pools.gameMusicRating);
+        if (oldItems.length === 0 && newItems.length === 0) {
+          notice(t('Maimai2.RatingPage.Empty'));
+        }
       } catch (error) {
         if (active) notice(t('Common.OperationFailed'));
       }
@@ -165,39 +221,19 @@ export function Maimai2RatingPage() {
     return () => { active = false; };
   }, [catalogReady]);
 
-  const b35rating = best35.reduce((sum, item) => sum + item.rating, 0);
-  const b15rating = best15.reduce((sum, item) => sum + item.rating, 0);
-  const playerRating = b35rating + b15rating;
+  const computedB35 = best35.reduce((sum, item) => sum + item.rating, 0);
+  const computedB15 = best15.reduce((sum, item) => sum + item.rating, 0);
+  const unscored = [...best35, ...best15].filter((item) => !item.scored).length;
+  // 游戏自己算的总分与本地复算之差 = 谱面定数缺失吃掉的分数。
+  const unscoredGap = Math.max(0, gameMusicRating - (computedB35 + computedB15));
 
-  const recommendation = useMemo(() => {
-    if (best35.length === 0) {
-      return { headers: [0, 0, 0, 0, 0], rows: [{}, {}, {}, {}, {}] as Array<Record<number, number>> };
-    }
-    let highest = 0;
-    for (const item of best35) {
-      if (item.rating > highest) highest = item.rating;
-    }
-    const maximum = highest + ratingGrowth(highest);
-    const rows = [980000, 990000, 995000, 1000000, 1005000].map((rank) => targetDs(highest, maximum, rank));
-    const ratingBases = Object.keys(rows[4]).map(Number).sort((left, right) => left - right);
-    const preliminary = [0.2, 0.4, 0.6, 0.8, 1].map((percentile) =>
-      ratingBases[Math.ceil(percentile * ratingBases.length) - 1],
-    );
-    const headers = [0, 0, 0, 0, 0];
-    let insertion = 4;
-    let last = 0;
-    for (let index = 4; index >= 0; index -= 1) {
-      if (preliminary[index] !== last) {
-        headers[insertion] = preliminary[index] ?? 0;
-        last = preliminary[index] ?? 0;
-        insertion -= 1;
-      }
-    }
-    return { headers, rows };
-  }, [best35]);
+  const table = useMemo(
+    () => buildTable(pool === 'b35' ? best35 : best15),
+    [pool, best35, best15],
+  );
 
   const recommendationValue = (ratingBase: number, rank: number) =>
-    recommendation.rows[rank]?.[ratingBase] === undefined ? ' ' : String(recommendation.rows[rank][ratingBase]);
+    table.rows[rank]?.[ratingBase] === undefined ? ' ' : String(table.rows[rank][ratingBase]);
 
   return (
     <div className="maimai2-rating-page">
@@ -207,22 +243,43 @@ export function Maimai2RatingPage() {
         <div className="row justify-content-between p-3 align-items-center" style={{ fontSize: '1.25rem' }}>
           <span className="col-auto">Rating:</span>
           <span className="col-auto">
-            <span className="player-rating" style={{ fontSize: '0.75rem' }}>{b35rating}+{b15rating}=</span>
-            {playerRating}
+            <span className="player-rating" style={{ fontSize: '0.75rem' }}>{computedB35}+{computedB15}=</span>
+            {gameMusicRating}
           </span>
         </div>
+        {unscored > 0 && (
+          <div className="px-3 pb-2 small text-warning">
+            {t('Maimai2.RatingPage.UnscoredNotice', { count: unscored, gap: unscoredGap })}
+          </div>
+        )}
       </div>
 
       <div className="card mt-3 mb-3">
         <div className="card-body">
-          <span className="card-title" style={{ fontSize: '1.25rem' }}>{t('Maimai2.RatingPage.ElevateRecommend')}</span>
+          <div className="d-flex flex-wrap align-items-center gap-2">
+            <span className="card-title" style={{ fontSize: '1.25rem' }}>
+              {t(pool === 'b35' ? 'Maimai2.RatingPage.ElevateRecommendB35' : 'Maimai2.RatingPage.ElevateRecommendB15')}
+            </span>
+            <div className="btn-group btn-group-sm ms-auto" role="group" aria-label={t('Maimai2.RatingPage.ElevateRecommend')}>
+              {(['b35', 'b15'] as const).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  className={`btn ${pool === key ? 'btn-secondary' : 'btn-outline-secondary'}`}
+                  onClick={() => setPool(key)}
+                >
+                  {t(key === 'b35' ? 'Maimai2.RatingPage.B35' : 'Maimai2.RatingPage.B15').trim()}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="table-container d-block d-md-none">
             <table className="table table-striped" style={{ textAlign: 'center' }}>
               <thead>
                 <tr>
                   <th />
-                  {recommendation.headers.map((header, index) => (
+                  {table.headers.map((header, index) => (
                     <th style={{ fontWeight: 'bold' }} key={index}>{header !== 0 ? header / 10 : ' '}</th>
                   ))}
                 </tr>
@@ -231,7 +288,7 @@ export function Maimai2RatingPage() {
                 {rankIcons.map((icon, rowIndex) => (
                   <tr key={icon}>
                     <td><img className="rank-icon" src={`${maiAssetsHost}assets/mai2/common/music_icon_${icon}.webp`} alt="" /></td>
-                    {recommendation.headers.map((header, index) => (
+                    {table.headers.map((header, index) => (
                       <td key={index}>{recommendationValue(header, rowIndex)}</td>
                     ))}
                   </tr>
@@ -251,7 +308,7 @@ export function Maimai2RatingPage() {
                 </tr>
               </thead>
               <tbody>
-                {recommendation.headers.map((header, rowIndex) => (
+                {table.headers.map((header, rowIndex) => (
                   <tr key={rowIndex}>
                     <td style={{ fontWeight: 'bold' }}>{header !== 0 ? header / 10 : ' '}</td>
                     {rankIcons.map((_, rankIndex) => <td key={rankIndex}>{recommendationValue(header, rankIndex)}</td>)}
@@ -265,7 +322,7 @@ export function Maimai2RatingPage() {
 
       <div className="mb-3 d-flex align-items-center mt-3">
         <h2 className="mb-0">{t('Maimai2.RatingPage.B35')}</h2>
-        <span className="badge bg-secondary text-bg-secondary rounded-pill ms-2">{b35rating}</span>
+        <span className="badge bg-secondary text-bg-secondary rounded-pill ms-2">{computedB35}</span>
       </div>
       <div className="row mb-4 g-2">
         {best35.map((item, index) => (
@@ -275,7 +332,7 @@ export function Maimai2RatingPage() {
 
       <div className="mb-3 d-flex align-items-center mt-3">
         <h2 className="mb-0">{t('Maimai2.RatingPage.B15')}</h2>
-        <span className="badge bg-info text-bg-info rounded-pill ms-2">{b15rating}</span>
+        <span className="badge bg-info text-bg-info rounded-pill ms-2">{computedB15}</span>
       </div>
       <div className="row mb-4 g-2">
         {best15.map((item, index) => (

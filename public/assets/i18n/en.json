@@ -978,6 +978,10 @@
       "B15": "BEST15  ",
       "B35": "BEST35 ",
       "ElevateRecommend": "Elevate Recommend",
+      "ElevateRecommendB15": "BEST15 Elevate Recommend",
+      "ElevateRecommendB35": "BEST35 Elevate Recommend",
+      "Unscored": "Chart data missing - cannot be scored",
+      "UnscoredNotice": "{{count}} record(s) have no chart data and are not scored; about {{gap}} points below the in-game total",
       "Empty": "Warning: rating is empty!",
       "Title": "Best 50 Rating"
     },
