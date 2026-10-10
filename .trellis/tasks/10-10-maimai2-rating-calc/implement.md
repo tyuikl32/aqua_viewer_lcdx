@@ -136,3 +136,41 @@ recipe. Commits: `LCDXNetApi` `0bc7e96` (fixes) on top of `bcd0ac8`.
 | catalog cache | second call 2.0 s vs 3.8 s first call (catalog cached; the rest is the ~1 MB export) |
 | page `/mai2/rating` in a browser | header `11046+3224=14604` + the unscored warning; BEST35 table rows 13.7 / 14.0 / 14.4 / 14.7 / 15.0; toggle → BEST15 rows 8.9 / 10.4 / 12.0 / 13.5 / 15.0; 50 cards, 3 unscored markers; **no console errors, no failed requests** |
 | screenshots | `.artifacts/rating-b35.png`, `.artifacts/rating-b15.png` (gitignored) |
+
+## Production smoke test (2026-10-10, backend deployed / frontend not yet)
+
+The backend (`0bc7e96`) was deployed to `https://lcdxnet.am-allnet.com` while the frontend was still
+the previous build. Two passes, both green.
+
+**Pass 1 — the deployed endpoint directly** (21/21 assertions):
+
+| area | result |
+| --- | --- |
+| endpoint present | `GET /lcdx/rating` → 200 with `94001 Authorization is required` (not 404) |
+| auth | no header → `94001`; foreign `aimeId` → `95001 ... (HTTP 404)`; the account's token → `92001` |
+| values | `Σ b35 = 11046` == the game's `playerOldRating`; `Σ b15 = 3224` (residual 334); `gameMusicRating = 14604`; `poolThreshold = 26500` from `lastRomVersion 1.70.00`; 3 unscored records including `12024`; 16 AP-flagged records inside B35; no record crosses the pool boundary |
+| shape | `b35`/`b15` = 35/15 entries with all 8 fields the page reads |
+| stability | three identical responses (2.7 s / 2.1 s / 2.1 s) |
+| no regression | `/api/user/me`, `/lcdx/kop/rank`, `/api/game/maimai2/profile` (still `musicRating = 14604`) all fine |
+
+**Pass 2 — the new frontend against the deployed backend** (the post-deploy pairing): the local `dist/`
+served with `/api/*` → the real main site and `/lcdx/*` → `https://lcdxnet.am-allnet.com`. Login →
+`/mai2/rating` shows the same numbers as the local run, BEST35 table 13.7 → 15.0, toggle → BEST15
+8.9 → 15.0, 50 cards, 3 unscored, **no console errors and no failed requests**.
+
+Deployment notes confirmed by the smoke:
+
+- the edge already routes `/lcdx/*` to `LCDXNetApi` (the new endpoint answers on the production
+  domain), so shipping the frontend needs no proxy change — it is an artifact swap;
+- the endpoint adds no EF entity and touches no table, so it needs no `CLL.Net` migration;
+- the frontend bundles everything it needs (the prod `.env` keeps `LCDX_API_SERVER = '/'`), so no new
+  runtime configuration is required;
+- the PWA updates through `sw.js` (`registerType: 'autoUpdate'`), so returning users pick the new
+  bundle up on their next load.
+
+**One diagnostics defect found in the deployed build (not fixed here):** with an invalid token the
+catalog fetch (which runs before the account check) fails first, so the caller sees
+`95001 Failed to load the game catalog` instead of an authentication error. It is rejected correctly
+either way, and the page only surfaces a generic message, but the wording misleads during debugging.
+A one-line change (include the upstream HTTP status in that message, or map a 401 to `94001`) would
+fix it — it needs a redeploy, so it was left for the user to schedule.
