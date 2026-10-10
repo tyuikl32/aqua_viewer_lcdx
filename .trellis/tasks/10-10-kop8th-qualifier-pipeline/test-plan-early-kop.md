@@ -104,3 +104,96 @@
 1. **#1 我直接改？** 建议窗口 `OpenTime = 2026-10-01 00:00:00Z`（今天是 10-10，肯定覆盖），`CloseTime` 不动。
    ⚠️ 副作用：**从现在起打的成绩就会进正式榜** —— 开赛前记得用 §五 的清库语句清掉。
 2. **#3 event 要不要一起做？**（做的话我加一个今天的调试 event；不做也不影响榜页/计分/解锁）
+
+---
+
+## 七、补充（2026-10-10 晚）：#2 详解 / #3 配方 / 启动清单
+
+### 7.1 #2 到底在讲什么
+
+**为什么"下发还不够"，还要一个开关？**
+
+```
+游戏 → 问 LCTitleServer：GetGameTournamentInfoApi「有哪些 KOP 赛事？」
+     → LCTitleServer（我们加的 TEMP-KOP 模块）合成一条 KOP8th 记录，
+        里面**带着日期**（startDate / endDate）
+     → 游戏客户端拿这个日期跟"现在"比：**不在窗口内 → 整条丢掉**
+     → 结果：游戏内**看不到** The 8th 榜页
+```
+
+**过滤发生在游戏客户端**（`ScoreRankingManager` 消费的是这份响应），
+所以 LCTitleServer 唯一能做的就是把**日期放宽** —— 这就是那个开关存在的理由。
+
+| `IgnoreSchedule` | 实际下发的 `startDate` ~ `endDate` | 现在（10-10）会怎样 |
+|---|---|---|
+| **`false`**（默认，官方窗口） | `2026-10-29 07:00:00` ~ `2026-11-23 23:59:59` | **不在窗口 → 榜页不出现** ✗ |
+| **`true`**（提前联调） | `2019-01-01 00:00:00` ~ `2029-01-01 00:00:00` | **在窗口 → 榜页出现** ✅ |
+
+**改哪里**：**机台上部署的** LCTitleServer 的 `appsettings.json`
+
+```json
+"KopTournamentInfo": {
+  "Enabled": true,          // 模块总开关（默认 true，别关）
+  "IgnoreSchedule": true    // ← 只改这一行
+}
+```
+
+然后**重启 LCTitleServer**。**不用重新编译** —— 两套日期都是模块里的常量
+（`OfficialStartDate/EndDate` 与 `OverrideStartDate/EndDate`，见
+`Raw/Processors/KopTournamentInfoInjector.cs:40-44`），开关只决定用哪一套。
+
+- **只影响 KOP8th 这一条**：上游返回的其它条目原样透传，不受影响。
+- **回滚**：改回 `false` + 重启。
+
+> 顺带说明为什么不用改 N021 来达到同样目的：榜页的**可见性**由这份响应决定，
+> 而包里的 `ScoreRanking020006` 只管"页签叫什么、挂哪三首曲" ✓
+
+### 7.2 #3 的精确配方（你说你来，这里给最短路径）
+
+⚠️ **`Event.xml` 里没有日期字段** —— 日期**写在 event ID 的前 6 位**（YYMMDD）。
+所以"提前解禁"**只能改 ID**，改不了别的。
+
+```
+1) 复制目录：event/event261029011/  →  event/event261010011/
+2) 改 Event.xml 里的**两处**：
+     <dataName>261010011</dataName>
+     <name><id>261010011</id><str>…（文字随意）</str></name>
+   （261010 = 2026-10-10 = 今天 → 立即解禁；end 固定 2029-01-01）
+3) 同样处理 event261029051 → event261010051（ScoreRanking 那条告知）
+```
+
+**然后还要让游戏"看得见"这些 event** —— 现网实测走的是**分支③（依赖主站）**
+（`H:\Package\mai2.ini` 没有 `[lcdx]` 段），二选一：
+
+- **路线②（自主可控，推荐）**：在机台 `mai2.ini`（或 `D:/mai2.ini`）写
+  ```ini
+  [lcdx]
+  MininumOpenEvent = 26010100
+  ```
+  → id ≥ 该值的事件**不看主站**，直接按 ID 日期解禁 ✅
+  （若 `CabinetSettings` 下发不生效，就直接写这个 ini 文件）
+- **路线③**：往主站 `maimai2_game_event` 插这两条
+
+⚠️ **注意**：**即使开了路线②，原来的 `261029011` 也仍然要等到 10-29**
+（`now < 其 ID 日期` 会被 skip）→ **必须换新 ID** 才有效。
+
+### 7.3 除了上面这些，还要什么（启动清单）
+
+| # | 项 | 状态 |
+|---|---|---|
+| 1 | **CLL.Net 计分窗口**（生产库 `KopTournaments(20006).OpenTime`） | ⏳ **等你说"改"** |
+| 2 | **LCTitleServer build + 分发到机台** + `IgnoreSchedule=true` | ⏳ 你做（模块目前只在本地仓库：`LCTitleServer@b79da6b`，**未推**） |
+| 3 | **N021 用 SGImgTool 打包 + 装机** | ⏳ 你做 |
+| 4 | **event 提前解禁**（§7.2） | ⏳ 你做 |
+| 5 | ⚠️ **playlog 上报前置**：`Setting.EnableNetworkBackup` 必须 true **且** `JbManager.Is2078Modo` 为真 | ⏳ **必查**，否则 credit 不上报 → KOP 永远无成绩（G17） |
+| 6 | 主站 / 机台时间 | ✅ **不需要**（只有走 event 路线③时主站才相关；机台时间不用改） |
+| 7 | LCDXNetApi / 前端 / CLL.Net | ✅ 已部署，冒烟已过 |
+
+### 7.4 已核实的两个"以为要、其实不用"
+
+| 疑点 | 结论 |
+|---|---|
+| 第三曲 12025 只放了 `012025_03.ma2`（MASTER），缺 `_00/_01/_02`，会不会报错？ | **不会**。`Music.xml` 里 6 个难度槽**只有 `_03` 是 `<isEnable>true</isEnable>`**，其余指向占位 `000000_xx.ma2` 且 `isEnable=false` → 游戏不会去加载它们 ✅ 而且 KOP 本来就只算 MASTER（G14） |
+| 第三曲会不会被 `netOpenName` / `eventName` 挡住？ | **不会**。12025 的 `netOpenName = Net230324`（2023 年的旧值，早于现在）、`eventName = 無期限常時解放` → **无门控、常时解放** ✅ |
+
+**结论**：除了 §7.3 那 5 项，**没有别的隐藏依赖**。
