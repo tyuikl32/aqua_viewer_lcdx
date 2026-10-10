@@ -442,3 +442,60 @@ foreach (var info in list) {
 - 时间窗：客户端本就按 `startDate..endDate` 丢弃窗口外的条目 → **无需额外日期逻辑**，10-29 自动出现。
   提前联调可用 `KopTournamentInfo:IgnoreSchedule=true`（用 2019~2029 覆盖窗口）。
 - **B**（仅网页榜）已不再需要作为唯一出路，但若模块被移除则回到 B 的状态。
+
+---
+
+## 12. LCTitleServer 落地后，还要不要动 BmDaemon 的 tournament？（2026-10-10 复核）
+
+**结论：不要。** `bmdaemon.tournament` 这个待办可以正式关闭。
+
+| 依据 | 内容 |
+|---|---|
+| **D1** | 赛事定义来源 = **录入**，**不做 BmDaemon 上报** |
+| **D6** | **BmDaemon 不改代码**（`kop6th/get` 路由与 contact type 11 保持原样） |
+| **G9** | 游戏**主动请求** → BmDaemon 被动响应 → **无需改** |
+
+### 代码层实证
+
+BmDaemon 的**活跃路径本来就届次无关**（`BmDaemonCore/Runtime/Services/Contact/ContactCommandService.cs`）：
+
+```csharp
+var response = await _host.RemoteApiClient.CleanGetAsync<TournamentRanking>("kop6th/get/" + userId);
+if (response == null) return;                       // 查不到就不发
+var message = new BufferedContactMessage().Add(11, new Dictionary<string, string> {
+    ["userId"] = userId,
+    ["torId"]  = response.TournamentId.ToString(),  // ← 届次由 CLL.Net 决定，原样透传
+    ["rank"]   = response.Rank.ToString(),
+    ["score"]  = response.Score.ToString()
+});
+```
+
+**没有任何硬编码届次** → 8th 期间 CLL.Net 返回 `TournamentId=20006`，BmDaemon 就回传 `torId=20006` ✅
+
+### 历史
+
+- `BmDaemonApi/UserTournamentSaver.cs` 是**遗留死代码**：`CallSaveData` / `GetData` / `RequestData`
+  三个方法**都以 `return;` 开头短路** —— 早期"机台本地缓存"方案，已被"远程代理 CLL.Net"取代。
+  git 上仅 `55e0998 Move` 搬过位置，之后无功能变更。
+- 真正引入 KOP 的是 **`28e7084 KOP Ranking`**（旧目录结构时代：`Contacter/Contacter.cs`、
+  `Net/Api.cs`、`Net/HttpApiClient.cs`）。
+
+### 与 LCTitleServer 的分工（不重叠）
+
+| 组件 | 回答的问题 | 载体 |
+|---|---|---|
+| **LCTitleServer** | 「**有哪些 KOP 赛事**、窗口、三首曲、首局锁定」→ 游戏内出现 The 8th 榜页 + 解锁第三曲 | `GetGameTournamentInfoApi` |
+| **BmDaemon（contact 11）** | 「**这个玩家排第几**」 | `kop6th/get/{userId}` → 回 `(torId, rank, score)` |
+
+→ 所以 §11 的选择（LCTitleServer 自己发）**不改变** BmDaemon 的结论。
+
+### 实测印证（2026-10-10）
+
+线上 `GET /kop6th/get/{6th 用户}` 返回 **200 + 空体** → BmDaemon 得到 `null` → `return`（不发消息）→
+正是预期（8th 尚无成绩）。等有 8th 成绩后它会**自动**带 `torId=20006` 转发。
+
+### 唯一保留项
+
+contact 11 回传的 `torId=20006` **游戏端能否正确消费**，在 1.70 dump 里找不到
+`RequestUserTournament` 符号（消费方应在 native / `AMDaemon.NET` 层）→ **只能真机验证**，
+与 S5「打 3 曲后看游戏内是否显示名次」是同一件事，**不构成 BmDaemon 的代码改动**。
