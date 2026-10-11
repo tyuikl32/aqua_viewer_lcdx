@@ -21,6 +21,6 @@
   "children": [],
   "parent": null,
   "relatedFiles": [],
-  "notes": "",
+  "notes": "最终定性：① 本仓为有意定制 —— 登录/注册成功后走 navigate('/dashboard')（上游为 window.location.reload()），系 cbe5c7f 为满足 LCDX 特有的无卡用户 /netcode-bind 引导而改（reload() 与 React Router 异步导航存在竞态会弹回登录页），方向正确、不回退；② 上游无问题 —— RinNET 上游因登录后整页重载不触发该路径，不受此故障影响，无需上游侧改动；③ 本仓缺口 —— 该定制使模块级单例失去 reload 兜底，initializeApp 的单例在未登录路径下被永久消费，已由 L0 修复（dc21368 / c62726b / b0e74c7）。L1~L4 未开工，设计已就绪。",
   "meta": {}
 }

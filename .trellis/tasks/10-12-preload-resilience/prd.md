@@ -2,9 +2,17 @@
 
 ## Goal
 
-消除 dashboard「游戏数据」卡片**永久卡在「检查更新 Loading…」且无失败出口**的可复现故障（Edge 高频、Chrome 未复现），并把整条初始化/预载链从「无限等待」改造为「有界、可重试、必进终态、可增量续传」。
+消除 dashboard「游戏数据」卡片**永久卡在「检查更新 Loading…」且无失败出口**的可复现故障，并把整条初始化/预载链从「无限等待」改造为「有界、可重试、必进终态、可增量续传」。
 
-本轮交付**设计方案**（`design.md` + `research/root-cause-forensics.md`），**不实施代码改动**。
+本轮交付：**L0 修复已实施并提交**（`dc21368` / `c62726b` / `b0e74c7`，未 push）；L1~L4 设计方案已就绪，**未开工**。
+
+## 最终定性（2026-10-12，用户确认）
+
+> **有意定制；上游无问题。**
+
+1. **本仓为有意定制，非缺陷移植。** 登录/注册成功后走 `navigate('/dashboard')`（上游为 `window.location.reload()`），由 `cbe5c7f`（2026-09-25）引入，目的是满足 LCDX 特有的**无卡用户 `/netcode-bind` 引导**——`reload()` 重载当前 URL，与 React Router 的异步导航存在竞态，会把用户弹回登录页。**该定制方向正确，不回退为 `reload`。** 对齐对象是 LCDX 自家 Angular 旧版（注释「等价旧版 `router.url.startsWith('/sign-in')`」），符合本项目「业务语义以自家旧版为权威、RinNET 上游仅是代码基线」的移植原则。
+2. **上游无问题。** RinNET 上游因登录后整页重载，该路径不被触发，**不受此故障影响，无需上游侧改动**。
+3. **本仓的缺口**：该定制使全站模块级单例失去 reload 兜底，而 `initializeApp` 的单例在「未登录进入 → SPA 内登录」路径下会被永久消费 ⇒ 即本次故障。已由 **L0** 修复；同类单例审计结论：仅 `initializationPromise`（已修）与 `lib/db/db.ts` 的 `dbPromise`（属 L2）需处理，其余均有 `.finally` 重置或由 effect 管理。
 
 ## Background
 
