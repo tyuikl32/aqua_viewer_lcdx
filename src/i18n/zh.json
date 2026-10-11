@@ -533,6 +533,7 @@
     "NoCardMessage": "你尚未绑定游戏账户。",
     "NoKeychipMessage": "没有任何可用机台，你的账号无法在非白名单机台登录。",
     "NoProfileMessage": "你还没有 maimai DX 档案",
+    "NotStarted": "暂未开始",
     "OperationFailed": "操作失败",
     "OverPower": "完成度",
     "Photos": "相册",

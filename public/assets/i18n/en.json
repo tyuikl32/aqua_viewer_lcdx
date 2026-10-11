@@ -533,6 +533,7 @@
     "NoCardMessage": "You have not bound a game account yet.",
     "NoKeychipMessage": "No available keychips. Your account cannot login on non-whitelisted keychips. ",
     "NoProfileMessage": "You have no maimai DX profile",
+    "NotStarted": "Not started",
     "OperationFailed": "Operation failed",
     "OverPower": "OverPower",
     "Photos": "Photos",

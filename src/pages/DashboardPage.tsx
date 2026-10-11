@@ -17,7 +17,8 @@ import { getCurrentLang, langStore, translate } from '@/lib/i18n';
 import { useStore } from '@/lib/store';
 import { enableImages, maiAssetsHost } from '@/lib/utils';
 import { fullWidth, padDigits } from '@/lib/format';
-import { preloadStates, checkingUpdate, dbVersionStore, reload } from '@/lib/db/preload';
+import { preloadStates, checkingUpdate, dbVersionStore, reload, checkDbUpdate } from '@/lib/db/preload';
+import { getAccount } from '@/lib/auth/account';
 import { loadUser } from '@/lib/user';
 import { Announcement } from '@/features/announcements/announcement';
 import { AnnouncementContent } from '@/features/announcements/AnnouncementContent';
@@ -112,6 +113,15 @@ export function DashboardPage() {
       active = false;
     };
   }, [lang]);
+
+  // 兜底：登录成功走的是 SPA 内导航（navigate('/dashboard')），App 级 initializeApp 不会重跑。
+  // 若「游戏数据检查」至今一次都没发起过（checkingUpdate 仍为 null），进入本页即补触发一次，
+  // 避免卡片永久停在「检查更新」且无法自愈。checkDbUpdate 自带 in-flight 守卫，重复调用安全。
+  // 见 .trellis/tasks/10-12-preload-resilience。
+  useEffect(() => {
+    if (!getAccount()) return;
+    if (checkingUpdate.get() === null) void checkDbUpdate();
+  }, []);
 
   const loadProfiles = useCallback(async () => {
     setLoadingProfiles(true);
@@ -420,7 +430,10 @@ export function DashboardPage() {
           <h3 className="mb-3">{t('DashboardPage.GameData')}</h3>
           <div className="card mb-3">
             <div className="card-body">
-              {(checking === 'checking' || (preloadStats.loadingDatabase && preloadStats.downloading === 0)) && (
+              {checking === null && (
+                <div className="mb-2 text-body-secondary">{t('DashboardPage.NotStarted')}</div>
+              )}
+              {checking === 'checking' && (
                 <div className="mb-2">
                   <span className="pe-2">{t('DashboardPage.CheckingUpdate')}</span>
                   <span className="spinner-border spinner-border-sm" role="status">
@@ -428,7 +441,7 @@ export function DashboardPage() {
                   </span>
                 </div>
               )}
-              {checking !== 'checking' && preloadStats.loadingDatabase && preloadStats.downloading > 0 && (
+              {checking !== null && checking !== 'checking' && preloadStats.loadingDatabase && preloadStats.downloading > 0 && (
                 <div className="d-flex align-items-center mb-2">
                   <span className="pe-2">
                     {t('DashboardPage.Downloading')}
@@ -460,7 +473,7 @@ export function DashboardPage() {
                   </span>
                 </div>
               )}
-              {checking !== 'checking' && !preloadStats.loadingDatabase && preloadStats.error > 0 && (
+              {checking !== null && checking !== 'checking' && !preloadStats.loadingDatabase && preloadStats.error > 0 && (
                 <div className="d-flex align-items-center mb-2">
                   <XLg className="d-flex align-items-center me-2 text-danger" />
                   <span>
