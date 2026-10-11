@@ -318,3 +318,46 @@ DevTools 的 Disable cache 通常**伴随一次刷新**使用。而本故障的�
 1. **本仓**：保留 `navigate('/dashboard')` + L0 的幂等修复。这比上游的整页重载更快，且已消除缺陷；**不要**退回 `reload`。
 2. **上游**：该缺陷是潜伏的，建议向上游提 issue/PR，至少把 `initializeApp` 幂等化（未登录不缓存单例）。这不是「本仓特有问题」，而是**上游也存在的定时炸弹**。
 3. **移植约定（建议写入 spec）**：从上游移植时，凡上游依赖「整页 reload 重置」的模块级单例，若改为 SPA 导航，必须逐个重新审计是否需要显式重置。本次即为此类移植差异的直接后果。
+
+### 10.6 这次差异的性质：对齐 LCDX 自家旧版，不是偏离上游
+
+**来历（`git blame`）**：`SignInPage.tsx` 的登录跳转行由 `cbe5c7f`（Xavior, 2026-09-25）引入，其上一版来自 `b8505d3`（HoshimiRIN, 2026-09-02，即 fork 时的上游基线）。该提交的主题是：
+
+> `feat(sign-in): replay LCDX QQ login (POST lcdx/login) + TOTP, drop email/passkey/OAuth entry points`
+
+**两侧整页重载调用点的完整对比**：
+
+| 场景 | 上游 | 本仓 | 是否一致 |
+| --- | --- | --- | --- |
+| 登出（`AppShell` / `BannedPage`） | `location.assign('')` | `location.assign('')` | ✅ 一致 |
+| 401 强制重载（`client.ts`） | `location.reload()` | `location.reload()` | ✅ 一致 |
+| OAuth 外跳（`oauth.ts`） | `window.location.href = …` | 同 | ✅ 一致 |
+| `dbVersion` 变更 / 手动重载（`preload.ts`） | `window.location.reload()` ×2 | ×2 | ✅ 一致 |
+| 封禁跳转（`router.tsx`） | `location.assign('/banned')` | 同 | ✅ 一致 |
+| **登录成功（`SignInPage` ×3）** | **`window.location.reload()`** | **`navigate('/dashboard')`** | ❌ **本仓唯一改动** |
+| **注册成功（`SignUpPage`）** | **`window.location.reload()`** | **`navigate('/dashboard')`** | ❌ **本仓唯一改动** |
+| EULA 相关（`AdminPage` / `EulaPage`） | 有 | 无 | LCDX 已删除 EULA |
+| 机台设置（`Maimai2SettingPage`） | 无 | `window.location.reload()` ×2 | LCDX 特有 |
+
+⇒ **本仓精准地只改了「登录/注册成功」这 4 处**，其余全部保留。这不是粗心，是一次**范围明确的有意定制**。
+
+**定制的正当理由**（代码内注释已写明）：
+
+```ts
+// 等价旧版 `if (router.url.startsWith('/sign-in'))`：无卡用户已被 procLoginResp
+// 送去 /netcode-bind，此处不得覆盖
+if (window.location.pathname.startsWith('/sign-in')) {
+  await navigate('/dashboard');
+}
+```
+
+LCDX 有一条上游没有的业务分支：`procLoginResp` 会把**无卡用户**导航到 `/netcode-bind`。而 `window.location.reload()` 重载的是**当前 URL**，它与 React Router 的异步导航存在竞态——若导航尚未提交到 history 就 reload，用户会被弹回登录页。因此这里**必须**用 SPA 导航并显式判断当前路径。**退回 `reload` 会破坏 LCDX 的无卡引导流程。**
+
+**注意注释的措辞：「等价旧版 `if (router.url.startsWith('/sign-in'))`」** —— 对齐对象是 **LCDX 自家的 Angular 旧版**，不是 RinNET 上游。这符合本项目一贯的移植原则：业务语义以 LCDX 自家旧版为权威，RinNET 上游只是代码基线。
+
+**真正的问题在于「没有记录、因而没有审计」**：`cbe5c7f` 的提交说明列了 6 条改动（登录端点、TOTP、i18n 清理、入口移除…），**唯独没有提到跳转方式的变更**。于是「登录成功后不再整页重载」这个副作用——它让全站模块级单例失去了 reload 兜底——从未被复查。这才是本次故障得以潜伏两个多月的直接土壤。
+
+**结论**：
+1. **不是「不适合我们」**，这个定制方向正确，且是 LCDX 业务必需；
+2. **不要退回上游的 `reload`**；
+3. 缺的只是一次**「SPA 化后模块级单例审计」**——本次已完成，结论是仅有 `initializationPromise`（已修）与 `dbPromise`（属 L2）需要处理。
