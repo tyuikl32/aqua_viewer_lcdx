@@ -254,3 +254,38 @@ Tracked, deliberate, do not extend:
   string, and an empty field yields `''`, not `NaN` or `null` — handle the empty state deliberately.
 - Do not put a conversion inside a JSX prop expression that only runs on one branch; a mistyped
   handler fails at runtime, not at compile time.
+
+### Theme overlay geometry (toasts)
+
+- `.liquefy-toast` (`liquefy.css`) sets `min-height`, while the library's `.lq-alert` is
+  `align-items: flex-start`. Whatever `min-height` adds beyond the content therefore lands **below**
+  the text, so a one-line toast reads as bottom-heavy (measured 16px above vs 27.6px below = 1.72×,
+  i.e. it looks like an extra empty line). A user reported exactly this as "上窄下宽".
+- Keep the toast `min-height` at the single-line natural height — 2 × 1rem padding + the 22px line
+  box ≈ `3.4rem` (54.4px). A larger floor is only acceptable together with `align-items: center`,
+  which splits the surplus evenly. Multi-line messages grow past the floor, so they stay symmetric.
+- Generalise: any fixed `min-height` plus `flex-start` makes leftover space one-sided. When touching
+  an overlay's box, check the short-content case at 1440px *and* 390px, in all three theme families
+  (liquefy / animal-island / legacy).
+- Toast severity follows the `notice(text, color)` argument, not the message text: calling
+  `notice(t('…SuccessMessage'))` without a color renders the **info** tint (`#3cc9d1`) with the ⓘ
+  glyph, not the green ✓. Pass `'success'` when the message is a success.
+
+### Verify the deployed artifact, not the working tree
+
+- Production frontend is **`https://lcdxnet.am-allnet.com/`** (nginx container, `/var/www/portal`).
+  `portal.naominet.live` is the upstream site / game-data API, **not** this app.
+- `.github/workflows/deploy-test-server.yml` **builds and deploys** on every push to `master`
+  (`scp` → `docker exec` → `docker cp` into nginx). So a local `npm run build` proves nothing about
+  production, and **an uncommitted change is never deployed** — the 2026-10-12 toast fix looked
+  "deployed but broken" for exactly this reason.
+- Asset filenames are content hashes, which makes a live check decisive. Through the local proxy
+  (`127.0.0.1:7897`, the only reliable one — `git config` already has it):
+  ```bash
+  curl -x http://127.0.0.1:7897 -s https://lcdxnet.am-allnet.com/ | grep -o 'index-[^"]*\.css'
+  curl -x http://127.0.0.1:7897 -s https://lcdxnet.am-allnet.com/assets/index-XXXX.css \
+    | grep -o 'liquefy-toast{[^}]*}'
+  ```
+  Compare the `min-height` (or any changed declaration) with the source value; a different CSS
+  filename than the local build's artefact means the deploy did not use that build at all.
+
