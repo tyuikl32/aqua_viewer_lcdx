@@ -550,3 +550,24 @@ Append 'CiRCLE+' (26) and 'MAGiCAL' (27) to the VERSIONS array in Maimai2SongLis
 ### Status
 
 [OK] **Completed**
+
+
+## Session 17: mai2 recent DX score 框右侧偏移：排查 + 一行修复
+
+**Date**: 2026-10-12
+**Task**: mai2 recent DX score 框右侧偏移：排查 + 一行修复
+**Branch**: `master`
+
+### Summary
+
+实测定位内层卡片无 padding 致右侧仅 4px 留白（左 8px 不对称），加 px-3 后 20/24px；补 spec 记录回归套件 teardown 挂起与 recent 页无覆盖
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ef17e55` | (see git log) |
+
+### Status
+
+[OK] **Completed**
