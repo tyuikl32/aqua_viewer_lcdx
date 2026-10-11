@@ -29,7 +29,7 @@ export function OnetimeSignInPage() {
         const resp = await loginLcdxOnetime(token);
         const statusCode: number = resp?.status?.code;
         if (statusCode === StatusCode.OK && resp.data) {
-          notice(translate('SignInPage.LoginSuccessMessage'));
+          notice(translate('SignInPage.LoginSuccessMessage'), 'success');
           if (window.location.pathname.startsWith('/onetime-sign-in')) {
             navigate('/dashboard');
           }

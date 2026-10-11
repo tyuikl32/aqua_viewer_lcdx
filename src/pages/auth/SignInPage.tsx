@@ -58,7 +58,7 @@ export function SignInPage() {
       const resp = await loginLcdx(qqNumber, password);
       const statusCode: number = resp?.status?.code;
       if (statusCode === StatusCode.OK && resp.data) {
-        notice(t('SignInPage.LoginSuccessMessage'));
+        notice(t('SignInPage.LoginSuccessMessage'), 'success');
         // 等价旧版 `if (router.url.startsWith('/sign-in'))`：无卡用户已被 procLoginResp
         // 送去 /netcode-bind，此处不得覆盖
         if (window.location.pathname.startsWith('/sign-in')) {
@@ -89,7 +89,7 @@ export function SignInPage() {
       const resp = await loginWithTotp(totpToken!, totpCode);
       const statusCode: number = resp?.status?.code;
       if (statusCode === StatusCode.OK && resp.data) {
-        notice(t('SignInPage.LoginSuccessMessage'));
+        notice(t('SignInPage.LoginSuccessMessage'), 'success');
         if (window.location.pathname.startsWith('/sign-in')) {
           await navigate('/dashboard');
         }
