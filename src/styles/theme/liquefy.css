@@ -1425,7 +1425,12 @@
   box-shadow:
     0 14px 30px color-mix(in srgb, var(--lq-shadow-color) 36%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 88%, white);
-  min-height: 4.1rem;
+  /* 3.4rem ≈ 54.4px = 单行内容的自然高（2×1rem padding + 22px 行盒）。
+     原值 4.1rem(65.6px) 会撑出 ~11.6px，而 .lq-alert 是 align-items:flex-start，
+     多出的高度全落在文字下方（实测 上16/下27.56 = 1.72×），看起来像「多了一个空行」。
+     取内容自然高为下限，单行时上下留白相等；多行时由内容自然撑高。
+     见 .trellis/tasks/10-11-login-success-toast-shape/。 */
+  min-height: 3.4rem;
   padding: 1rem 1.1rem;
   -webkit-backdrop-filter: blur(22px) saturate(1.55);
   backdrop-filter: blur(22px) saturate(1.55);
