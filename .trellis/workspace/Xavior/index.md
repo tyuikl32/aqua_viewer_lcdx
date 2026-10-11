@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 17
+- **Total Sessions**: 18
 - **Last Active**: 2026-10-12
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~573 | Active |
+| `journal-1.md` | ~613 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 18 | 2026-10-12 | 登录成功 toast 上窄下宽：逐像素取证 → 归属判定 → 一行修复 | `fe6bbba`, `4a86c04`, `546573b` | `master` |
 | 17 | 2026-10-12 | mai2 recent DX score 框右侧偏移：排查 + 一行修复 | `ef17e55` | `master` |
 | 16 | 2026-10-10 | Add CiRCLE+ and MAGiCAL to the maimai2 songlist version filter | `d647e4c` | `master` |
 | 15 | 2026-09-25 | React LCDX audit SPA fallback verification | - | `migrate/react-port` |

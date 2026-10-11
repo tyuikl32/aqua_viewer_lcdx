@@ -571,3 +571,43 @@ Append 'CiRCLE+' (26) and 'MAGiCAL' (27) to the VERSIONS array in Maimai2SongLis
 ### Status
 
 [OK] **Completed**
+
+
+## Session 18: 登录成功 toast 上窄下宽：逐像素取证 → 归属判定 → 一行修复
+
+**Date**: 2026-10-12
+**Task**: 登录成功 toast 上窄下宽：逐像素取证 → 归属判定 → 一行修复
+**Branch**: `master`
+
+### Summary
+
+用户报「登录成功提示框上窄下宽，是不是多了个换行」。逐像素取证证明：文案四份 i18n 干净无换行、生产盒子是对称圆角矩形（非梯形），真因是 .liquefy-toast 的 min-height 4.1rem 配上库的 align-items:flex-start，把多出的 ~11.6px 全压到文字下方（1.72×）。改 min-height 为单行自然高 3.4rem 后上下留白 1.02×。并判定该 min-height 源自上游提交 90d8f11（可原样回馈上游），另核查出「已部署但没生效」是修复当时未提交所致。
+
+### Main Changes
+
+- liquefy.css: .liquefy-toast min-height 4.1rem → 3.4rem（= 单行内容自然高 54.4px），只动 liquefy 作用域
+- 任务文档：prd + research/toast-shape-forensics（三族×两视口实测、排除清单、生产截图取证、info/success 三重颜色判定、归属判定）+ research/deploy-verification（线上仍 4.1rem 的三方对比）
+- spec/frontend/quality-guidelines.md：补 min-height+flex-start 的留白陷阱、notice 语义色、生产前端域名与线上产物核验配方
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fe6bbba` | (see git log) |
+| `4a86c04` | (see git log) |
+| `546573b` | (see git log) |
+
+### Testing
+
+- [OK] .artifacts/probe-toast-variants.mjs：盒高 65.59px/留白 1.72× → 54.39px/1.02×（3 主题族 × 1440/390 对照）
+- [OK] 生产 CSS 实拉复核（经 127.0.0.1:7897）：线上 index-Cxd9SGKM.css 内 min-height:4.1rem、3.4rem 出现 0 次 ⇒ 证实该次部署未含修复
+- [OK] npm run build（01:46）：产物 index-B-CkFpsO.css 内含 min-height:3.4rem ⇒ 改动编译通过
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- push master 触发 CI 自动构建+部署（未执行，待用户确认），部署后用同配方复核线上 CSS 是否已是 3.4rem
+- 语义待定：SignInPage.tsx:61/92、OnetimeSignInPage.tsx:32 的 notice(text) → notice(text,'success')（图标回绿色 ✓）
