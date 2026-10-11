@@ -2,10 +2,16 @@
 
 ## Goal
 
-查清用户报告的「'登录成功' 提示框上窄下宽，是不是多了个换行」的真实成因，并给出可执行的结论：
-要么定位到产生该形态的具体规则，要么用证据链说明在当前 master 上不可复现。
+查清用户报告的「'登录成功' 提示框上窄下宽，是不是多了个换行」的真实成因，并给出可执行的结论。
 
-本任务先做**诊断**，不擅自改代码（用户原话：「建 trellis 任务看看」）。
+**结论（2026-10-12，生产截图取证后）**：
+不是换行，也不是盒子轮廓变梯形 —— 是 `min-height: 4.1rem` 撑出的**底部空白**（下/上留白 = 1.72×），
+看起来像「多了一个空行」；另发现成功提示误用 info 语义（青色 ⓘ）的独立缺陷。
+证据见 `research/toast-shape-forensics.md` §9，候选修法见 §10。
+
+**归属（2026-10-12 追问后核实）**：
+几何问题 = **上游固有**（`90d8f11`，作者 HoshimiRIN，两仓为同一提交对象，`.liquefy-toast` 段逐字节一致）
+⇒ 修法可原样回馈上游；「登录成功」文案与该调用点漏传颜色 = **LCDX 专有**。详见 forensics §11。
 
 ## Requirements
 
@@ -16,21 +22,30 @@
 
 ## Acceptance Criteria
 
-- [ ] 出结论：成功提示文案是否含换行（附文件路径 + 行列证据）
-- [ ] 出结论：当前 master 在 3 主题 × 2 视口下能否复现「上窄下宽」（附实测数字/截图）
-- [ ] 若能复现：定位到具体 CSS/DOM 规则，给出修复方案并回归
-- [ ] 若不能复现：记录证据链、需用户补充的信息（主题族 / 视口 / 截图），归档或挂起
+- [x] 结论：成功提示文案**不含**换行 —— 四份 i18n 资源逐字节干净（`src/i18n/{zh,en}.json:1436`、`public/assets/i18n/{zh,en}.json:1436`）
+- [x] 结论：3 主题族 × 2 视口共 6 组实测**全部单行**；生产盒子经像素级逐行/逐列还原为**对称圆角矩形**（544×65.6，四角 r≈16px）
+- [x] 定位到真因：`liquefy.css:1428` `min-height: 4.1rem` + `.lq-alert { align-items: flex-start }` → 下方多出 ~11.6px 空白（生产 18/32px = 1.78×）
+- [x] **修法 A 已实施**：`min-height: 4.1rem` → `3.4rem`（`src/styles/theme/liquefy.css`），探针实测 65.59→54.39px、留白 1.72×→**1.02×**；多行情形不受影响
+- [ ] 产物重建 + 真浏览器回归（`npm run build` + 离线 fixture spec）—— **未做**（重建需先确认）
+- [x] 颜色复核（用户要求）：三重像素验证 ⇒ 确认是 **info（青绿 ⓘ）**，生产填充 (36.9,69.1,83.1)/198.2° 与 info 渲染 (36.4,69.0,81.5)/196.6° 吻合，与 success (41.0,72.0,72.3)/180.6° 不符；详见 forensics §9.3
 
-## Open Questions（当前阻塞）
+## 待决
 
-1. 用户当时用的是哪个主题族？（默认 `liquefy`，另有 `animal-island`、`legacy`）
-2. 视口情境？桌面浏览器窗口宽度？还是手机/PWA？
-3. 能否提供截图？—— 描述与实测结果存在冲突（见 `research/toast-shape-forensics.md`），截图可一分钟定位。
+- **C（语义）**：三处 `notice(text)` → `notice(text,'success')`（绿色 ✓）。颜色复核后仍**未改**，等用户拍板。
+- 重建与部署：产物重建待确认；生产部署由用户手动执行（CI 只 build）。
+
+## 候选修法（实测数据见 forensics §10）
+
+| 方案 | 改动 | 单行时上/下留白 | 盒高 | 状态 |
+| --- | --- | --- | --- | --- |
+| **A** | `min-height: 4.1rem` → `3.4rem` | 16 / 16.36（1.02×） | 54.39px | ✅ 已实施 |
+| **B** | 保留 `4.1rem` + liquefy 作用域 `align-items: center` | 21.78 / 21.78 | 65.59px | 未采用 |
+| **C** | 3 处 `notice(text)` → `notice(text, 'success')` | — | — | 待定 |
 
 ## Notes
 
-- 已核实：`SignInPage.LoginSuccessMessage` = `登录成功`（4 字，无换行），且 toast 容器最小可用宽 ≥ 350px，
-  4 个汉字（≈60px）在任何主题族下都**不可能折行** —— 因此「上窄下宽」大概率不是换行造成的。
-- 诊断证据与复现配方见 `research/toast-shape-forensics.md`；探针脚本在 `.artifacts/probe-toast-shape.*`（已 gitignore）。
-- 附带发现一处**真实**几何缺陷（非本次症状）：移动端 390px 下 liquefy toast 左缘越界约 6px，
-  见 forensics「附带发现」，待用户决定是否并入修复。
+- 触发链唯一：`SignInPage.tsx:61`/`:92`、`OnetimeSignInPage.tsx:32` → `notice()` → `lib/message.ts` → `Toasts.tsx`。
+- 探针（只读，均落在 gitignore 的 `.artifacts/`）：
+  `probe-toast-shape.mjs`（三族 × 两视口几何）、`probe-toast-variants.mjs`（现状 vs A/B/C 对照图）、
+  `probe-toast-prod-shape.py`（生产截图轮廓/留白）。
+- 另一处**独立**缺陷（未列入本次修法）：窄视口 390px 下 toast 左缘越界 ~6px（forensics §7）。
