@@ -611,3 +611,40 @@ Append 'CiRCLE+' (26) and 'MAGiCAL' (27) to the VERSIONS array in Maimai2SongLis
 
 - push master 触发 CI 自动构建+部署（未执行，待用户确认），部署后用同配方复核线上 CSS 是否已是 3.4rem
 - 语义待定：SignInPage.tsx:61/92、OnetimeSignInPage.tsx:32 的 notice(text) → notice(text,'success')（图标回绿色 ✓）
+
+
+## Session 19: 登录成功提示语义修正（info 青绿 ⓘ → success 绿 ✓）
+
+**Date**: 2026-10-12
+**Task**: 登录成功提示语义修正（info 青绿 ⓘ → success 绿 ✓）
+**Branch**: `master`
+
+### Summary
+
+用户拍板后一并修语义：三处 notice(...LoginSuccessMessage) 未传颜色，导致成功提示渲染成 info（青绿 ⓘ）。补 'success' 后走 text-bg-success → 绿 #52d69a + SuccessGlyph。判定依据是生产截图（图标为圆内 i、描边色相 183.6°、填充 198.2°，三者均命中 info 而非 success）。tsc -b 通过。用户选择先不 push（push 会触发 CI 自动部署）。
+
+### Main Changes
+
+- SignInPage.tsx:61/:92、OnetimeSignInPage.tsx:32：notice(text) → notice(text, 'success')
+- prd.md 将 C 项标记为已实施；prd.md / forensics 的 i18n 行号 1436 → 1437（他处新增 key 导致漂移）
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bf8b3f2` | (see git log) |
+| `d8e51b9` | (see git log) |
+
+### Testing
+
+- [OK] npx tsc -b：exit 0（无输出）
+- [OK] 调用点复核：全仓 LoginSuccessMessage 三处均已带 'success'，无遗漏
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- push master（待用户定时）→ 触发 CI 构建+部署；部署后用 127.0.0.1:7897 代理复核线上 CSS 是否为 3.4rem、图标是否为绿色 ✓
+- 可选：给 tests/lcdx-regression 的离线 fixture 造出 1 行 toast 的触发路径，把「上下留白对称」固化为常驻回归
