@@ -245,3 +245,76 @@ DevTools 的 Disable cache 通常**伴随一次刷新**使用。而本故障的�
 | **P1** | 初始化链与 preload 全部无超时/重试/终态 | `client.ts:132`、`preload.ts:42/49/77` | 放大因素：把「未执行」与「挂起」都变成永久态 |
 | **P2** | 恢复路径只有 `clearDb()+reload()`，无增量续传 | `preload.ts:68/82` | 失败代价过高 |
 | **P3** | `index.html` 无 `Cache-Control`、`assets/` 保留旧产物、SW precache 为空 | 服务器 / SW | 历史债，非本次直接成因 |
+
+---
+
+## 10. 上游对比：为什么上游「怎么测都没问题」，以及这不是 EdgeOne 的原因
+
+### 10.1 提出的假设
+
+> 上游是不是因为走 EdgeOne CDN，所以没这个问题？
+
+**否。** EdgeOne 是 CDN，**不执行页面 JS**。而本故障的全部机制（`initializationPromise` 模块级单例、`navigate()` SPA 路由、`checkingUpdate` store）都发生在浏览器内，CDN 无从干预。唯一能通过 CDN 影响前端的途径是缓存/改写 HTML 与静态资源，而本故障不依赖资源内容。
+
+### 10.2 对比方法与结果
+
+本地上游工作副本：`E:/ALL.Net/RinNET_frontend`（`master`，HEAD `593510f`，同为 React 版）。
+
+**三处关键实现，逐一相同：**
+
+| 检查点 | 上游 | 本仓（修复前） |
+| --- | --- | --- |
+| `app.tsx` 的 `initializationPromise` 单例 + `if (!getAccount()) return` 位于 async 内部 | **相同** | 相同 |
+| `procLoginResp` 是否调用 `checkDbUpdate` | **都没有** | 都没有 |
+| `DashboardPage` 的条件 `checking === 'checking' \|\| (loadingDatabase && downloading === 0)` | **完全相同** | 相同 |
+
+⇒ **上游带着一模一样的缺陷。**
+
+**一处关键差异（这就是答案）：**
+
+| 登录成功后的跳转 | 上游 | 本仓 |
+| --- | --- | --- |
+| `SignInPage.tsx` | **`window.location.reload()`**（:111 / :140 / :168） | `await navigate('/dashboard')`（:65 / :94） |
+| `SignUpPage.tsx` | `window.location.reload()`（:184） | `await navigate('/dashboard')`（:103） |
+
+### 10.3 时序推演
+
+```
+上游（reload 语义）：
+  退出登录 -> logout().then(() => location.assign(''))   整页重载
+  -> 未登录，initializeApp 提前 return（单例被污染）
+  -> 登录成功 -> window.location.reload()               整页重载！
+  -> 模块重新求值，initializationPromise 重置为 null
+  -> 此时已登录 -> initializeApp 走完 -> checkDbUpdate() 正常执行  ✅ 缺陷被掩盖
+
+本仓（SPA 语义）：
+  退出登录 -> logout().then(() => location.assign(''))   同样整页重载
+  -> 未登录，initializeApp 提前 return（单例被污染）
+  -> 登录成功 -> navigate('/dashboard')                 SPA 内导航，App 不重挂载
+  -> initializationPromise 仍是那个「已 resolve 的空 promise」
+  -> checkDbUpdate() 永不执行 -> 卡片永久「检查更新」              ❌ 缺陷暴露
+```
+
+**上游的 `window.location.reload()` 每次都顺手重置了整个模块状态**，于是这个缺陷在上游**从未被触发过**。它属于**潜伏缺陷（latent defect）**：只要上游哪天把登录后的 reload 优化成 SPA 导航，就会立刻复现同一个故障。
+
+### 10.4 拓展结论：本仓哪些模块级状态失去了 reload 兜底
+
+上游用整页重载隐含地重置了所有模块级单例；本仓改走 SPA 导航后，这些单例的正确性不再有兜底。逐个核对本仓（与上游列同一份清单）：
+
+| 单例 | 位置 | 是否自愈 | 判定 |
+| --- | --- | --- | --- |
+| `initializationPromise` | `app.tsx:20` | ❌（修复前） | **本次根因，已修（`dc21368`）** |
+| `dbPromise` | `lib/db/db.ts:173` | ❌ 无重置路径 | **同类隐患**，正常路径不会坏；仅当 `openDB` 因 `blocked` 长期 pending 时污染后续全部 `getDb()`。属 design.md 的 **L2** |
+| `refreshPromise` | `lib/api/client.ts:75` | ✅ `.finally` 重置 | 安全 |
+| `loadPromise` | `lib/auth/access.ts:13` | ✅ `.finally` 重置 | 安全 |
+| `loadPromise` | `lib/user.ts:37` | ✅ `.finally` 重置 | 安全 |
+| `bootstrapPromise` | `lib/auth/impersonation.ts:31` | 需复核 | 夺舍场景，非本次范围 |
+| `refreshTimer` / `navigateFn` / `nextId` / theme 状态 | 各处 | ✅ 由 effect 或纯递增管理 | 安全 |
+
+⇒ **本仓真正无自愈的单例只有两个：`initializationPromise`（已修）与 `dbPromise`（列在 L2）。**
+
+### 10.5 建议
+
+1. **本仓**：保留 `navigate('/dashboard')` + L0 的幂等修复。这比上游的整页重载更快，且已消除缺陷；**不要**退回 `reload`。
+2. **上游**：该缺陷是潜伏的，建议向上游提 issue/PR，至少把 `initializeApp` 幂等化（未登录不缓存单例）。这不是「本仓特有问题」，而是**上游也存在的定时炸弹**。
+3. **移植约定（建议写入 spec）**：从上游移植时，凡上游依赖「整页 reload 重置」的模块级单例，若改为 SPA 导航，必须逐个重新审计是否需要显式重置。本次即为此类移植差异的直接后果。
