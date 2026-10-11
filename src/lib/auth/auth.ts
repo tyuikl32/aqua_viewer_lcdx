@@ -5,6 +5,7 @@ import { navigate } from '@/lib/nav';
 import { setAccount, clearAccount, getAccount } from '@/lib/auth/account';
 import { restoreAccess, clearAccess } from '@/lib/auth/access';
 import { loadUser, clearUser, getCurrentUser } from '@/lib/user';
+import { checkDbUpdate } from '@/lib/db/preload';
 
 /** 等价旧版 authentication.service.ts */
 
@@ -21,6 +22,10 @@ export async function procLoginResp(loginResp: any): Promise<any> {
     return loginResp;
   }
   const userResp = await loadUser(true);
+  // 登录走的是 SPA 内导航，App 的 initializeApp 不会重跑；此处补齐 App 级初始化中的
+  // 「游戏数据检查」。否则「未登录进入页面 -> 登录」这条路径下 checkDbUpdate 永不执行，
+  // dashboard 的「游戏数据」卡片会永久停在「检查更新」（见 .trellis/tasks/10-12-preload-resilience）。
+  void checkDbUpdate();
   // LCDX：无卡用户引导至网络码绑定页（等价旧版 procLoginResp 的 cards.length===0 分支）
   if (userResp?.status?.code === StatusCode.OK && getCurrentUser()?.cards?.length === 0) {
     navigate('/netcode-bind');

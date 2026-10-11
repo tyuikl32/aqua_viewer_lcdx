@@ -71,7 +71,13 @@ export async function reload() {
   window.location.reload();
 }
 
+let checkInFlight = false;
+
 export async function checkDbUpdate() {
+  // 幂等守卫：本函数有三个触发点 —— App 级初始化、登录补齐（procLoginResp）、
+  // dashboard 入口兜底。重复进入会重复拉取 dbVersion 并叠加多轮 loadAll。
+  if (checkInFlight) return;
+  checkInFlight = true;
   checkingUpdate.set('checking');
   try {
     const resp = await api.get('api/static/dbVersion');
@@ -91,5 +97,7 @@ export async function checkDbUpdate() {
     loadAll();
     checkingUpdate.set('error');
     notice(translate('Common.OperationFailed'));
+  } finally {
+    checkInFlight = false;
   }
 }
