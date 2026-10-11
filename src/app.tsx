@@ -19,12 +19,24 @@ import '@/lib/i18n';
 const queryClient = new QueryClient();
 let initializationPromise: Promise<void> | null = null;
 
-/** 等价旧版 AppComponent 构造器/ngOnInit 的一次性启动逻辑 */
+/**
+ * 等价旧版 AppComponent 构造器/ngOnInit 的一次性启动逻辑。
+ *
+ * 必须幂等且可重入。登录成功走的是 SPA 内导航（SignInPage → navigate('/dashboard')），
+ * App 组件不会重新挂载，本函数不会再被 App 的 useEffect 触发。因此：
+ *   ① 未登录时不得把「空初始化」缓存进 initializationPromise；
+ *   ② 失败时同样不缓存，允许后续重试。
+ * 否则「未登录进入页面 → 之后在 SPA 内登录」这条路径下 checkDbUpdate() 将永不执行，
+ * dashboard 的「游戏数据」卡片会永久停在「检查更新」且无法自愈。
+ * 详见 .trellis/tasks/10-12-preload-resilience。
+ */
 function initializeApp(): Promise<void> {
+  if (!getAccount()) {
+    initializationPromise = null;
+    return Promise.resolve();
+  }
   if (!initializationPromise) {
     initializationPromise = (async () => {
-      if (!getAccount()) return;
-
       const status = await restoreAccess();
       if (status?.banned) {
         navigate('/banned');
@@ -32,7 +44,9 @@ function initializeApp(): Promise<void> {
       }
       void checkDbUpdate();
       await loadUser();
-    })();
+    })().catch(() => {
+      initializationPromise = null;
+    });
   }
   return initializationPromise;
 }
