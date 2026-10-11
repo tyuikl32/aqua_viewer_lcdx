@@ -33,7 +33,9 @@
 
 - ~~**C（语义）**：三处 `notice(text)` → `notice(text,'success')`~~ → **已实施（用户 2026-10-12 拍板）**：
   `SignInPage.tsx:61`/`:92`、`OnetimeSignInPage.tsx:32` 均补 `'success'`；`tsc -b` 通过。
-- **推送/部署未做**（用户选择「先不推」）：本地已有 4 + 1 个未推提交；push master 会触发 CI 自动部署。
+- **推送/部署未做**（用户选择「先不推」）：本地共 **7 个**未推提交
+  （`fe6bbba` fix → `4a86c04`/`546573b` docs → `5488b80` journal → `bf8b3f2` fix → `d8e51b9` docs → `d3b9caa` journal）；
+  push master 会触发 CI 自动构建+部署（`deploy-test-server.yml`）。
 - 真浏览器回归（离线 fixture spec）未做——需先给 fixture 造出一条 1 行 toast 的触发路径。
 
 ## 候选修法（实测数据见 forensics §10）
