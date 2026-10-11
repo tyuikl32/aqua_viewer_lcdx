@@ -17,12 +17,12 @@
 
 ## S0 — 开工门禁
 
-- [ ] N1 "我的成绩"是否也要游戏内展示
-- [ ] N2 `Score` 口径切换是否接受两届不同
-- [ ] N3 单 credit 内 1~2 首是否计入
-- [ ] N4 `MininumOpenEvent` 写在哪里、由谁下发
-- [ ] N5 `N021/DataConfig.xml` 现状
-- [ ] N6 与 `tmpNormalScoreIdList` 的冲突实测结论
+- [x] N1 "我的成绩"是否也要游戏内展示
+- [x] N2 `Score` 口径切换是否接受两届不同
+- [x] N3 单 credit 内 1~2 首是否计入
+- [x] N4 `MininumOpenEvent` 写在哪里、由谁下发
+- [x] N5 `N021/DataConfig.xml` 现状
+- [x] N6 与 `tmpNormalScoreIdList` 的冲突实测结论
 
 ## S1 — CLL.Net（先行，schema owner；对应 `T-kop8th`）✅ 已完成
 
@@ -55,12 +55,12 @@
 
 ## S2 — LCDXNetApi（对应独立任务）
 
-- [ ] S2.1 `GET lcdx/kop/current`（R5）
-- [ ] S2.2 `GET lcdx/kop/rank?tournamentId=&limit=`（R5，缺省当前届次，`limit` 默认 30）
-- [ ] S2.3 `GET lcdx/kop/tournaments`（R5 / G13 / **G15：有数据的届次 ∪ 当前启用届次**）
-- [ ] S2.4 ~~`lcdx/kop/my`~~ **不做**（G2）
-- [ ] S2.5 `KOPRankingRecord` 主键 + `KopNo`/`DeluxScore` 同步；`KopTournamentRecord` 只读映射
-- [ ] **验收**：端点实数据各打一次（201/6th 与 20006/8th 各一次）；编译 0 警告 0 错误
+- [x] S2.1 `GET lcdx/kop/current`（R5）
+- [x] S2.2 `GET lcdx/kop/rank?tournamentId=&limit=`（R5，缺省当前届次，`limit` 默认 30）
+- [x] S2.3 `GET lcdx/kop/tournaments`（R5 / G13 / **G15：有数据的届次 ∪ 当前启用届次**）
+- [x] S2.4 ~~`lcdx/kop/my`~~ **不做**（G2）
+- [x] S2.5 `KOPRankingRecord` 主键 + `KopNo`/`DeluxScore` 同步；`KopTournamentRecord` 只读映射
+- [x] **验收**：端点实数据各打一次（201/6th 与 20006/8th 各一次）；编译 0 警告 0 错误
 - [ ] **commit**（不 push）
 
 ## S3 — 前端 aqua_viewer_lcdx ✅ 已完成
@@ -122,3 +122,9 @@
 
 - S1.3 主键迁移前：`CREATE TABLE KOPRankings_bak_20261010 AS SELECT * FROM KOPRankings`
 - 每步一个 commit，逐步可退
+
+> 📌 **N6 标注（2026-10-11）**：与 `tmpNormalScoreIdList` 的冲突**暂不做实测**（非"永远不做"）——
+> 设计结论据 D14 保留：本服不启用特殊 ROM（`enableKopSpecialRom=False`），该链为死代码。
+> `tmpNormalScoreIdList` 是 `SpecialRomManager` 里"特殊 ROM 模式下哪些谱面算常规"的硬编码白名单（`int[]`，长度随版本变）。
+
+> ✅ **N8（单 credit 只打 1~2 首是否计入）最终口径**：本服改为「**必须打满当届全部课题曲**」（已实现+部署：`CLL.Net@ddc8bff`）—— 非官方口径，理由见 CLL.Net 任务行。
