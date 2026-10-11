@@ -167,6 +167,24 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
   (`channel: 'chrome'`). `tests/lcdx-regression/fixture.ts` intercepts all API/LCDX traffic and
   blocks other origins; use fake credentials only. This verifies browser behavior and fixture
   contracts, not live backend integration or pixel parity.
+  - ⚠️ **Observed on this machine (2026-10-11)**: a full-suite run hangs in the webServer
+    teardown / reporter-flush stage — every spec finishes, but the process never exits and the
+    `line` reporter never prints its summary. Do not conclude "still running, wait longer": check
+    whether new directories appear under `test-results/lcdx-regression/` (their mtimes track live
+    progress); no new mtime for minutes means it is wedged.
+  - **Reliable way to verify here**: run a targeted spec and judge by the failure artifacts instead
+    of the exit code — `./node_modules/.bin/playwright test -c playwright.lcdx.config.ts
+    <spec>.spec.ts --timeout=45000` redirected to a file, then read it after the listed specs
+    appear. Playwright only writes into `test-results/lcdx-regression/` for **failures**, so
+    `[ -z "$(ls -A test-results/lcdx-regression)" ]` ⇔ all listed specs passed. Kill the still-hung
+    runner afterwards.
+  - Also note the suite has **no `/mai2/recent` coverage**: the fixture never mocks
+    `api/game/maimai2/data/musicList`, so `preloadStates.maimai2Music` never reaches `OK` and the
+    page renders zero records. Page-local verification needs a purpose-built probe (see the
+    `10-11-mai2-recent-score-box-offset` task's `.artifacts/probe-score-box.mjs`); a passing suite
+    says nothing about that page.
+  - Debugging a probe? `checkDbUpdate()` only calls `loadAll()` when the `/api/static/dbVersion`
+    response carries `state: 'success'`; mock it without that field and no catalog ever loads.
 - **i18n audit**: `node scripts/audit-i18n.mjs` checks all four resources, interpolation variables,
   literal translation calls and full-key declarations. `--dynamic` lists unresolved expressions
   for review. The parser comes from the locked Vite React plugin dependency tree; reinstall with
