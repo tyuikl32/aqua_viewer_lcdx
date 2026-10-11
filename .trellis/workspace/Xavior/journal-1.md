@@ -648,3 +648,24 @@ Append 'CiRCLE+' (26) and 'MAGiCAL' (27) to the VERSIONS array in Maimai2SongLis
 
 - push master（待用户定时）→ 触发 CI 构建+部署；部署后用 127.0.0.1:7897 代理复核线上 CSS 是否为 3.4rem、图标是否为绿色 ✓
 - 可选：给 tests/lcdx-regression 的离线 fixture 造出 1 行 toast 的触发路径，把「上下留白对称」固化为常驻回归
+
+
+## Session 20: 上游 RinNET_frontend recent score 框偏移：调研定案为不修改并归档
+
+**Date**: 2026-10-12
+**Task**: 上游 RinNET_frontend recent score 框偏移：调研定案为不修改并归档
+**Branch**: `master`
+
+### Summary
+
+确证上游同源问题（代码/CSS 与 fork 逐字节相同），上游 parity 逐像素比对仅跑 legacy family 且容差 0.5%，单边改动会破坏基线；给出 A/B/C 三方案并推荐 A；决定不改上游，零改动留档
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8a4c479` | (see git log) |
+
+### Status
+
+[OK] **Completed**

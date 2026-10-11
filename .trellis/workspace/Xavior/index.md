@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 19
+- **Total Sessions**: 20
 - **Last Active**: 2026-10-12
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~650 | Active |
+| `journal-1.md` | ~671 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 20 | 2026-10-12 | 上游 RinNET_frontend recent score 框偏移：调研定案为不修改并归档 | `8a4c479` | `master` |
 | 19 | 2026-10-12 | 登录成功提示语义修正（info 青绿 ⓘ → success 绿 ✓） | `bf8b3f2`, `d8e51b9` | `master` |
 | 18 | 2026-10-12 | 登录成功 toast 上窄下宽：逐像素取证 → 归属判定 → 一行修复 | `fe6bbba`, `4a86c04`, `546573b` | `master` |
 | 17 | 2026-10-12 | mai2 recent DX score 框右侧偏移：排查 + 一行修复 | `ef17e55` | `master` |
