@@ -24,10 +24,10 @@
 
 | 文件:行 | 值 |
 | --- | --- |
-| `src/i18n/zh.json:1436` | `"LoginSuccessMessage": "登录成功",` |
-| `src/i18n/en.json:1436` | `"LoginSuccessMessage": "Sign in successful",` |
-| `public/assets/i18n/zh.json:1436` | `"LoginSuccessMessage": "登录成功",` |
-| `public/assets/i18n/en.json:1436` | `"LoginSuccessMessage": "Sign in successful",` |
+| `src/i18n/zh.json:1437` | `"LoginSuccessMessage": "登录成功",` |
+| `src/i18n/en.json:1437` | `"LoginSuccessMessage": "Sign in successful",` |
+| `public/assets/i18n/zh.json:1437` | `"LoginSuccessMessage": "登录成功",` |
+| `public/assets/i18n/en.json:1437` | `"LoginSuccessMessage": "Sign in successful",` |
 
 值内**没有 `\n` 转义、没有尾随空格、没有全角空格**。
 `src/lib/i18n.ts` 用的是 `src/i18n/*.json`（打包进 bundle），`public/assets/i18n/*.json` 是副本；
