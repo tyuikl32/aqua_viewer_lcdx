@@ -208,13 +208,17 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
     `dist/`. Treat the LCDX regression suite below as this fork's actual browser test. Also note the
     specs are dominated by `chuni-*` / `ongeki-*` pages that are **frozen** in this fork, so even a
     working run would not yield actionable work.
-  - **Upstream's copy is live, though.** Where the legacy baseline exists (the upstream repo —
-    `../aqua_viewer/dist/aqua-viewer/browser`, overridable via `LEGACY_DIST_DIR`) this suite does run,
-    and it pixel-compares the React build against legacy Angular at **0.5% tolerance** — but **only
-    under `themeFamily=legacy`**; the Liquefy case asserts behaviour and CSS values instead of pixels.
-    Consequence for a style fix we intend to send upstream: check which themes it moves. A change that
-    also relayouts the legacy theme rewrites their baseline (and fails their parity run); one scoped to
-    `[data-theme='liquefy']` does not. Recorded in `10-12-upstream-recent-score-strip-decision`.
+  - **Upstream has retired this suite** (maintainer, 2026-10-12). The pixel-diff harness belongs to the
+    React migration, when "the rewrite must look exactly like the Angular app" was the acceptance bar.
+    The architecture has since split **logic from UI**: `theme/contract.css` owns the `--ui-*` vocabulary,
+    each theme implements it on its own `data-theme` root, and application code only consumes that
+    vocabulary ("RinNET owns semantics; themes implement them and Bootstrap consumes them"). The
+    maintainer's rule of thumb: **a change confined to a theme's own code is fine** — the
+    React-vs-Angular pixel gate no longer applies. The suite's *replacement* is `theme-system.spec.ts`,
+    which runs React only and asserts semantic-token contrast instead of parity with Angular.
+    Institutionally it still pixel-compares only under `themeFamily=legacy` (the Liquefy case asserts
+    behaviour/CSS values), so a `[data-theme='liquefy']`-scoped visual fix never touched that gate even
+    while it was live. See `10-12-upstream-recent-score-strip-decision` for the full record.
 - **Backend counterpart**: `dotnet test LCDXNetApi.sln` (cwd = `LCDXNetApi`), expected 95/95 green;
   use `--filter` for scoped runs. Do **not** run `dotnet` from the Bash tool (known environment
   corruption — see the `dotnet-windows-env-fix` skill).
