@@ -732,3 +732,40 @@ Append 'CiRCLE+' (26) and 'MAGiCAL' (27) to the VERSIONS array in Maimai2SongLis
 ### Status
 
 [OK] **Completed**
+
+
+## Session 23: 登录成功 toast 任务收尾：线上核实为方案 B 并归档
+
+**Date**: 2026-10-12
+**Task**: 登录成功 toast 任务收尾：线上核实为方案 B 并归档
+**Branch**: `master`
+
+### Summary
+
+按用户指示归档 10-11-login-success-toast-shape。归档前先核实线上：fork 的 origin/master 已含全部修复（CI #67/#68 为 A 形式、#69 8ee0fcd 为 B 形式，20:19 +0800 成功），线上 index-BqfK9Hmp.css 的 .liquefy-toast 块实测含 align-items:center + min-height:4.1rem、0 处 3.4rem ⇒ 方案 B 已上线，C（success 语义）亦已上线；用户确认无问题。任务文档补齐最终状态后归档到 archive/2026-10/。
+
+### Main Changes
+
+- 10-11-login-success-toast-shape/prd.md：修正过时的待决段（推送/部署实际已完成），验收项补齐，候选表标注 A 弃用 / B 现行
+- task.py archive → archive/2026-10/10-11-login-success-toast-shape（自动提交 chore(task)）
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0c4ecde` | (see git log) |
+| `2cabadc` | (see git log) |
+
+### Testing
+
+- [OK] 线上 CSS 实拉复核（经 127.0.0.1:7897）：index-BqfK9Hmp.css 内 liquefy-toast 块含 align-items:center 与 min-height:4.1rem；min-height:3.4rem 出现 0 次
+- [OK] CI 记录：GitHub API 显示 #69（8ee0fcd）completed/success
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 10-12-upstream-liquefy-toast-fit 仍为 planning：上游本地提交 158c4d5 未 push、未开 PR，等用户决定（基线 main）
+- 可选遗留：给 tests/lcdx-regression 的离线 fixture 造 1 行 toast 触发路径，把上下留白对称固化为常驻回归
