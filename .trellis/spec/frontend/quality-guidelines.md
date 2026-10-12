@@ -272,9 +272,17 @@ Tracked, deliberate, do not extend:
   `align-items: flex-start`. Whatever `min-height` adds beyond the content therefore lands **below**
   the text, so a one-line toast reads as bottom-heavy (measured 16px above vs 27.6px below = 1.72×,
   i.e. it looks like an extra empty line). A user reported exactly this as "上窄下宽".
-- Keep the toast `min-height` at the single-line natural height — 2 × 1rem padding + the 22px line
-  box ≈ `3.4rem` (54.4px). A larger floor is only acceptable together with `align-items: center`,
-  which splits the surplus evenly. Multi-line messages grow past the floor, so they stay symmetric.
+- Pair the toast `min-height` with `align-items: center` **in the theme scope**. The height is the
+  shell row height — `4.1rem`, the same value as `.app-navbar` and `.sidebar`'s `top` — so the box
+  stays at 65.6px while the surplus is split evenly (21.78px above / 21.78px below, ratio 1.00).
+  Mirrors `.liquefy-import-warning` (`liquefy.css:817`), which is also `align-items: center` plus a
+  `min-height`. Shrinking the floor to the single-line natural height (≈`3.4rem`) also removes the
+  asymmetry, but it breaks the navbar height rhythm and hard-codes a number derived from the
+  library's `padding` + line box — prefer centring. Multi-line messages grow past the floor either
+  way, so they stay symmetric.
+- This fix is **mirrored upstream**: `RinNET_frontend`'s `liquefy.css` carries the identical rule
+  (decision 2026-10-12, task `10-12-upstream-liquefy-toast-fit`). Keep the two repos' toast rule in
+  sync — it is one of the few files where a divergence would be silent.
 - Generalise: any fixed `min-height` plus `flex-start` makes leftover space one-sided. When touching
   an overlay's box, check the short-content case at 1440px *and* 390px, in all three theme families
   (liquefy / animal-island / legacy).
