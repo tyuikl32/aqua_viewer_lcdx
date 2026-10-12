@@ -669,3 +669,45 @@ Append 'CiRCLE+' (26) and 'MAGiCAL' (27) to the VERSIONS array in Maimai2SongLis
 ### Status
 
 [OK] **Completed**
+
+
+## Session 21: 上游 liquefy toast 修法定稿（B：保留壳层行高 + 居中）与 fork 同步
+
+**Date**: 2026-10-12
+**Task**: 上游 liquefy toast 修法定稿（B：保留壳层行高 + 居中）与 fork 同步
+**Branch**: `master`
+
+### Summary
+
+上游 RinNET_frontend 存在同源问题（liquefy 单行 toast 上16/下27.56 = 1.72×）。按要求先出方案再取授权：服主口径（parity 已退休、改动限于主题自身代码）下对比 A/B/C/F 四案，实测证伪 C（@liquefy-ui/react 1.1.0 的 .lq-alert 仍 flex-start）。用户选定 B：保留 min-height 4.1rem（= .app-navbar 壳层行高）+ 液化作用域 align-items: center，并让 fork 统一为同一实现（原 fe6bbba 的 3.4rem 撤回）。两仓各 1 处改动，均只本地提交。
+
+### Main Changes
+
+- 上游 RinNET_frontend：liquefy.css 的 .liquefy-toast 加 align-items: center（1 行 + 英文注释），提交 158c4d5
+- fork aqua_viewer_lcdx：同款改动（min-height 回到 4.1rem + align-items: center，中文注释），提交 e8a1590
+- spec/frontend/quality-guidelines.md：把'取单行自然高 3.4rem'改判为'min-height 必须与 align-items: center 成对'，并记两仓同款需保持同步
+- 任务文档：新增 10-12-upstream-liquefy-toast-fit（prd + design，含门禁现状/协作约束/实施结果）；10-11-login-success-toast-shape 标记 A 被 B 取代
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ae470e2` | (see git log) |
+| `7332adf` | (see git log) |
+| `e8a1590` | (see git log) |
+
+### Testing
+
+- [OK] .artifacts/probe-toast-fit.mjs（注入两仓真实源文件）：两仓均 544×65.59px、上/下留白 21.78/21.78 = 1.00×、单行；data-theme=legacy 下 51px + 库默认 flex-start ⇒ 作用域隔离正确
+- [OK] npx tsc -b：exit 0（无输出）
+- [OK] 上游门禁核查：parity 已退休；theme-system.spec.ts 与 liquefy-importer-feedback.spec.ts 均无 toast 几何断言；上游 CI 只在 push next 触发 ⇒ PR 不跑测试
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- 两仓均未 push、未开 PR：上游若开 PR，基线分支是 main（注意 fork 是 master）
+- 若要在上游真机复核：需 npm ci && npm run build（上游无 node_modules），待授权
+- fork 侧仍待 push 才会部署（此前 8 个未推提交 + 本轮 3 个）
