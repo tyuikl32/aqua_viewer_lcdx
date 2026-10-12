@@ -218,7 +218,7 @@ export function Maimai2RecentPage() {
                   </div>
                 </div>
 
-                <div className="card bg-secondary-subtle px-3">
+                <div className="card bg-secondary-subtle">
                   <div className="row justify-content-between align-items-center no-wrap">
                     <div className="col-auto">
                       <div className="d-flex flex-row gap-2" style={{ alignItems: 'center' }}>
