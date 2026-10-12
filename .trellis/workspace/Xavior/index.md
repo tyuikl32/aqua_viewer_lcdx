@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 21
+- **Total Sessions**: 22
 - **Last Active**: 2026-10-12
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~713 | Active |
+| `journal-1.md` | ~734 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 22 | 2026-10-12 | recent score 条改判为液化作用域（方案 A）：fork 实施 + 上游 PR #64 | `6e82ad0` | `master` |
 | 21 | 2026-10-12 | 上游 liquefy toast 修法定稿（B：保留壳层行高 + 居中）与 fork 同步 | `ae470e2`, `7332adf`, `e8a1590` | `master` |
 | 20 | 2026-10-12 | 上游 RinNET_frontend recent score 框偏移：调研定案为不修改并归档 | `8a4c479` | `master` |
 | 19 | 2026-10-12 | 登录成功提示语义修正（info 青绿 ⓘ → success 绿 ✓） | `bf8b3f2`, `d8e51b9` | `master` |

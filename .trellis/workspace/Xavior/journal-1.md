@@ -711,3 +711,24 @@ Append 'CiRCLE+' (26) and 'MAGiCAL' (27) to the VERSIONS array in Maimai2SongLis
 - 两仓均未 push、未开 PR：上游若开 PR，基线分支是 main（注意 fork 是 master）
 - 若要在上游真机复核：需 npm ci && npm run build（上游无 node_modules），待授权
 - fork 侧仍待 push 才会部署（此前 8 个未推提交 + 本轮 3 个）
+
+
+## Session 22: recent score 条改判为液化作用域（方案 A）：fork 实施 + 上游 PR #64
+
+**Date**: 2026-10-12
+**Task**: recent score 条改判为液化作用域（方案 A）：fork 实施 + 上游 PR #64
+**Branch**: `master`
+
+### Summary
+
+按服主口径把跨主题 px-3 换成 [data-theme=liquefy] 作用域 CSS；探针三主题实测（液化 20/24px、legacy 回 4/8px）；改写上游 commit 描述后推送分支并开 PR #64；归档本任务
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6e82ad0` | (see git log) |
+
+### Status
+
+[OK] **Completed**
