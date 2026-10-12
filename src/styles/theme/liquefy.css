@@ -1421,16 +1421,17 @@
 
 [data-theme='liquefy'] .liquefy-toast {
   --lq-alert-tint: var(--lq-accent);
+  /* 盒高取壳层行高 4.1rem（与 .app-navbar 等高），而库的 .lq-alert 是 flex-start：
+     不居中的话，min-height 多出来的 ~11.6px 会全落在文字下方（实测 上16/下27.56 = 1.72×，
+     看起来像「多了一个空行」）。居中后剩余高度由 flex 均分（21.78/21.78）。
+     写法与同文件 .liquefy-import-warning 一致。
+     与上游 RinNET_frontend 同款（两仓统一），见 .trellis/tasks/10-12-upstream-liquefy-toast-fit/。 */
+  align-items: center;
   border-radius: 1rem;
   box-shadow:
     0 14px 30px color-mix(in srgb, var(--lq-shadow-color) 36%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--lq-glass-bright) 88%, white);
-  /* 3.4rem ≈ 54.4px = 单行内容的自然高（2×1rem padding + 22px 行盒）。
-     原值 4.1rem(65.6px) 会撑出 ~11.6px，而 .lq-alert 是 align-items:flex-start，
-     多出的高度全落在文字下方（实测 上16/下27.56 = 1.72×），看起来像「多了一个空行」。
-     取内容自然高为下限，单行时上下留白相等；多行时由内容自然撑高。
-     见 .trellis/tasks/10-11-login-success-toast-shape/。 */
-  min-height: 3.4rem;
+  min-height: 4.1rem;
   padding: 1rem 1.1rem;
   -webkit-backdrop-filter: blur(22px) saturate(1.55);
   backdrop-filter: blur(22px) saturate(1.55);
