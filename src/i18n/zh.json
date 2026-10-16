@@ -244,6 +244,7 @@
       "Character": "伙伴",
       "Circle": "Circle圈子",
       "Dashboard": "仪表板",
+      "Dxnum": "机台人数查询",
       "Dxpass": "DX通行证",
       "Festa": "Festa活动",
       "Import": "导入",
@@ -676,6 +677,23 @@
     },
     "CabinetControlPage": {
       "Title": "机台控制"
+    },
+    "DxnumPage": {
+      "ColCabinet": "机台别名",
+      "ColLocation": "位置",
+      "ColLcMode": "LC 模式",
+      "ColPlaying": "在玩",
+      "Keyword": "机台别名前缀",
+      "LoadFailed": "查询失败，请稍后重试",
+      "NoMatch": "未找到匹配机台",
+      "NoPermission": "你没有机台人数查询权限",
+      "Placeholder": "输入机台别名前缀",
+      "Playing": "近 {{minutes}} 分钟内在玩",
+      "Refresh": "刷新",
+      "Search": "查询",
+      "Summary": "命中 {{count}} 台机台",
+      "SummaryPageOnly": "（第 {{page}} 页，每页 {{size}} 台）",
+      "Title": "机台人数查询"
     },
     "Cabinets": {
       "AppDelivery": "应用配信",

@@ -10,7 +10,7 @@
 - [x] `src/features/mai2/cabinet-models.ts`：`CabinetDxnumItem`（无 fullKeychip）+ `CabinetDxnumResult`（含 `playingWindowMinutes`）。
 - [x] `src/features/mai2/Maimai2DxnumPage.tsx` 新建：查询行（input+回车+查询+刷新）、表格每行一台（别名/位置/LC模式/今日/30分/1时/2时/在玩徽章）、`Maimai2Pagination`、行展开在玩名单（文案动态 `playingWindowMinutes`）、汇总行、空态、无权限兜底。骨架照抄 `Maimai2CabinetsPage.tsx`。
 - [x] `npm run build` 过（tsc -b + vite build）。
-- [ ] i18n 四份同步：`src/i18n/zh.json`、`src/i18n/en.json`、`public/assets/i18n/zh.json`、`public/assets/i18n/en.json`。键：`App.Sidebar.Dxnum`、`Maimai2.DxnumPage.{Title,Keyword,Placeholder,Search,Refresh,NoMatch,NoPermission,Summary,SummaryPageOnly,Playing,LoadFailed,ColCabinet,ColLocation,ColLcMode,ColPlaying}`；四窗列头复用 `Maimai2.Cabinets.{Today,HalfHour,OneHour,TwoHour}`。
+- [x] i18n 四份同步：`src/i18n/zh.json`、`src/i18n/en.json`、`public/assets/i18n/zh.json`、`public/assets/i18n/en.json`。键：`App.Sidebar.Dxnum`、`Maimai2.DxnumPage.{Title,Keyword,Placeholder,Search,Refresh,NoMatch,NoPermission,Summary,SummaryPageOnly,Playing,LoadFailed,ColCabinet,ColLocation,ColLcMode,ColPlaying}`；四窗列头复用 `Maimai2.Cabinets.{Today,HalfHour,OneHour,TwoHour}`。
 - [ ] `tests/lcdx-regression/fixture.ts`：`setup()` 加可选 `hasManage` 参数（默认维持现行为不破坏既有 spec）。
 - [ ] `tests/lcdx-regression/dxnum.spec.ts` 新建：P0 深链跳 dashboard / P7 且 hasManage=false 菜单出现可访问 / P3 有无授权 menu 显隐 / 接口失败降级。
 - [ ] `npm run build` 过（`tsc -b && vite build`）；Playwright 定向跑 dxnum+guards spec 验证；commit（路径限定）。

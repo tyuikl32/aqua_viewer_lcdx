@@ -244,6 +244,7 @@
       "Character": "Character",
       "Circle": "Circle",
       "Dashboard": "Dashboard",
+      "Dxnum": "Cabinet Player Count",
       "Dxpass": "DX Pass",
       "Festa": "Festa",
       "Import": "Import",
@@ -676,6 +677,23 @@
     },
     "CabinetControlPage": {
       "Title": "Cabinet Control"
+    },
+    "DxnumPage": {
+      "ColCabinet": "Cabinet",
+      "ColLocation": "Location",
+      "ColLcMode": "LC Mode",
+      "ColPlaying": "Playing",
+      "Keyword": "Cabinet alias prefix",
+      "LoadFailed": "Query failed, please retry",
+      "NoMatch": "No matching cabinet",
+      "NoPermission": "You don't have permission to query cabinet player counts",
+      "Placeholder": "Enter cabinet alias prefix",
+      "Playing": "Playing in the last {{minutes}} minutes",
+      "Refresh": "Refresh",
+      "Search": "Search",
+      "Summary": "{{count}} cabinet(s) matched",
+      "SummaryPageOnly": "(page {{page}}, {{size}} per page)",
+      "Title": "Cabinet Player Count"
     },
     "Cabinets": {
       "AppDelivery": "App Delivery",
