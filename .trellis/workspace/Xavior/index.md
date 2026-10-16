@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 23
-- **Last Active**: 2026-10-12
+- **Total Sessions**: 24
+- **Last Active**: 2026-10-16
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~771 | Active |
+| `journal-1.md` | ~792 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 24 | 2026-10-16 | KOP spec 夹具修复 + dxnum 真实库验收 | `50c1842` | `master` |
 | 23 | 2026-10-12 | 登录成功 toast 任务收尾：线上核实为方案 B 并归档 | `0c4ecde`, `2cabadc` | `master` |
 | 22 | 2026-10-12 | recent score 条改判为液化作用域（方案 A）：fork 实施 + 上游 PR #64 | `6e82ad0` | `master` |
 | 21 | 2026-10-12 | 上游 liquefy toast 修法定稿（B：保留壳层行高 + 居中）与 fork 同步 | `ae470e2`, `7332adf`, `e8a1590` | `master` |

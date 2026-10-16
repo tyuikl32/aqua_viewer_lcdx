@@ -769,3 +769,24 @@ Append 'CiRCLE+' (26) and 'MAGiCAL' (27) to the VERSIONS array in Maimai2SongLis
 
 - 10-12-upstream-liquefy-toast-fit 仍为 planning：上游本地提交 158c4d5 未 push、未开 PR，等用户决定（基线 main）
 - 可选遗留：给 tests/lcdx-regression 的离线 fixture 造 1 行 toast 触发路径，把上下留白对称固化为常驻回归
+
+
+## Session 24: KOP spec 夹具修复 + dxnum 真实库验收
+
+**Date**: 2026-10-16
+**Task**: KOP spec 夹具修复 + dxnum 真实库验收
+**Branch**: `master`
+
+### Summary
+
+修复 content-pages 7 个 KOP 测试：补 mock lcdx/kop/current + rank glob 容忍查询参数；全量回归 67/67。教训入 spec。另在后端仓提交真实库手工验收 harness（LCDX_REAL_DB=1）并实测通过。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `50c1842` | (see git log) |
+
+### Status
+
+[OK] **Completed**
