@@ -3,7 +3,7 @@
   "name": "dxnum-frontend",
   "title": "dxnum 前端：菜单/守卫/页面/类型/i18n/Playwright",
   "description": "把 QQBot dx几人 Web 化（前端侧）。新增 /mai2/dxnum 页（机台人数查询，表格+分页+行展开在玩名单）。方案见 E:/ALL.Net/Project_LCDX_NET/.artifacts/dxnum-设计方案-v3.md §3/§5。",
-  "status": "in_progress",
+  "status": "completed",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -11,21 +11,53 @@
   "creator": "Xavior",
   "assignee": "Xavior",
   "createdAt": "2026-10-16",
-  "completedAt": null,
+  "completedAt": "2026-10-16",
   "branch": null,
   "base_branch": "master",
   "worktree_path": null,
   "commit": null,
   "pr_url": null,
   "subtasks": [
-    { "id": "fe-menu", "title": "menu.ts: allowFromPermission + showItem 放行 + 菜单项 id 16", "done": false },
-    { "id": "fe-router", "title": "router.tsx: RequireDxnumAccess + 路由", "done": false },
-    { "id": "fe-models", "title": "cabinet-models.ts: CabinetDxnumItem/Result（含 playingWindowMinutes）", "done": false },
-    { "id": "fe-page", "title": "Maimai2DxnumPage.tsx 新建（表格+Maimai2Pagination+行展开）", "done": false },
-    { "id": "fe-i18n", "title": "i18n 四份同步（src+public assets，zh/en）", "done": false },
-    { "id": "fe-fixture", "title": "fixture.ts setup() 加可选 hasManage 参数", "done": false },
-    { "id": "fe-spec", "title": "dxnum.spec.ts 新建（P0/P7无授权/P3有无授权/降级）", "done": false },
-    { "id": "fe-build", "title": "npm run build 过 + Playwright 定向验证 + commit", "done": false }
+    {
+      "id": "fe-menu",
+      "title": "menu.ts: allowFromPermission + showItem 放行 + 菜单项 id 16",
+      "done": true
+    },
+    {
+      "id": "fe-router",
+      "title": "router.tsx: RequireDxnumAccess + 路由",
+      "done": true
+    },
+    {
+      "id": "fe-models",
+      "title": "cabinet-models.ts: CabinetDxnumItem/Result（含 playingWindowMinutes）",
+      "done": true
+    },
+    {
+      "id": "fe-page",
+      "title": "Maimai2DxnumPage.tsx 新建（表格+Maimai2Pagination+行展开）",
+      "done": true
+    },
+    {
+      "id": "fe-i18n",
+      "title": "i18n 四份同步（src+public assets，zh/en）",
+      "done": true
+    },
+    {
+      "id": "fe-fixture",
+      "title": "fixture.ts setup() 加可选 hasManage 参数",
+      "done": true
+    },
+    {
+      "id": "fe-spec",
+      "title": "dxnum.spec.ts 新建（P0/P7无授权/P3有无授权/降级）",
+      "done": true
+    },
+    {
+      "id": "fe-build",
+      "title": "npm run build 过 + Playwright 定向验证 + commit",
+      "done": true
+    }
   ],
   "children": [],
   "parent": null,
@@ -42,5 +74,7 @@
     "tests/lcdx-regression/dxnum.spec.ts"
   ],
   "notes": "提交一律路径限定 git add <单文件>，禁 -A；不 push。dev 无 /lcdx 代理 ⇒ 手工验证走 local-server.mjs。Playwright 定向跑单 spec，按 test-results/lcdx-regression/ 是否为空判定，跑完 kill。",
-  "meta": { "prd": "../../.artifacts/dxnum-设计方案-v3.md" }
+  "meta": {
+    "prd": "../../.artifacts/dxnum-设计方案-v3.md"
+  }
 }
