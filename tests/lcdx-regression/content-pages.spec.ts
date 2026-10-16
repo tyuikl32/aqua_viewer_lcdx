@@ -12,6 +12,14 @@ const rankings = Array.from({ length: 6 }, (_, index) => ({
   score: 3015007 - index * 1000, tournamentId: 20004, rankDate: '2024-11-07T20:18:00.386097',
 }));
 
+// 届次化后页面先读 lcdx/kop/current 才会发起 rank 请求；缺此 mock 则 selectedId=null、榜单恒为空
+const currentTournament = {
+  tournamentId: 20004, kopNo: 9, shortName: 'KOP 9th', name: 'KOP 9th Qualifier',
+  musicIds: [100, 200], requiredLevel: 1,
+  openTime: '2024-11-01T00:00:00', closeTime: '2024-12-31T23:59:59',
+  isEnabled: true, isOpen: true,
+};
+
 async function mockAnnouncements(page: Page, content: unknown, translations?: unknown, type = 'UPDATE') {
   const queries: string[] = [];
   await page.route('**/lcdx/announcement/**', route => {
@@ -77,7 +85,8 @@ for (const family of ['legacy', 'liquefy', 'animal-island']) {
       await setup(page);
       await page.setViewportSize({ width, height: 900 });
       await page.addInitScript(family => localStorage.setItem('themeFamily', family), family);
-      await page.route('**/lcdx/kop/rank', route => route.fulfill({ json: rankings }));
+      await page.route('**/lcdx/kop/current', route => route.fulfill({ json: ok(currentTournament) }));
+      await page.route('**/lcdx/kop/rank*', route => route.fulfill({ json: rankings }));
       await page.goto('/mai2/kop');
       const rows = page.locator('.kop-ranking-page tbody tr');
       await expect(rows).toHaveCount(6);
@@ -109,7 +118,8 @@ for (const family of ['legacy', 'liquefy', 'animal-island']) {
 test('KOP still accepts envelope responses and an empty ranking', async ({ page }) => {
   await setup(page);
   let populated = true;
-  await page.route('**/lcdx/kop/rank', route => route.fulfill({ json: ok(populated ? rankings : []) }));
+  await page.route('**/lcdx/kop/current', route => route.fulfill({ json: ok(currentTournament) }));
+  await page.route('**/lcdx/kop/rank*', route => route.fulfill({ json: ok(populated ? rankings : []) }));
   await page.goto('/mai2/kop');
   await expect(page.locator('.kop-ranking-page tbody tr')).toHaveCount(6);
   populated = false;
