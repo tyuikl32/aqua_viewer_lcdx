@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { lcdx } from '@/lib/api/client';
 import { getCurrentUser } from '@/lib/user';
@@ -141,8 +141,8 @@ export function Maimai2DxnumPage() {
                 const isOpen = expanded.has(rowKey);
                 const playingCount = item.playing.length;
                 return (
-                  <>
-                    <tr key={rowKey} style={{ cursor: 'pointer' }} onClick={() => toggleExpand(rowKey)}>
+                  <Fragment key={rowKey}>
+                    <tr style={{ cursor: 'pointer' }} onClick={() => toggleExpand(rowKey)}>
                       <td>{item.nickName ?? '—'}</td>
                       <td>{item.locationName ?? '—'}</td>
                       <td>
@@ -163,7 +163,7 @@ export function Maimai2DxnumPage() {
                       </td>
                     </tr>
                     {isOpen && (
-                      <tr key={`${rowKey}-detail`}>
+                      <tr>
                         <td colSpan={8}>
                           <h6 className="mb-2">
                             {t('Maimai2.DxnumPage.Playing', { minutes: windowMinutes })}
@@ -183,7 +183,7 @@ export function Maimai2DxnumPage() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 );
               })}
             </tbody>
