@@ -7,7 +7,7 @@ import { restoreAccess } from '@/lib/auth/access';
 import { isAdmin, loadUser, userStore } from '@/lib/user';
 import { useStore } from '@/lib/store';
 import { notice } from '@/lib/message';
-import { MANAGE_GRANTS, useBotPermission } from '@/lib/botPermission';
+import { MANAGE_GRANTS, MANAGE_PERMISSIONS, useBotPermission } from '@/lib/botPermission';
 import { HomePage } from '@/pages/HomePage';
 import { SignInPage } from '@/pages/auth/SignInPage';
 import { SignUpPage } from '@/pages/auth/SignUpPage';
@@ -44,6 +44,7 @@ import { Maimai2RivalPage } from '@/features/mai2/Maimai2RivalPage';
 import { Maimai2CabinetsPage } from '@/features/mai2/Maimai2CabinetsPage';
 import { Maimai2RemoteControlPage } from '@/features/mai2/Maimai2RemoteControlPage';
 import { Maimai2LocksPage } from '@/features/mai2/Maimai2LocksPage';
+import { Maimai2DxnumPage } from '@/features/mai2/Maimai2DxnumPage';
 import { Maimai2CabmodePage } from '@/features/mai2/Maimai2CabmodePage';
 import { Maimai2KopRankingPage } from '@/features/mai2/Maimai2KopRankingPage';
 import { Maimai2SettingPage } from '@/features/mai2/Maimai2SettingPage';
@@ -175,6 +176,30 @@ export function RequireCabinetAdmin({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+/** 机台人数查询守卫：hasManage ∨ P≥7（统计宽、操作严；安全边界在后端 L2/L3）。
+ * 照抄 RequireCabinetManage 的「探测未完成放行、loaded 才判 denied」形状。 */
+export function RequireDxnumAccess({ children }: { children: ReactNode }) {
+  const location = useLocation();
+  const { t } = useTranslation();
+  const account = getAccount();
+  const permission = useBotPermission();
+  const denied = Boolean(account) && permission.loaded && !permission.hasManage && permission.permission < MANAGE_PERMISSIONS;
+
+  useEffect(() => {
+    if (denied) {
+      notice(t('Common.NoCabinetPermission'));
+    }
+  }, [denied, t]);
+
+  if (!account) {
+    return <Navigate to="/" replace state={{ from: location }} />;
+  }
+  if (denied) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <>{children}</>;
+}
+
 export const router = createBrowserRouter([
   {
     element: <AppShell />,
@@ -266,6 +291,15 @@ export const router = createBrowserRouter([
               </RequireCabinetAdmin>
             ),
             handle: { title: 'Maimai2.LocksPage.Title' },
+          },
+          {
+            path: 'dxnum',
+            element: (
+              <RequireDxnumAccess>
+                <Maimai2DxnumPage />
+              </RequireDxnumAccess>
+            ),
+            handle: { title: 'Maimai2.DxnumPage.Title' },
           },
         ],
       },

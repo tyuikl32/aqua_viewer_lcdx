@@ -18,6 +18,8 @@ export interface Menu {
   displayCondition: DisplayCondition;
   /** LCDX 机台管理门控：0=EP-18 hasManage；>0=permission 下限（locks 页为 4=MANAGE_GRANTS）；undefined=无门控 */
   requiredBotPermission?: number;
+  /** 额外放行：permission ≥ 该值时无视 requiredBotPermission（管理员可见）。dxnum 页用 7。 */
+  allowFromPermission?: number;
 }
 
 /**
@@ -47,6 +49,8 @@ export const menu = new Map<string, Menu[]>([
       { id: 13, name: 'RemoteControl', url: 'mai2/remotecontrol', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },
       // 操作记录与授权：P≥4（机台管理授权；Admin 授权卡 P≥7 由页面内部再分档）
       { id: 14, name: 'Locks', url: 'mai2/locks', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 4 },
+      // 机台人数查询：hasManage ∨ P≥7（统计宽、操作严）；后端可见范围 P≥7 全量 / 1≤P<7 授权 / P<1 拒
+      { id: 16, name: 'Dxnum', url: 'mai2/dxnum', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0, allowFromPermission: 7 },
       { id: 6, name: 'MusicList', url: 'mai2/songlist', displayCondition: DisplayCondition.Always },
       { id: 1, name: 'Setting', url: 'mai2/setting', displayCondition: DisplayCondition.HasProfile },
     ],
@@ -60,6 +64,9 @@ export function showItem(game: string, item: Menu, user: User | null): boolean {
     // 机台管理菜单组：附加 EP-18/EP-01 权限门控（等价旧版 menu.service.showItem）
     if (item.requiredBotPermission !== undefined && item.requiredBotPermission !== null) {
       const state = getBotPermission();
+      if (item.allowFromPermission !== undefined && state.permission >= item.allowFromPermission) {
+        return true;
+      }
       if (item.requiredBotPermission === 0) {
         return state.hasManage;
       }

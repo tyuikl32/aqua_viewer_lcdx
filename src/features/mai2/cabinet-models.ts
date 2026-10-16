@@ -53,6 +53,29 @@ export interface CabinetPlayers {
   playing: PlayingUser[];
 }
 
+/** dxnum 机台人数查询：单台统计项（无 fullKeychip） */
+export interface CabinetDxnumItem {
+  nickName: string | null;
+  locationName: string | null;
+  isSpecialMode: number;
+  level: number;
+  today: PlayerWindow;
+  halfHour: PlayerWindow;
+  oneHour: PlayerWindow;
+  twoHour: PlayerWindow;
+  playing: PlayingUser[];
+}
+
+/** dxnum 响应：matchedCount 为全范围命中总数（非当页数） */
+export interface CabinetDxnumResult {
+  keyword: string;
+  matchedCount: number;
+  page: number;
+  pageSize: number;
+  playingWindowMinutes: number;
+  items: CabinetDxnumItem[];
+}
+
 export interface DeliveryImage {
   rfState: number;
   deliveryTitle: string | null;
