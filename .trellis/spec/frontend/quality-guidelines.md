@@ -185,6 +185,13 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
     says nothing about that page.
   - Debugging a probe? `checkDbUpdate()` only calls `loadAll()` when the `/api/static/dbVersion`
     response carries `state: 'success'`; mock it without that field and no catalog ever loads.
+  - ⚠️ **Route globs must tolerate query strings** (2026-10-16, KOP 届次化事故): `page.route('**/foo/rank')`
+    requires the URL to **end** with `rank`, so a refactored page calling `rank?tournamentId=…` silently
+    falls through to the fixture catch-all and every assertion sees empty data. When a page gains query
+    parameters, widen the glob (`'**/foo/rank*'`) — and when a page gains a *new prerequisite request*
+    (e.g. KOP now reads `lcdx/kop/current` before requesting `rank`), the spec must mock it too, or the
+    dependent request never fires. Failure signature: all rows 0 / "No … configured" while the network
+    log shows 200s.
 - **i18n audit**: `node scripts/audit-i18n.mjs` checks all four resources, interpolation variables,
   literal translation calls and full-key declarations. `--dynamic` lists unresolved expressions
   for review. The parser comes from the locked Vite React plugin dependency tree; reinstall with
