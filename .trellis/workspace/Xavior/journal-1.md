@@ -814,3 +814,25 @@ Append 'CiRCLE+' (26) and 'MAGiCAL' (27) to the VERSIONS array in Maimai2SongLis
 ### Status
 
 [OK] **Completed**
+
+
+## Session 26: dxnum v4 前端：别名查询 + 绑卡门控 + netUpsert 统计卡
+
+**Date**: 2026-10-17
+**Task**: dxnum v4 前端：别名查询 + 绑卡门控 + netUpsert 统计卡
+**Branch**: `master`
+
+### Summary
+
+menu.ts 新增 requiresBoundCard（user.cards.length>0）并删除 allowFromPermission 权限组字段；RequireDxnumAccess 同口径，未绑卡跳 /dashboard。页面改查询驱动：进入空态不请求、输入别名前缀查询/回车/刷新、结果覆盖式刷新（保留竞态守卫与分页）。结果卡对齐 netUpsert：单台给标题/LC/三窗「X 人（共Y次）」/正在上机的玩家/两小时内游玩过的玩家（含次数）/没人快去霸机；多台只给当页合计 + 每台数字，页面不出现任何玩家名。i18n 四份同步（1320 键、audit errors 0）。定向 Playwright 21 passed。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `98e49bc` | (see git log) |
+| `1813194` | (see git log) |
+
+### Status
+
+[OK] **Completed**

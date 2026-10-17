@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 25
+- **Total Sessions**: 26
 - **Last Active**: 2026-10-17
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~816 | Active |
+| `journal-1.md` | ~838 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 26 | 2026-10-17 | dxnum v4 前端：别名查询 + 绑卡门控 + netUpsert 统计卡 | `98e49bc`,  `1813194` | `master` |
 | 25 | 2026-10-17 | dxnum 前端全量落地：菜单/守卫/页面/类型/i18n 四份/Playwright，并归档任务 | `2fb2ba8`,  `8faa9ee`,  `3cd5b27`,  `a0356ea` | `master` |
 | 24 | 2026-10-16 | KOP spec 夹具修复 + dxnum 真实库验收 | `50c1842` | `master` |
 | 23 | 2026-10-12 | 登录成功 toast 任务收尾：线上核实为方案 B 并归档 | `0c4ecde`, `2cabadc` | `master` |
