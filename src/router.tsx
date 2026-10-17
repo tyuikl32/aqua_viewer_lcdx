@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useState, type ReactNode } from 'react';
 import { Navigate, createBrowserRouter, useLocation, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AppShell } from '@/components/shell/AppShell';
@@ -7,7 +7,7 @@ import { restoreAccess } from '@/lib/auth/access';
 import { isAdmin, loadUser, userStore } from '@/lib/user';
 import { useStore } from '@/lib/store';
 import { notice } from '@/lib/message';
-import { MANAGE_GRANTS, MANAGE_PERMISSIONS, useBotPermission } from '@/lib/botPermission';
+import { MANAGE_GRANTS, useBotPermission } from '@/lib/botPermission';
 import { HomePage } from '@/pages/HomePage';
 import { SignInPage } from '@/pages/auth/SignInPage';
 import { SignUpPage } from '@/pages/auth/SignUpPage';
@@ -176,18 +176,20 @@ export function RequireCabinetAdmin({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-/** 机台人数查询守卫：hasManage ∨ P≥7（统计宽、操作严；安全边界在后端 L2/L3）。
- * 照抄 RequireCabinetManage 的「探测未完成放行、loaded 才判 denied」形状。 */
+/** 机台人数查询守卫（dxnum v4）：仅**已绑定卡片**的用户可访问（`user.cards.length > 0`）。
+ * 未绑卡 → 提示并回仪表板；用户资料尚未就绪时不放行（`key` 随账号变化，SPA 内换号时重置页面内部状态）。
+ * 安全边界仍在后端 401/L1 + 绑卡校验，守卫仅为 UX。 */
 export function RequireDxnumAccess({ children }: { children: ReactNode }) {
   const location = useLocation();
   const { t } = useTranslation();
   const account = getAccount();
-  const permission = useBotPermission();
-  const denied = Boolean(account) && permission.loaded && !permission.hasManage && permission.permission < MANAGE_PERMISSIONS;
+  const user = useStore(userStore);
+  const granted = (user?.cards?.length ?? 0) > 0;
+  const denied = Boolean(account) && Boolean(user) && !granted;
 
   useEffect(() => {
     if (denied) {
-      notice(t('Common.NoCabinetPermission'));
+      notice(t('Maimai2.DxnumPage.NoBindCard'));
     }
   }, [denied, t]);
 
@@ -197,7 +199,7 @@ export function RequireDxnumAccess({ children }: { children: ReactNode }) {
   if (denied) {
     return <Navigate to="/dashboard" replace />;
   }
-  return <>{children}</>;
+  return <Fragment key={user?.username ?? ''}>{children}</Fragment>;
 }
 
 export const router = createBrowserRouter([

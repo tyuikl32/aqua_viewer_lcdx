@@ -53,6 +53,13 @@ export interface CabinetPlayers {
   playing: PlayingUser[];
 }
 
+/** 两小时窗口内游玩过的玩家（按 userId 去重 + 次数；仅单台命中时下发） */
+export interface PlayerPlayCount {
+  userId: number;
+  userName: string;
+  plays: number;
+}
+
 /** dxnum 机台人数查询：单台统计项（无 fullKeychip） */
 export interface CabinetDxnumItem {
   nickName: string | null;
@@ -63,7 +70,12 @@ export interface CabinetDxnumItem {
   halfHour: PlayerWindow;
   oneHour: PlayerWindow;
   twoHour: PlayerWindow;
+  /** 仅命中恰好 1 台时非空（多台命中「隐名」，后端下发 []） */
   playing: PlayingUser[];
+  /** 仅命中恰好 1 台时非空；口径见设计 §2.1 */
+  recentPlayers: PlayerPlayCount[];
+  /** 命中多台 → true：本项不含任何玩家名字，前端据此不渲染名单 */
+  namesHidden: boolean;
 }
 
 /** dxnum 响应：matchedCount 为全范围命中总数（非当页数） */

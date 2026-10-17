@@ -18,8 +18,13 @@ export interface Menu {
   displayCondition: DisplayCondition;
   /** LCDX 机台管理门控：0=EP-18 hasManage；>0=permission 下限（locks 页为 4=MANAGE_GRANTS）；undefined=无门控 */
   requiredBotPermission?: number;
-  /** 额外放行：permission ≥ 该值时无视 requiredBotPermission（管理员可见）。dxnum 页用 7。 */
-  allowFromPermission?: number;
+  /** dxnum 页门控：仅已绑定卡片（`user.cards.length > 0`）的用户可见 —— 不再依赖权限组 */
+  requiresBoundCard?: boolean;
+}
+
+/** 绑卡判定（与 `src/lib/auth/auth.ts:30` 的「无卡用户引导」同口径） */
+function hasBoundCard(user: User | null): boolean {
+  return (user?.cards?.length ?? 0) > 0;
 }
 
 /**
@@ -49,8 +54,8 @@ export const menu = new Map<string, Menu[]>([
       { id: 13, name: 'RemoteControl', url: 'mai2/remotecontrol', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0 },
       // 操作记录与授权：P≥4（机台管理授权；Admin 授权卡 P≥7 由页面内部再分档）
       { id: 14, name: 'Locks', url: 'mai2/locks', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 4 },
-      // 机台人数查询：hasManage ∨ P≥7（统计宽、操作严）；后端可见范围 P≥7 全量 / 1≤P<7 授权 / P<1 拒
-      { id: 16, name: 'Dxnum', url: 'mai2/dxnum', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 0, allowFromPermission: 7 },
+      // 机台人数查询：仅绑卡用户可见（不再看权限组/辖区；可见性靠「知道别名 + 多台隐名」）
+      { id: 16, name: 'Dxnum', url: 'mai2/dxnum', displayCondition: DisplayCondition.AfterLogin, requiresBoundCard: true },
       { id: 6, name: 'MusicList', url: 'mai2/songlist', displayCondition: DisplayCondition.Always },
       { id: 1, name: 'Setting', url: 'mai2/setting', displayCondition: DisplayCondition.HasProfile },
     ],
@@ -61,12 +66,13 @@ export function showItem(game: string, item: Menu, user: User | null): boolean {
   if (item.displayCondition === DisplayCondition.Always) {
     return true;
   } else if (item.displayCondition === DisplayCondition.AfterLogin && getAccount()) {
+    // dxnum：绑卡门控先于权限组门控（两者互斥使用，见 Menu 字段注释）
+    if (item.requiresBoundCard && !hasBoundCard(user)) {
+      return false;
+    }
     // 机台管理菜单组：附加 EP-18/EP-01 权限门控（等价旧版 menu.service.showItem）
     if (item.requiredBotPermission !== undefined && item.requiredBotPermission !== null) {
       const state = getBotPermission();
-      if (item.allowFromPermission !== undefined && state.permission >= item.allowFromPermission) {
-        return true;
-      }
       if (item.requiredBotPermission === 0) {
         return state.hasManage;
       }
