@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 28
+- **Total Sessions**: 29
 - **Last Active**: 2026-10-18
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~881 | Active |
+| `journal-1.md` | ~902 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 29 | 2026-10-18 | dxnum UI 修复：标题改用 page-heading 约定（间距 + 装饰条归位） | pending | `master` |
 | 28 | 2026-10-18 | dxnum v6 前端：操作记录筛选项补 dxnum-query | `3e95227` | `master` |
 | 27 | 2026-10-17 | dxnum v5 前端：位置名遮蔽 + 别名回退渲染 | `c55672d`,  `d4a290a` | `master` |
 | 26 | 2026-10-17 | dxnum v4 前端：别名查询 + 绑卡门控 + netUpsert 统计卡 | `98e49bc`,  `1813194` | `master` |

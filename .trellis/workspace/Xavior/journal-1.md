@@ -879,3 +879,24 @@ Maimai2LocksPage 的 ACTIONS 下拉追加 dxnum-query，用户可在 /mai2/locks
 ### Status
 
 [OK] **Completed**
+
+
+## Session 29: dxnum UI 修复：标题改用 page-heading 约定（间距 + 装饰条归位）
+
+**Date**: 2026-10-18
+**Task**: dxnum UI 修复：标题改用 page-heading 约定（间距 + 装饰条归位）
+**Branch**: `master`
+
+### Summary
+
+用户反馈标题与查询框太挤。根因是本页用 div.page-heading 包整页 + h2.card-title（.card-title 仅 8px 下边距），导致 ::after 装饰条被排到页面底部。改为全仓约定的 h1.page-heading + Fragment。探针实测：page-heading 元素数 1、间距 24px、底部无孤立装饰条；截图存 .artifacts/dxnum-ui-{empty,single}.png。build 过、定向 Playwright 24 passed。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `pending` | (see git log) |
+
+### Status
+
+[OK] **Completed**
