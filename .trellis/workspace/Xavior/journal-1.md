@@ -895,7 +895,7 @@ Maimai2LocksPage 的 ACTIONS 下拉追加 dxnum-query，用户可在 /mai2/locks
 
 | Hash | Message |
 |------|---------|
-| `pending` | (see git log) |
+| `db0d967` | fix(dxnum): 标题改用 page-heading 约定，修复与查询行间距及装饰条错位 |
 
 ### Status
 
