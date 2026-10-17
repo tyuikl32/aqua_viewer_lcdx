@@ -38,21 +38,14 @@ jobs:
       - name: Compress dist folder
         run: tar -czf dist.tar.gz dist/
 
-      - name: Delete old artifacts
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          ids=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?per_page=100" --paginate --jq '.artifacts[].id')
-          for id in $ids; do
-            echo "Deleting artifact $id"
-            gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/artifacts/$id" || true
-          done
-
       - name: Delete failed workflow runs
+        # 只清理本 workflow（deploy-test-server.yml）的失败 run，不再全仓库乱删；
+        # 清理动作本身失败也不阻塞后面的上传与部署。
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ids=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100" --paginate --jq '.workflow_runs[] | select(.conclusion == "failure") | .id')
+          ids=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/deploy-test-server.yml/runs?per_page=100" --paginate --jq '.workflow_runs[] | select(.conclusion == "failure") | .id')
           for id in $ids; do
             echo "Deleting failed run $id"
             gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$id" || true
@@ -63,7 +56,90 @@ jobs:
         with:
           name: dist
           path: dist.tar.gz
-          retention-days: 7
+          # 90 天是 GitHub 允许的上限（retention-days 取值 1-90），
+          # 需要更长期留存请改用 Releases，而不是 artifact。
+          retention-days: 90
+
+  # 只保留最新 3 个构建的产物：本次构建 + 之前最新 2 次成功构建。
+  # 删除范围严格限定在本 workflow 产生的 artifact，其它 workflow 的产物一律不碰。
+  prune:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: Keep only the latest 3 builds
+        uses: actions/github-script@v7
+        # 清理是辅助动作：即使它失败也不应挡住部署。
+        continue-on-error: true
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const workflowPath = '.github/workflows/deploy-test-server.yml';
+            const TOTAL_KEEP = 3; // 本次运行 + 之前最新 2 次成功构建
+
+            // 1) 定位本 workflow，避免误删其它 workflow 的产物
+            const workflows = await github.paginate(github.rest.actions.listRepoWorkflows, {
+              owner, repo, per_page: 100,
+            });
+            const wf = workflows.find((w) => w.path === workflowPath);
+            if (!wf) {
+              core.setFailed(`workflow ${workflowPath} not found; nothing deleted`);
+              return;
+            }
+
+            // 2) 保留集合：本次运行（产物刚上传完，尚未计入 success 列表）+ 之前最新 (TOTAL_KEEP - 1) 次成功构建
+            const keepIds = new Set([context.runId]);
+            const succeeded = await github.paginate(github.rest.actions.listWorkflowRuns, {
+              owner, repo, workflow_id: wf.id, status: 'success', per_page: 100,
+            });
+            for (const r of succeeded) {
+              if (keepIds.size >= TOTAL_KEEP) break;
+              keepIds.add(r.id);
+            }
+
+            // 3) 本 workflow 的全部 run，作为删除范围白名单
+            const ownRuns = await github.paginate(github.rest.actions.listWorkflowRuns, {
+              owner, repo, workflow_id: wf.id, per_page: 100,
+            });
+            const ownRunIds = new Set(ownRuns.map((r) => r.id));
+            ownRunIds.add(context.runId);
+
+            // 4) 遍历仓库内 artifact，只删本 workflow 中超出保留集合的那些
+            const artifacts = await github.paginate(github.rest.actions.listArtifactsForRepo, {
+              owner, repo, per_page: 100,
+            });
+            const log = [];
+            let deleted = 0, kept = 0, untouched = 0, failed = 0, freed = 0;
+
+            for (const a of artifacts) {
+              const runId = a.workflow_run && a.workflow_run.id;
+              if (!runId || !ownRunIds.has(runId)) { untouched++; continue; }
+              if (keepIds.has(runId)) {
+                kept++;
+                log.push(`keep    ${a.name} (run ${runId}, expires ${a.expires_at})`);
+                continue;
+              }
+              const mb = (a.size_in_bytes / 1048576).toFixed(1);
+              try {
+                await github.rest.actions.deleteArtifact({ owner, repo, artifact_id: a.id });
+                deleted++; freed += a.size_in_bytes;
+                log.push(`deleted ${a.name} (${mb} MB, run ${runId})`);
+              } catch (e) {
+                failed++;
+                log.push(`FAILED  ${a.name} (${mb} MB, run ${runId}): ${e.message}`);
+              }
+            }
+
+            if (failed > 0) core.setFailed(`${failed} artifact(s) could not be deleted`);
+
+            await core.summary
+              .addHeading('Prune artifacts (keep latest 3 builds)')
+              .addRaw(`kept runs: ${[...keepIds].map((id) => `\`${id}\``).join(', ')}`).addEol()
+              .addRaw(`deleted=${deleted} · kept artifacts=${kept} · untouched (other workflows)=${untouched} · failed=${failed} · freed=${(freed / 1048576).toFixed(1)} MB`).addEol()
+              .addCodeBlock(log.slice(0, 300).join('\n') || '(nothing to do)', 'text')
+              .write();
 
   deploy:
     needs: build
