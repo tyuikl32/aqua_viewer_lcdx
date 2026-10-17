@@ -115,8 +115,10 @@ export function Maimai2DxnumPage() {
   const multi = hasItems && !single;
 
   return (
-    <div className="page-heading">
-      <h2 className="card-title">{t('Maimai2.DxnumPage.Title')}</h2>
+    <>
+      {/* 标题用全仓统一约定 h1.page-heading（1.5rem 下边距 + 标题下方装饰条）；
+          此前误用 div.page-heading 包裹整页 + h2.card-title，导致标题与查询行只隔 8px、装饰条被推到页面底部 */}
+      <h1 className="page-heading">{t('Maimai2.DxnumPage.Title')}</h1>
 
       <div className="d-flex gap-2 mb-3 flex-wrap">
         <input
@@ -175,7 +177,7 @@ export function Maimai2DxnumPage() {
           onPageChange={changePage}
         />
       )}
-    </div>
+    </>
   );
 }
 
