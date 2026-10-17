@@ -37,6 +37,8 @@ const ACTIONS = [
   'grant-remove',
   'perm-set',
   'perm-remove',
+  // v6：dxnum 查询溯源（每次机台人数查询落一条）
+  'dxnum-query',
 ];
 
 type MemberSortKey = 'qqNumber' | 'permission' | 'note' | 'addedSince';
