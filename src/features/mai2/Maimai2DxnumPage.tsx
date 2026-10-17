@@ -192,6 +192,10 @@ function SingleCabinetCard({ item }: { item: CabinetDxnumItem }) {
       <div className="card-body">
         <h5 className="card-title mb-3">
           {t('Maimai2.DxnumPage.SingleTitle', { location })}{' '}
+          {/* v5：有位置权限时补一个别名 badge，让「位置 + 别名」同时可见；低权限时标题本身就是别名 */}
+          {item.locationVisible && item.nickName ? (
+            <span className="badge text-bg-secondary me-1">{item.nickName}</span>
+          ) : null}
           <span className={`badge ${item.isSpecialMode > 0 ? 'text-bg-warning' : 'text-bg-secondary'}`}>LC</span>
         </h5>
         <div className="mb-2">
@@ -238,6 +242,8 @@ function MultiCabinetCard({ items, matchedCount }: { items: CabinetDxnumItem[]; 
   const { t } = useTranslation();
   const totals = sumWindows(items);
   const location = items[0].locationName ?? items[0].nickName ?? '—';
+  // v5：位置名由后端按权限脱敏；无任何一台可见位置时整列不渲染（第一列已是别名，避免重复列）
+  const showLocation = items.some((i) => i.locationVisible);
 
   return (
     <div className="card">
@@ -253,7 +259,7 @@ function MultiCabinetCard({ items, matchedCount }: { items: CabinetDxnumItem[]; 
             <thead>
               <tr>
                 <th>{t('Maimai2.DxnumPage.ColCabinet')}</th>
-                <th>{t('Maimai2.DxnumPage.ColLocation')}</th>
+                {showLocation && <th>{t('Maimai2.DxnumPage.ColLocation')}</th>}
                 <th>{t('Maimai2.DxnumPage.ColLcMode')}</th>
                 <th className="text-center">{t('Maimai2.DxnumPage.HalfHourShort')}</th>
                 <th className="text-center">{t('Maimai2.DxnumPage.OneHourShort')}</th>
@@ -264,7 +270,7 @@ function MultiCabinetCard({ items, matchedCount }: { items: CabinetDxnumItem[]; 
               {items.map((item, index) => (
                 <tr key={`${item.nickName ?? ''}-${index}`}>
                   <td>{item.nickName ?? '—'}</td>
-                  <td>{item.locationName ?? '—'}</td>
+                  {showLocation && <td>{item.locationName ?? '—'}</td>}
                   <td>
                     {item.isSpecialMode > 0 ? (
                       <span className="badge text-bg-warning">LC</span>

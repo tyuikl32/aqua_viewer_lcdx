@@ -63,7 +63,10 @@ export interface PlayerPlayCount {
 /** dxnum 机台人数查询：单台统计项（无 fullKeychip） */
 export interface CabinetDxnumItem {
   nickName: string | null;
+  /** v5：仅当调用者权限 ≥ ManageGrants(4) 时才有真实位置名，否则为 null（脱敏在服务端） */
   locationName: string | null;
+  /** v5：调用者是否有权看到真实位置名；false 时前端一律以别名呈现 */
+  locationVisible: boolean;
   isSpecialMode: number;
   level: number;
   today: PlayerWindow;
