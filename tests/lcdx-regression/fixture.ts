@@ -6,10 +6,93 @@ export const user = {
   cards: [{ default: true, extId: '100', luid: '12345678901234567890' }],
   defaultCard: { extId: '100', luid: '12345678901234567890' },
 };
+
+/** 未绑卡用户（dxnum v4 绑卡准入的负例）；其余字段与 user 保持一致 */
+export const unboundUser = {
+  username: '123456',
+  roles: [],
+  cards: [],
+};
+
 export const ok = (data: unknown) => ({ status: { code: 92001 }, data });
 
-export async function setup(page: Page, permission = 10, cached = true, authenticated = true, hasManage?: boolean) {
+/** 绑卡控制：默认 'bound' 保持既有 spec 的隐含前提（user 一直带 cards）不变 */
+export type CardsMode = 'bound' | 'none';
+
+/** dxnum mock 按 keyword 分流：dw → 多台隐名、dw1 → 单台明细、其他 → 0 命中 */
+export function dxnumResponse(keyword: string, page = 1, pageSize = 20) {
+  const base = { keyword, page, pageSize, playingWindowMinutes: 20 };
+  if (keyword === 'dw1') {
+    return {
+      ...base,
+      matchedCount: 1,
+      items: [
+        {
+          nickName: 'dw1',
+          locationName: 'LocOne',
+          isSpecialMode: 1,
+          level: 5,
+          today: { players: 3, plays: 5 },
+          halfHour: { players: 1, plays: 1 },
+          oneHour: { players: 2, plays: 3 },
+          twoHour: { players: 3, plays: 5 },
+          playing: [{ userId: 1, userName: 'AlphaPlayer', lastPlayDate: '2026-10-16T21:00:00' }],
+          recentPlayers: [
+            { userId: 1, userName: 'AlphaPlayer', plays: 3 },
+            { userId: 2, userName: 'BetaPlayer', plays: 2 },
+          ],
+          namesHidden: false,
+        },
+      ],
+    };
+  }
+  if (keyword === 'dw') {
+    return {
+      ...base,
+      matchedCount: 2,
+      items: [
+        {
+          nickName: 'dw1',
+          locationName: 'LocA',
+          isSpecialMode: 0,
+          level: 4,
+          today: { players: 2, plays: 2 },
+          halfHour: { players: 2, plays: 2 },
+          oneHour: { players: 2, plays: 2 },
+          twoHour: { players: 2, plays: 2 },
+          playing: [],
+          recentPlayers: [],
+          namesHidden: true,
+        },
+        {
+          nickName: 'dw2',
+          locationName: 'LocB',
+          isSpecialMode: 0,
+          level: 3,
+          today: { players: 1, plays: 1 },
+          halfHour: { players: 1, plays: 1 },
+          oneHour: { players: 1, plays: 1 },
+          twoHour: { players: 1, plays: 1 },
+          playing: [],
+          recentPlayers: [],
+          namesHidden: true,
+        },
+      ],
+    };
+  }
+  return { ...base, matchedCount: 0, items: [] };
+}
+
+export async function setup(
+  page: Page,
+  permission = 10,
+  cached = true,
+  authenticated = true,
+  hasManage?: boolean,
+  cards: CardsMode = 'bound',
+) {
   const requests: string[] = [];
+  const effectiveUser = cards === 'none' ? unboundUser : user;
   await page.addInitScript(({ user, cached, authenticated }) => {
     if (authenticated) {
       localStorage.setItem('currentAccount', JSON.stringify({
@@ -21,7 +104,7 @@ export async function setup(page: Page, permission = 10, cached = true, authenti
     if (cached) localStorage.setItem('currentUser', JSON.stringify(user));
     localStorage.setItem('lang', 'en');
     localStorage.setItem('dbVersion', '1');
-  }, { user, cached, authenticated });
+  }, { user: effectiveUser, cached, authenticated });
 
   // hasManage 默认沿用旧行为（permission > 0），允许显式覆盖以测 P7+无授权等场景
   const effectiveHasManage = hasManage ?? (permission > 0);
@@ -35,7 +118,7 @@ export async function setup(page: Page, permission = 10, cached = true, authenti
     }
     requests.push(url.pathname + url.search);
     let data: unknown = null;
-    if (url.pathname === '/api/user/me') data = user;
+    if (url.pathname === '/api/user/me') data = effectiveUser;
     else if (url.pathname === '/api/account/status') data = { banned: false, appeal: '' };
     else if (url.pathname.includes('/permission/')) data = { permission, qqNumber: 123456 };
     else if (url.pathname.includes('/manage-access/')) data = { hasManage: effectiveHasManage };
@@ -49,23 +132,10 @@ export async function setup(page: Page, permission = 10, cached = true, authenti
     } else if (url.pathname.includes('/locks/')) {
       data = { items: [], total: 45 };
     } else if (url.pathname.includes('/dxnum/')) {
-      data = {
-        keyword: '',
-        matchedCount: 2,
-        page: 1,
-        pageSize: 20,
-        playingWindowMinutes: 20,
-        items: [
-          { nickName: 'Cabinet A', locationName: 'LocA', isSpecialMode: 0, level: 4,
-            today: { players: 1, plays: 1 }, halfHour: { players: 1, plays: 1 },
-            oneHour: { players: 1, plays: 1 }, twoHour: { players: 1, plays: 1 },
-            playing: [{ userId: 1, userName: 'p1', lastPlayDate: '2026-10-16T21:00:00' }] },
-          { nickName: 'Cabinet B', locationName: 'LocB', isSpecialMode: 1, level: 3,
-            today: { players: 0, plays: 0 }, halfHour: { players: 0, plays: 0 },
-            oneHour: { players: 0, plays: 0 }, twoHour: { players: 0, plays: 0 },
-            playing: [] },
-        ],
-      };
+      const keyword = (url.searchParams.get('keyword') ?? '').trim();
+      const pageNo = Number(url.searchParams.get('page') ?? '1');
+      const pageSize = Number(url.searchParams.get('pageSize') ?? '20');
+      data = dxnumResponse(keyword, pageNo, pageSize);
     }
     if (url.pathname.includes('/version')) {
       return route.fulfill({ json: { version: { major: 1 } } });
