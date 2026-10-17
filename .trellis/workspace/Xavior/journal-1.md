@@ -858,3 +858,24 @@ menu.ts 新增 requiresBoundCard（user.cards.length>0）并删除 allowFromPerm
 ### Status
 
 [OK] **Completed**
+
+
+## Session 28: dxnum v6 前端：操作记录筛选项补 dxnum-query
+
+**Date**: 2026-10-18
+**Task**: dxnum v6 前端：操作记录筛选项补 dxnum-query
+**Branch**: `master`
+
+### Summary
+
+Maimai2LocksPage 的 ACTIONS 下拉追加 dxnum-query，用户可在 /mai2/locks 直接筛出 dxnum 查询溯源行（此前只能写 SQL）。npm run build 与 i18n audit（1320×4）全绿，定向 Playwright 24 passed。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3e95227` | (see git log) |
+
+### Status
+
+[OK] **Completed**
