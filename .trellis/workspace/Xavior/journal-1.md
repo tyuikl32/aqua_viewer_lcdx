@@ -790,3 +790,27 @@ Append 'CiRCLE+' (26) and 'MAGiCAL' (27) to the VERSIONS array in Maimai2SongLis
 ### Status
 
 [OK] **Completed**
+
+
+## Session 25: dxnum 前端全量落地：菜单/守卫/页面/类型/i18n 四份/Playwright，并归档任务
+
+**Date**: 2026-10-17
+**Task**: dxnum 前端全量落地：菜单/守卫/页面/类型/i18n 四份/Playwright，并归档任务
+**Branch**: `master`
+
+### Summary
+
+按 .artifacts/dxnum-设计方案-v3.md §3/§5 落地：menu.ts 加 allowFromPermission + 菜单 id 16；router.tsx 加 RequireDxnumAccess + /mai2/dxnum 路由；新建 Maimai2DxnumPage.tsx（查询/刷新/分页/行展开在玩名单/动态分钟文案）；cabinet-models.ts 加两类型；i18n 四份（src+public assets，zh/en）同步；fixture.ts setup() 加可选 hasManage；dxnum.spec.ts 7 用例。npm run build 过，Playwright 定向 dxnum+guards 18/18，全量回归 67/67。修 Fragment key。未 push。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2fb2ba8` | (see git log) |
+| `8faa9ee` | (see git log) |
+| `3cd5b27` | (see git log) |
+| `a0356ea` | (see git log) |
+
+### Status
+
+[OK] **Completed**
