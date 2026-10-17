@@ -836,3 +836,25 @@ menu.ts 新增 requiresBoundCard（user.cards.length>0）并删除 allowFromPerm
 ### Status
 
 [OK] **Completed**
+
+
+## Session 27: dxnum v5 前端：位置名遮蔽 + 别名回退渲染
+
+**Date**: 2026-10-17
+**Task**: dxnum v5 前端：位置名遮蔽 + 别名回退渲染
+**Branch**: `master`
+
+### Summary
+
+类型加 locationVisible；单台卡标题回退链落到别名、有位置权限时补别名 badge；多台卡 showLocation = items.some(locationVisible)，低权限时位置列整列不渲染，标题同样回退别名。i18n 不新增键（四份 1320）。fixture 的 dxnumResponse 增 permission 维度脱敏；新增 3 条 Playwright 用例（P3 多台无位置/无位置列、P3 单台标题回退别名、P4 位置可见）。定向 24 passed，build 与 i18n audit 全绿。
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c55672d` | (see git log) |
+| `d4a290a` | (see git log) |
+
+### Status
+
+[OK] **Completed**
