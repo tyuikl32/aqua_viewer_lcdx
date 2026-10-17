@@ -103,3 +103,50 @@ test.describe('dxnum alias query results', () => {
     await expect(page.locator('table')).toHaveCount(0);
   });
 });
+
+/** v5：真实位置名只发给权限 ≥ ManageGrants(4) 的调用者；其余一律以别名呈现 */
+test.describe('dxnum location masking', () => {
+  test('P3 sees only the alias: no concrete location, no Location column', async ({ page }) => {
+    await setup(page, 3, true, true, true);
+    await page.goto(DXNUM_URL);
+    await expect(page.getByText('Type an alias prefix and search')).toBeVisible();
+
+    await search(page, 'dw');
+
+    // 标题里的「xxx」变成别名（第一个命中的别名），整页不出现具体位置名
+    await expect(page.getByRole('heading', { name: 'Realtime stats for 2 cabinets such as dw1' })).toBeVisible();
+    await expect(page.getByText('LocA')).toHaveCount(0);
+    await expect(page.getByText('LocB')).toHaveCount(0);
+    // 低权限：位置列整列不渲染（第一列已是别名）
+    await expect(page.getByRole('columnheader', { name: 'Location' })).toHaveCount(0);
+    await expect(page.getByRole('columnheader', { name: 'Cabinet' })).toBeVisible();
+  });
+
+  test('P3 single match: the title falls back to the alias', async ({ page }) => {
+    await setup(page, 3, true, true, true);
+    await page.goto(DXNUM_URL);
+    await expect(page.getByText('Type an alias prefix and search')).toBeVisible();
+
+    await search(page, 'dw1');
+
+    await expect(page.getByRole('heading', { name: 'Realtime stats for dw1' })).toBeVisible();
+    await expect(page.getByText('LocOne')).toHaveCount(0);
+    // 单台明细仍在（只是位置名被遮蔽）
+    await expect(page.getByText('Playing now:')).toBeVisible();
+    await expect(page.getByText('AlphaPlayer', { exact: true })).toBeVisible();
+  });
+
+  test('P4 and above still see the concrete location', async ({ page }) => {
+    await setup(page, 4, true, true, true);
+    await page.goto(DXNUM_URL);
+    await expect(page.getByText('Type an alias prefix and search')).toBeVisible();
+
+    await search(page, 'dw');
+
+    await expect(page.getByRole('heading', { name: 'Realtime stats for 2 cabinets such as LocA' })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Location' })).toBeVisible();
+    await expect(page.getByText('LocB')).toBeVisible();
+    // 别名列照旧（位置 + 别名同现）
+    await expect(page.getByText('dw2', { exact: true })).toBeVisible();
+  });
+});

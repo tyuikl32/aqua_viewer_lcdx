@@ -19,9 +19,12 @@ export const ok = (data: unknown) => ({ status: { code: 92001 }, data });
 /** 绑卡控制：默认 'bound' 保持既有 spec 的隐含前提（user 一直带 cards）不变 */
 export type CardsMode = 'bound' | 'none';
 
-/** dxnum mock 按 keyword 分流：dw → 多台隐名、dw1 → 单台明细、其他 → 0 命中 */
-export function dxnumResponse(keyword: string, page = 1, pageSize = 20) {
+/** dxnum mock 按 keyword 分流：dw → 多台隐名、dw1 → 单台明细、其他 → 0 命中。
+ *  v5：位置名按调用者权限脱敏 —— permission >= 4（ManageGrants）才给真实位置名。 */
+export function dxnumResponse(keyword: string, page = 1, pageSize = 20, permission = 10) {
   const base = { keyword, page, pageSize, playingWindowMinutes: 20 };
+  const locationVisible = permission >= 4;
+  const place = (name: string) => (locationVisible ? name : null);
   if (keyword === 'dw1') {
     return {
       ...base,
@@ -29,7 +32,8 @@ export function dxnumResponse(keyword: string, page = 1, pageSize = 20) {
       items: [
         {
           nickName: 'dw1',
-          locationName: 'LocOne',
+          locationName: place('LocOne'),
+          locationVisible,
           isSpecialMode: 1,
           level: 5,
           today: { players: 3, plays: 5 },
@@ -53,7 +57,8 @@ export function dxnumResponse(keyword: string, page = 1, pageSize = 20) {
       items: [
         {
           nickName: 'dw1',
-          locationName: 'LocA',
+          locationName: place('LocA'),
+          locationVisible,
           isSpecialMode: 0,
           level: 4,
           today: { players: 2, plays: 2 },
@@ -66,7 +71,8 @@ export function dxnumResponse(keyword: string, page = 1, pageSize = 20) {
         },
         {
           nickName: 'dw2',
-          locationName: 'LocB',
+          locationName: place('LocB'),
+          locationVisible,
           isSpecialMode: 0,
           level: 3,
           today: { players: 1, plays: 1 },
@@ -135,7 +141,7 @@ export async function setup(
       const keyword = (url.searchParams.get('keyword') ?? '').trim();
       const pageNo = Number(url.searchParams.get('page') ?? '1');
       const pageSize = Number(url.searchParams.get('pageSize') ?? '20');
-      data = dxnumResponse(keyword, pageNo, pageSize);
+      data = dxnumResponse(keyword, pageNo, pageSize, permission);
     }
     if (url.pathname.includes('/version')) {
       return route.fulfill({ json: { version: { major: 1 } } });
