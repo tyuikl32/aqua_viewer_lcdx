@@ -134,10 +134,12 @@ jobs:
 
             if (failed > 0) core.setFailed(`${failed} artifact(s) could not be deleted`);
 
+            // 注意：@actions/core 的 Summary 只提供 addEOL()（EOL 全大写），没有 addEol()。
+            // 这里用 addRaw(text, true) 追加换行，避免再踩大小写坑。
             await core.summary
               .addHeading('Prune artifacts (keep latest 3 builds)')
-              .addRaw(`kept runs: ${[...keepIds].map((id) => `\`${id}\``).join(', ')}`).addEol()
-              .addRaw(`deleted=${deleted} · kept artifacts=${kept} · untouched (other workflows)=${untouched} · failed=${failed} · freed=${(freed / 1048576).toFixed(1)} MB`).addEol()
+              .addRaw(`kept runs: ${[...keepIds].map((id) => `\`${id}\``).join(', ')}`, true)
+              .addRaw(`deleted=${deleted} · kept artifacts=${kept} · untouched (other workflows)=${untouched} · failed=${failed} · freed=${(freed / 1048576).toFixed(1)} MB`, true)
               .addCodeBlock(log.slice(0, 300).join('\n') || '(nothing to do)', 'text')
               .write();
 
