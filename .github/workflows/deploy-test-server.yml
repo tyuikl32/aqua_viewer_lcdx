@@ -163,7 +163,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           source: "dist.tar.gz"
-          target: "/root/"
+          target: "/tmp/lcdx-portal"
+          overwrite: true
 
       - name: Run deployment script on server
         if: env.HAS_DEPLOY_SECRETS == 'true'
@@ -175,9 +176,33 @@ jobs:
           port: 22
           script: |
             set -euo pipefail
-            cd /root
+            STAGE=/tmp/lcdx-portal
+            DOC=/www/wwwroot/lcdxnet.am-allnet.com
+
+            # 解包。注意 build 步骤用的是 tar -czf dist.tar.gz dist/，
+            # 所以包内带 dist/ 前缀，解出来就是 $STAGE/dist/。
+            cd "$STAGE"
             rm -rf dist
             tar -xzf dist.tar.gz
-            docker exec nginx rm -rf /var/www/portal
-            docker cp /root/dist nginx:/var/www/portal
+
+            # 只同步前端产物。--delete 负责清掉过期的哈希包；
+            # 下面 exclude 的都是站点自有文件（公告/媒体/字体/404/配置），
+            # 它们不在 dist 里，不排除就会被 --delete 删掉。
+            rsync -a --delete \
+              --exclude=announcement \
+              --exclude=media \
+              --exclude=web_config \
+              --exclude='*.ttf' \
+              --exclude=404.html \
+              --exclude=web.config \
+              --exclude=.user.ini \
+              --exclude=.htaccess \
+              "$STAGE/dist/" "$DOC/"
+
+            # .user.ini 被宝塔设了 chattr +i，chown/chmod 会报 Operation not permitted；
+            # 这里容错处理，不要让它中断部署。
+            chown -R www:www "$DOC" 2>/dev/null || true
+            find "$DOC" -type d -exec chmod 755 {} + 2>/dev/null || true
+            find "$DOC" -type f -exec chmod 644 {} + 2>/dev/null || true
+
             echo "Finished React deployment for ${{ github.sha }}"
