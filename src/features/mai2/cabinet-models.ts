@@ -35,6 +35,10 @@ export interface CabinetInfo {
 export interface PlayerWindow {
   players: number;
   plays: number;
+  /** 窗口区间起点（闭区间）。今日窗口 = 当日 00:00；其余 = snapshotTime 往前推 N 分/时 */
+  from?: string;
+  /** 窗口区间终点（闭区间）= 该次统计的快照时刻 */
+  to?: string;
 }
 
 export interface PlayingUser {
@@ -58,6 +62,8 @@ export interface PlayerPlayCount {
   userId: number;
   userName: string;
   plays: number;
+  /** 该玩家最新一条游玩时刻（打码只影响 userName，不影响本字段） */
+  lastPlayDate?: string;
 }
 
 /** dxnum 机台人数查询：单台统计项（无 fullKeychip） */
@@ -88,6 +94,8 @@ export interface CabinetDxnumResult {
   page: number;
   pageSize: number;
   playingWindowMinutes: number;
+  /** 本次统计的快照时刻（四窗与在玩判定的基准取时）。与信封 time（响应生成时刻）语义不同 */
+  snapshotTime?: string;
   items: CabinetDxnumItem[];
 }
 
