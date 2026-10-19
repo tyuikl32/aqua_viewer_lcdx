@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api, lcdx } from '@/lib/api/client';
+import { isGuofuCardNumber } from '@/lib/guofuCard';
 import { translate } from '@/lib/i18n';
 import { notice } from '@/lib/message';
-import { isOk } from '@/lib/models';
+import { isOk, StatusCode } from '@/lib/models';
 import { getCurrentUser, loadUser } from '@/lib/user';
 import type { DisplayMaimai2Profile } from './models';
 import './Maimai2SettingPage.css';
@@ -49,6 +50,8 @@ export function Maimai2SettingPage() {
   const [mergeRequested, setMergeRequested] = useState(false);
   const [mergeRequestLoading, setMergeRequestLoading] = useState(false);
   const [mergeCardId, setMergeCardId] = useState('');
+  /** 默认卡是国服卡号时才渲染引继入口（镜像后端 TryConvertCardIdToUserId） */
+  const [mergeEligible, setMergeEligible] = useState(false);
   const [mergeLastRequestDate, setMergeLastRequestDate] = useState<string | null>(null);
   const [mergeLastSuccessDate, setMergeLastSuccessDate] = useState<string | null>(null);
 
@@ -60,6 +63,11 @@ export function Maimai2SettingPage() {
     lcdx
       .get(`lcdx/mergeRegistry/${user}/${encodeURIComponent(cardId)}`)
       .then((resp) => {
+        // 94001 = 后端不认这个卡号（与本地判定漂移时兜底：隐藏入口，而不是留一个必失败的按钮）
+        if (resp?.status?.code === StatusCode.BAD_REQUEST) {
+          setMergeEligible(false);
+          return;
+        }
         if (isOk(resp)) {
           setMergeRequested(resp.data?.isOnRequest === true);
           setMergeLastRequestDate(normalizeMergeDate(resp.data?.lastRequestDate));
@@ -75,8 +83,11 @@ export function Maimai2SettingPage() {
         await loadUser();
         const user = getCurrentUser();
         const id = String(user?.defaultCard?.extId ?? '');
+        const mergeLuid = String(user?.defaultCard?.luid ?? '');
         setAimeId(id);
-        setMergeCardId(String(user?.defaultCard?.luid ?? ''));
+        setMergeCardId(mergeLuid);
+        // 引继入口只对「国服卡号」开放：非国服卡整块不渲染，避免点了必然失败
+        setMergeEligible(isGuofuCardNumber(mergeLuid));
 
         // LCDX account tools must not depend on unrelated game-profile availability.
         const results = await Promise.allSettled([
@@ -110,11 +121,11 @@ export function Maimai2SettingPage() {
   }, []);
 
   useEffect(() => {
-    if (mergeCardId) {
+    if (mergeEligible && mergeCardId) {
       loadMergeRequestStatus(mergeCardId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mergeCardId]);
+  }, [mergeCardId, mergeEligible]);
 
   const changeUserName = async () => {
     if (!userNameTouched) return;
@@ -373,43 +384,45 @@ export function Maimai2SettingPage() {
           </div>
 
           {/* LCDX：国服数据引继卡（等价旧版 MergeRequest：状态查询 + 请求/取消 + 日期展示） */}
-          <div className="card mb-3">
-            <div className="card-header">{t('Maimai2.Setting.MergeRequest')}</div>
-            <div className="card-body">
-              <h5 className="card-title">{t('Maimai2.Setting.MergeRequestTitle')}</h5>
-              <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
-                <div className="text-muted small">{t('Maimai2.Setting.MergeRequestSubTitle')}</div>
-                <button
-                  type="button"
-                  className={`btn flex-shrink-0 ${mergeRequested ? 'btn-danger' : 'btn-primary'}`}
-                  disabled={mergeRequestLoading || !mergeCardId}
-                  onClick={() =>
-                    void (mergeRequested ? cancelMergeRequest() : requestMergeFromDefaultServer())
-                  }
-                >
-                  {mergeRequestLoading
-                    ? t('Maimai2.Setting.MergeRequestLoading')
-                    : mergeRequested
-                      ? t('Maimai2.Setting.MergeCancelButton')
-                      : t('Maimai2.Setting.MergeRequestButton')}
-                </button>
-              </div>
-              {(mergeLastRequestDate || mergeLastSuccessDate) && (
-                <div className="text-muted small mt-2">
-                  {mergeLastRequestDate && (
-                    <div>
-                      {t('Maimai2.Setting.MergeLastRequestDate')}: {mergeLastRequestDate}
-                    </div>
-                  )}
-                  {mergeLastSuccessDate && (
-                    <div>
-                      {t('Maimai2.Setting.MergeLastSuccessDate')}: {mergeLastSuccessDate}
-                    </div>
-                  )}
+          {mergeEligible && (
+            <div className="card mb-3">
+              <div className="card-header">{t('Maimai2.Setting.MergeRequest')}</div>
+              <div className="card-body">
+                <h5 className="card-title">{t('Maimai2.Setting.MergeRequestTitle')}</h5>
+                <div className="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                  <div className="text-muted small">{t('Maimai2.Setting.MergeRequestSubTitle')}</div>
+                  <button
+                    type="button"
+                    className={`btn flex-shrink-0 ${mergeRequested ? 'btn-danger' : 'btn-primary'}`}
+                    disabled={mergeRequestLoading || !mergeCardId}
+                    onClick={() =>
+                      void (mergeRequested ? cancelMergeRequest() : requestMergeFromDefaultServer())
+                    }
+                  >
+                    {mergeRequestLoading
+                      ? t('Maimai2.Setting.MergeRequestLoading')
+                      : mergeRequested
+                        ? t('Maimai2.Setting.MergeCancelButton')
+                        : t('Maimai2.Setting.MergeRequestButton')}
+                  </button>
                 </div>
-              )}
+                {(mergeLastRequestDate || mergeLastSuccessDate) && (
+                  <div className="text-muted small mt-2">
+                    {mergeLastRequestDate && (
+                      <div>
+                        {t('Maimai2.Setting.MergeLastRequestDate')}: {mergeLastRequestDate}
+                      </div>
+                    )}
+                    {mergeLastSuccessDate && (
+                      <div>
+                        {t('Maimai2.Setting.MergeLastSuccessDate')}: {mergeLastSuccessDate}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
       {profile && (
