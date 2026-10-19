@@ -97,6 +97,16 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
 - Independent LCDX account tools (binding/merge) must not depend on upstream game-profile or
   photo-config success. Only enable binding mutations after a valid binding-state response.
   Preserve the legacy distinction: binding uses `cards[0].luid`, merge uses `defaultCard.luid`.
+- **The merge entry is gated by the default card's number format.** Only a CN card number — the
+  `2430443067` + pad10(userId × 83 + 4579) encoding that `LCDXNetApi`'s
+  `TryConvertCardIdToUserId` accepts — renders the「国服数据引继」card. `src/lib/guofuCard.ts`
+  mirrors that backend rule (same precedent as `botPermission.ts` ↔ `PermissionLevels.cs`), so a
+  change to the rule means changing both sides in one pass. The legacy `243044306799` + raw-id
+  scheme is **deliberately rejected** here because the LCDX API rejects it too: never render an
+  entry that can only fail. Non-CN default card / no card / legacy scheme ⇒ the block is **not
+  rendered** (no status request, no empty card shell), and a backend `94001` on the status read
+  hides it as a drift guard. A default-card number that merely *looks* CN but fails the arithmetic
+  must stay hidden. Regression: `tests/lcdx-regression/settings.spec.ts`.
 - Draft filter edits must not retrigger initialization; apply filters explicitly.
 - Allow at most one in-flight poll per remote session. Terminal results are monotonic: timeout
   may only change a still-pending entry. Thirty attempts are not a strict wall-clock 60-second
