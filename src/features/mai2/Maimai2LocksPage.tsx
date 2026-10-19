@@ -39,6 +39,8 @@ const ACTIONS = [
   'perm-remove',
   // v6：dxnum 查询溯源（每次机台人数查询落一条）
   'dxnum-query',
+  // dxnum 外部入口（专用 token 调用）溯源：与上面区分来源，便于按 action 直接筛选
+  'dxnum-token-query',
 ];
 
 type MemberSortKey = 'qqNumber' | 'permission' | 'note' | 'addedSince';
