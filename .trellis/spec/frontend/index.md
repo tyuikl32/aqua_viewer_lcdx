@@ -31,6 +31,7 @@
 | [State Management](./state-management.md) | `createStore`, local state, permission/theme stores |
 | [Quality Guidelines](./quality-guidelines.md) | Forbidden patterns, i18n rule, CSS scoping, verification steps |
 | [Type Safety](./type-safety.md) | tsconfig strictness, DTO modelling, `verbatimModuleSyntax` |
+| [Arcade Login QR](./card-qr-entry.md) | NCBT login-QR entry: card eligibility, forced black-on-white, 10s cooldown, payload handling |
 
 ---
 
