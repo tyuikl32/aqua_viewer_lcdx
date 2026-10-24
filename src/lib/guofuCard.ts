@@ -1,40 +1,79 @@
 /**
- * 国服卡号判定（前端镜像，供 maimai2 设置页的「国服数据引继」入口门控使用）。
+ * 国服卡号解码与判定（前端镜像，供设置页「国服数据引继」门控与卡片页「登机二维码」入口使用）。
  *
- * 唯一事实源：`LCDXNetApi/Services/UserService.cs` 的 `TryConvertCardIdToUserId`。
- * 卡号编码 = `"2430443067"` + padLeft10(国服 userId × 83 + 4579)，
- * 反推 userId = (后 10 位 − 4579) / 83，必须整除。
+ * 唯一事实源：`LCDXNetApi/Helper/NcbtQrGenerator.cs` 的 `TryResolveClientId`。
+ * 两种码段，靠**第 11 位**区分：
  *
- * 引继相关端点（`lcdx/mergeRegistry/*`）只接受这种卡号，其余一律回落
- * `94001 Invalid card id`；因此默认卡不是国服卡号时，整块入口都不渲染。
- * **改这里的判定必须同时改后端**，否则前端会出现「能点但必失败」的按钮。
+ *   新码  `2430443067` + padLeft10(cid × 83 + 4579)
+ *   旧码  `243044306799` + 8 位 cid
  *
- * 旧方案 `243044306799` + 8 位原始 clientId（LCTitleServer 仍兼容）在这里刻意不放行：
- * LCDXNetApi 目前会拒掉它，前端放行只会把一个必然失败的按钮重新露出来。
+ * 为什么第 11 位可靠：合法 cid 区间 [10_000_000, 20_000_000) 内
+ * `cid × 83 + 4579 ∈ [830,004,579, 1,660,004,496]`，补零后首位只能是 '0' 或 '1'；
+ * 旧码第 11 位恒为 '9'。三者互斥（线上 74 条实测零例外）。
+ *
+ * 最终统一做 cid 区间校验：既挡「旧码巧合满足新码公式」，也挡明文首位碰撞
+ * （cid 50000000 与 10000000 去掉首位后相同）。
+ *
+ * **改这里的判定必须同时改后端**，否则前端会出现「能点但必失败」（引继）或
+ * 「能点但出不了码」（二维码）。
  */
 
 const GUOFU_CARD_PREFIX = '2430443067';
+const LEGACY_CARD_PREFIX = '243044306799';
 const GUOFU_CARD_ENCODE_MULTIPLIER = 83;
 const GUOFU_CARD_ENCODE_OFFSET = 4579;
 const ACCESS_CODE_LENGTH = 20;
 const DIGITS_ONLY = /^\d+$/;
 
+/** 可编码进游戏离线码的 clientId 区间（8 位且首位为 1）。 */
+const MIN_CLIENT_ID = 10_000_000;
+const MAX_CLIENT_ID_EXCLUSIVE = 20_000_000;
+
 /**
- * 20 位国服卡号 → true；其余（实体 Aime 卡、旧方案卡号、空值、非法长度）→ false。
- * 纯函数，不做任何 IO。
+ * 20 位卡号 → clientId；不可解返回 null。
+ * 新码优先、旧码兜底，两种码段都做区间校验。纯函数，不做任何 IO。
  */
-export function isGuofuCardNumber(cardNumber: string | null | undefined): boolean {
+export function decodeGuofuCardId(cardNumber: string | null | undefined): number | null {
   const value = cardNumber ?? '';
   if (value.length !== ACCESS_CODE_LENGTH || !DIGITS_ONLY.test(value)) {
-    return false;
+    return null;
   }
   if (!value.startsWith(GUOFU_CARD_PREFIX)) {
-    return false;
+    return null;
   }
 
-  const suffix = Number(value.slice(GUOFU_CARD_PREFIX.length));
-  if (!Number.isSafeInteger(suffix) || suffix <= GUOFU_CARD_ENCODE_OFFSET) {
-    return false;
+  const discriminator = value.at(GUOFU_CARD_PREFIX.length);
+  let clientId: number | null = null;
+
+  if (discriminator === '9') {
+    // 旧码：243044306799 + 8 位 clientId
+    if (value.startsWith(LEGACY_CARD_PREFIX)) {
+      const legacy = Number(value.slice(LEGACY_CARD_PREFIX.length));
+      if (Number.isSafeInteger(legacy)) {
+        clientId = legacy;
+      }
+    }
+  } else if (discriminator === '0' || discriminator === '1') {
+    // 新码：2430443067 + pad10(cid * 83 + 4579)
+    const suffix = Number(value.slice(GUOFU_CARD_PREFIX.length));
+    if (Number.isSafeInteger(suffix)) {
+      const raw = suffix - GUOFU_CARD_ENCODE_OFFSET;
+      if (raw >= 0 && raw % GUOFU_CARD_ENCODE_MULTIPLIER === 0) {
+        clientId = raw / GUOFU_CARD_ENCODE_MULTIPLIER;
+      }
+    }
   }
-  return (suffix - GUOFU_CARD_ENCODE_OFFSET) % GUOFU_CARD_ENCODE_MULTIPLIER === 0;
+
+  if (clientId === null || clientId < MIN_CLIENT_ID || clientId >= MAX_CLIENT_ID_EXCLUSIVE) {
+    return null;
+  }
+
+  return clientId;
+}
+
+/**
+ * 是否是可参与国服业务的卡号（新码或旧码）。物理卡、别名卡、空值、非法长度一律 false。
+ */
+export function isGuofuCardNumber(cardNumber: string | null | undefined): boolean {
+  return decodeGuofuCardId(cardNumber) !== null;
 }
