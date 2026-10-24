@@ -92,11 +92,12 @@ test('merge entry is hidden for a physical Aime card', async ({ page }) => {
   expect(mergeCalls).toEqual([]);
 });
 
-test('merge entry is hidden for the legacy CN card scheme', async ({ page }) => {
+test('merge entry is shown for the legacy CN card scheme', async ({ page }) => {
   await setup(page);
+  // 旧码段（243044306799 + 8 位 cid）已与后端同步放宽：旧码用户同样需要引继能力
   const mergeCalls = await openSettingsWithDefaultCard(page, LEGACY_CN_CARD);
-  await expect(page.getByRole('button', { name: 'Set Merge', exact: true })).toHaveCount(0);
-  expect(mergeCalls).toEqual([]);
+  await expect(page.getByRole('button', { name: 'Set Merge', exact: true })).toBeEnabled();
+  expect(mergeCalls.length).toBeGreaterThan(0);
 });
 
 test('merge entry is hidden when the account has no card', async ({ page }) => {
