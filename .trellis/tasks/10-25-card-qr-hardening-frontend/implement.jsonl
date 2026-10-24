@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/card-qr-entry.md", "reason": "二维码入口的易错规则：白底黑块、错误态唯一、冷却归属"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "build 与 playwright 回归的准入标准"}
+{"file": ".trellis/spec/frontend/state-management.md", "reason": "倒计时/冷却/失效态的状态归属与清理"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "复用既有 qrcode/掩码/lcdx 客户端"}

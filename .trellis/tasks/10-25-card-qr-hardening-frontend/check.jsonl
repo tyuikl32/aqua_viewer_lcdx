@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/card-qr-entry.md", "reason": "核对错误态唯一性与暗色白底断言"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "核对 build 与回归全绿"}
