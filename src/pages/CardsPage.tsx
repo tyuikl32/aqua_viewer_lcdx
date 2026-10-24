@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ExclamationTriangleFill,
@@ -7,10 +7,13 @@ import {
   InfoCircleFill,
   PencilSquare,
   PlusSquareDotted,
+  QrCodeScan,
   Trash,
 } from 'react-bootstrap-icons';
 import { BModal } from '@/components/shared/BModal';
+import { CardQrModal } from '@/features/cards/CardQrModal';
 import { api } from '@/lib/api/client';
+import { decodeGuofuCardId } from '@/lib/guofuCard';
 import { notice } from '@/lib/message';
 import { StatusCode, type Card, type CardExternal } from '@/lib/models';
 import { loadUser, userStore } from '@/lib/user';
@@ -49,7 +52,8 @@ type ModalState =
   | { kind: 'unbind'; card: Card }
   | { kind: 'change'; card: Card }
   | { kind: 'addAlias'; card: Card }
-  | { kind: 'removeAlias'; external: CardExternal };
+  | { kind: 'removeAlias'; external: CardExternal }
+  | { kind: 'qr'; card: Card };
 
 /** 等价旧版 cards.component */
 export function CardsPage() {
@@ -59,6 +63,47 @@ export function CardsPage() {
   const [luidsHidden, setLuidsHidden] = useState<Record<string, boolean>>({});
   const [modal, setModal] = useState<ModalState>({ kind: 'none' });
   const [accessCode, setAccessCode] = useState('');
+
+  /**
+   * 二维码生成冷却（页面级）：后端按 10 秒窗口限流，冷却放页面而不是弹窗，
+   * 关闭再打开也仍然生效，避免用户自己点出 94032。
+   */
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [cooldownLeft, setCooldownLeft] = useState(0);
+
+  useEffect(() => {
+    if (cooldownUntil <= 0) {
+      setCooldownLeft(0);
+      return;
+    }
+
+    let timer = 0;
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000));
+      setCooldownLeft(left);
+      if (left === 0) window.clearInterval(timer);
+    };
+    tick();
+    timer = window.setInterval(tick, 250);
+    return () => window.clearInterval(timer);
+  }, [cooldownUntil]);
+
+  /** 二维码请求落定：占用后端窗口的请求（非 94001）才进入冷却。 */
+  const handleQrSettled = useCallback((at: number, throttle: boolean) => {
+    if (!throttle) return;
+    setCooldownUntil(at + 10_000);
+  }, []);
+
+  const openQr = useCallback(
+    (card: Card) => {
+      if (cooldownLeft > 0) {
+        notice(t('CardsPage.QrRefreshCooldown', { n: cooldownLeft }));
+        return;
+      }
+      setModal({ kind: 'qr', card });
+    },
+    [cooldownLeft, t],
+  );
 
   useEffect(() => {
     void loadUser().then(() => setLoaded(true));
@@ -250,6 +295,17 @@ export function CardsPage() {
                     >
                       <PencilSquare />
                     </div>
+                    {decodeGuofuCardId(card.luid) !== null && (
+                      <div
+                        className="ms-2 p-0 user-select-none cursor-pointer d-flex align-items-center"
+                        title={t('CardsPage.QrButton')}
+                        aria-label={t('CardsPage.QrButton')}
+                        role="button"
+                        onClick={() => openQr(card)}
+                      >
+                        <QrCodeScan />
+                      </div>
+                    )}
                   </div>
                   <div className="mb-2 fw-bold">
                     {t('CardsPage.Aliases')}
@@ -413,6 +469,15 @@ export function CardsPage() {
           </form>
         </BModal>
       )}
+
+      <CardQrModal
+        open={modal.kind === 'qr'}
+        userName={user?.username ?? ''}
+        card={modal.kind === 'qr' ? modal.card : null}
+        cooldownLeft={cooldownLeft}
+        onClose={() => setModal({ kind: 'none' })}
+        onSettled={handleQrSettled}
+      />
     </div>
   );
 }
