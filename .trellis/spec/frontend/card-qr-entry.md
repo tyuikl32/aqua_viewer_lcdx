@@ -61,6 +61,39 @@ and looks back 10 of them. Do not "round up" to 600 when wiring a new UI.
 `LCDXNetApi/Helper/NcbtQrGenerator.TryResolveClientId`. If you change one side, change the other —
 otherwise you get a button that always fails.
 
+### 7. The error state must REPLACE the QR container, not stack on top of it
+
+The dialog used to render two independent branches:
+
+```tsx
+<div className="bg-white …">{showQr ? <img/> : <span>{failedCopy}</span>}</div>
+{errorKey && <div className="text-danger">{t(errorKey)}</div>}   // ← also renders
+```
+
+On every error `dataUrl` is null, so `expired && dataUrl` is false and the placeholder fell through to
+`QrRenderFailed`. Users therefore saw *"Failed to render, please refresh"* next to *"Too frequent"* — and
+the refresh button was disabled for 10 s at that exact moment, i.e. the copy told them to do the one
+thing that could not work.
+
+Keep the two mutually exclusive: `errorKey ? <error> : <white container>`. Tests must assert the generic
+copy has `count === 0`; asserting only that the specific message is visible passes even with the bug.
+
+### 8. Countdown comes from `expiresAt`, not from `expiresInSeconds`
+
+`expiresInSeconds` starts counting when the **response arrives**, while the code actually expires
+`540 s` after the server captured `now`. The backend now also returns an absolute `expiresAt`
+(ISO 8601 with offset) which is authoritative:
+
+```ts
+const target = data.expiresAt ? Date.parse(data.expiresAt) : NaN;
+return Number.isFinite(target)
+  ? clamp(Math.round((target - Date.now()) / 1000))
+  : clamp(data.expiresInSeconds || 540);
+```
+
+Keep the fallback — the frontend must still work against a backend that predates `expiresAt`.
+`clamp` to `[0, 540]` so clock skew cannot display a remaining time that never existed.
+
 ---
 
 ## Status code mapping
@@ -68,7 +101,19 @@ otherwise you get a button that always fails.
 | code | meaning | i18n key |
 |---|---|---|
 | 92001 | ok | — |
-| 94001 | card number cannot be encoded | `CardsPage.QrUnsupported` |
+| 94001 | card number cannot be encoded (or user not registered) | `CardsPage.QrUnsupported` |
 | 94031 | card is not the caller's primary card | `CardsPage.QrNotOwner` |
 | 94032 | throttled (10s) | `CardsPage.QrTooFrequent` |
 | 95001 | ownership unverifiable (Rinnet down) | `CardsPage.QrUnavailable` |
+
+---
+
+## Automated guards
+
+| Concern | Where |
+|---|---|
+| entry visibility (new / legacy / physical / no card) | `cards-qr.spec.ts` |
+| one message per error state | `cards-qr.spec.ts` — "shows exactly one error message" |
+| black-on-white under dark theme (pixel statistics) | `cards-qr.spec.ts` — "QR stays black-on-white in …" |
+| `expiresAt` vs `expiresInSeconds` | `cards-qr.spec.ts` — two countdown cases |
+
