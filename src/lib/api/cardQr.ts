@@ -4,7 +4,14 @@ import type { ApiResponse } from '@/lib/models';
 /** 机台登入二维码生成结果。`payload` 是 40 字符 NCBT 码，只在内存里流转。 */
 export interface CardQrPayload {
   payload: string;
+  /** 相对秒数（兼容字段，540 = 最坏可用时长）。 */
   expiresInSeconds: number;
+  /**
+   * 绝对失效时刻（ISO 8601 带偏移）。由服务端 `now + 540s` 推导，**权威值**：
+   * 相对秒数从响应送达起算，会比真实失效晚一个请求耗时。
+   * 旧后端不返回此字段，调用方必须能回退到 `expiresInSeconds`。
+   */
+  expiresAt?: string;
 }
 
 /**

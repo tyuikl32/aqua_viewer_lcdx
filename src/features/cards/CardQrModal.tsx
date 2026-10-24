@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode';
 import { BModal } from '@/components/shared/BModal';
-import { fetchCardQr } from '@/lib/api/cardQr';
+import { fetchCardQr, type CardQrPayload } from '@/lib/api/cardQr';
 import { isOk, StatusCode, type Card } from '@/lib/models';
 
 /**
@@ -32,6 +32,22 @@ function formatRemain(seconds: number): string {
   const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
   const ss = String(seconds % 60).padStart(2, '0');
   return `${mm}:${ss}`;
+}
+
+/**
+ * 剩余秒数。优先用服务端的绝对失效时刻 `expiresAt`（权威，已含请求耗时），
+ * 缺失时回退 `expiresInSeconds`——保证与尚未升级的后端也能配合。
+ *
+ * 钳制到 [0, 540]：客户端时钟比服务器慢时不会显示「10:30」这种不存在的余量；
+ * 快时立刻显示失效，而不是展示一个机台已拒收的码。
+ */
+function remainingSeconds(data: CardQrPayload): number {
+  const clamp = (n: number) => Math.max(0, Math.min(COUNTDOWN_SECONDS, n));
+  const target = data.expiresAt ? Date.parse(data.expiresAt) : Number.NaN;
+  if (Number.isFinite(target)) {
+    return clamp(Math.round((target - Date.now()) / 1000));
+  }
+  return clamp(data.expiresInSeconds || COUNTDOWN_SECONDS);
 }
 
 export function CardQrModal({
@@ -93,7 +109,7 @@ export function CardQrModal({
         if (cancelled) return;
 
         setDataUrl(url);
-        setRemain(resp.data.expiresInSeconds || COUNTDOWN_SECONDS);
+        setRemain(remainingSeconds(resp.data));
         onSettled(Date.now(), true);
       } catch {
         if (!cancelled) {
@@ -128,34 +144,43 @@ export function CardQrModal({
 
   const fileName = useMemo(() => `lcdx-login-qr-${card?.id ?? 0}.png`, [card?.id]);
 
+  // 占位文案只覆盖「没有二维码也没有错误」的状态。errorKey 存在时整块容器让位给
+  // 具体原因（见下方渲染），因此这里不再兜底出「生成失败」，避免两句话同时出现。
+  const placeholder = busy
+    ? t('CardsPage.QrLoading')
+    : expired && dataUrl
+      ? t('CardsPage.QrExpired')
+      : t('CardsPage.QrRenderFailed');
+
   return (
     <BModal open={open} onClose={onClose} title={t('CardsPage.QrTitle')}>
       <div className="d-flex flex-column align-items-center">
-        {/* 白底容器是硬约束：暗色主题下也必须让码是深模块 + 白底 */}
-        <div
-          className="bg-white d-flex align-items-center justify-content-center rounded"
-          style={{ width: QR_SIZE + 24, height: QR_SIZE + 24 }}
-        >
-          {showQr && dataUrl ? (
-            <img src={dataUrl} width={QR_SIZE} height={QR_SIZE} alt={t('CardsPage.QrTitle')} />
-          ) : (
-            <span className="text-secondary small">
-              {busy
-                ? t('CardsPage.QrLoading')
-                : expired && dataUrl
-                  ? t('CardsPage.QrExpired')
-                  : t('CardsPage.QrRenderFailed')}
-            </span>
-          )}
-        </div>
+        {errorKey ? (
+          /*
+           * 错误态与二维码容器**互斥**：两者同时渲染会让用户看到
+           * 「生成失败，请刷新重试」紧挨着「操作太频繁」——而后者恰好把刷新按钮
+           * 禁用了 10 秒，等于指引他做一件必然失败的事。
+           */
+          <div className="text-danger small text-center py-4">{t(errorKey)}</div>
+        ) : (
+          /* 白底容器是硬约束：暗色主题下也必须让码是深模块 + 白底 */
+          <div
+            className="bg-white d-flex align-items-center justify-content-center rounded"
+            style={{ width: QR_SIZE + 24, height: QR_SIZE + 24 }}
+          >
+            {showQr && dataUrl ? (
+              <img src={dataUrl} width={QR_SIZE} height={QR_SIZE} alt={t('CardsPage.QrTitle')} />
+            ) : (
+              <span className="text-secondary small">{placeholder}</span>
+            )}
+          </div>
+        )}
 
         {showQr && (
           <div className="mt-2 font-monospace">
             {t('CardsPage.QrRemaining', { time: formatRemain(remain) })}
           </div>
         )}
-
-        {errorKey && <div className="mt-2 text-danger small text-center">{t(errorKey)}</div>}
 
         <div className="alert alert-warning small mt-3 mb-2 w-100 text-center">
           <div className="fw-bold">{t('CardsPage.QrWarningTitle')}</div>
