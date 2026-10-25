@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/frontend/card-qr-entry.md", "reason": "二维码入口的既有约束：白底黑块、错误态唯一、冷却归属"}
+{"file": ".trellis/spec/frontend/directory-structure.md", "reason": "新页面放 pages/、可复用面板放 features/ 的目录约定"}
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "页面与组件的写法约定"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "build 与 playwright 回归准入"}

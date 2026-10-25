@@ -1,6 +1,6 @@
 # Arcade Login QR (NCBT) — Frontend Entry
 
-> Knowledge captured by task `10-25-card-qr-login-frontend`. Backend counterpart:
+> Knowledge captured by tasks `10-25-card-qr-login-frontend` and `10-26-player-qr-page`. Backend counterpart:
 > `LCDXNetApi/.trellis/spec/backend/card-qr-ncbt.md`.
 
 ---
@@ -11,9 +11,14 @@
 |---|---|
 | Card-number decode / eligibility | `src/lib/guofuCard.ts` (`decodeGuofuCardId`, `isGuofuCardNumber`) |
 | API wrapper | `src/lib/api/cardQr.ts` (`fetchCardQr`) |
-| Dialog | `src/features/cards/CardQrModal.tsx` |
-| Entry point | `src/pages/CardsPage.tsx` (QR icon next to the primary card's access code) |
-| Regression spec | `tests/lcdx-regression/cards-qr.spec.ts` |
+| Inline panel (QR + countdown + cooldown) | `src/features/cards/CardQrPanel.tsx` |
+| Page | `src/pages/PlayerQrPage.tsx` (route `/mai2/playerqr`) |
+| Sidebar entry | `src/lib/menu.ts` → `{ id: 17, name: 'PlayerQr', url: 'mai2/playerqr' }` |
+| Regression spec | `tests/lcdx-regression/player-qr.spec.ts` |
+
+**Why a dedicated page and not a button on `/cards`:** `/cards` has no sidebar entry at all (only the
+direct URL reaches it), so an entry placed there is invisible to real users. The QR feature must live on
+a page that is reachable from the sidebar; do not re-attach it to the cards page or the dashboard card row.
 
 ---
 
@@ -34,13 +39,13 @@ number in practice, and the backend ownership check rejects them anyway — keep
 ### 3. The 10-second cooldown is page-level, not dialog-level
 
 The backend throttles on the audit table with a 10s window, and **any** request except `94001` consumes
-that window. That is why the cooldown lives in `CardsPage` state:
+that window. That is why the cooldown lives inside `CardQrPanel` and gates the refresh button directly:
 
-- opening the dialog during cooldown is blocked with a notice;
-- the dialog's refresh button is disabled and shows `CardsPage.QrRefreshCooldown`.
+- the refresh button is disabled and shows `PlayerQrPage.RefreshCooldown` while cooling down;
+- the panel generates on mount, so there is no "close and reopen" path that could bypass the window.
 
-If you move the cooldown into the dialog, closing and reopening lets the user hit `94032` immediately,
-which reads as a bug.
+If a future UI adds a modal/entry layer around the panel, the cooldown must move **above** that layer —
+otherwise closing and reopening lets the user hit `94032` immediately, which reads as a bug.
 
 ### 4. Payload is never persisted
 

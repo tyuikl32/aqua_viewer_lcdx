@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/card-qr-entry.md", "reason": "核对入口位置与原有约束"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "核对 build/回归全绿"}
