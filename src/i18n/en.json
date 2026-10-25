@@ -1402,10 +1402,12 @@
   "PlayerQrPage": {
     "CardLabel": "Primary card",
     "Expired": "QR code expired",
+    "Generate": "Generate QR",
     "Hint": "Aim your screen at the cabinet scanner before the countdown ends.",
     "Intro": "This is your arcade login QR. Aim it at the cabinet scanner to sign in — no physical card needed.",
     "Loading": "Generating…",
     "NoCard": "No card bound yet. Bind a card before generating a login QR.",
+    "NotGenerated": "No QR generated yet",
     "NotOwner": "This card does not belong to your account.",
     "Refresh": "Refresh",
     "RefreshCooldown": "Refresh in {{n}}s",

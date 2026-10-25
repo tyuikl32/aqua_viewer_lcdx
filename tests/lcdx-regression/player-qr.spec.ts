@@ -9,6 +9,7 @@ const LEGACY_CARD = '24304430679911909652';
 const PHYSICAL_CARD = '50143954486701365311';
 
 const PAGE_TITLE = 'Player QR';
+const GENERATE = 'Generate QR';
 const GENERIC_FAILURE = 'Failed to generate the QR code';
 
 /** 打开玩家二维码页，并为每个 luid 造一张主卡（i=0 为默认卡）。 */
@@ -39,21 +40,51 @@ async function stubPayload(page: Page, payload = 'NCBTCMDDA1C492FF43D14A47BCE8FF
   );
 }
 
+const generate = (page: Page) => page.getByRole('button', { name: GENERATE }).click();
+
 test('sidebar exposes the Player QR entry and routes to the page', async ({ page }) => {
   await setup(page);
   await stubPayload(page);
   await openPlayerQr(page, [CN_CARD]);
 
-  // 从仪表板点侧栏进入，验证入口真的存在且可跳转
   await page.goto('/dashboard');
   await page.locator('nav.shell-sidebar-nav').getByText(PAGE_TITLE, { exact: true }).click();
   await expect(page).toHaveURL(/\/mai2\/playerqr$/);
 });
 
-test('CN card renders the QR inline with a countdown', async ({ page }) => {
+test('page does not hit the API until the user generates', async ({ page }) => {
+  await setup(page);
+  let calls = 0;
+  await page.route('**/lcdx/cardQr/**', route => {
+    calls += 1;
+    return route.fulfill({ json: ok({ payload: 'NCBTCMDDA1C492FF43D14A47BCE8FFBB4EAD5CF5', expiresInSeconds: 540 }) });
+  });
+  await openPlayerQr(page, [CN_CARD]);
+
+  // 挂载不发请求：避免路由重挂载造成 10 秒窗口内的第二次请求（→ 94032）
+  await expect(page.getByRole('button', { name: GENERATE })).toBeVisible();
+  expect(calls).toBe(0);
+
+  await generate(page);
+  await expect(page.locator(`img[alt="${PAGE_TITLE}"]`)).toBeVisible();
+  expect(calls).toBe(1);
+
+  // 生成后按钮进入 10 秒冷却
+  await expect(page.getByRole('button', { name: /Refresh in \d+s/ })).toBeDisabled();
+
+  // 客户端路由来回：不应再打后端
+  await page.locator('nav.shell-sidebar-nav').getByText('Dashboard', { exact: true }).click();
+  await page.locator('nav.shell-sidebar-nav').getByText(PAGE_TITLE, { exact: true }).click();
+  await expect(page.getByRole('button', { name: GENERATE })).toBeVisible();
+  expect(calls).toBe(1);
+});
+
+test('CN card renders the QR with a countdown once generated', async ({ page }) => {
   await setup(page);
   await stubPayload(page);
   await openPlayerQr(page, [CN_CARD]);
+
+  await generate(page);
 
   await expect(page.locator(`img[alt="${PAGE_TITLE}"]`)).toBeVisible();
   await expect(page.getByText('09:00 left')).toBeVisible();
@@ -65,15 +96,17 @@ test('legacy CN card is accepted too', async ({ page }) => {
   await stubPayload(page);
   await openPlayerQr(page, [LEGACY_CARD]);
 
+  await generate(page);
+
   await expect(page.locator(`img[alt="${PAGE_TITLE}"]`)).toBeVisible();
 });
 
-test('physical card shows the unsupported hint instead of a QR', async ({ page }) => {
+test('physical card shows the unsupported hint instead of a generator', async ({ page }) => {
   await setup(page);
   await stubPayload(page);
   await openPlayerQr(page, [PHYSICAL_CARD]);
 
-  await expect(page.locator(`img[alt="${PAGE_TITLE}"]`)).toHaveCount(0);
+  await expect(page.getByRole('button', { name: GENERATE })).toHaveCount(0);
   await expect(page.getByText('Your primary card is not a CN card, so a login QR cannot be generated.')).toBeVisible();
 });
 
@@ -98,6 +131,8 @@ for (const [code, message] of [
     );
     await openPlayerQr(page, [CN_CARD]);
 
+    await generate(page);
+
     await expect(page.getByText(message)).toHaveCount(1);
     await expect(page.getByText(GENERIC_FAILURE)).toHaveCount(0);
   });
@@ -118,6 +153,7 @@ for (const family of ['legacy', 'liquefy']) {
     await openPlayerQr(page, [CN_CARD]);
 
     await expect(page.locator('html')).toHaveAttribute('data-color-scheme', 'dark');
+    await generate(page);
     await expect(page.locator(`img[alt="${PAGE_TITLE}"]`)).toBeVisible();
 
     const measured = await page.evaluate(async (alt) => {

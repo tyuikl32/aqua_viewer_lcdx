@@ -13,8 +13,11 @@ import { isOk, StatusCode } from '@/lib/models';
  * - payload 只存在于组件内存，卸载即销毁；不写 localStorage / URL / 查询缓存。
  * - 倒计时 540s 是后端可用时长下界（码按分钟对齐，生成于 HH:MM:SS 时最晚可用到
  *   HH:MM+9:59）；服务端给了绝对 `expiresAt` 时以它为准。
- * - 挂载即取码：本组件只出现在「玩家二维码」页，不需要二次点击。
- * - 关闭/离开页面时用 cancelled 守卫丢弃在途响应。
+ *
+ * **点击生成，不在挂载时自动取码**：
+ * 路由的 auth 包装用 `Fragment key={username}`，用户名到达时整棵子树会重挂载；
+ * 若挂载即取码，一次进入会发两次请求，第二次必然撞上后端 10 秒窗口返回 94032，
+ * 把已经拿到的码替换成"操作太频繁"。改为用户显式点击后，请求次数完全可预测。
  */
 
 const COUNTDOWN_SECONDS = 540;
@@ -51,16 +54,6 @@ function remainingSeconds(data: CardQrPayload): number {
   return clamp(data.expiresInSeconds || COUNTDOWN_SECONDS);
 }
 
-/**
- * 有效期内复用同一张卡已取回的码。
- *
- * 为什么必须有：`router.tsx` 的 auth 包装用 `Fragment key={user?.username}`，
- * 用户名从空变成实际值时整棵子树会**重挂载**，面板的 effect 因此会再发一次请求；
- * 4 秒内二次请求必然撞上后端 10 秒窗口（94032），把已经拿到的码替换成"操作太频繁"。
- * 缓存只在内存里、以服务端 expiresAt 为准，刷新页面即清空。
- */
-const livePayloadCache = new Map<string, CardQrPayload>();
-
 export function CardQrPanel({
   userName,
   cardId,
@@ -78,11 +71,10 @@ export function CardQrPanel({
   const [remain, setRemain] = useState(0);
   const [busy, setBusy] = useState(false);
   const [errorKey, setErrorKey] = useState<string | null>(null);
-  const [reloadToken, setReloadToken] = useState(0);
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [cooldownLeft, setCooldownLeft] = useState(0);
 
-  // 10 秒刷新冷却：后端按窗口限流，冷却放在面板内即可（面板不会被关掉重开）
+  // 10 秒刷新冷却：后端按窗口限流，冷却放在面板内
   useEffect(() => {
     if (cooldownUntil <= 0) {
       setCooldownLeft(0);
@@ -100,86 +92,6 @@ export function CardQrPanel({
     return () => window.clearInterval(timer);
   }, [cooldownUntil]);
 
-  const markSettled = useCallback((throttle: boolean) => {
-    if (!throttle) return;
-    setCooldownUntil(Date.now() + COOLDOWN_MS);
-  }, []);
-
-  useEffect(() => {
-    if (!cardId || !userName) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const renderPayload = async (payload: CardQrPayload): Promise<boolean> => {
-      const url = await QRCode.toDataURL(payload.payload, {
-        width: QR_SIZE,
-        margin: 2,
-        errorCorrectionLevel: 'H',
-        color: { dark: '#000000ff', light: '#ffffffff' },
-      });
-      if (cancelled) return false;
-      setDataUrl(url);
-      setRemain(remainingSeconds(payload));
-      return true;
-    };
-
-    const cacheKey = `${userName}|${cardId}`;
-    // 手动刷新（reloadToken > 0）必须真的打后端，不复用缓存
-    const cached = reloadToken === 0 ? livePayloadCache.get(cacheKey) : undefined;
-
-    setBusy(true);
-    setErrorKey(null);
-
-    void (async () => {
-      try {
-        if (cached && remainingSeconds(cached) > 0) {
-          await renderPayload(cached);
-          return;
-        }
-
-        setDataUrl(null);
-        setRemain(0);
-
-        const resp = await fetchCardQr(userName, cardId);
-        if (cancelled) return;
-
-        if (!isOk(resp)) {
-          const code = resp?.status?.code ?? StatusCode.INTERNAL_SERVER_ERROR;
-
-          // 撞上限流但手上还有未过期的码：继续用它，别把好好的码换成报错
-          const fallback = livePayloadCache.get(cacheKey);
-          if (code === StatusCode.CARD_QR_TOO_FREQUENT && fallback && remainingSeconds(fallback) > 0) {
-            await renderPayload(fallback);
-            return;
-          }
-
-          setErrorKey(ERROR_KEYS[code] ?? 'PlayerQrPage.RenderFailed');
-          // 除「卡号不支持」外，请求都已占用后端 10 秒窗口
-          markSettled(code !== StatusCode.BAD_REQUEST);
-          return;
-        }
-
-        livePayloadCache.set(cacheKey, resp.data);
-        await renderPayload(resp.data);
-        markSettled(true);
-      } catch {
-        if (!cancelled) {
-          setErrorKey('PlayerQrPage.RenderFailed');
-        }
-      } finally {
-        if (!cancelled) {
-          setBusy(false);
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [cardId, userName, reloadToken, markSettled]);
-
   // 倒计时：每秒递减，归零即停止
   useEffect(() => {
     if (remain <= 0) {
@@ -190,8 +102,47 @@ export function CardQrPanel({
     return () => window.clearTimeout(timer);
   }, [remain]);
 
+  const generate = useCallback(async () => {
+    if (busy || cooldownLeft > 0 || !userName || !cardId) {
+      return;
+    }
+
+    setBusy(true);
+    setErrorKey(null);
+
+    try {
+      const resp = await fetchCardQr(userName, cardId);
+
+      if (!isOk(resp)) {
+        const code = resp?.status?.code ?? StatusCode.INTERNAL_SERVER_ERROR;
+        setErrorKey(ERROR_KEYS[code] ?? 'PlayerQrPage.RenderFailed');
+        // 除「卡号不支持」外，请求都已占用后端 10 秒窗口
+        if (code !== StatusCode.BAD_REQUEST) {
+          setCooldownUntil(Date.now() + COOLDOWN_MS);
+        }
+        return;
+      }
+
+      const url = await QRCode.toDataURL(resp.data.payload, {
+        width: QR_SIZE,
+        margin: 2,
+        errorCorrectionLevel: 'H',
+        color: { dark: '#000000ff', light: '#ffffffff' },
+      });
+
+      setDataUrl(url);
+      setRemain(remainingSeconds(resp.data));
+      setCooldownUntil(Date.now() + COOLDOWN_MS);
+    } catch {
+      setErrorKey('PlayerQrPage.RenderFailed');
+    } finally {
+      setBusy(false);
+    }
+  }, [busy, cooldownLeft, userName, cardId]);
+
   const expired = remain <= 0;
   const showQr = Boolean(dataUrl) && !expired;
+  const idle = !dataUrl && !errorKey && !busy;
 
   // 占位文案只覆盖「没有二维码也没有错误」的状态：errorKey 存在时整块容器让位给
   // 具体原因，避免「生成失败」和「操作太频繁」同时出现。
@@ -201,10 +152,27 @@ export function CardQrPanel({
       ? t('PlayerQrPage.Expired')
       : t('PlayerQrPage.RenderFailed');
 
+  const refreshLabel =
+    cooldownLeft > 0
+      ? t('PlayerQrPage.RefreshCooldown', { n: cooldownLeft })
+      : busy
+        ? t('PlayerQrPage.Loading')
+        : dataUrl
+          ? t('PlayerQrPage.Refresh')
+          : t('PlayerQrPage.Generate');
+
   return (
     <div className="d-flex flex-column align-items-center">
       {errorKey ? (
         <div className="text-danger small text-center py-4">{t(errorKey)}</div>
+      ) : idle ? (
+        /* 空闲态不占位：给一个明确的生成按钮，避免挂载即发请求 */
+        <div
+          className="d-flex align-items-center justify-content-center rounded bg-body-tertiary text-secondary small"
+          style={{ width: QR_SIZE + 24, height: QR_SIZE + 24 }}
+        >
+          {t('PlayerQrPage.NotGenerated')}
+        </div>
       ) : (
         /* 白底容器是硬约束：暗色主题下也必须让码是深模块 + 白底 */
         <div
@@ -245,11 +213,9 @@ export function CardQrPanel({
           type="button"
           className="btn btn-primary btn-sm"
           disabled={busy || cooldownLeft > 0}
-          onClick={() => setReloadToken((value) => value + 1)}
+          onClick={() => void generate()}
         >
-          {cooldownLeft > 0
-            ? t('PlayerQrPage.RefreshCooldown', { n: cooldownLeft })
-            : t('PlayerQrPage.Refresh')}
+          {refreshLabel}
         </button>
       </div>
     </div>

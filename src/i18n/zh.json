@@ -1402,10 +1402,12 @@
   "PlayerQrPage": {
     "CardLabel": "主卡",
     "Expired": "二维码已失效",
+    "Generate": "生成二维码",
     "Hint": "把手机屏幕对准机台上的扫码区，倒计时结束前有效。",
     "Intro": "这是你的机台登入二维码：对准机台扫码区即可登入，无需实体卡。",
     "Loading": "正在生成…",
     "NoCard": "当前账号还没有绑定卡片，请先绑定后再来生成二维码。",
+    "NotGenerated": "尚未生成二维码",
     "NotOwner": "该卡片不属于当前账号。",
     "Refresh": "刷新",
     "RefreshCooldown": "{{n}} 秒后可刷新",
