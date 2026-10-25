@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode';
 import { fetchCardQr, type CardQrPayload } from '@/lib/api/cardQr';
@@ -54,15 +54,6 @@ function remainingSeconds(data: CardQrPayload): number {
   return clamp(data.expiresInSeconds || COUNTDOWN_SECONDS);
 }
 
-/**
- * 已生成码的内存缓存（键 = userName|cardId）。
- *
- * 为什么需要：路由的 auth 包装用 `Fragment key={username}`，父级重渲染/路由切换会让
- * 面板重挂载，组件 state 归零 —— 用户会看到刚生成的码突然变回「尚未生成」。
- * 缓存只活到服务端 `expiresAt` 为止，刷新整页即清空。
- */
-const livePayloadCache = new Map<string, CardQrPayload>();
-
 export function CardQrPanel({
   userName,
   cardId,
@@ -111,79 +102,70 @@ export function CardQrPanel({
     return () => window.clearTimeout(timer);
   }, [remain]);
 
-  // 面板重挂载时用缓存还原已生成的码（不再发请求）
-  useEffect(() => {
-    if (!userName || !cardId) {
-      return;
-    }
-
-    const cached = livePayloadCache.get(`${userName}|${cardId}`);
-    if (!cached) {
-      return;
-    }
-
-    const left = remainingSeconds(cached);
-    if (left <= 0) {
-      livePayloadCache.delete(`${userName}|${cardId}`);
-      return;
-    }
-
-    let cancelled = false;
-    void (async () => {
-      const url = await QRCode.toDataURL(cached.payload, {
-        width: QR_SIZE,
-        margin: 2,
-        errorCorrectionLevel: 'H',
-        color: { dark: '#000000ff', light: '#ffffffff' },
-      });
-      if (cancelled) return;
-      setDataUrl(url);
-      setRemain(left);
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [userName, cardId]);
-
-  const generate = useCallback(async () => {
-    if (busy || cooldownLeft > 0 || !userName || !cardId) {
-      return;
-    }
-
-    setBusy(true);
-    setErrorKey(null);
-
-    try {
-      const resp = await fetchCardQr(userName, cardId);
-
-      if (!isOk(resp)) {
-        const code = resp?.status?.code ?? StatusCode.INTERNAL_SERVER_ERROR;
-        setErrorKey(ERROR_KEYS[code] ?? 'PlayerQrPage.RenderFailed');
-        // 除「卡号不支持」外，请求都已占用后端 10 秒窗口
-        if (code !== StatusCode.BAD_REQUEST) {
-          setCooldownUntil(Date.now() + COOLDOWN_MS);
-        }
+  const generate = useCallback(
+    async (resume: boolean) => {
+      if (busy || !userName || !cardId) {
+        return;
+      }
+      // 手动发新码才受冷却约束；resume（刷新页面/重挂载）不占后端窗口
+      if (!resume && cooldownLeft > 0) {
         return;
       }
 
-      const url = await QRCode.toDataURL(resp.data.payload, {
-        width: QR_SIZE,
-        margin: 2,
-        errorCorrectionLevel: 'H',
-        color: { dark: '#000000ff', light: '#ffffffff' },
-      });
+      setBusy(true);
+      setErrorKey(null);
 
-      setDataUrl(url);
-      setRemain(remainingSeconds(resp.data));
-      setCooldownUntil(Date.now() + COOLDOWN_MS);
-      livePayloadCache.set(`${userName}|${cardId}`, resp.data);
-    } catch {
-      setErrorKey('PlayerQrPage.RenderFailed');
-    } finally {
-      setBusy(false);
+      try {
+        const resp = await fetchCardQr(userName, cardId, resume);
+
+        if (!isOk(resp)) {
+          const code = resp?.status?.code ?? StatusCode.INTERNAL_SERVER_ERROR;
+          setErrorKey(ERROR_KEYS[code] ?? 'PlayerQrPage.RenderFailed');
+          // 除「卡号不支持」外，请求都已占用后端 10 秒窗口
+          if (code !== StatusCode.BAD_REQUEST) {
+            setCooldownUntil(Date.now() + COOLDOWN_MS);
+          }
+          return;
+        }
+
+        const url = await QRCode.toDataURL(resp.data.payload, {
+          width: QR_SIZE,
+          margin: 2,
+          errorCorrectionLevel: 'H',
+          color: { dark: '#000000ff', light: '#ffffffff' },
+        });
+
+        setDataUrl(url);
+        setRemain(remainingSeconds(resp.data));
+
+        // 只有真正发了新码才进入冷却；服务端复用旧码（resumed=true）时窗口没被占用
+        if (!resp.data.resumed) {
+          setCooldownUntil(Date.now() + COOLDOWN_MS);
+        }
+      } catch {
+        setErrorKey('PlayerQrPage.RenderFailed');
+      } finally {
+        setBusy(false);
+      }
+    },
+    [busy, cooldownLeft, userName, cardId],
+  );
+
+  /**
+   * 进入页面即「恢复」：resume=true。
+   * 服务端存着未过期的发行记录就返回**同一枚码**（刷新页面不再换码、也不撞频控），
+   * 没有则顺带发一枚并写入缓存。
+   */
+  const autoResumedRef = useRef(false);
+  useEffect(() => {
+    if (autoResumedRef.current || !userName || !cardId) {
+      return;
     }
-  }, [busy, cooldownLeft, userName, cardId]);
+    autoResumedRef.current = true;
+    void generate(true);
+    // 只在卡片/用户变化时触发一次；generate 随状态重建，不参与依赖
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userName, cardId]);
 
   const expired = remain <= 0;
   const showQr = Boolean(dataUrl) && !expired;
@@ -258,7 +240,7 @@ export function CardQrPanel({
           type="button"
           className="btn btn-primary btn-sm"
           disabled={busy || cooldownLeft > 0}
-          onClick={() => void generate()}
+          onClick={() => void generate(false)}
         >
           {refreshLabel}
         </button>
