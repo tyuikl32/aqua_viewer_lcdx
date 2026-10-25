@@ -36,16 +36,26 @@ colors and scanning silently fails.
 `cards[].luid` is eligible; `cards[].cardExternalList[]` is **not**. Aliases never carry a `2430…`
 number in practice, and the backend ownership check rejects them anyway — keep both layers aligned.
 
-### 3. The 10-second cooldown is page-level, not dialog-level
+### 3. The 10-second cooldown follows the server, not the click
 
-The backend throttles on the audit table with a 10s window, and **any** request except `94001` consumes
-that window. That is why the cooldown lives inside `CardQrPanel` and gates the refresh button directly:
+The backend throttles on the audit table with a 10s window, and **any request that mints a new code**
+consumes it. Two consequences:
 
-- the refresh button is disabled and shows `PlayerQrPage.RefreshCooldown` while cooling down;
-- the panel generates on mount, so there is no "close and reopen" path that could bypass the window.
+- the cooldown must be driven by the response, not by "the user clicked": `if (!resp.data.resumed)`
+  start the 10s cooldown. A `resumed: true` response reused an already-issued code and did **not**
+  consume the window, so disabling the button would be wrong;
+- the panel auto-requests on mount with `resume: true`, so there is no "close and reopen" path that
+  could bypass the window — a reload just gets the same code back.
 
-If a future UI adds a modal/entry layer around the panel, the cooldown must move **above** that layer —
-otherwise closing and reopening lets the user hit `94032` immediately, which reads as a bug.
+If a future UI adds a modal/entry layer around the panel, keep the cooldown above that layer.
+
+### 3b. `resume` is the only correct way to survive a reload
+
+`POST lcdx/cardQr` takes `resume`. On mount the panel always sends `resume: true`; the「刷新」button
+always sends `resume: false`. Do **not** try to cache the payload in the browser (module scope,
+`sessionStorage`, …) to survive a reload: the server is the authority for "which code is currently
+issued", and a second local copy drifts (e.g. the server may decide the remaining time is under 60s and
+mint a new code while the client still shows the old one).
 
 ### 4. Payload is never persisted
 
