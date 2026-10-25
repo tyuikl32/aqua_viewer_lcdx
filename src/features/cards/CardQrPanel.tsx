@@ -51,6 +51,16 @@ function remainingSeconds(data: CardQrPayload): number {
   return clamp(data.expiresInSeconds || COUNTDOWN_SECONDS);
 }
 
+/**
+ * 有效期内复用同一张卡已取回的码。
+ *
+ * 为什么必须有：`router.tsx` 的 auth 包装用 `Fragment key={user?.username}`，
+ * 用户名从空变成实际值时整棵子树会**重挂载**，面板的 effect 因此会再发一次请求；
+ * 4 秒内二次请求必然撞上后端 10 秒窗口（94032），把已经拿到的码替换成"操作太频繁"。
+ * 缓存只在内存里、以服务端 expiresAt 为准，刷新页面即清空。
+ */
+const livePayloadCache = new Map<string, CardQrPayload>();
+
 export function CardQrPanel({
   userName,
   cardId,
@@ -101,34 +111,58 @@ export function CardQrPanel({
     }
 
     let cancelled = false;
+
+    const renderPayload = async (payload: CardQrPayload): Promise<boolean> => {
+      const url = await QRCode.toDataURL(payload.payload, {
+        width: QR_SIZE,
+        margin: 2,
+        errorCorrectionLevel: 'H',
+        color: { dark: '#000000ff', light: '#ffffffff' },
+      });
+      if (cancelled) return false;
+      setDataUrl(url);
+      setRemain(remainingSeconds(payload));
+      return true;
+    };
+
+    const cacheKey = `${userName}|${cardId}`;
+    // 手动刷新（reloadToken > 0）必须真的打后端，不复用缓存
+    const cached = reloadToken === 0 ? livePayloadCache.get(cacheKey) : undefined;
+
     setBusy(true);
     setErrorKey(null);
-    setDataUrl(null);
-    setRemain(0);
 
     void (async () => {
       try {
+        if (cached && remainingSeconds(cached) > 0) {
+          await renderPayload(cached);
+          return;
+        }
+
+        setDataUrl(null);
+        setRemain(0);
+
         const resp = await fetchCardQr(userName, cardId);
         if (cancelled) return;
 
         if (!isOk(resp)) {
           const code = resp?.status?.code ?? StatusCode.INTERNAL_SERVER_ERROR;
+
+          // 撞上限流但手上还有未过期的码：继续用它，别把好好的码换成报错
+          const fallback = livePayloadCache.get(cacheKey);
+          if (code === StatusCode.CARD_QR_TOO_FREQUENT && fallback && remainingSeconds(fallback) > 0) {
+            await renderPayload(fallback);
+            return;
+          }
+
           setErrorKey(ERROR_KEYS[code] ?? 'PlayerQrPage.RenderFailed');
           // 除「卡号不支持」外，请求都已占用后端 10 秒窗口
           markSettled(code !== StatusCode.BAD_REQUEST);
           return;
         }
 
-        const url = await QRCode.toDataURL(resp.data.payload, {
-          width: QR_SIZE,
-          margin: 2,
-          errorCorrectionLevel: 'H',
-          color: { dark: '#000000ff', light: '#ffffffff' },
-        });
-        if (cancelled) return;
-
-        setDataUrl(url);
-        setRemain(remainingSeconds(resp.data));
+        livePayloadCache.set(cacheKey, resp.data);
+        await renderPayload(resp.data);
         markSettled(true);
       } catch {
         if (!cancelled) {
