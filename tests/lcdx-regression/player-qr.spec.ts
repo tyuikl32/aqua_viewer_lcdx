@@ -72,10 +72,10 @@ test('page does not hit the API until the user generates', async ({ page }) => {
   // 生成后按钮进入 10 秒冷却
   await expect(page.getByRole('button', { name: /Refresh in \d+s/ })).toBeDisabled();
 
-  // 客户端路由来回：不应再打后端
+  // 客户端路由来回：面板重挂载后应从缓存还原已生成的码，且不再打后端
   await page.locator('nav.shell-sidebar-nav').getByText('Dashboard', { exact: true }).click();
   await page.locator('nav.shell-sidebar-nav').getByText(PAGE_TITLE, { exact: true }).click();
-  await expect(page.getByRole('button', { name: GENERATE })).toBeVisible();
+  await expect(page.locator(`img[alt="${PAGE_TITLE}"]`)).toBeVisible();
   expect(calls).toBe(1);
 });
 

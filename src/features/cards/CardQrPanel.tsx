@@ -54,6 +54,15 @@ function remainingSeconds(data: CardQrPayload): number {
   return clamp(data.expiresInSeconds || COUNTDOWN_SECONDS);
 }
 
+/**
+ * 已生成码的内存缓存（键 = userName|cardId）。
+ *
+ * 为什么需要：路由的 auth 包装用 `Fragment key={username}`，父级重渲染/路由切换会让
+ * 面板重挂载，组件 state 归零 —— 用户会看到刚生成的码突然变回「尚未生成」。
+ * 缓存只活到服务端 `expiresAt` 为止，刷新整页即清空。
+ */
+const livePayloadCache = new Map<string, CardQrPayload>();
+
 export function CardQrPanel({
   userName,
   cardId,
@@ -102,6 +111,41 @@ export function CardQrPanel({
     return () => window.clearTimeout(timer);
   }, [remain]);
 
+  // 面板重挂载时用缓存还原已生成的码（不再发请求）
+  useEffect(() => {
+    if (!userName || !cardId) {
+      return;
+    }
+
+    const cached = livePayloadCache.get(`${userName}|${cardId}`);
+    if (!cached) {
+      return;
+    }
+
+    const left = remainingSeconds(cached);
+    if (left <= 0) {
+      livePayloadCache.delete(`${userName}|${cardId}`);
+      return;
+    }
+
+    let cancelled = false;
+    void (async () => {
+      const url = await QRCode.toDataURL(cached.payload, {
+        width: QR_SIZE,
+        margin: 2,
+        errorCorrectionLevel: 'H',
+        color: { dark: '#000000ff', light: '#ffffffff' },
+      });
+      if (cancelled) return;
+      setDataUrl(url);
+      setRemain(left);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userName, cardId]);
+
   const generate = useCallback(async () => {
     if (busy || cooldownLeft > 0 || !userName || !cardId) {
       return;
@@ -133,6 +177,7 @@ export function CardQrPanel({
       setDataUrl(url);
       setRemain(remainingSeconds(resp.data));
       setCooldownUntil(Date.now() + COOLDOWN_MS);
+      livePayloadCache.set(`${userName}|${cardId}`, resp.data);
     } catch {
       setErrorKey('PlayerQrPage.RenderFailed');
     } finally {
