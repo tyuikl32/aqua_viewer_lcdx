@@ -136,3 +136,24 @@ npx playwright test --config=playwright.lcdx.config.ts tests/lcdx-regression
   本次保留以免一次性改动过大。
 - `/cards` 页面仍在（直接 URL 可访问），只是不再包含二维码入口。
 
+## 上线后的实测与追加修复
+
+部署后用真实账号（`LCDXChEXAy` / QQ 2320812015，主卡 `24304430670867596939`）在生产环境验证：
+
+| 项 | 结果 |
+|---|---|
+| 侧栏「玩家二维码」入口 | ✅ 出现，可跳转 `/mai2/playerqr` |
+| 挂载是否发请求 | ✅ 0 次（改点击生成后） |
+| 点击生成 | ✅ 1 次请求，`200 / 94001 → 92001`，返回 40 字符 payload |
+| 二维码渲染 | ⚠️ **t+0.6s 渲染成功**（img + 剩余 09:00 + 按钮冷却），**t+1.2s 被重置回「尚未生成」** |
+
+追加修复（已合并）：`fix(mai2)` 改为点击生成 + `livePayloadCache` 重挂载还原。
+
+**仍未解决**：生产环境里生成后约 1 秒组件会被重置。已排除整页刷新（`window.__marker`
+跨事件存活）、Service Worker（已 block）、限流（只有 1 次请求）。本地 dev server 下
+Playwright 12 项全绿、状态稳定，说明是生产环境的挂载/重渲染路径差异，尚未定位到具体触发源。
+
+下一步建议：在 `PlayerQrPage`/`CardQrPanel` 加临时 `console.info` 标记挂载与 effect 触发，
+线上复现一次即可确定是谁在重挂载。
+
+
