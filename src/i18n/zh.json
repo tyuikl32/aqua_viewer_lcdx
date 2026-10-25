@@ -255,6 +255,7 @@
       "Navigation": "导航",
       "OnlineBattle": "全国对战",
       "Photos": "相册",
+      "PlayerQr": "玩家二维码",
       "PlayRecord": "游玩记录",
       "Profile": "档案",
       "Rating": "评级",
@@ -1397,6 +1398,27 @@
   },
   "PasswordResetPage": {
     "OperationFailed": "操作失败"
+  },
+  "PlayerQrPage": {
+    "CardLabel": "主卡",
+    "Expired": "二维码已失效",
+    "Hint": "把手机屏幕对准机台上的扫码区，倒计时结束前有效。",
+    "Intro": "这是你的机台登入二维码：对准机台扫码区即可登入，无需实体卡。",
+    "Loading": "正在生成…",
+    "NoCard": "当前账号还没有绑定卡片，请先绑定后再来生成二维码。",
+    "NotOwner": "该卡片不属于当前账号。",
+    "Refresh": "刷新",
+    "RefreshCooldown": "{{n}} 秒后可刷新",
+    "Remaining": "剩余 {{time}}",
+    "RenderFailed": "二维码生成失败",
+    "Save": "保存图片",
+    "Title": "玩家二维码",
+    "TooFrequent": "操作太频繁，请稍后再试。",
+    "Unavailable": "暂时无法校验卡片归属，请稍后重试。",
+    "Unsupported": "该卡号不支持生成登入二维码。",
+    "UnsupportedCard": "当前主卡不是国服卡号，无法生成机台登入二维码。",
+    "WarningBody": "请勿传播此二维码。",
+    "WarningTitle": "为了您的账号安全"
   },
   "ProfilePage": {
     "AddPasskey": "添加 Passkey",

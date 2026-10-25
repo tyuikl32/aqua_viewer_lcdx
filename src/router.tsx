@@ -19,6 +19,7 @@ import { ContributorsPage } from '@/pages/ContributorsPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 import { CardsPage } from '@/pages/CardsPage';
+import { PlayerQrPage } from '@/pages/PlayerQrPage';
 import { KeychipPage } from '@/pages/KeychipPage';
 import { ImporterPage } from '@/pages/ImporterPage';
 import { AnnouncementsPage } from '@/pages/AnnouncementsPage';
@@ -255,6 +256,8 @@ export const router = createBrowserRouter([
           { path: 'circle', element: <Maimai2CirclePage />, handle: { title: 'Maimai2.CirclePage.Title' } },
           { path: 'festa', element: <Maimai2FestaPage />, handle: { title: 'Maimai2.FestaPage.Title' } },
           { path: 'songlist', element: <Maimai2SongListPage />, handle: { title: 'Maimai2.SongList.Title' } },
+          // 玩家二维码：左侧导航独立入口（不是卡片页的附属功能）
+          { path: 'playerqr', element: <PlayerQrPage />, handle: { title: 'PlayerQrPage.Title' } },
           { path: 'rival', element: <Maimai2RivalPage />, handle: { title: 'Maimai2.RivalPage.Title' } },
           // LCDX 机台管理（等价旧版 maimai2.routing：cabinets/cabmode/remotecontrol → ManageGuard，locks → AdminGuard）
           {

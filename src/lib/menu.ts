@@ -56,6 +56,8 @@ export const menu = new Map<string, Menu[]>([
       { id: 14, name: 'Locks', url: 'mai2/locks', displayCondition: DisplayCondition.AfterLogin, requiredBotPermission: 4 },
       // 机台人数查询：仅绑卡用户可见（不再看权限组/辖区；可见性靠「知道别名 + 多台隐名」）
       { id: 16, name: 'Dxnum', url: 'mai2/dxnum', displayCondition: DisplayCondition.AfterLogin, requiresBoundCard: true },
+      // 玩家二维码：登录后可见（无卡用户进入后由页面给出绑定提示，故不做绑卡门控）
+      { id: 17, name: 'PlayerQr', url: 'mai2/playerqr', displayCondition: DisplayCondition.AfterLogin },
       { id: 6, name: 'MusicList', url: 'mai2/songlist', displayCondition: DisplayCondition.Always },
       { id: 1, name: 'Setting', url: 'mai2/setting', displayCondition: DisplayCondition.HasProfile },
     ],

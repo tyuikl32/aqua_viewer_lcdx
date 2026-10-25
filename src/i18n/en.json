@@ -255,6 +255,7 @@
       "Navigation": "Navigation",
       "OnlineBattle": "Online Battle",
       "Photos": "Photos",
+      "PlayerQr": "Player QR",
       "PlayRecord": "Play Record",
       "Profile": "Profile",
       "Rating": "Rating",
@@ -1397,6 +1398,27 @@
   },
   "PasswordResetPage": {
     "OperationFailed": "Operation failed"
+  },
+  "PlayerQrPage": {
+    "CardLabel": "Primary card",
+    "Expired": "QR code expired",
+    "Hint": "Aim your screen at the cabinet scanner before the countdown ends.",
+    "Intro": "This is your arcade login QR. Aim it at the cabinet scanner to sign in — no physical card needed.",
+    "Loading": "Generating…",
+    "NoCard": "No card bound yet. Bind a card before generating a login QR.",
+    "NotOwner": "This card does not belong to your account.",
+    "Refresh": "Refresh",
+    "RefreshCooldown": "Refresh in {{n}}s",
+    "Remaining": "{{time}} left",
+    "RenderFailed": "Failed to generate the QR code",
+    "Save": "Save image",
+    "Title": "Player QR",
+    "TooFrequent": "Too frequent, please try again later.",
+    "Unavailable": "Unable to verify card ownership, please retry.",
+    "Unsupported": "This card cannot be used for a login QR.",
+    "UnsupportedCard": "Your primary card is not a CN card, so a login QR cannot be generated.",
+    "WarningBody": "Do not share this QR code.",
+    "WarningTitle": "For your account safety"
   },
   "ProfilePage": {
     "AddPasskey": "Add Passkey",
