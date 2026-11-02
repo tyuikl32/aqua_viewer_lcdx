@@ -7,7 +7,7 @@ import { isOk } from '@/lib/models';
 import { getCurrentUser, loadUser } from '@/lib/user';
 import { filterCommands, useBotPermission } from '@/lib/botPermission';
 import type { CabinetSummary, RemoteCommandResult } from './cabinet-models';
-import { REMOTE_COMMANDS } from './cabinet-models';
+import { argFormatKey, commandArgValue, isArgInvalid, REMOTE_COMMANDS } from './cabinet-models';
 import './Maimai2RemoteControlPage.css';
 
 const POLL_INTERVAL_MS = 2_000;
@@ -49,6 +49,11 @@ export function Maimai2RemoteControlPage() {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [sessions, setSessions] = useState<SessionEntry[]>([]);
+  /** 参数框已失焦（或点击发送被拦）：此后才显示行内校验错误，避免刚选中指令就报红 */
+  const [argTouched, setArgTouched] = useState(false);
+  const paramsRef = useRef<HTMLInputElement>(null);
+  /** 上一次选中指令的参数格式签名（'' = 无参/未选），用于判断切换时是否要清空已填值 */
+  const prevArgFormatRef = useRef<string>('');
 
   /** 指令下拉按角色过滤（等价旧版 botPermission.state 订阅：延迟返回的 Admin 探测可扩展列表） */
   const commands = useMemo(
@@ -57,6 +62,8 @@ export function Maimai2RemoteControlPage() {
   );
 
   const selectedCommandDef = commands.find((c) => c.command === selectedCommand);
+  const argSpec = selectedCommandDef?.arg;
+  const showArgError = argTouched && isArgInvalid(argSpec, message);
 
   /** 权限变化后若当前选中指令不再可见则清空（等价旧版订阅内逻辑） */
   useEffect(() => {
@@ -64,6 +71,20 @@ export function Maimai2RemoteControlPage() {
       setSelectedCommand('');
     }
   }, [commands, selectedCommand]);
+
+  /**
+   * 切换指令：复位「已失焦」标记；参数格式变了就清空已填值（无参指令同样清空），
+   * 只有 download / downloadpro 这类同格式指令之间切换才保留。
+   * 依赖只有 selectedCommand —— commands 会随权限探测换新数组，不能让它触发清理。
+   */
+  useEffect(() => {
+    setArgTouched(false);
+    const format = argFormatKey(selectedCommandDef?.arg);
+    if (prevArgFormatRef.current !== format) {
+      prevArgFormatRef.current = format;
+      setMessage('');
+    }
+  }, [selectedCommand]);
 
   const sessionsRef = useRef(sessions);
   sessionsRef.current = sessions;
@@ -176,13 +197,20 @@ export function Maimai2RemoteControlPage() {
     if (!selectedCommand || !selectedNick || sending) {
       return;
     }
+    // 契约校验：必填未填 / 格式不符时只报行内错误，不发请求（错误就地展示，不再弹 toast）
+    if (isArgInvalid(argSpec, message)) {
+      setArgTouched(true);
+      paramsRef.current?.focus();
+      return;
+    }
     setSending(true);
     try {
       const resp = await lcdx.post('lcdx/cabinet/command', {
         userName: userName(),
         nickName: selectedNick,
         command: selectedCommand,
-        message,
+        // 无参指令恒发空串，避免把上一条指令的残留参数带给机台
+        message: commandArgValue(argSpec, message),
       });
       setSending(false);
       if (isOk(resp) && resp.data?.requestId) {
@@ -206,7 +234,7 @@ export function Maimai2RemoteControlPage() {
       setSending(false);
       notice(translate('Maimai2.RemoteControlPage.NetworkError'));
     }
-  }, [message, selectedCommand, selectedNick, sending, startPolling, t]);
+  }, [argSpec, message, selectedCommand, selectedNick, sending, startPolling, t]);
 
   return (
     <>
@@ -220,8 +248,11 @@ export function Maimai2RemoteControlPage() {
             <div className="card-body">
               <div className="row g-2 align-items-start">
                 <div className="col-md-4 cabinet-select-col">
-                  <label className="form-label">{t('Maimai2.Cabinets.SelectCabinet')}</label>
+                  <label className="form-label" htmlFor="remote-cabinet">
+                    {t('Maimai2.Cabinets.SelectCabinet')}
+                  </label>
                   <select
+                    id="remote-cabinet"
                     className="form-select cabinet-select"
                     value={selectedNick}
                     onChange={(event) => setSelectedNick(event.target.value)}
@@ -238,11 +269,15 @@ export function Maimai2RemoteControlPage() {
                   </select>
                 </div>
                 <div className="col-md-4">
-                  <label className="form-label">{t('Maimai2.RemoteControl.Command')}</label>
+                  <label className="form-label" htmlFor="remote-command">
+                    {t('Maimai2.RemoteControl.Command')}
+                  </label>
                   <select
+                    id="remote-command"
                     className="form-select"
                     value={selectedCommand}
                     onChange={(event) => setSelectedCommand(event.target.value)}
+                    aria-describedby={selectedCommandDef ? 'remote-args-hint' : undefined}
                   >
                     <option value="" disabled>
                       {t('Maimai2.RemoteControl.SelectCommand')}
@@ -254,22 +289,39 @@ export function Maimai2RemoteControlPage() {
                     ))}
                   </select>
                   {selectedCommandDef && (
-                    <div className="form-text">
-                      {selectedCommandDef.hasArg
-                        ? t(selectedCommandDef.argHintKey)
+                    <div className="form-text" id="remote-args-hint">
+                      {argSpec
+                        ? t(argSpec.hintKey)
                         : t('Maimai2.RemoteControl.NoArgCommand')}
                     </div>
                   )}
                 </div>
                 <div className="col-md-4">
-                  <label className="form-label">{t('Maimai2.RemoteControl.Params')}</label>
+                  <label className="form-label" htmlFor="remote-params">
+                    {t('Maimai2.RemoteControl.Params')}
+                  </label>
                   <input
-                    className="form-control"
+                    id="remote-params"
+                    ref={paramsRef}
+                    className={'form-control' + (showArgError ? ' is-invalid' : '')}
                     value={message}
                     onChange={(event) => setMessage(event.target.value)}
-                    disabled={Boolean(selectedCommandDef) && !selectedCommandDef?.hasArg}
-                    placeholder={t('Maimai2.RemoteControl.ParamsPlaceholder')}
+                    onBlur={() => setArgTouched(true)}
+                    disabled={!argSpec}
+                    placeholder={t(argSpec?.placeholderKey ?? 'Maimai2.RemoteControl.ParamsPlaceholder')}
+                    inputMode={argSpec?.numeric ? 'numeric' : undefined}
+                    autoComplete="off"
+                    spellCheck={false}
+                    aria-invalid={showArgError || undefined}
+                    aria-describedby={
+                      showArgError ? 'remote-args-hint remote-args-error' : 'remote-args-hint'
+                    }
                   />
+                  {showArgError && (
+                    <div className="invalid-feedback d-block" id="remote-args-error" role="alert">
+                      {t(argSpec?.invalidKey ?? argSpec?.hintKey ?? 'Maimai2.RemoteControl.Params')}
+                    </div>
+                  )}
                 </div>
               </div>
               <button

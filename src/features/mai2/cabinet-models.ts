@@ -235,26 +235,108 @@ export const LCSET_KEYS: {
   { key: 'ffesta', setting: 'ForceFestaMode', default: '0' },
 ];
 
+/**
+ * 单条指令的参数契约（与机台侧 Remoteware 参数格式对齐；前端校验仅 UX，安全边界在后端白名单与机台 daemon）。
+ * 不设此字段 = 该指令不接受参数：输入框禁用，下发空串。
+ */
+export interface RemoteCommandArg {
+  /** 指令下拉下方的提示（说明可选 / 必填 / 格式），如「参数：0 / 1 / 2（可选）」 */
+  hintKey: string;
+  /** 输入框 placeholder；缺省回落到通用 ParamsPlaceholder */
+  placeholderKey?: string;
+  /** 必填：空值即校验失败（阻止发送） */
+  required?: boolean;
+  /** 格式校验，作用在归一化后的值上；不匹配即失败 */
+  pattern?: RegExp;
+  /** 校验失败文案；缺省回落到 hintKey，保证提示永不为空 */
+  invalidKey?: string;
+  /** 下发前的归一化（同时用于校验），如卡号去空白；缺省原样下发 */
+  normalize?: (value: string) => string;
+  /** 移动端弹数字键盘 */
+  numeric?: boolean;
+}
+
+export interface RemoteCommandDef {
+  command: string;
+  arg?: RemoteCommandArg;
+}
+
+const remoteArg = (hintKey: string, extra: Partial<RemoteCommandArg> = {}): RemoteCommandArg => ({
+  hintKey,
+  ...extra,
+});
+
 /** Remoteware 指令 17 条（Admin；普通子集 2 条由 botPermission 过滤） */
-export const REMOTE_COMMANDS: { command: string; hasArg: boolean; argHintKey: string }[] = [
-  { command: 'ping', hasArg: false, argHintKey: '' },
-  { command: 'game-reboot', hasArg: false, argHintKey: '' },
-  { command: 'game-switch', hasArg: false, argHintKey: '' },
-  { command: 'game-force-reboot', hasArg: false, argHintKey: '' },
-  { command: 'printscr', hasArg: false, argHintKey: '' },
-  { command: 'remote-card', hasArg: false, argHintKey: '' },
-  { command: 'download', hasArg: true, argHintKey: 'Maimai2.RemoteControl.ArgUrl' },
-  { command: 'downloadpro', hasArg: true, argHintKey: 'Maimai2.RemoteControl.ArgUrl' },
-  { command: 'unzip', hasArg: true, argHintKey: 'Maimai2.RemoteControl.ArgPath' },
-  { command: 'logsince', hasArg: true, argHintKey: 'Maimai2.RemoteControl.ArgDate' },
-  { command: 'logsave', hasArg: true, argHintKey: 'Maimai2.RemoteControl.ArgName' },
-  { command: 'remote-cmd', hasArg: true, argHintKey: 'Maimai2.RemoteControl.ArgCmd' },
-  { command: 'remote-cmd-with-user', hasArg: true, argHintKey: 'Maimai2.RemoteControl.ArgUserCmd' },
-  { command: 'remote-bat', hasArg: true, argHintKey: 'Maimai2.RemoteControl.ArgBat' },
-  { command: 'remote-bat-with-user', hasArg: true, argHintKey: 'Maimai2.RemoteControl.ArgUserBat' },
-  { command: 'remote-url-bat', hasArg: true, argHintKey: 'Maimai2.RemoteControl.ArgUrl' },
-  { command: 'remote-url-bat-with-user', hasArg: true, argHintKey: 'Maimai2.RemoteControl.ArgUserUrlBat' },
+export const REMOTE_COMMANDS: RemoteCommandDef[] = [
+  { command: 'ping' },
+  { command: 'game-reboot' },
+  { command: 'game-switch' },
+  { command: 'game-force-reboot' },
+  {
+    command: 'printscr',
+    arg: remoteArg('Maimai2.RemoteControl.ArgPrintScr', {
+      placeholderKey: 'Maimai2.RemoteControl.PlaceholderPrintScr',
+      invalidKey: 'Maimai2.RemoteControl.ArgPrintScrInvalid',
+      pattern: /^[012]$/,
+      // 单字符取值：校验与下发都用 trim 后的值，避免把「2 」（尾随空格）原样发给机台
+      normalize: (value) => value.trim(),
+      numeric: true,
+    }),
+  },
+  {
+    command: 'remote-card',
+    arg: remoteArg('Maimai2.RemoteControl.ArgCardNumber', {
+      required: true,
+      placeholderKey: 'Maimai2.RemoteControl.PlaceholderCardNumber',
+      invalidKey: 'Maimai2.RemoteControl.PlaceholderCardNumber',
+      pattern: /^\d{20}$/,
+      // 允许「1234 5678 9012 3456 7890」这类从别处粘来的分组卡号
+      normalize: (value) => value.replace(/\s+/g, ''),
+      numeric: true,
+    }),
+  },
+  { command: 'download', arg: remoteArg('Maimai2.RemoteControl.ArgDownload', { placeholderKey: 'Maimai2.RemoteControl.PlaceholderDownload' }) },
+  { command: 'downloadpro', arg: remoteArg('Maimai2.RemoteControl.ArgDownload', { placeholderKey: 'Maimai2.RemoteControl.PlaceholderDownload' }) },
+  { command: 'unzip', arg: remoteArg('Maimai2.RemoteControl.ArgPath') },
+  { command: 'logsince', arg: remoteArg('Maimai2.RemoteControl.ArgDate') },
+  { command: 'logsave', arg: remoteArg('Maimai2.RemoteControl.ArgName') },
+  { command: 'remote-cmd', arg: remoteArg('Maimai2.RemoteControl.ArgCmd') },
+  { command: 'remote-cmd-with-user', arg: remoteArg('Maimai2.RemoteControl.ArgUserCmd') },
+  { command: 'remote-bat', arg: remoteArg('Maimai2.RemoteControl.ArgBat') },
+  { command: 'remote-bat-with-user', arg: remoteArg('Maimai2.RemoteControl.ArgUserBat') },
+  { command: 'remote-url-bat', arg: remoteArg('Maimai2.RemoteControl.ArgUrl') },
+  { command: 'remote-url-bat-with-user', arg: remoteArg('Maimai2.RemoteControl.ArgUserUrlBat') },
 ];
+
+/** 校验用值：有 normalize 用归一化值；否则 trim（防止全空格绕过必填） */
+function checkValue(arg: RemoteCommandArg, raw: string): string {
+  return arg.normalize ? arg.normalize(raw) : raw.trim();
+}
+
+/** 参数是否非法：空值只在 required 时算非法；无参指令恒 false */
+export function isArgInvalid(arg: RemoteCommandArg | undefined, raw: string): boolean {
+  if (!arg) {
+    return false;
+  }
+  const value = checkValue(arg, raw);
+  if (value === '') {
+    return Boolean(arg.required);
+  }
+  return Boolean(arg.pattern && !arg.pattern.test(value));
+}
+
+/** 真正下发给机台的值：无参指令恒空串；有 normalize 的按归一化值；其余原样（不 trim 命令行类参数） */
+export function commandArgValue(arg: RemoteCommandArg | undefined, raw: string): string {
+  if (!arg) {
+    return '';
+  }
+  return arg.normalize ? arg.normalize(raw) : raw;
+}
+
+/** 参数格式签名：签名相同即视为同一参数格式（download / downloadpro 共享），切换时保留已填值 */
+export function argFormatKey(arg: RemoteCommandArg | undefined): string {
+  return arg ? arg.hintKey : '';
+}
 
 /** fileName 截断：去第 20 位起 7 字符（越界保护，设计展示规则） */
 export function truncateFileName(name: string): string {
