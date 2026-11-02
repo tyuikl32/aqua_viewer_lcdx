@@ -142,6 +142,15 @@ frontend (2026-09). Scope: `aqua_viewer_lcdx` and its integration with `LCDXNetA
     ellipsis`
 - Do not widen `col-md-*` to fit longer names; truncation in the closed control is expected.
 
+### 远程指令的参数契约只在 `REMOTE_COMMANDS` 里定义
+
+- `src/features/mai2/cabinet-models.ts` 的 `REMOTE_COMMANDS: RemoteCommandDef[]` 是唯一事实源：**没有 `arg` 字段 = 不接受参数**（输入框禁用、下发空串）；有 `arg` 时由 `hintKey` / `placeholderKey` / `required` / `pattern` / `normalize` 决定提示、必填与格式。
+- 页面只做派生（`isArgInvalid` / `commandArgValue` / `argFormatKey`），不要在 JSX 里再写一套针对某个指令的 if/else。
+- 校验值（`trim`）与下发值（原样；只有声明了 `normalize` 的指令才改写）必须分开 —— `remote-cmd` / `remote-bat` 这类命令行参数的字节不能被前端顺手 trim。
+- 参数语义的权威在机台 daemon，后端 `RemoteControlService` 只转发不校验；前端校验是 UX，写法必须“改一行正则就能放宽”。
+- 切换指令用 `argFormatKey`（= `hintKey`）判断是否清空已填值：格式变了就清空，`download` / `downloadpro` 这类同格式指令之间才保留。
+- 回归：`tests/lcdx-regression/remote-args.spec.ts`（用例覆盖 0/1/2 可选、20 位卡号必填、`存储位置\|下载URL`、无参指令下发空串）。
+
 ### Route guards
 
 - Guards live in `src/router.tsx` (`RequireAuth`, `RequireCabinetManage`, `RequireCabinetAdmin`).
