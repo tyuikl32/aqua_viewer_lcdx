@@ -233,6 +233,7 @@ export const LCSET_KEYS: {
   { key: 'skipdlc', setting: 'SkipDeliveryCheck', default: '1' },
   { key: 'disfesta', setting: 'DisableFestaMode', default: '1' },
   { key: 'ffesta', setting: 'ForceFestaMode', default: '0' },
+  { key: '旧段位', setting: 'EnableOldDanCourse' },
 ];
 
 /**
